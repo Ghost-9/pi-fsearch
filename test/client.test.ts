@@ -9,6 +9,7 @@ import { formatGrepFiles } from "../src/formatter.ts";
 import { LsmCompactor } from "../src/compactor.ts";
 import { recordMistake, learnCorrection, getLearnedCorrection, formatRecursiveLearningReport } from "../src/recursive-learning.ts";
 import { UltraSearchTui } from "../src/tui.ts";
+import { expandIntentKeywords, searchSemanticIntent } from "../src/semantic.ts";
 
 const sharedClient = new FSearchClient();
 
@@ -267,4 +268,17 @@ test("tui: snapshot execution produces mission control dashboard", async () => {
   const tui = new UltraSearchTui();
   // Ensure run(true) completes without throwing in headless mode
   await tui.run(true);
+});
+
+test("semantic: intent keyword expansion and hybrid retrieval", async () => {
+  const keywords = expandIntentKeywords("where is the user authentication and login logic?");
+  assert.ok(keywords.includes("auth"));
+  assert.ok(keywords.includes("login"));
+
+  const res = await searchSemanticIntent(sharedClient, "auth token secret", {
+    in: process.cwd(),
+    limit: 5,
+  });
+  assert.equal(typeof res.confidence, "number");
+  assert.ok(Array.isArray(res.files));
 });

@@ -20,7 +20,7 @@ export class UltraSearchTui {
   }
 
   public async run(once = false): Promise<void> {
-    const isInteractive = Boolean(process.stdin.isTTY && process.stdout.isTTY && !once);
+    const isInteractive = Boolean(process.stdin.isTTY && process.stdout.isTTY && !once && !process.env.CI);
 
     if (!isInteractive) {
       await this.renderSnapshot();
@@ -28,11 +28,17 @@ export class UltraSearchTui {
       return;
     }
 
-    // Set up interactive terminal
-    readline.emitKeypressEvents(process.stdin);
-    if (process.stdin.isTTY) {
-      process.stdin.setRawMode(true);
-      this.rawMode = true;
+    // Set up interactive terminal with cross-platform fallback
+    try {
+      readline.emitKeypressEvents(process.stdin);
+      if (process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
+        process.stdin.setRawMode(true);
+        this.rawMode = true;
+      }
+    } catch {
+      await this.renderSnapshot();
+      this.client.close();
+      return;
     }
 
     process.stdout.write("\x1B[?25l"); // Hide cursor
@@ -41,35 +47,35 @@ export class UltraSearchTui {
     await this.render();
 
     process.stdin.on("keypress", async (str, key) => {
-      if (key.ctrl && key.name === "c") {
+      if (key && key.ctrl && key.name === "c") {
         this.exit();
       }
 
       const rows = loadAudit();
 
-      if (key.name === "up" || key.name === "k") {
+      if (key && (key.name === "up" || key.name === "k")) {
         if (this.selectedIndex > 0) {
           this.selectedIndex--;
           await this.render();
         }
-      } else if (key.name === "down" || key.name === "j") {
+      } else if (key && (key.name === "down" || key.name === "j")) {
         if (this.selectedIndex < Math.max(0, rows.length - 1)) {
           this.selectedIndex++;
           await this.render();
         }
-      } else if (key.name === "return" || key.name === "space" || key.name === "e") {
+      } else if (key && (key.name === "return" || key.name === "space" || key.name === "e")) {
         this.isExpanded = !this.isExpanded;
         await this.render();
-      } else if (key.name === "l") {
+      } else if (key && key.name === "l") {
         this.showLearning = !this.showLearning;
         await this.render();
-      } else if (key.name === "c") {
+      } else if (key && key.name === "c") {
         this.statusMessage = "⏳ Running LSM Compaction...";
         await this.render();
         const res = await this.compactor.compact();
         this.statusMessage = res.ok ? `✅ ${res.message}` : `❌ ${res.message}`;
         await this.render();
-      } else if (key.name === "q" || key.name === "escape") {
+      } else if (key && (key.name === "q" || key.name === "escape")) {
         if (this.isExpanded || this.showLearning) {
           this.isExpanded = false;
           this.showLearning = false;
@@ -82,8 +88,10 @@ export class UltraSearchTui {
   }
 
   private exit(): void {
-    if (this.rawMode && process.stdin.isTTY) {
-      process.stdin.setRawMode(false);
+    if (this.rawMode && process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
+      try {
+        process.stdin.setRawMode(false);
+      } catch {}
     }
     process.stdout.write("\x1B[?25h"); // Restore cursor
     process.stdout.write("\x1B[0m\n"); // Reset colors
@@ -130,7 +138,7 @@ export class UltraSearchTui {
 
     // Header banner
     lines.push("\x1B[1;36m========================================================================================\x1B[0m");
-    lines.push("\x1B[1;37m   ⚡ PI-ULTRASEARCH MISSION CONTROL & OBSERVABILITY TUI \x1B[0m  \x1B[90m(v0.2.2 AGPL-3.0)\x1B[0m");
+    lines.push("\x1B[1;37m   ⚡ PI-ULTRASEARCH MISSION CONTROL & OBSERVABILITY TUI \x1B[0m  \x1B[90m(v0.3.0 AGPL-3.0)\x1B[0m");
     lines.push("\x1B[1;36m========================================================================================\x1B[0m");
 
     // Daemon Status Line
