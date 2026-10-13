@@ -1,4 +1,4 @@
-import { scrubSecrets } from "./sanitize.ts";
+import { scrubSecrets, isSensitiveFile } from "./sanitize.ts";
 import type { FSearchGrepFile } from "./types.ts";
 
 export interface FormatOptions {
@@ -12,8 +12,9 @@ const SYMBOL_REGEX = /^\s*(?:pub\s+)?(?:async\s+)?(?:export\s+)?(?:default\s+)?(
 
 /**
  * Formats grep file matches.
- * - Defaults to `compact: true` (clean one-line `file:line: text` format, saving 30-50% tokens without dropping any matches).
+ * - Defaults to `compact: true` (clean one-line `file:line: text` format).
  * - Defaults to uncapped context (`maxTokens: undefined`), ensuring the AI agent NEVER misses any matching files or definitions.
+ * - Enterprise DLP Protection: Completely redacts environment variables & private keys from `.env*`, `.pem`, `.key`, `id_rsa`.
  * - Prioritizes AST symbol declarations (`class`, `func`, `struct`, `interface`, etc.) when `prioritizeSymbols` is enabled.
  */
 export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions): { text: string; tokenCount: number; truncatedCount: number } {
@@ -25,7 +26,6 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
   let totalMatches = 0;
   let printedMatches = 0;
 
-  // Count total matches
   for (const f of files) {
     totalMatches += f.matches.length;
   }
@@ -35,9 +35,11 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
       ? file.path.slice(worktreeRoot.length).replace(/^\//, "")
       : file.path;
 
+    const isSensitive = isSensitiveFile(file.path);
+
     // Sort matches in file if symbol prioritization is enabled
     let sortedMatches = [...file.matches];
-    if (prioritizeSymbols) {
+    if (prioritizeSymbols && !isSensitive) {
       sortedMatches.sort((a, b) => {
         const aIsDef = SYMBOL_REGEX.test(a.text) ? 1 : 0;
         const bIsDef = SYMBOL_REGEX.test(b.text) ? 1 : 0;
@@ -47,7 +49,10 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
 
     if (compact) {
       for (const m of sortedMatches) {
-        const scrubbed = scrubSecrets(m.text).trim();
+        let scrubbed = scrubSecrets(m.text).trim();
+        if (isSensitive) {
+          scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
+        }
         const lineStr = `${relPath}:${m.line}: ${scrubbed}`;
         if (currentChars + lineStr.length > maxChars && printedMatches > 0) {
           const omitted = totalMatches - printedMatches;
@@ -63,7 +68,7 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
         printedMatches++;
       }
     } else {
-      const fileHeader = `\n=== ${relPath} ===`;
+      const fileHeader = `\n=== ${relPath}${isSensitive ? " [DLP PROTECTED FILE]" : ""} ===`;
       if (currentChars + fileHeader.length > maxChars && printedMatches > 0) {
         const omitted = totalMatches - printedMatches;
         lines.push(`\n[... Truncated: ${omitted} additional matches omitted. Omit max_tokens or refine path_filter to see more]`);
@@ -77,7 +82,10 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
       currentChars += fileHeader.length + 1;
 
       for (const m of sortedMatches) {
-        const scrubbed = scrubSecrets(m.text).trim();
+        let scrubbed = scrubSecrets(m.text).trim();
+        if (isSensitive) {
+          scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
+        }
         const lineStr = `  L${m.line}: ${scrubbed}`;
         if (currentChars + lineStr.length > maxChars && printedMatches > 0) {
           const omitted = totalMatches - printedMatches;

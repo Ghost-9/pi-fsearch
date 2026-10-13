@@ -1,3 +1,19 @@
+
+import * as child_process from "node:child_process";
+
+export function resolveDefaultSocketPath(): string {
+  const home = os.homedir();
+  if (process.platform === "win32") {
+    return "\\\\.\\pipe\\fsearch";
+  }
+  if (process.platform === "linux") {
+    if (process.env.XDG_RUNTIME_DIR) {
+      return path.join(process.env.XDG_RUNTIME_DIR, "fsearch.sock");
+    }
+    return path.join(home, ".local/share/fsearch/fsearch.sock");
+  }
+  return path.join(home, "Library/Application Support/FSearch/fsearch.sock");
+}
 import * as net from "node:net";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -74,11 +90,31 @@ export class FSearchClient {
   }>();
 
   constructor(options: FSearchClientOptions = {}) {
-    const home = os.homedir();
-    this.socketPath = options.socketPath ?? path.join(home, "Library/Application Support/FSearch/fsearch.sock");
+    this.socketPath = options.socketPath ?? resolveDefaultSocketPath();
     this.timeoutMs = options.timeoutMs ?? 5000;
     this.maxReconnectRetries = options.maxReconnectRetries ?? 3;
     this.enableFallback = options.enableFallback ?? true;
+  }
+
+  
+  private trySpawnDaemon(): void {
+    try {
+      const candidates = [
+        path.join(os.homedir(), ".local/bin/fsearch"),
+        "/usr/local/bin/fsearch",
+        "/opt/homebrew/bin/fsearch",
+      ];
+      for (const bin of candidates) {
+        if (fs.existsSync(bin)) {
+          const child = child_process.spawn(bin, ["serve"], {
+            detached: true,
+            stdio: "ignore",
+          });
+          child.unref();
+          break;
+        }
+      }
+    } catch {}
   }
 
   private async ensureConnection(retryCount = 0): Promise<net.Socket> {
@@ -123,6 +159,7 @@ export class FSearchClient {
       sock.on("error", async (err) => {
         this.cleanup();
         this.isConnecting = false;
+        if (retryCount === 0) { this.trySpawnDaemon(); }
         if (retryCount < this.maxReconnectRetries) {
           const backoffMs = Math.min(100 * Math.pow(2, retryCount), 500);
           await new Promise((r) => setTimeout(r, backoffMs));

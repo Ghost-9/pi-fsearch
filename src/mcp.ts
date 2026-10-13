@@ -1,10 +1,12 @@
 import * as readline from "node:readline";
+import * as path from "node:path";
 import { FSearchClient } from "./client.ts";
-import { scrubSecrets } from "./sanitize.ts";
+import { formatGrepFiles } from "./formatter.ts";
+import { summarizeAudit, formatAuditSummary } from "./telemetry.ts";
 
 /**
- * Lightweight native Model Context Protocol (MCP) server speaking JSON-RPC 2.0 over stdio.
- * Can be run via `npx tsx bin/mcp-server.ts` in Claude Desktop, Antigravity, or T3 Code.
+ * Enterprise Model Context Protocol (MCP) server speaking JSON-RPC 2.0 over stdio.
+ * Supports Claude Desktop, Cursor, Windsurf, Zed, VS Code, Antigravity, and T3 Code.
  */
 export class FSearchMcpServer {
   private client: FSearchClient;
@@ -43,6 +45,14 @@ export class FSearchMcpServer {
     const { id, method, params } = req;
 
     if (method === "initialize") {
+      // Dynamic workspace root detection from IDE client
+      if (params?.rootUri && typeof params.rootUri === "string") {
+        const parsed = params.rootUri.replace(/^file:\/\//, "");
+        if (parsed) this.cwd = parsed;
+      } else if (params?.rootPath && typeof params.rootPath === "string") {
+        this.cwd = params.rootPath;
+      }
+
       return {
         jsonrpc: "2.0",
         id,
@@ -70,26 +80,75 @@ export class FSearchMcpServer {
           tools: [
             {
               name: "fsearch_query",
-              description: "Fast indexed file and path discovery (<0.1ms). Supports globs, git filters, and zero typo tolerance.",
+              description: "Instant indexed whole-disk or workspace file search (<0.1ms). Strict zero typo tolerance. Supports globs, extension filters, and git filters.",
               inputSchema: {
                 type: "object",
                 properties: {
-                  query: { type: "string", description: "Search query or glob" },
-                  limit: { type: "number", description: "Max results" },
+                  query: { type: "string", description: "Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified')" },
+                  limit: { type: "number", description: "Max results (default: 30)" },
+                  global: { type: "boolean", description: "Search whole disk instead of workspace" },
                 },
                 required: ["query"],
               },
             },
             {
               name: "fsearch_grep",
-              description: "Indexed trigram text search inside files (<1ms).",
+              description: "Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.",
               inputSchema: {
                 type: "object",
                 properties: {
                   pattern: { type: "string", description: "Literal or identifier to search" },
-                  path_filter: { type: "string", description: "Subdirectory filter" },
+                  path_filter: { type: "string", description: "Subdirectory or file filter" },
+                  mode: { type: "string", enum: ["literal", "regex", "symbol"], description: "Search mode" },
+                  limit: { type: "number", description: "Max files to return" },
+                  compact: { type: "boolean", description: "Compact one-line format (default: true)" },
+                  max_tokens: { type: "number", description: "Optional token budget ceiling" },
                 },
                 required: ["pattern"],
+              },
+            },
+            {
+              name: "fsearch_multi_grep",
+              description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  patterns: { type: "array", items: { type: "string" }, description: "Array of search patterns" },
+                  path_filter: { type: "string", description: "Subdirectory filter" },
+                  compact: { type: "boolean", description: "Compact one-line format (default: true)" },
+                  max_tokens: { type: "number", description: "Optional token budget ceiling" },
+                },
+                required: ["patterns"],
+              },
+            },
+            {
+              name: "fsearch_locate",
+              description: "Instant O(1) filename lookup (e.g. 'package.json', 'Cargo.toml') within current workspace.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  filename: { type: "string", description: "Exact filename to locate" },
+                  global: { type: "boolean", description: "Search entire disk" },
+                },
+                required: ["filename"],
+              },
+            },
+            {
+              name: "fsearch_recent",
+              description: "Recently worked or edited files in current workspace (frecency ranked).",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  limit: { type: "number", description: "Max recent files (default: 15)" },
+                },
+              },
+            },
+            {
+              name: "fsearch_metrics",
+              description: "Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice.",
+              inputSchema: {
+                type: "object",
+                properties: {},
               },
             },
           ],
@@ -100,30 +159,109 @@ export class FSearchMcpServer {
     if (method === "tools/call") {
       const toolName = params?.name;
       const args = params?.arguments ?? {};
+      const activeRoot = args.path ? path.resolve(this.cwd, args.path) : this.cwd;
 
       if (toolName === "fsearch_query") {
-        const res = await this.client.search(args.query, { in: this.cwd, limit: args.limit ?? 20 });
+        const searchScope = args.global ? undefined : activeRoot;
+        const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30 });
         const hits = res.hits ?? [];
-        const formatted = hits.map((h) => `${h.path} (${h.kind})`).join("\n");
+        const formatted = hits.map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n");
         return {
           jsonrpc: "2.0",
           id,
           result: {
-            content: [{ type: "text", text: formatted || "No matches found." }],
+            content: [{ type: "text", text: formatted || `No files matching "${args.query}" found.` }],
           },
         };
       }
 
       if (toolName === "fsearch_grep") {
-        const res = await this.client.grep(args.pattern, { in: this.cwd, limit: 20 });
+        const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
+        const res = await this.client.grep(args.pattern, {
+          in: searchScope,
+          mode: args.mode ?? "literal",
+          limit: args.limit ?? 30,
+        });
         const files = res.files ?? [];
-        const out = files.map((f) => `${f.path}:\n` + f.matches.map((m) => `  L${m.line}: ${scrubSecrets(m.text)}`).join("\n")).join("\n");
+        if (files.length === 0) {
+          return {
+            jsonrpc: "2.0",
+            id,
+            result: { content: [{ type: "text", text: `No occurrences of "${args.pattern}" found.` }] },
+          };
+        }
+        const formatted = formatGrepFiles(files, {
+          worktreeRoot: activeRoot,
+          compact: args.compact ?? true,
+          maxTokens: args.max_tokens,
+          prioritizeSymbols: args.mode === "symbol",
+        });
         return {
           jsonrpc: "2.0",
           id,
           result: {
-            content: [{ type: "text", text: out || "No occurrences found." }],
+            content: [{ type: "text", text: formatted.text }],
           },
+        };
+      }
+
+      if (toolName === "fsearch_multi_grep") {
+        const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
+        const res = await this.client.multiGrep(args.patterns ?? [], {
+          in: searchScope,
+          limit: args.limit ?? 30,
+        });
+        const files = res.files ?? [];
+        if (files.length === 0) {
+          return {
+            jsonrpc: "2.0",
+            id,
+            result: { content: [{ type: "text", text: `No occurrences of [${(args.patterns ?? []).join(", ")}] found.` }] },
+          };
+        }
+        const formatted = formatGrepFiles(files, {
+          worktreeRoot: activeRoot,
+          compact: args.compact ?? true,
+          maxTokens: args.max_tokens,
+        });
+        return {
+          jsonrpc: "2.0",
+          id,
+          result: {
+            content: [{ type: "text", text: formatted.text }],
+          },
+        };
+      }
+
+      if (toolName === "fsearch_locate") {
+        const searchScope = args.global ? undefined : activeRoot;
+        const res = await this.client.search(`'${args.filename}`, { in: searchScope, limit: 10 });
+        const hits = res.hits ?? [];
+        const lines = hits.map((h) => h.path).join("\n");
+        return {
+          jsonrpc: "2.0",
+          id,
+          result: { content: [{ type: "text", text: lines || `File "${args.filename}" not found.` }] },
+        };
+      }
+
+      if (toolName === "fsearch_recent") {
+        const res = await this.client.recent(activeRoot, args.limit ?? 15);
+        const hits = res.hits ?? [];
+        const lines = hits.map((h) => h.path.replace(activeRoot, "").replace(/^\//, "")).join("\n");
+        return {
+          jsonrpc: "2.0",
+          id,
+          result: { content: [{ type: "text", text: lines || "No recent activity recorded." }] },
+        };
+      }
+
+      if (toolName === "fsearch_metrics") {
+        const summary = summarizeAudit();
+        return {
+          jsonrpc: "2.0",
+          id,
+          result: { content: [{ type: "text", text: formatAuditSummary(summary) }] },
         };
       }
 

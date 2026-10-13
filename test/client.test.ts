@@ -1,7 +1,7 @@
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { FSearchClient } from "../src/client.ts";
-import { scrubSecrets, isPathSafe, matchesIgnorePattern } from "../src/sanitize.ts";
+import { scrubSecrets, isPathSafe, matchesIgnorePattern, isSensitiveFile } from "../src/sanitize.ts";
 import { renderUltraSearchDeclarations, renderFSearchDeclarations, getFSearchCodemodeTools } from "../src/codemode.ts";
 import { recordAudit, loadAudit, summarizeAudit, formatAuditSummary, resetAudit } from "../src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "../src/observer.ts";
@@ -76,11 +76,32 @@ test("sanitize: scrubs secrets properly", () => {
     "api_key: 'abcdef1234567890'",
     `const stripeKey = '${samplePrefix}1234567890abcdef12345678';`,
     "const bearer = 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-ID'",
+    "DATABASE_URL=postgres://app_user:SuperSecretPassword123@db.prod.internal:5432/main",
   ];
   for (const input of inputs) {
     const scrubbed = scrubSecrets(input);
     assert.ok(scrubbed.includes("[REDACTED"));
+    assert.ok(!scrubbed.includes("SuperSecretPassword123"));
   }
+});
+
+test("sanitize: identifies sensitive environment and credential files", () => {
+  assert.equal(isSensitiveFile(".env"), true);
+  assert.equal(isSensitiveFile(".env.local"), true);
+  assert.equal(isSensitiveFile(".env.production"), true);
+  assert.equal(isSensitiveFile("/repo/.env"), true);
+  assert.equal(isSensitiveFile("id_rsa"), true);
+  assert.equal(isSensitiveFile("id_ed25519"), true);
+  assert.equal(isSensitiveFile("server.pem"), true);
+  assert.equal(isSensitiveFile("private.key"), true);
+  assert.equal(isSensitiveFile("service-account-key.json"), true);
+  assert.equal(isSensitiveFile("credentials.json"), true);
+  assert.equal(isSensitiveFile(".npmrc"), true);
+
+  // Non-sensitive files
+  assert.equal(isSensitiveFile("package.json"), false);
+  assert.equal(isSensitiveFile("index.ts"), false);
+  assert.equal(isSensitiveFile("README.md"), false);
 });
 
 test("sanitize: path boundary safety and traversal protection", () => {
@@ -170,6 +191,21 @@ test("formatter: compact mode produces clean file:line output", () => {
   assert.ok(res.text.includes("src/index.ts:10: export function search() {}"));
   assert.ok(res.text.includes("src/index.ts:20: const a = 1;"));
   assert.ok(!res.text.includes("==="));
+});
+
+test("formatter: masks sensitive .env and key files with DLP protection", () => {
+  const dummy = [
+    {
+      path: "/test/repo/.env",
+      matches: [
+        { line: 1, text: "STRIPE_SECRET=sk_live_998877665544332211" },
+        { line: 2, text: "DB_PASS=supersecretpassword" },
+      ],
+    },
+  ];
+  const res = formatGrepFiles(dummy, { worktreeRoot: "/test/repo", compact: true });
+  assert.ok(res.text.includes("[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]"));
+  assert.ok(!res.text.includes("supersecretpassword"));
 });
 
 test("formatter: token budget truncation triggers gracefully", () => {
