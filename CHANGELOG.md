@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.2] - 2026-10-13
 
 ### Changed
+- **License Conversion to GNU AGPLv3**: Relicensed project from MIT to the **GNU Affero General Public License v3.0 (AGPL-3.0-or-later)** to guarantee copyleft protection and close the remote network SaaS loophole (Section 13). Updated `LICENSE`, `package.json`, and `README.md`.
 - **Extension & Repository Rebranding**: Formally renamed extension to `pi-ultrasearch` across all documentation, metadata, type definitions, MCP server declarations (`pi-ultrasearch-mcp`), and package repository manifests (`https://github.com/Ghost-9/pi-ultrasearch.git`).
 - **Slash Commands**: Registered `/ultrasearch` command for inspecting real-time metrics, telemetry audits, and status, retaining `/fsearch` as backwards-compatible alias.
 - **Cache Path Alignment**: Telemetry logs default to `~/.pi/agent/cache/pi-ultrasearch/audit.jsonl` with seamless migration from existing audit files.

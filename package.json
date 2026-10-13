@@ -41,7 +41,7 @@
     "observability"
   ],
   "author": "Ghost-9",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "devDependencies": {
     "@types/node": "^22.10.2",
     "typescript": "^5.7.2"

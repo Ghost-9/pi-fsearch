@@ -3,7 +3,7 @@
 > Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for **Pi Agent** and **T3 Code**, backed by the persistent resident Rust daemon `fsearch`.
 
 [![Version](https://img.shields.io/badge/version-0.2.2-blue.svg)](CHANGELOG.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: AGPL 3.0](https://img.shields.io/badge/License-AGPL%203.0-purple.svg)](LICENSE)
 [![Tested on Apple Silicon](https://img.shields.io/badge/platform-macOS%20Apple%20Silicon-black.svg)]()
 [![CI Gate](https://img.shields.io/badge/CI%20Gate-p95%20%3C%2010ms-brightgreen.svg)]()
 
@@ -125,4 +125,4 @@ npm run typecheck
 
 ## License
 
-[MIT](LICENSE) © 2026 Ghost-9
+[GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE) © 2026 Ghost-9
