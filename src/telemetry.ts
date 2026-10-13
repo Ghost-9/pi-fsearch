@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 export interface FSearchAuditRow {
   ts: number;
   sessionId?: string;
-  tool: "fsearch_query" | "fsearch_grep" | "fsearch_locate" | "fsearch_recent" | "fsearch_multi_grep" | "cli_bypass";
+  tool: "fsearch_query" | "fsearch_grep" | "fsearch_locate" | "fsearch_recent" | "fsearch_multi_grep" | "fsearch_compact" | "cli_bypass";
   query?: string;
   pattern?: string;
   scope?: string;
@@ -18,7 +18,13 @@ export interface FSearchAuditRow {
   diagnosticHint?: string;
 }
 
-const AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "audit.jsonl");
+export function getAuditFilePath(): string {
+  if (process.env.PI_ULTRASEARCH_TEST === "1") {
+    return join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "test_audit.jsonl");
+  }
+  return join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "audit.jsonl");
+}
+
 const LEGACY_AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-fsearch", "audit.jsonl");
 const MAX_LINES = 5000;
 
@@ -32,7 +38,7 @@ export function estimateTokensSaved(
   tool: string,
   hitCount: number
 ): number {
-  if (tool === "cli_bypass") return 0;
+  if (tool === "cli_bypass" || tool === "fsearch_compact") return 0;
   if (tool === "fsearch_grep" || tool === "fsearch_multi_grep") {
     // A grep hit avoids loading entire files into agent context.
     // Average source file: 1,200 tokens. Surgical grep match: ~30 tokens.
@@ -59,18 +65,19 @@ export function recordAudit(row: FSearchAuditRow): void {
       row.tokensSaved = estimateTokensSaved(row.tool, row.hitCount);
     }
 
-    mkdirSync(dirname(AUDIT_FILE), { recursive: true });
+    const auditFile = getAuditFilePath();
+    mkdirSync(dirname(auditFile), { recursive: true });
 
     // Initialize line count once
     if (estimatedLineCount === -1) {
-      if (!existsSync(AUDIT_FILE) && existsSync(LEGACY_AUDIT_FILE)) {
+      if (!existsSync(auditFile) && existsSync(LEGACY_AUDIT_FILE) && process.env.PI_ULTRASEARCH_TEST !== "1") {
         try {
           const legacy = readFileSync(LEGACY_AUDIT_FILE, "utf-8");
-          writeFileSync(AUDIT_FILE, legacy, "utf-8");
+          writeFileSync(auditFile, legacy, "utf-8");
         } catch {}
       }
-      if (existsSync(AUDIT_FILE)) {
-        const content = readFileSync(AUDIT_FILE, "utf-8");
+      if (existsSync(auditFile)) {
+        const content = readFileSync(auditFile, "utf-8");
         estimatedLineCount = content.split("\n").filter(Boolean).length;
       } else {
         estimatedLineCount = 0;
@@ -80,15 +87,15 @@ export function recordAudit(row: FSearchAuditRow): void {
     // Rotate only when exceeding threshold
     if (estimatedLineCount >= MAX_LINES) {
       try {
-        const content = readFileSync(AUDIT_FILE, "utf-8");
+        const content = readFileSync(auditFile, "utf-8");
         const lines = content.split("\n").filter(Boolean);
         const retained = lines.slice(-Math.floor(MAX_LINES / 2));
-        writeFileSync(AUDIT_FILE, retained.join("\n") + "\n", "utf-8");
+        writeFileSync(auditFile, retained.join("\n") + "\n", "utf-8");
         estimatedLineCount = retained.length;
       } catch {}
     }
 
-    appendFileSync(AUDIT_FILE, JSON.stringify(row) + "\n", "utf-8");
+    appendFileSync(auditFile, JSON.stringify(row) + "\n", "utf-8");
     estimatedLineCount++;
   } catch {
     // Non-blocking telemetry
@@ -100,7 +107,12 @@ export function recordAudit(row: FSearchAuditRow): void {
  */
 export function loadAudit(limit = 1000): FSearchAuditRow[] {
   try {
-    const target = existsSync(AUDIT_FILE) ? AUDIT_FILE : existsSync(LEGACY_AUDIT_FILE) ? LEGACY_AUDIT_FILE : null;
+    const auditFile = getAuditFilePath();
+    const target = existsSync(auditFile)
+      ? auditFile
+      : (process.env.PI_ULTRASEARCH_TEST !== "1" && existsSync(LEGACY_AUDIT_FILE))
+      ? LEGACY_AUDIT_FILE
+      : null;
     if (!target) return [];
     return readFileSync(target, "utf-8")
       .split("\n")
@@ -121,10 +133,11 @@ export function loadAudit(limit = 1000): FSearchAuditRow[] {
 
 export function resetAudit(): void {
   try {
-    if (existsSync(AUDIT_FILE)) {
-      writeFileSync(AUDIT_FILE, "", "utf-8");
+    const auditFile = getAuditFilePath();
+    if (existsSync(auditFile)) {
+      writeFileSync(auditFile, "", "utf-8");
     }
-    if (existsSync(LEGACY_AUDIT_FILE)) {
+    if (process.env.PI_ULTRASEARCH_TEST !== "1" && existsSync(LEGACY_AUDIT_FILE)) {
       writeFileSync(LEGACY_AUDIT_FILE, "", "utf-8");
     }
     estimatedLineCount = 0;
@@ -211,7 +224,7 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
     }
   }
 
-  // Find the latest active tool call (prefer actual fsearch tools over test/cli bypasses if available)
+  // Find the latest active tool call (prefer actual fsearch query tools over test/cli bypasses if available)
   const nonBypassRows = rows.filter((r) => r.tool !== "cli_bypass");
   const latestRow = nonBypassRows.length > 0 ? nonBypassRows[nonBypassRows.length - 1] : rows[rows.length - 1];
   if (latestRow) {
@@ -250,6 +263,16 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
   }
 
   for (const stat of toolStats) {
+    if (stat.tool === "fsearch_compact") {
+      // Compaction is a disk maintenance operation over millions of files; evaluate against 2.5s gate
+      if (stat.p95Ms > 2500) {
+        advice.push(
+          `LSM Compaction p95 latency is ${stat.p95Ms.toFixed(1)}ms (>2500ms maintenance threshold). Daemon memory or disk I/O may be saturated.`
+        );
+      }
+      continue;
+    }
+
     if (stat.p95Ms > 10) {
       advice.push(
         `Tool ${stat.tool} has p95 latency of ${stat.p95Ms.toFixed(1)}ms (>10ms target). Ensure scope paths are narrowed or FSearch daemon content index is warm.`

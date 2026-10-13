@@ -1,3 +1,4 @@
+process.env.PI_ULTRASEARCH_TEST = "1";
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { FSearchClient } from "../src/client.ts";

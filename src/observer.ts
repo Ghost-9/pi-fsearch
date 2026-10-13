@@ -1,5 +1,6 @@
 import { recordAudit } from "./telemetry.ts";
 import type { FSearchClient } from "./client.ts";
+import { getLearnedCorrection } from "./recursive-learning.ts";
 
 /**
  * Checks if a bash/powershell command is a search bypass that could have used fsearch.
@@ -45,8 +46,16 @@ export async function diagnoseEmptyQuery(
   worktreeRoot: string,
   client: FSearchClient
 ): Promise<string | undefined> {
-  // Check if query is looking for a filename without path
-  const baseNameMatch = /([a-zA-Z0-9_\-\.]+\.[a-zA-Z0-9]+)$/.exec(query.trim());
+  const cleanQ = query.trim().replace(/^['"]/, "").replace(/['"]$/, "");
+
+  // 1. Check if a known typo pattern was learned by the recursive engine
+  const learned = getLearnedCorrection(cleanQ);
+  if (learned) {
+    return `Learned correction pattern: Did you mean '${learned}'? Exact zero-typo matching is strictly enforced on code symbols.`;
+  }
+
+  // 2. Check if query is looking for a filename without path
+  const baseNameMatch = /([a-zA-Z0-9_\-\.]+\.[a-zA-Z0-9]+)$/.exec(cleanQ);
   if (baseNameMatch) {
     const filename = baseNameMatch[1];
     // Check if file exists globally or elsewhere in repo

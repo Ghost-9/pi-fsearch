@@ -41,37 +41,61 @@ export interface FSearchClientOptions {
  * Extracts plain words that must be strictly matched in exact mode.
  */
 export function extractExactWords(query: string): string[] {
-  return query
-    .trim()
+  let cleanQuery = query.trim();
+  if (
+    (cleanQuery.startsWith('"') && cleanQuery.endsWith('"')) ||
+    (cleanQuery.startsWith("'") && cleanQuery.endsWith("'"))
+  ) {
+    cleanQuery = cleanQuery.slice(1, -1).trim();
+  }
+  return cleanQuery
     .split(/\s+/)
     .filter(Boolean)
     .filter((tok) => !tok.includes(":") && !tok.startsWith("!") && !tok.includes("*") && !tok.includes("?"))
-    .map((tok) => tok.replace(/^['^]/, "").replace(/\$$/, "").toLowerCase())
+    .map((tok) => {
+      let t = tok;
+      if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+        t = t.slice(1, -1);
+      }
+      return t.replace(/^['^]/, "").replace(/\$$/, "").toLowerCase();
+    })
     .filter(Boolean);
 }
 
 /**
- * Transforms plain words in query into exact match mode (prefixing `'`),
+ * Transforms plain words in query into exact match mode (prefixing ''),
  * ensuring ZERO typo tolerance and strict deterministic token matching.
  */
 export function enforceExactQuery(query: string): string {
-  const tokens = query.trim().split(/\s+/).filter(Boolean);
+  let cleanQuery = query.trim();
+  if (
+    (cleanQuery.startsWith('"') && cleanQuery.endsWith('"')) ||
+    (cleanQuery.startsWith("'") && cleanQuery.endsWith("'"))
+  ) {
+    cleanQuery = cleanQuery.slice(1, -1).trim();
+  }
+  const tokens = cleanQuery.split(/\s+/).filter(Boolean);
   const transformed = tokens.map((tok) => {
-    if (
-      tok.includes(":") ||
-      tok.startsWith("'") ||
-      tok.startsWith("!") ||
-      tok.startsWith("^") ||
-      tok.endsWith("$") ||
-      tok.includes("*") ||
-      tok.includes("?")
-    ) {
-      return tok;
+    let t = tok;
+    if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+      t = t.slice(1, -1);
     }
-    return `'${tok}`;
+    if (
+      t.includes(":") ||
+      t.startsWith("'") ||
+      t.startsWith("!") ||
+      t.startsWith("^") ||
+      t.endsWith("$") ||
+      t.includes("*") ||
+      t.includes("?")
+    ) {
+      return t;
+    }
+    return `'${t}`;
   });
   return transformed.join(" ");
 }
+
 
 export class FSearchClient {
   private socketPath: string;

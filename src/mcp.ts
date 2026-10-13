@@ -3,6 +3,7 @@ import * as path from "node:path";
 import { FSearchClient } from "./client.ts";
 import { formatGrepFiles } from "./formatter.ts";
 import { summarizeAudit, formatAuditSummary } from "./telemetry.ts";
+import { diagnoseEmptyQuery } from "./observer.ts";
 
 /**
  * Enterprise Model Context Protocol (MCP) server speaking JSON-RPC 2.0 over stdio.
@@ -18,48 +19,59 @@ export class FSearchMcpServer {
   }
 
   public start(): void {
-    const rl = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: false,
+    });
 
     rl.on("line", async (line) => {
       const trimmed = line.trim();
       if (!trimmed) return;
+
       try {
-        const req = JSON.parse(trimmed);
-        const res = await this.handleRpc(req);
-        if (res) {
-          process.stdout.write(JSON.stringify(res) + "\n");
+        const msg = JSON.parse(trimmed);
+        const resp = await this.handleMessage(msg);
+        if (resp) {
+          process.stdout.write(JSON.stringify(resp) + "\n");
         }
       } catch (err: any) {
         process.stdout.write(
           JSON.stringify({
             jsonrpc: "2.0",
             id: null,
-            error: { code: -32700, message: `Parse error: ${err?.message ?? err}` },
+            error: { code: -32700, message: "Parse error", data: err?.message },
           }) + "\n"
         );
       }
     });
+
+    process.on("SIGINT", () => {
+      this.client.close();
+      process.exit(0);
+    });
+    process.on("SIGTERM", () => {
+      this.client.close();
+      process.exit(0);
+    });
   }
 
-  private async handleRpc(req: any): Promise<any> {
-    const { id, method, params } = req;
+  public async handleMessage(msg: any): Promise<any> {
+    const { id, method, params } = msg;
 
     if (method === "initialize") {
-      // Dynamic workspace root detection from IDE client
-      if (params?.rootUri && typeof params.rootUri === "string") {
-        const parsed = params.rootUri.replace(/^file:\/\//, "");
-        if (parsed) this.cwd = parsed;
-      } else if (params?.rootPath && typeof params.rootPath === "string") {
-        this.cwd = params.rootPath;
-      }
-
       return {
         jsonrpc: "2.0",
         id,
         result: {
           protocolVersion: "2024-11-05",
-          capabilities: { tools: {} },
-          serverInfo: { name: "pi-ultrasearch-mcp", version: "0.2.2" },
+          serverInfo: {
+            name: "pi-ultrasearch",
+            version: "0.3.0",
+          },
+          capabilities: {
+            tools: {},
+          },
         },
       };
     }
@@ -165,12 +177,27 @@ export class FSearchMcpServer {
         const searchScope = args.global ? undefined : activeRoot;
         const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30 });
         const hits = res.hits ?? [];
+        if (hits.length === 0) {
+          const hint = await diagnoseEmptyQuery(args.query, activeRoot, this.client);
+          return {
+            jsonrpc: "2.0",
+            id,
+            result: {
+              content: [
+                {
+                  type: "text",
+                  text: `No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}`,
+                },
+              ],
+            },
+          };
+        }
         const formatted = hits.map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n");
         return {
           jsonrpc: "2.0",
           id,
           result: {
-            content: [{ type: "text", text: formatted || `No files matching "${args.query}" found.` }],
+            content: [{ type: "text", text: formatted }],
           },
         };
       }
@@ -184,10 +211,18 @@ export class FSearchMcpServer {
         });
         const files = res.files ?? [];
         if (files.length === 0) {
+          const hint = await diagnoseEmptyQuery(args.pattern, activeRoot, this.client);
           return {
             jsonrpc: "2.0",
             id,
-            result: { content: [{ type: "text", text: `No occurrences of "${args.pattern}" found.` }] },
+            result: {
+              content: [
+                {
+                  type: "text",
+                  text: `No occurrences of "${args.pattern}" found.\n💡 Hint: ${hint ?? "Strict exact zero-typo matching enforced."}`,
+                },
+              ],
+            },
           };
         }
         const formatted = formatGrepFiles(files, {
@@ -216,7 +251,7 @@ export class FSearchMcpServer {
           return {
             jsonrpc: "2.0",
             id,
-            result: { content: [{ type: "text", text: `No occurrences of [${(args.patterns ?? []).join(", ")}] found.` }] },
+            result: { content: [{ type: "text", text: `No occurrences of [${(args.patterns ?? []).join(", ")}] found.\n💡 Hint: Exact zero-typo matching enforced across all patterns.` }] },
           };
         }
         const formatted = formatGrepFiles(files, {
@@ -237,45 +272,67 @@ export class FSearchMcpServer {
         const searchScope = args.global ? undefined : activeRoot;
         const res = await this.client.search(`'${args.filename}`, { in: searchScope, limit: 10 });
         const hits = res.hits ?? [];
-        const lines = hits.map((h) => h.path).join("\n");
+        if (hits.length === 0) {
+          const hint = await diagnoseEmptyQuery(args.filename, activeRoot, this.client);
+          return {
+            jsonrpc: "2.0",
+            id,
+            result: {
+              content: [
+                {
+                  type: "text",
+                  text: `File "${args.filename}" not found in current scope.\n💡 Hint: ${hint ?? "Use fsearch_query for glob search across subdirectories."}`,
+                },
+              ],
+            },
+          };
+        }
+        const formatted = hits.map((h) => h.path).join("\n");
         return {
           jsonrpc: "2.0",
           id,
-          result: { content: [{ type: "text", text: lines || `File "${args.filename}" not found.` }] },
+          result: {
+            content: [{ type: "text", text: formatted }],
+          },
         };
       }
 
       if (toolName === "fsearch_recent") {
         const res = await this.client.recent(activeRoot, args.limit ?? 15);
         const hits = res.hits ?? [];
-        const lines = hits.map((h) => h.path.replace(activeRoot, "").replace(/^\//, "")).join("\n");
+        const formatted = hits.map((h) => `${h.path} (score: ${h.score})`).join("\n");
         return {
           jsonrpc: "2.0",
           id,
-          result: { content: [{ type: "text", text: lines || "No recent activity recorded." }] },
+          result: {
+            content: [{ type: "text", text: formatted || "No recent files recorded in scope." }],
+          },
         };
       }
 
       if (toolName === "fsearch_metrics") {
-        const summary = summarizeAudit();
+        const summary = summarizeAudit(1000);
+        const report = formatAuditSummary(summary);
         return {
           jsonrpc: "2.0",
           id,
-          result: { content: [{ type: "text", text: formatAuditSummary(summary) }] },
+          result: {
+            content: [{ type: "text", text: report }],
+          },
         };
       }
 
       return {
         jsonrpc: "2.0",
         id,
-        error: { code: -32601, message: `Method not found: ${toolName}` },
+        error: { code: -32601, message: `Tool not found: ${toolName}` },
       };
     }
 
     return {
       jsonrpc: "2.0",
       id,
-      error: { code: -32601, message: `Unsupported method: ${method}` },
+      error: { code: -32601, message: `Method not found: ${method}` },
     };
   }
 }
