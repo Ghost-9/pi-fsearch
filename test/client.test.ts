@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { FSearchClient } from "../src/client.ts";
 import { scrubSecrets, isPathSafe, matchesIgnorePattern } from "../src/sanitize.ts";
 import { renderFSearchDeclarations, getFSearchCodemodeTools } from "../src/codemode.ts";
+import { recordAudit, loadAudit, summarizeAudit, formatAuditSummary, resetAudit } from "../src/telemetry.ts";
+import { analyzeCommandForBypass, diagnoseEmptyQuery } from "../src/observer.ts";
 
 const sharedClient = new FSearchClient();
 
@@ -15,13 +17,25 @@ test("FSearchClient ping", async () => {
   assert.equal(ok, true);
 });
 
-test("FSearchClient search with cwd scope", async () => {
+test("FSearchClient search: exact match succeeds", async () => {
   const res = await sharedClient.search("package.json", {
     in: process.cwd(),
     limit: 5,
   });
   assert.equal(res.ok, true);
   assert.ok(Array.isArray(res.hits));
+  assert.ok(res.hits.length > 0);
+  assert.ok(res.hits.some((h) => h.path.endsWith("package.json")));
+});
+
+test("FSearchClient strict zero typo tolerance (no forgiveness)", async () => {
+  // A misspelled query must NEVER match or forgive typos
+  const res = await sharedClient.search("pckage.json", {
+    in: process.cwd(),
+    limit: 5,
+  });
+  assert.equal(res.ok, true);
+  assert.equal(res.hits?.length ?? 0, 0, "Expected 0 hits for misspelled query under zero typo tolerance");
 });
 
 test("FSearchClient grep with trigram index", async () => {
@@ -91,4 +105,54 @@ test("codemode: sandbox tool definitions", async () => {
   assert.equal(tools.length, 2);
   assert.equal(tools[0].name, "fsearch_query");
   assert.equal(tools[1].name, "fsearch_grep");
+});
+
+test("observability: telemetry logging and audit summary", () => {
+  resetAudit();
+  recordAudit({
+    ts: Date.now(),
+    tool: "fsearch_query",
+    query: "index.ts",
+    ms: 0.42,
+    ok: true,
+    hitCount: 1,
+    source: "index",
+  });
+  recordAudit({
+    ts: Date.now(),
+    tool: "fsearch_query",
+    query: "nonexistent.xyz",
+    ms: 0.15,
+    ok: true,
+    hitCount: 0,
+    source: "index",
+    diagnosticHint: "Zero typo tolerance enforced",
+  });
+
+  const rows = loadAudit(10);
+  assert.ok(rows.length >= 2);
+
+  const summary = summarizeAudit(10);
+  assert.ok(summary.totalCalls >= 2);
+  assert.ok(summary.toolStats.some((s) => s.tool === "fsearch_query"));
+
+  const formatted = formatAuditSummary(summary);
+  assert.ok(formatted.includes("FSearch Observability & Toolchain Audit"));
+  assert.ok(formatted.includes("fsearch_query"));
+});
+
+test("observability: shadow detector detects CLI find and rg bypasses", () => {
+  analyzeCommandForBypass("find . -name '*.ts'", 120);
+  analyzeCommandForBypass("rg -i 'FSearchClient' src/", 85);
+
+  const summary = summarizeAudit(10);
+  assert.ok(summary.cliBypasses.length >= 2);
+  assert.ok(summary.cliBypasses.some((b) => b.command.includes("find")));
+  assert.ok(summary.cliBypasses.some((b) => b.command.includes("rg")));
+});
+
+test("observability: diagnostic analyzer generates zero-typo guidance", async () => {
+  const hint = await diagnoseEmptyQuery("nonexistent.ts", process.cwd(), sharedClient);
+  assert.ok(hint);
+  assert.ok(hint.includes("Zero typo tolerance"));
 });

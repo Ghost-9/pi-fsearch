@@ -72,6 +72,7 @@ export interface SearchOptions {
   git?: boolean | string;
   boost?: boolean;
   near?: string;
+  fuzzy?: boolean;
   sort?: "score" | "mtime" | "path" | "frecency";
 }
 

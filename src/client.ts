@@ -22,6 +22,42 @@ export interface FSearchClientOptions {
   enableFallback?: boolean;
 }
 
+/**
+ * Extracts plain words that must be strictly matched in exact mode.
+ */
+export function extractExactWords(query: string): string[] {
+  return query
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((tok) => !tok.includes(":") && !tok.startsWith("!") && !tok.includes("*") && !tok.includes("?"))
+    .map((tok) => tok.replace(/^['^]/, "").replace(/\$$/, "").toLowerCase())
+    .filter(Boolean);
+}
+
+/**
+ * Transforms plain words in query into exact match mode (prefixing `'`),
+ * ensuring ZERO typo tolerance and strict deterministic token matching.
+ */
+export function enforceExactQuery(query: string): string {
+  const tokens = query.trim().split(/\s+/).filter(Boolean);
+  const transformed = tokens.map((tok) => {
+    if (
+      tok.includes(":") ||
+      tok.startsWith("'") ||
+      tok.startsWith("!") ||
+      tok.startsWith("^") ||
+      tok.endsWith("$") ||
+      tok.includes("*") ||
+      tok.includes("?")
+    ) {
+      return tok;
+    }
+    return `'${tok}`;
+  });
+  return transformed.join(" ");
+}
+
 export class FSearchClient {
   private socketPath: string;
   private timeoutMs: number;
@@ -51,7 +87,6 @@ export class FSearchClient {
     }
 
     if (this.isConnecting) {
-      // Wait for in-flight connection attempt
       await new Promise((r) => setTimeout(r, 50));
       if (this.socket && !this.socket.destroyed) return this.socket;
     }
@@ -89,7 +124,6 @@ export class FSearchClient {
         this.cleanup();
         this.isConnecting = false;
         if (retryCount < this.maxReconnectRetries) {
-          // Exponential backoff watchdog reconnect
           const backoffMs = Math.min(100 * Math.pow(2, retryCount), 500);
           await new Promise((r) => setTimeout(r, backoffMs));
           try {
@@ -163,13 +197,16 @@ export class FSearchClient {
   }
 
   /**
-   * Fast file search with typo tolerance, globs, proximity ranking, and fail-open native fallback.
+   * Fast file search with STRICT ZERO TYPO TOLERANCE, globs, proximity ranking, and fail-open native fallback.
    */
   public async search(query: string, options: SearchOptions = {}): Promise<FSearchSearchResponse> {
     try {
+      const finalQuery = options.fuzzy ? query : enforceExactQuery(query);
+      const exactWords = options.fuzzy ? [] : extractExactWords(query);
+
       const payload: Record<string, any> = {
         op: "search",
-        query,
+        query: finalQuery,
         in: options.in,
         limit: options.limit ?? 30,
         git: options.git ?? true,
@@ -181,6 +218,14 @@ export class FSearchClient {
       }
 
       const res: FSearchSearchResponse = await this.request(payload);
+
+      // Strict Zero Typo Tolerance post-filter: remove low-scoring partial matches that do not contain exact query words
+      if (res.ok && res.hits && !options.fuzzy && exactWords.length > 0) {
+        res.hits = res.hits.filter((h) => {
+          const pathLower = h.path.toLowerCase();
+          return exactWords.every((word) => pathLower.includes(word));
+        });
+      }
 
       // Apply Proximity re-ranking if near option or near: filter requested
       if (res.ok && res.hits && options.near) {
@@ -311,13 +356,11 @@ export class FSearchClient {
         const hitDir = path.dirname(path.resolve(hit.path));
         const hitParts = hitDir.split(path.sep);
 
-        // Find shared prefix directory depth
         let common = 0;
         while (common < targetParts.length && common < hitParts.length && targetParts[common] === hitParts[common]) {
           common++;
         }
         const distance = (targetParts.length - common) + (hitParts.length - common);
-        // Boost score inversely proportional to directory distance
         const proximityBoost = Math.max(0, 100 - distance * 10);
         return {
           ...hit,
@@ -329,7 +372,8 @@ export class FSearchClient {
   }
 
   /**
-   * Graceful fail-open fallback: performs local file search using ripgrep or fs walk.
+   * Graceful fail-open fallback: performs deterministic file search using ripgrep or fs walk.
+   * Strict exact matching (zero typo tolerance).
    */
   private nativeFallbackSearch(query: string, options: SearchOptions): FSearchSearchResponse {
     const start = Date.now();
@@ -353,7 +397,8 @@ export class FSearchClient {
         let matched = false;
         let score = 50;
 
-        if (!qLower || base.includes(qLower)) {
+        // Deterministic exact matching only
+        if (!qLower || base === qLower || base.includes(qLower)) {
           matched = true;
           if (base === qLower) score = 300;
           else if (base.startsWith(qLower)) score = 200;

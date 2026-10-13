@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] - 2026-10-13
+
+### Changed
+- **Zero Typo Tolerance Enforced**: Completely eliminated all fuzzy typo forgiveness across `fsearch_query` and fallback search. Plain query terms are transformed into strict exact match mode (`Mode::Exact`), guaranteeing zero false positives and deterministic resolution.
+
+### Added
+- **Full Hybrid Observability System**:
+  - Persistent JSONL append-only audit logger in `~/.pi/agent/cache/pi-fsearch/audit.jsonl`.
+  - **Toolchain Shadow Detector** (`src/observer.ts`): Intercepts `bash` and `powershell` execution to flag CLI search bypasses (`find`, `rg`) where `fsearch` would be 12–45× faster.
+  - **Diagnostic Analyzer**: Provides actionable corrective guidance on 0-hit queries (detects whether exact matches exist under different directories or advises on exact matching).
+  - **Profiler Tool & Slash Command**: Registered `fsearch_metrics` tool and `/fsearch` slash command (`metrics`, `audit`, `reset`, `status`) to observe p50/p90/p95 latency and anti-patterns.
+
+---
+
 ## [0.2.0] - 2026-10-13
 
 ### Fixed

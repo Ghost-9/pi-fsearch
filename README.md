@@ -2,7 +2,7 @@
 
 > Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for **Pi Agent** and **T3 Code**, backed by the persistent resident Rust daemon `fsearch`.
 
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.1-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tested on Apple Silicon](https://img.shields.io/badge/platform-macOS%20Apple%20Silicon-black.svg)]()
 [![CI Gate](https://img.shields.io/badge/CI%20Gate-p95%20%3C%2010ms-brightgreen.svg)]()
@@ -21,7 +21,7 @@ Modern LLM coding agents spend **35%–60% of turn latency** executing repetitiv
 |:---|:---:|:---:|:---:|:---:|
 | **File Path Discovery (p50)** | 14.40 ms | 6.46 ms | **0.15 ms** | **45.3× faster** |
 | **Trigram Grep Search (p50)** | 1.27 ms | 45.00 ms | **0.09 ms** | **11.9× faster** |
-| **Typo Tolerance** | 0% (exact only) | 0% | **100% (1–2 typos forgiven)** | Instant recovery |
+| **Typo Tolerance** | 0% (exact only) | 0% | **0% (Strict zero typo tolerance)** | Deterministic precision |
 | **Disk I/O per query** | Repeated disk read | Moderate file read | **0 bytes (mmap RAM)** | Zero disk churn |
 | **Agent Context Bloat** | Up to 4,000 tokens dumped | Filtered in script | **Terse relative paths** | 90%+ context savings |
 
@@ -31,7 +31,7 @@ Modern LLM coding agents spend **35%–60% of turn latency** executing repetitiv
 
 ### 1. `fsearch_query`
 Instant indexed file and path discovery.
-- **Fuzzy & Typo-Tolerant**: Forgives 1–2 typos (`mian.rs` -> `main.rs`).
+- **Strict Zero Typo Tolerance**: Deterministic exact matching only. Plain tokens are evaluated in `Mode::Exact`. Misspellings return 0 false positives.
 - **Globs & Filters**: `src/**/*.{ts,tsx} !test/`, `ext:rs`, `in:./Sources`.
 - **Git Awareness**: Native integration with git status (`git:modified`, `git:staged`, `git:untracked`).
 - **Proximity Re-Ranking**: `near: <path>` or `near` parameter boosts files closer in directory hierarchy.
@@ -52,6 +52,19 @@ O(1) exact filename resolver for configs, headers, or module definitions (`packa
 
 ### 5. `fsearch_recent`
 Frecency-ranked list of files worked on recently in the active workspace or git branch. Updated automatically via the `tool_execution_end` lifecycle hook whenever the agent reads, views, or edits files.
+
+### 6. `fsearch_metrics`
+Toolchain audit profiler & self-learning advice. Inspects session latency percentiles (p50/p90/p95), error rates, 0-hit diagnostics, and flags CLI search bypasses (`find`, `rg`).
+
+---
+
+## Observability & Toolchain Shadow Detector
+
+`pi-fsearch` includes an autonomous observability engine:
+- **Persistent JSONL Telemetry**: Logs all search operations and latencies to `~/.pi/agent/cache/pi-fsearch/audit.jsonl`.
+- **Toolchain Shadow Detector**: Hooks into `tool_execution_end` to monitor agent `bash` calls. Whenever an agent falls back to slow shell commands (`find . -name ...` or `rg ...`), it logs an anti-pattern event and calculates the latency gap.
+- **Dynamic Diagnostic Hints**: When queries produce 0 hits, the engine inspects the workspace, verifies if the target exists in another directory, and attaches actionable corrective guidance in the tool result.
+- **Slash Command**: Run `/fsearch metrics` or `/fsearch audit` in Pi Agent to view real-time profiler statistics.
 
 ---
 
@@ -98,7 +111,7 @@ console.log(renderFSearchDeclarations());
 
 Run the test suite and regression gate:
 ```bash
-# Run unit & security tests
+# Run unit & observability tests
 npm test
 
 # Run deterministic sub-10ms p95 latency CI gate

@@ -22,6 +22,8 @@
     "src/sanitize.ts",
     "src/codemode.ts",
     "src/mcp.ts",
+    "src/telemetry.ts",
+    "src/observer.ts",
     "bin/mcp-server.ts",
     "type-stubs.d.ts"
   ]

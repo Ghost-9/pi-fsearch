@@ -4,6 +4,8 @@ import { execFileSync } from "node:child_process";
 import * as path from "node:path";
 import { FSearchClient } from "./src/client.ts";
 import { scrubSecrets, isPathSafe } from "./src/sanitize.ts";
+import { recordAudit, summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.ts";
+import { analyzeCommandForBypass, diagnoseEmptyQuery } from "./src/observer.ts";
 
 /**
  * Resolves the top-level repository worktree root to prevent cross-repo context leaks.
@@ -32,21 +34,22 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
     }
   };
 
-  // 1. fsearch_query: Fast path/file discovery with fuzzy matching, globs, git filters, and proximity ranking
+  // 1. fsearch_query: Fast path/file discovery with strict zero typo tolerance, globs, git filters, and proximity ranking
   register({
     name: "fsearch_query",
     label: "FSearch Query",
     description:
-      "Instant indexed whole-disk or workspace file search (<0.1ms). Supports typos (forgives 1-2 typos), globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.",
+      "Instant indexed whole-disk or workspace file search (<0.1ms). Strict deterministic matching (zero typo tolerance) for exact symbol, glob, and path resolution. Supports globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.",
     parameters: Type.Object({
       query: Type.String({
-        description: "Search keywords, globs, or filters (e.g. 'Omnibox *.swift', 'git:modified', 'near:index.ts', 'src/**/*.{ts,tsx} !test/').",
+        description: "Search keywords, globs, or filters (e.g. 'Omnibox *.swift', 'git:modified', 'near:index.ts', 'src/**/*.{ts,tsx} !test/'). Zero typo tolerance enforced.",
       }),
       limit: Type.Optional(Type.Number({ description: "Maximum results to return (default: 30)." })),
       global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository worktree." })),
       near: Type.Optional(Type.String({ description: "Optional active file path to re-rank results by folder proximity." })),
     }),
     execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string }) => {
+      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.global ? undefined : worktreeRoot;
@@ -68,13 +71,52 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
           near: proximityTarget ? path.resolve(worktreeRoot, proximityTarget) : undefined,
         });
 
+        const elapsed = performance.now() - start;
+
         if (!res.ok && res.error) {
+          recordAudit({
+            ts: Date.now(),
+            tool: "fsearch_query",
+            query: params.query,
+            scope: searchScope,
+            ms: elapsed,
+            ok: false,
+            hitCount: 0,
+            source: res.source ?? "index",
+          });
           return { content: [{ type: "text", text: `FSearch error: ${res.error}` }] };
         }
 
         const hits = res.hits ?? [];
+
+        // Telemetry & Diagnostic hint when 0 hits occur
+        let hintText = "";
         if (hits.length === 0) {
-          return { content: [{ type: "text", text: `No files matching "${params.query}" found.` }] };
+          const hint = await diagnoseEmptyQuery(params.query, worktreeRoot, client);
+          if (hint) hintText = `\n[FSearch Diagnostic: ${hint}]`;
+        }
+
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_query",
+          query: params.query,
+          scope: searchScope,
+          ms: elapsed,
+          ok: true,
+          hitCount: hits.length,
+          source: res.source ?? "index",
+          diagnosticHint: hintText.trim() || undefined,
+        });
+
+        if (hits.length === 0) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `No files matching "${params.query}" found (zero typo tolerance enforced).${hintText}`,
+              },
+            ],
+          };
         }
 
         const formatted = hits
@@ -119,6 +161,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
       global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository." })),
     }),
     execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number; global?: boolean }) => {
+      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const baseScope = params.global ? undefined : worktreeRoot;
@@ -126,7 +169,6 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
           ? (path.isAbsolute(params.path_filter) ? params.path_filter : path.join(worktreeRoot, params.path_filter))
           : baseScope;
 
-        // Path safety containment check
         if (searchScope && !isPathSafe(searchScope, worktreeRoot) && !params.global) {
           return { content: [{ type: "text", text: "Security violation: path filter cannot escape workspace root." }] };
         }
@@ -139,11 +181,34 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
           context: 1,
         });
 
+        const elapsed = performance.now() - start;
+
         if (!res.ok && res.error) {
+          recordAudit({
+            ts: Date.now(),
+            tool: "fsearch_grep",
+            pattern: params.pattern,
+            scope: searchScope,
+            ms: elapsed,
+            ok: false,
+            hitCount: 0,
+            source: res.source ?? "index",
+          });
           return { content: [{ type: "text", text: `FSearch grep error: ${res.error}` }] };
         }
 
         const files = res.files ?? [];
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_grep",
+          pattern: params.pattern,
+          scope: searchScope,
+          ms: elapsed,
+          ok: true,
+          hitCount: files.length,
+          source: res.source ?? "index",
+        });
+
         if (files.length === 0) {
           return { content: [{ type: "text", text: `No occurrences of "${params.pattern}" found.` }] };
         }
@@ -186,6 +251,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
       limit: Type.Optional(Type.Number({ description: "Maximum files to match." })),
     }),
     execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number }) => {
+      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.path_filter ? path.join(worktreeRoot, params.path_filter) : worktreeRoot;
@@ -195,11 +261,24 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
           limit: params.limit ?? 30,
         });
 
+        const elapsed = performance.now() - start;
+        const files = res.files ?? [];
+
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_multi_grep",
+          pattern: params.patterns.join(" | "),
+          scope: searchScope,
+          ms: elapsed,
+          ok: res.ok,
+          hitCount: files.length,
+          source: res.source ?? "index",
+        });
+
         if (!res.ok && res.error) {
           return { content: [{ type: "text", text: `Multi-grep error: ${res.error}` }] };
         }
 
-        const files = res.files ?? [];
         if (files.length === 0) {
           return { content: [{ type: "text", text: `No occurrences of [${params.patterns.join(", ")}] found.` }] };
         }
@@ -237,6 +316,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
       global: Type.Optional(Type.Boolean({ description: "Search entire disk (default: false, scopes to project)." })),
     }),
     execute: async (_toolCallId: string, params: { filename: string; global?: boolean }) => {
+      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.global ? undefined : worktreeRoot;
@@ -245,7 +325,20 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
           limit: 10,
         });
 
+        const elapsed = performance.now() - start;
         const hits = res.hits ?? [];
+
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_locate",
+          query: params.filename,
+          scope: searchScope,
+          ms: elapsed,
+          ok: res.ok,
+          hitCount: hits.length,
+          source: res.source ?? "index",
+        });
+
         if (hits.length === 0) {
           return { content: [{ type: "text", text: `File "${params.filename}" not found.` }] };
         }
@@ -267,10 +360,23 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
       limit: Type.Optional(Type.Number({ description: "Maximum recent files (default: 15)." })),
     }),
     execute: async (_toolCallId: string, params: { limit?: number }) => {
+      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const res = await client.recent(worktreeRoot, params.limit ?? 15);
+        const elapsed = performance.now() - start;
         const hits = res.hits ?? [];
+
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_recent",
+          scope: worktreeRoot,
+          ms: elapsed,
+          ok: res.ok,
+          hitCount: hits.length,
+          source: res.source ?? "index",
+        });
+
         if (hits.length === 0) {
           return { content: [{ type: "text", text: "No recent activity recorded for this workspace." }] };
         }
@@ -282,10 +388,60 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 6. Automated file-touch lifecycle tracking via tool_execution_end
+  // 6. fsearch_metrics: Observability toolchain audit profiler & self-learning advice
+  register({
+    name: "fsearch_metrics",
+    label: "FSearch Metrics",
+    description: "Observability profiler: returns per-tool latencies (p50/p90/p95), error rates, 0-hit diagnostics, CLI bypasses (find/rg), and recursive self-learning recommendations.",
+    parameters: Type.Object({
+      limit: Type.Optional(Type.Number({ description: "Number of audit rows to analyze (default: 1000)." })),
+    }),
+    execute: async () => {
+      const summary = summarizeAudit();
+      return {
+        content: [{ type: "text", text: formatAuditSummary(summary) }],
+      };
+    },
+  });
+
+  // Slash command /fsearch [metrics|audit|reset|status]
+  if (typeof (pi as any).registerCommand === "function") {
+    (pi as any).registerCommand("fsearch", {
+      description: "FSearch telemetry, toolchain audit, and status.",
+      handler: async (args: string, ctx: any) => {
+        const action = args.trim().toLowerCase();
+        if (action === "metrics" || action === "audit") {
+          const summary = summarizeAudit();
+          ctx?.ui?.notify(formatAuditSummary(summary), "info");
+        } else if (action === "reset") {
+          resetAudit();
+          ctx?.ui?.notify("FSearch audit log cleared.", "info");
+        } else {
+          const status = await client.status();
+          ctx?.ui?.notify(
+            `FSearch v0.2.1 daemon active: ${status.entries ?? 0} files indexed; index size: ${((status.index_bytes ?? 0) / 1024 / 1024).toFixed(1)}MB`,
+            "info"
+          );
+        }
+      },
+    });
+  }
+
+  // 7. Toolchain Shadow Detector & File Touch lifecycle tracking via tool_execution_end
   if (typeof (pi as any).on === "function") {
     (pi as any).on("tool_execution_end", async (event: any) => {
       const toolName = event?.toolName;
+
+      // Shadow Detector: check if agent bypassed fsearch with bash/powershell find or rg
+      if (toolName === "bash" || toolName === "powershell") {
+        const cmd = event?.params?.command || event?.params?.cmd;
+        const duration = event?.durationMs ?? 20;
+        if (typeof cmd === "string") {
+          analyzeCommandForBypass(cmd, duration);
+        }
+      }
+
+      // Frecency touch tracking
       const filePath =
         event?.params?.path ||
         event?.params?.target_file ||

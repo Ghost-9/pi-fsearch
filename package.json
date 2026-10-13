@@ -1,6 +1,6 @@
 {
   "name": "pi-fsearch",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for Pi Agent & T3 Code, backed by fsearch daemon.",
   "type": "module",
   "bin": {
@@ -26,7 +26,8 @@
     "tantivy",
     "fast-search",
     "codemode",
-    "mcp"
+    "mcp",
+    "observability"
   ],
   "author": "Ghost-9",
   "license": "MIT",
