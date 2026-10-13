@@ -154,9 +154,13 @@ async function main() {
         try {
           const { execSync } = await import("node:child_process");
           execSync("open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'");
-          execSync("open -R ~/Applications/UltraSearch.app || open -R ~/.local/bin/ultrasearch-daemon");
-          console.log("📂 Revealed 'UltraSearch' in Finder.");
-          console.log("💡 Simply toggle or drag 'UltraSearch' into the Full Disk Access list.");
+          const sysApp = "/Applications/UltraSearch.app";
+          const userApp = path.join(os.homedir(), "Applications/UltraSearch.app");
+          const target = fs.existsSync(sysApp) ? sysApp : (fs.existsSync(userApp) ? userApp : path.join(os.homedir(), ".local/bin/ultrasearch-daemon"));
+          execSync(`open -R "${target}"`);
+          console.log(`📂 Revealed '${target}' in Finder.`);
+          console.log("💡 In System Settings, make sure 'UltraSearch' is toggled ON (blue switch).");
+          console.log("💡 If an old entry exists, remove it (-) and drag the highlighted UltraSearch into the list.");
         } catch (e: any) {
           console.error("Could not open settings:", e.message);
         }
@@ -176,9 +180,14 @@ async function main() {
         } else if (sub === "restart") {
           console.log("🔄 Restarting ultrasearch daemon...");
           try {
-            execSync("pkill -f 'UltraSearch serve' || pkill -f 'ultrasearch-daemon serve' || pkill -f 'fsearch serve' || true");
-            execSync("~/Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve >/dev/null 2>&1 & || ultrasearch-daemon serve >/dev/null 2>&1 &");
-            console.log("✅ Ultrasearch daemon restarted.");
+            execSync("pkill -9 -f 'UltraSearch serve' ; pkill -9 -f 'ultrasearch-daemon serve' ; pkill -9 -f 'fsearch serve' || true");
+            const sysAppBin = "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch";
+            const userAppBin = path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch");
+            const localDaemonBin = path.join(os.homedir(), ".local/bin/ultrasearch-daemon");
+            const daemonBin = fs.existsSync(sysAppBin) ? sysAppBin : (fs.existsSync(userAppBin) ? userAppBin : localDaemonBin);
+            const logFile = path.join(os.homedir(), "Library/Application Support/FSearch/daemon.log");
+            execSync(`nohup "${daemonBin}" serve > "${logFile}" 2>&1 &`);
+            console.log(`✅ Ultrasearch daemon restarted cleanly from ${daemonBin}`);
           } catch (e: any) {
             console.error("Restart error:", e.message);
           }

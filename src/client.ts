@@ -630,11 +630,20 @@ export class FSearchClient {
       }
       args.push("-print");
 
-      const out = execFileSync(
-        "find",
-        args,
-        { encoding: "utf-8", timeout: 4000, maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }
-      );
+      let out = "";
+      try {
+        out = execFileSync(
+          "find",
+          args,
+          { encoding: "utf-8", timeout: 4000, maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }
+        );
+      } catch (err: any) {
+        if (err.stdout) {
+          out = err.stdout.toString();
+        } else {
+          throw err;
+        }
+      }
 
       const lines = out.split("\n").filter(Boolean).slice(0, limit);
       const hits: FSearchHit[] = lines.map((p) => ({
@@ -667,20 +676,29 @@ export class FSearchClient {
     const limit = options.limit ?? 30;
 
     try {
-      const out = execFileSync(
-        "grep",
-        [
-          "-rn",
-          "--exclude-dir=.git",
-          "--exclude-dir=node_modules",
-          "--exclude-dir=target",
-          "--exclude-dir=dist",
-          "--exclude-dir=build",
-          pattern,
-          scope,
-        ],
-        { encoding: "utf-8", timeout: 4000, maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }
-      );
+      let out = "";
+      try {
+        out = execFileSync(
+          "grep",
+          [
+            "-rn",
+            "--exclude-dir=.git",
+            "--exclude-dir=node_modules",
+            "--exclude-dir=target",
+            "--exclude-dir=dist",
+            "--exclude-dir=build",
+            pattern,
+            scope,
+          ],
+          { encoding: "utf-8", timeout: 4000, maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }
+        );
+      } catch (err: any) {
+        if (err.stdout) {
+          out = err.stdout.toString();
+        } else {
+          throw err;
+        }
+      }
 
       const lines = out.split("\n").filter(Boolean).slice(0, limit * 3);
       const fileMap = new Map<string, { path: string; matches: any[] }>();
