@@ -295,6 +295,32 @@ export class FSearchClient {
         res.hits = this.applyProximityRanking(res.hits, options.near);
       }
 
+      if (
+        res.ok &&
+        (!res.hits || res.hits.length === 0) &&
+        options.in &&
+        this.isConsentGatedPath(options.in) &&
+        this.enableFallback
+      ) {
+        const fallbackRes = this.nativeFallbackSearch(query, options);
+        if (fallbackRes.ok && fallbackRes.hits && fallbackRes.hits.length > 0) {
+          const elapsed = Math.round((performance.now() - start) * 100) / 100;
+          if (!options.skipAudit) {
+            recordAudit({
+              ts: Date.now(),
+              tool: "fsearch_query",
+              query,
+              scope: options.in,
+              ms: elapsed,
+              ok: true,
+              hitCount: fallbackRes.hits.length,
+              source: "native_fallback",
+            });
+          }
+          return fallbackRes;
+        }
+      }
+
       const elapsed = Math.round((performance.now() - start) * 100) / 100;
       if (!options.skipAudit) {
         recordAudit({
@@ -349,6 +375,34 @@ export class FSearchClient {
       };
 
       const res: FSearchGrepResponse = await this.request(payload);
+
+      if (
+        res.ok &&
+        (!res.files || res.files.length === 0) &&
+        options.in &&
+        this.isConsentGatedPath(options.in) &&
+        this.enableFallback
+      ) {
+        const fallbackRes = this.nativeFallbackGrep(pattern, options);
+        if (fallbackRes.ok && fallbackRes.files && fallbackRes.files.length > 0) {
+          const elapsed = Math.round((performance.now() - start) * 100) / 100;
+          const totalMatches = fallbackRes.files.reduce((acc, f) => acc + f.matches.length, 0);
+          if (!options.skipAudit) {
+            recordAudit({
+              ts: Date.now(),
+              tool: "fsearch_grep",
+              pattern,
+              scope: options.in,
+              ms: elapsed,
+              ok: true,
+              hitCount: totalMatches,
+              source: "native_fallback",
+            });
+          }
+          return fallbackRes;
+        }
+      }
+
       const elapsed = Math.round((performance.now() - start) * 100) / 100;
 
       if (!options.skipAudit) {
@@ -517,6 +571,17 @@ export class FSearchClient {
   /**
    * Computes proximity distance and boosts hits closer in the folder tree to target path.
    */
+  public isConsentGatedPath(p?: string): boolean {
+    if (!p) return false;
+    const abs = path.resolve(p);
+    const home = os.homedir();
+    return (
+      abs.startsWith(path.join(home, "Downloads")) ||
+      abs.startsWith(path.join(home, "Documents")) ||
+      abs.startsWith(path.join(home, "Desktop"))
+    );
+  }
+
   public applyProximityRanking(hits: FSearchHit[], nearPath: string): FSearchHit[] {
     const targetDir = path.dirname(path.resolve(nearPath));
     const targetParts = targetDir.split(path.sep);
@@ -545,23 +610,35 @@ export class FSearchClient {
     const start = Date.now();
     const scope = options.in ? path.resolve(options.in) : process.cwd();
     const limit = options.limit ?? 30;
+    const cleanQ = query.trim().replace(/^['"]/, "").replace(/['"]$/, "");
 
     try {
+      const args = [
+        scope,
+        "-maxdepth", "6",
+        "-not", "-path", "*/.*",
+        "-not", "-path", "*/node_modules/*",
+        "-not", "-path", "*/target/*",
+        "-not", "-path", "*/dist/*",
+        "-not", "-path", "*/build/*",
+      ];
+      if (cleanQ) {
+        args.push("-iname", `*${cleanQ}*`);
+      }
+      args.push("-print");
+
       const out = execFileSync(
         "find",
-        [scope, "-maxdepth", "6", "-not", "-path", "*/.*", "-not", "-path", "*/node_modules/*", "-print"],
-        { encoding: "utf-8", timeout: 3000, stdio: ["ignore", "pipe", "ignore"] }
+        args,
+        { encoding: "utf-8", timeout: 4000, maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }
       );
 
-      const lines = out.split("\n").filter(Boolean);
-      const queryLower = query.toLowerCase().trim();
-      const matched = lines.filter((p) => (queryLower ? p.toLowerCase().includes(queryLower) : true)).slice(0, limit);
-
-      const hits: FSearchHit[] = matched.map((p) => ({
+      const lines = out.split("\n").filter(Boolean).slice(0, limit);
+      const hits: FSearchHit[] = lines.map((p) => ({
         kind: "file",
         mtime: Math.floor(Date.now() / 1000),
         path: p,
-        score: p.toLowerCase().endsWith(queryLower) ? 100 : 50,
+        score: p.toLowerCase().endsWith(cleanQ.toLowerCase()) ? 100 : 50,
         size: 0,
       }));
 
@@ -589,8 +666,17 @@ export class FSearchClient {
     try {
       const out = execFileSync(
         "grep",
-        ["-rn", "--exclude-dir=.*", "--exclude-dir=node_modules", pattern, scope],
-        { encoding: "utf-8", timeout: 3000, stdio: ["ignore", "pipe", "ignore"] }
+        [
+          "-rn",
+          "--exclude-dir=.git",
+          "--exclude-dir=node_modules",
+          "--exclude-dir=target",
+          "--exclude-dir=dist",
+          "--exclude-dir=build",
+          pattern,
+          scope,
+        ],
+        { encoding: "utf-8", timeout: 4000, maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }
       );
 
       const lines = out.split("\n").filter(Boolean).slice(0, limit * 3);
