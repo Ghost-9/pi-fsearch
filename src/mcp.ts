@@ -115,6 +115,8 @@ export class FSearchMcpServer {
                   limit: { type: "number", description: "Max files to return" },
                   compact: { type: "boolean", description: "Compact one-line format (default: true)" },
                   max_tokens: { type: "number", description: "Optional token budget ceiling" },
+                  context: { type: "number", description: "Lines of surrounding code context (0-5, default: 0)" },
+                  tag_symbols: { type: "boolean", description: "Tag matches with AST definition types like [def:fn], [def:class]" },
                 },
                 required: ["pattern"],
               },
@@ -204,10 +206,12 @@ export class FSearchMcpServer {
 
       if (toolName === "fsearch_grep") {
         const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
+        const ctxCount = typeof args.context === "number" ? args.context : 0;
         const res = await this.client.grep(args.pattern, {
           in: searchScope,
           mode: args.mode ?? "literal",
           limit: args.limit ?? 30,
+          context: ctxCount,
         });
         const files = res.files ?? [];
         if (files.length === 0) {
@@ -230,6 +234,8 @@ export class FSearchMcpServer {
           compact: args.compact ?? true,
           maxTokens: args.max_tokens,
           prioritizeSymbols: args.mode === "symbol",
+          showContext: ctxCount > 0,
+          tagSymbols: args.tag_symbols ?? (args.mode === "symbol"),
         });
         return {
           jsonrpc: "2.0",

@@ -243,6 +243,31 @@ test("formatter: symbol prioritization ranks declarations first", () => {
   assert.ok(lines[0].includes("export function search()"));
 });
 
+test("formatter: renders rich surrounding context and symbol tags", () => {
+  const dummy = [
+    {
+      path: "/test/repo/src/client.ts",
+      matches: [
+        {
+          line: 45,
+          text: "export function extractExactWords(query: string): string[] {",
+          before: ["/** docstring */"],
+          after: ["  return [];"],
+        },
+      ],
+    },
+  ];
+  const res = formatGrepFiles(dummy, {
+    worktreeRoot: "/test/repo",
+    compact: true,
+    showContext: true,
+    tagSymbols: true,
+  });
+  assert.ok(res.text.includes("src/client.ts-44- /** docstring */"));
+  assert.ok(res.text.includes("src/client.ts:45: [def:fn] export function extractExactWords"));
+  assert.ok(res.text.includes("src/client.ts-46- return [];"));
+});
+
 test("compactor: manual and automated compaction supervisor", async () => {
   const compactor = new LsmCompactor(sharedClient);
   const res = await compactor.compact();

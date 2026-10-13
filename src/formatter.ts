@@ -6,19 +6,41 @@ export interface FormatOptions {
   compact?: boolean;
   maxTokens?: number;
   prioritizeSymbols?: boolean;
+  showContext?: boolean;
+  tagSymbols?: boolean;
 }
 
 const SYMBOL_REGEX = /^\s*(?:pub\s+)?(?:async\s+)?(?:export\s+)?(?:default\s+)?(?:func|fn|function|class|struct|interface|type|trait|enum|def|protocol|actor|extension)\b/;
 
+export function detectSymbolTag(lineText: string): string | null {
+  const t = lineText.trim();
+  if (/^(?:pub\s+)?(?:async\s+)?(?:export\s+)?(?:default\s+)?(?:function|fn|func|def)\b/.test(t)) return "def:fn";
+  if (/^(?:pub\s+)?(?:export\s+)?(?:class)\b/.test(t)) return "def:class";
+  if (/^(?:pub\s+)?(?:export\s+)?(?:interface|struct|trait)\b/.test(t)) return "def:type";
+  if (/^(?:pub\s+)?(?:export\s+)?(?:type|enum)\b/.test(t)) return "def:type";
+  if (/^(?:pub\s+)?(?:export\s+)?(?:const|let|var)\b/.test(t)) return "def:var";
+  return null;
+}
+
 /**
  * Formats grep file matches.
  * - Defaults to `compact: true` (clean one-line `file:line: text` format).
- * - Defaults to uncapped context (`maxTokens: undefined`), ensuring the AI agent NEVER misses any matching files or definitions.
  * - Enterprise DLP Protection: Completely redacts environment variables & private keys from `.env*`, `.pem`, `.key`, `id_rsa`.
  * - Prioritizes AST symbol declarations (`class`, `func`, `struct`, `interface`, etc.) when `prioritizeSymbols` is enabled.
+ * - Supports surrounding code context (`showContext: true`) and symbol tagging (`tagSymbols: true`).
  */
-export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions): { text: string; tokenCount: number; truncatedCount: number } {
-  const { worktreeRoot, compact = true, maxTokens, prioritizeSymbols = false } = options;
+export function formatGrepFiles(
+  files: FSearchGrepFile[],
+  options: FormatOptions
+): { text: string; tokenCount: number; truncatedCount: number } {
+  const {
+    worktreeRoot,
+    compact = true,
+    maxTokens,
+    prioritizeSymbols = false,
+    showContext = false,
+    tagSymbols = false,
+  } = options;
   const maxChars = maxTokens !== undefined ? maxTokens * 4 : Infinity;
 
   const lines: string[] = [];
@@ -53,7 +75,23 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
         if (isSensitive) {
           scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
         }
-        const lineStr = `${relPath}:${m.line}: ${scrubbed}`;
+
+        const tag = (tagSymbols && !isSensitive) ? detectSymbolTag(m.text) : null;
+        const tagPrefix = tag ? `[${tag}] ` : "";
+
+        // If context lines exist and showContext is requested
+        if (showContext && !isSensitive) {
+          if (m.before && m.before.length > 0) {
+            for (let bIdx = 0; bIdx < m.before.length; bIdx++) {
+              const bLineNum = m.line - m.before.length + bIdx;
+              const bLine = `${relPath}-${bLineNum}- ${scrubSecrets(m.before[bIdx]).trim()}`;
+              lines.push(bLine);
+              currentChars += bLine.length + 1;
+            }
+          }
+        }
+
+        const lineStr = `${relPath}:${m.line}: ${tagPrefix}${scrubbed}`;
         if (currentChars + lineStr.length > maxChars && printedMatches > 0) {
           const omitted = totalMatches - printedMatches;
           lines.push(`\n[... Truncated: ${omitted} additional matches omitted to protect token ceiling. Omit max_tokens or refine path_filter to see more]`);
@@ -66,9 +104,21 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
         lines.push(lineStr);
         currentChars += lineStr.length + 1;
         printedMatches++;
+
+        if (showContext && !isSensitive) {
+          if (m.after && m.after.length > 0) {
+            for (let aIdx = 0; aIdx < m.after.length; aIdx++) {
+              const aLineNum = m.line + 1 + aIdx;
+              const aLine = `${relPath}-${aLineNum}- ${scrubSecrets(m.after[aIdx]).trim()}`;
+              lines.push(aLine);
+              currentChars += aLine.length + 1;
+            }
+          }
+        }
       }
     } else {
-      const fileHeader = `\n=== ${relPath}${isSensitive ? " [DLP PROTECTED FILE]" : ""} ===`;
+      const defCount = sortedMatches.filter((m) => SYMBOL_REGEX.test(m.text)).length;
+      const fileHeader = `\n=== ${relPath} (${sortedMatches.length} matches${defCount > 0 ? `, ${defCount} defs` : ""})${isSensitive ? " [DLP PROTECTED FILE]" : ""} ===`;
       if (currentChars + fileHeader.length > maxChars && printedMatches > 0) {
         const omitted = totalMatches - printedMatches;
         lines.push(`\n[... Truncated: ${omitted} additional matches omitted. Omit max_tokens or refine path_filter to see more]`);
@@ -86,7 +136,18 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
         if (isSensitive) {
           scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
         }
-        const lineStr = `  L${m.line}: ${scrubbed}`;
+
+        const tag = (!isSensitive) ? detectSymbolTag(m.text) : null;
+        const tagPrefix = tag ? `[${tag}] ` : "";
+
+        if (showContext && !isSensitive && m.before && m.before.length > 0) {
+          for (let bIdx = 0; bIdx < m.before.length; bIdx++) {
+            const bLineNum = m.line - m.before.length + bIdx;
+            lines.push(`  L${bLineNum}- ${scrubSecrets(m.before[bIdx]).trim()}`);
+          }
+        }
+
+        const lineStr = `  L${m.line}: ${tagPrefix}${scrubbed}`;
         if (currentChars + lineStr.length > maxChars && printedMatches > 0) {
           const omitted = totalMatches - printedMatches;
           lines.push(`  [... ${omitted} additional matches omitted]`);
@@ -99,6 +160,13 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
         lines.push(lineStr);
         currentChars += lineStr.length + 1;
         printedMatches++;
+
+        if (showContext && !isSensitive && m.after && m.after.length > 0) {
+          for (let aIdx = 0; aIdx < m.after.length; aIdx++) {
+            const aLineNum = m.line + 1 + aIdx;
+            lines.push(`  L${aLineNum}- ${scrubSecrets(m.after[aIdx]).trim()}`);
+          }
+        }
       }
     }
   }

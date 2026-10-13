@@ -20,6 +20,10 @@ export interface FSearchSearchResponse {
 export interface FSearchGrepMatch {
   line: number;
   text: string;
+  col?: number;
+  before?: string[];
+  after?: string[];
+  ranges?: Array<[number, number]>;
 }
 
 export interface FSearchGrepFile {
@@ -53,13 +57,14 @@ export interface FSearchMultiGrepResponse {
 export interface FSearchStatusResponse {
   id?: number | string | null;
   ok: boolean;
+  took_us?: number;
+  version?: string;
   entries?: number;
-  dirs?: number;
   index_bytes?: number;
+  content_files?: number;
   content_bytes?: number;
-  content_docs?: number;
-  content_pending?: number;
   content_segments?: number;
+  total_content_segments?: number;
   event_id?: number;
   full_disk_access?: boolean;
   owner?: boolean;
@@ -71,11 +76,11 @@ export interface FSearchStatusResponse {
 export interface SearchOptions {
   in?: string;
   limit?: number;
-  git?: boolean | string;
-  boost?: boolean;
   near?: string;
   fuzzy?: boolean;
   sort?: "score" | "mtime" | "path" | "frecency";
+  git?: boolean;
+  boost?: boolean;
   skipAudit?: boolean;
 }
 
