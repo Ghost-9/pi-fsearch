@@ -1,14 +1,14 @@
-# Pi-FSearch Architecture & Roadmap
+# Pi-UltraSearch Architecture & Roadmap
 
-This roadmap tracks the development lifecycle of `pi-fsearch`, mapping technical milestones to GitHub issues, empirical gates, and upstream `fsearch` releases.
+This roadmap tracks the development lifecycle of `pi-ultrasearch`, mapping technical milestones to GitHub issues, empirical gates, and upstream `fsearch` releases.
 
 ---
 
 ## Semantic Versioning Strategy
 
-`pi-fsearch` follows Semantic Versioning 2.0.0 (`MAJOR.MINOR.PATCH`):
+`pi-ultrasearch` follows Semantic Versioning 2.0.0 (`MAJOR.MINOR.PATCH`):
 - **0.1.x**: Initial client protocol, core tool bindings, line-buffered socket IPC. (Released)
-- **0.2.x**: QuickJS Code Mode integration, worktree isolation, fail-open resilience, MCP server. (Released)
+- **0.2.x**: QuickJS Code Mode integration, worktree isolation, fail-open resilience, MCP server, zero typo tolerance, and observability toolchain. (Released)
 - **0.3.x**: Git status filters (`git:modified`), proximity re-ranking, automated frecency tracking.
 - **0.4.x**: Enterprise security hardening, custom credential scrubbing, dynamic `.gitignore` evaluation.
 - **0.5.x**: Standard Model Context Protocol (MCP) registration in T3 Code & Antigravity.
@@ -26,7 +26,7 @@ This roadmap tracks the development lifecycle of `pi-fsearch`, mapping technical
 
 ### Milestone 2: Hardening, Code Mode & Resilience (v0.2.0) — *Completed*
 - [x] **#5**: Strict CWD boundary enforcement for git worktrees (`resolveWorktreeRoot`).
-- [x] **#6**: Dynamic TypeScript declarations generation for `@earendil-works/pi-codemode` (`renderFSearchDeclarations`).
+- [x] **#6**: Dynamic TypeScript declarations generation for `@earendil-works/pi-codemode` (`renderUltraSearchDeclarations`).
 - [x] **#7**: Auto-reconnecting daemon watchdog and graceful fail-open fallback to native `ripgrep` / `find`.
 
 ### Milestone 3: Git Status Engine & Context Proximity (v0.3.0) — *Completed*

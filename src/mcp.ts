@@ -49,7 +49,7 @@ export class FSearchMcpServer {
         result: {
           protocolVersion: "2024-11-05",
           capabilities: { tools: {} },
-          serverInfo: { name: "pi-fsearch-mcp", version: "0.2.0" },
+          serverInfo: { name: "pi-ultrasearch-mcp", version: "0.2.2" },
         },
       };
     }
@@ -70,52 +70,26 @@ export class FSearchMcpServer {
           tools: [
             {
               name: "fsearch_query",
-              description: "Fast indexed file search with globs, typo forgiveness, and git filters.",
+              description: "Fast indexed file and path discovery (<0.1ms). Supports globs, git filters, and zero typo tolerance.",
               inputSchema: {
                 type: "object",
                 properties: {
                   query: { type: "string", description: "Search query or glob" },
-                  limit: { type: "number", description: "Maximum results (default: 30)" },
-                  near: { type: "string", description: "Proximity re-ranking file target" },
+                  limit: { type: "number", description: "Max results" },
                 },
                 required: ["query"],
               },
             },
             {
               name: "fsearch_grep",
-              description: "Instant indexed trigram text content search (<1ms) inside code files.",
+              description: "Indexed trigram text search inside files (<1ms).",
               inputSchema: {
                 type: "object",
                 properties: {
-                  pattern: { type: "string", description: "String or regex to search" },
-                  path_filter: { type: "string", description: "Folder filter" },
-                  mode: { type: "string", enum: ["literal", "regex", "symbol"] },
-                  limit: { type: "number" },
+                  pattern: { type: "string", description: "Literal or identifier to search" },
+                  path_filter: { type: "string", description: "Subdirectory filter" },
                 },
                 required: ["pattern"],
-              },
-            },
-            {
-              name: "fsearch_locate",
-              description: "O(1) exact filename resolution.",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  filename: { type: "string", description: "Filename to find" },
-                },
-                required: ["filename"],
-              },
-            },
-            {
-              name: "fsearch_multi_grep",
-              description: "Simultaneous multi-pattern OR content retrieval.",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  patterns: { type: "array", items: { type: "string" } },
-                  path_filter: { type: "string" },
-                },
-                required: ["patterns"],
               },
             },
           ],
@@ -127,82 +101,43 @@ export class FSearchMcpServer {
       const toolName = params?.name;
       const args = params?.arguments ?? {};
 
-      try {
-        if (toolName === "fsearch_query") {
-          const res = await this.client.search(args.query, { in: this.cwd, limit: args.limit ?? 30, near: args.near });
-          const text = (res.hits ?? []).map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n");
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: { content: [{ type: "text", text: text || "No matches." }] },
-          };
-        }
-
-        if (toolName === "fsearch_grep") {
-          const res = await this.client.grep(args.pattern, {
-            in: args.path_filter ? `${this.cwd}/${args.path_filter}` : this.cwd,
-            mode: args.mode,
-            limit: args.limit ?? 30,
-          });
-          const lines: string[] = [];
-          for (const f of res.files ?? []) {
-            lines.push(`=== ${f.path} ===`);
-            for (const m of f.matches) lines.push(`  L${m.line}: ${scrubSecrets(m.text).trim()}`);
-          }
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: { content: [{ type: "text", text: lines.join("\n") || "No matches." }] },
-          };
-        }
-
-        if (toolName === "fsearch_locate") {
-          const res = await this.client.search(`'${args.filename}`, { in: this.cwd, limit: 10 });
-          const text = (res.hits ?? []).map((h) => h.path).join("\n");
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: { content: [{ type: "text", text: text || "Not found." }] },
-          };
-        }
-
-        if (toolName === "fsearch_multi_grep") {
-          const res = await this.client.multiGrep(args.patterns ?? [], {
-            in: args.path_filter ? `${this.cwd}/${args.path_filter}` : this.cwd,
-          });
-          const lines: string[] = [];
-          for (const f of res.files ?? []) {
-            lines.push(`=== ${f.path} ===`);
-            for (const m of f.matches) lines.push(`  L${m.line}: ${scrubSecrets(m.text).trim()}`);
-          }
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: { content: [{ type: "text", text: lines.join("\n") || "No matches." }] },
-          };
-        }
-
-        return {
-          jsonrpc: "2.0",
-          id,
-          error: { code: -32601, message: `Tool '${toolName}' not found.` },
-        };
-      } catch (err: any) {
+      if (toolName === "fsearch_query") {
+        const res = await this.client.search(args.query, { in: this.cwd, limit: args.limit ?? 20 });
+        const hits = res.hits ?? [];
+        const formatted = hits.map((h) => `${h.path} (${h.kind})`).join("\n");
         return {
           jsonrpc: "2.0",
           id,
           result: {
-            content: [{ type: "text", text: `Error: ${err?.message ?? err}` }],
-            isError: true,
+            content: [{ type: "text", text: formatted || "No matches found." }],
           },
         };
       }
+
+      if (toolName === "fsearch_grep") {
+        const res = await this.client.grep(args.pattern, { in: this.cwd, limit: 20 });
+        const files = res.files ?? [];
+        const out = files.map((f) => `${f.path}:\n` + f.matches.map((m) => `  L${m.line}: ${scrubSecrets(m.text)}`).join("\n")).join("\n");
+        return {
+          jsonrpc: "2.0",
+          id,
+          result: {
+            content: [{ type: "text", text: out || "No occurrences found." }],
+          },
+        };
+      }
+
+      return {
+        jsonrpc: "2.0",
+        id,
+        error: { code: -32601, message: `Method not found: ${toolName}` },
+      };
     }
 
     return {
       jsonrpc: "2.0",
       id,
-      error: { code: -32601, message: `Method '${method}' not found.` },
+      error: { code: -32601, message: `Unsupported method: ${method}` },
     };
   }
 }

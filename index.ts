@@ -24,7 +24,7 @@ function resolveWorktreeRoot(startDir = process.cwd()): string {
   return startDir;
 }
 
-export default function piFsearchExtension(pi: ExtensionAPI): void {
+export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   const client = new FSearchClient();
 
   // Helper to register tools cleanly across all Pi versions
@@ -37,7 +37,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
   // 1. fsearch_query: Fast path/file discovery with strict zero typo tolerance, globs, git filters, and proximity ranking
   register({
     name: "fsearch_query",
-    label: "FSearch Query",
+    label: "UltraSearch Query",
     description:
       "Instant indexed whole-disk or workspace file search (<0.1ms). Strict deterministic matching (zero typo tolerance) for exact symbol, glob, and path resolution. Supports globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.",
     parameters: Type.Object({
@@ -84,7 +84,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
             hitCount: 0,
             source: res.source ?? "index",
           });
-          return { content: [{ type: "text", text: `FSearch error: ${res.error}` }] };
+          return { content: [{ type: "text", text: `UltraSearch error: ${res.error}` }] };
         }
 
         const hits = res.hits ?? [];
@@ -93,7 +93,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
         let hintText = "";
         if (hits.length === 0) {
           const hint = await diagnoseEmptyQuery(params.query, worktreeRoot, client);
-          if (hint) hintText = `\n[FSearch Diagnostic: ${hint}]`;
+          if (hint) hintText = `\n[UltraSearch Diagnostic: ${hint}]`;
         }
 
         recordAudit({
@@ -139,7 +139,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
         };
       } catch (err: any) {
         return {
-          content: [{ type: "text", text: `FSearch query unavailable: ${err?.message ?? err}` }],
+          content: [{ type: "text", text: `UltraSearch query unavailable: ${err?.message ?? err}` }],
         };
       }
     },
@@ -148,7 +148,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
   // 2. fsearch_grep: Instant indexed trigram text content search (<1ms)
   register({
     name: "fsearch_grep",
-    label: "FSearch Grep",
+    label: "UltraSearch Grep",
     description:
       "Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk walks. Results scrubbed for credentials.",
     parameters: Type.Object({
@@ -194,7 +194,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
             hitCount: 0,
             source: res.source ?? "index",
           });
-          return { content: [{ type: "text", text: `FSearch grep error: ${res.error}` }] };
+          return { content: [{ type: "text", text: `UltraSearch grep error: ${res.error}` }] };
         }
 
         const files = res.files ?? [];
@@ -234,7 +234,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
         };
       } catch (err: any) {
         return {
-          content: [{ type: "text", text: `FSearch grep unavailable: ${err?.message ?? err}` }],
+          content: [{ type: "text", text: `UltraSearch grep unavailable: ${err?.message ?? err}` }],
         };
       }
     },
@@ -243,7 +243,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
   // 3. fsearch_multi_grep: Simultaneous multi-pattern OR content retrieval
   register({
     name: "fsearch_multi_grep",
-    label: "FSearch Multi Grep",
+    label: "UltraSearch Multi Grep",
     description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
     parameters: Type.Object({
       patterns: Type.Array(Type.String({ description: "Identifiers or literals to search concurrently." })),
@@ -309,7 +309,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
   // 4. fsearch_locate: O(1) exact file resolution
   register({
     name: "fsearch_locate",
-    label: "FSearch Locate",
+    label: "UltraSearch Locate",
     description: "Instant O(1) lookup for exact filenames (e.g., 'package.json', 'Cargo.toml', 'ROADMAP.md') within current workspace.",
     parameters: Type.Object({
       filename: Type.String({ description: "Exact filename to locate." }),
@@ -354,7 +354,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
   // 5. fsearch_recent: Recently worked files in the workspace / git branch
   register({
     name: "fsearch_recent",
-    label: "FSearch Recent",
+    label: "UltraSearch Recent",
     description: "Returns files recently edited or touched in the current workspace or git branch (frecency-ranked).",
     parameters: Type.Object({
       limit: Type.Optional(Type.Number({ description: "Maximum recent files (default: 15)." })),
@@ -391,7 +391,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
   // 6. fsearch_metrics: Observability toolchain audit profiler & self-learning advice
   register({
     name: "fsearch_metrics",
-    label: "FSearch Metrics",
+    label: "UltraSearch Metrics",
     description: "Observability profiler: returns per-tool latencies (p50/p90/p95), error rates, 0-hit diagnostics, CLI bypasses (find/rg), and recursive self-learning recommendations.",
     parameters: Type.Object({
       limit: Type.Optional(Type.Number({ description: "Number of audit rows to analyze (default: 1000)." })),
@@ -404,26 +404,32 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // Slash command /fsearch [metrics|audit|reset|status]
+  // Slash commands: /ultrasearch and /fsearch (alias) [metrics|audit|reset|status]
   if (typeof (pi as any).registerCommand === "function") {
+    const handleCommand = async (args: string, ctx: any) => {
+      const action = args.trim().toLowerCase();
+      if (action === "metrics" || action === "audit") {
+        const summary = summarizeAudit();
+        ctx?.ui?.notify(formatAuditSummary(summary), "info");
+      } else if (action === "reset") {
+        resetAudit();
+        ctx?.ui?.notify("UltraSearch audit log cleared.", "info");
+      } else {
+        const status = await client.status();
+        ctx?.ui?.notify(
+          `UltraSearch v0.2.2 daemon active: ${status.entries ?? 0} files indexed; index size: ${((status.index_bytes ?? 0) / 1024 / 1024).toFixed(1)}MB`,
+          "info"
+        );
+      }
+    };
+
+    (pi as any).registerCommand("ultrasearch", {
+      description: "UltraSearch telemetry, toolchain audit, and status.",
+      handler: handleCommand,
+    });
     (pi as any).registerCommand("fsearch", {
-      description: "FSearch telemetry, toolchain audit, and status.",
-      handler: async (args: string, ctx: any) => {
-        const action = args.trim().toLowerCase();
-        if (action === "metrics" || action === "audit") {
-          const summary = summarizeAudit();
-          ctx?.ui?.notify(formatAuditSummary(summary), "info");
-        } else if (action === "reset") {
-          resetAudit();
-          ctx?.ui?.notify("FSearch audit log cleared.", "info");
-        } else {
-          const status = await client.status();
-          ctx?.ui?.notify(
-            `FSearch v0.2.1 daemon active: ${status.entries ?? 0} files indexed; index size: ${((status.index_bytes ?? 0) / 1024 / 1024).toFixed(1)}MB`,
-            "info"
-          );
-        }
-      },
+      description: "UltraSearch telemetry, toolchain audit, and status (alias).",
+      handler: handleCommand,
     });
   }
 

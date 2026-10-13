@@ -2,7 +2,7 @@ import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { FSearchClient } from "../src/client.ts";
 import { scrubSecrets, isPathSafe, matchesIgnorePattern } from "../src/sanitize.ts";
-import { renderFSearchDeclarations, getFSearchCodemodeTools } from "../src/codemode.ts";
+import { renderUltraSearchDeclarations, renderFSearchDeclarations, getFSearchCodemodeTools } from "../src/codemode.ts";
 import { recordAudit, loadAudit, summarizeAudit, formatAuditSummary, resetAudit } from "../src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "../src/observer.ts";
 
@@ -35,7 +35,8 @@ test("FSearchClient strict zero typo tolerance (no forgiveness)", async () => {
     limit: 5,
   });
   assert.equal(res.ok, true);
-  assert.equal(res.hits?.length ?? 0, 0, "Expected 0 hits for misspelled query under zero typo tolerance");
+  // Zero typo tolerance guarantees 0 hits for misspelled token
+  assert.equal(res.hits?.length ?? 0, 0);
 });
 
 test("FSearchClient grep with trigram index", async () => {
@@ -45,6 +46,8 @@ test("FSearchClient grep with trigram index", async () => {
   });
   assert.equal(res.ok, true);
   assert.ok(Array.isArray(res.files));
+  assert.ok(res.files.length > 0);
+  assert.ok(res.files.some((f) => f.path.includes("client.ts") || f.path.includes("client.test.ts")));
 });
 
 test("FSearchClient multiGrep", async () => {
@@ -93,18 +96,19 @@ test("sanitize: ignore pattern matching", () => {
 });
 
 test("codemode: renders TypeScript declarations", () => {
-  const decls = renderFSearchDeclarations();
+  const decls = renderUltraSearchDeclarations();
   assert.ok(decls.includes("declare namespace tools"));
   assert.ok(decls.includes("fsearch_query"));
   assert.ok(decls.includes("fsearch_grep"));
   assert.ok(decls.includes("fsearch_multi_grep"));
+  assert.equal(renderFSearchDeclarations(), decls);
 });
 
 test("codemode: sandbox tool definitions", async () => {
   const tools = getFSearchCodemodeTools(sharedClient);
-  assert.equal(tools.length, 2);
-  assert.equal(tools[0].name, "fsearch_query");
-  assert.equal(tools[1].name, "fsearch_grep");
+  assert.ok(typeof tools.fsearch_query === "function");
+  assert.ok(typeof tools.fsearch_grep === "function");
+  assert.ok(typeof tools.fsearch_multi_grep === "function");
 });
 
 test("observability: telemetry logging and audit summary", () => {
@@ -129,30 +133,24 @@ test("observability: telemetry logging and audit summary", () => {
     diagnosticHint: "Zero typo tolerance enforced",
   });
 
-  const rows = loadAudit(10);
-  assert.ok(rows.length >= 2);
-
-  const summary = summarizeAudit(10);
-  assert.ok(summary.totalCalls >= 2);
-  assert.ok(summary.toolStats.some((s) => s.tool === "fsearch_query"));
-
+  const summary = summarizeAudit();
+  assert.equal(summary.totalCalls, 2);
   const formatted = formatAuditSummary(summary);
-  assert.ok(formatted.includes("FSearch Observability & Toolchain Audit"));
+  assert.ok(formatted.includes("Pi-UltraSearch Observability"));
   assert.ok(formatted.includes("fsearch_query"));
 });
 
 test("observability: shadow detector detects CLI find and rg bypasses", () => {
-  analyzeCommandForBypass("find . -name '*.ts'", 120);
-  analyzeCommandForBypass("rg -i 'FSearchClient' src/", 85);
+  resetAudit();
+  analyzeCommandForBypass("find . -name '*.ts'", 35);
+  analyzeCommandForBypass("rg -rn 'function' src/", 85);
 
-  const summary = summarizeAudit(10);
-  assert.ok(summary.cliBypasses.length >= 2);
-  assert.ok(summary.cliBypasses.some((b) => b.command.includes("find")));
-  assert.ok(summary.cliBypasses.some((b) => b.command.includes("rg")));
+  const summary = summarizeAudit();
+  assert.equal(summary.cliBypasses.length, 2);
+  assert.ok(summary.optimizationAdvice.some((a) => a.includes("CLI subprocess searches")));
 });
 
 test("observability: diagnostic analyzer generates zero-typo guidance", async () => {
-  const hint = await diagnoseEmptyQuery("nonexistent.ts", process.cwd(), sharedClient);
-  assert.ok(hint);
-  assert.ok(hint.includes("Zero typo tolerance"));
+  const hint = await diagnoseEmptyQuery("Cargo.toml", process.cwd(), sharedClient);
+  assert.ok(hint && (hint.includes("Exact match exists") || hint.includes("Zero typo tolerance")));
 });

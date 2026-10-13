@@ -1,9 +1,18 @@
 # Changelog
 
-All notable changes to `pi-fsearch` will be documented in this file.
+All notable changes to `pi-ultrasearch` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [0.2.2] - 2026-10-13
+
+### Changed
+- **Extension & Repository Rebranding**: Formally renamed extension to `pi-ultrasearch` across all documentation, metadata, type definitions, MCP server declarations (`pi-ultrasearch-mcp`), and package repository manifests (`https://github.com/Ghost-9/pi-ultrasearch.git`).
+- **Slash Commands**: Registered `/ultrasearch` command for inspecting real-time metrics, telemetry audits, and status, retaining `/fsearch` as backwards-compatible alias.
+- **Cache Path Alignment**: Telemetry logs default to `~/.pi/agent/cache/pi-ultrasearch/audit.jsonl` with seamless migration from existing audit files.
 
 ---
 
@@ -14,10 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Full Hybrid Observability System**:
-  - Persistent JSONL append-only audit logger in `~/.pi/agent/cache/pi-fsearch/audit.jsonl`.
-  - **Toolchain Shadow Detector** (`src/observer.ts`): Intercepts `bash` and `powershell` execution to flag CLI search bypasses (`find`, `rg`) where `fsearch` would be 12–45× faster.
+  - Persistent JSONL append-only audit logger in `~/.pi/agent/cache/pi-ultrasearch/audit.jsonl`.
+  - **Toolchain Shadow Detector** (`src/observer.ts`): Intercepts `bash` and `powershell` execution to flag CLI search bypasses (`find`, `rg`) where indexed search would be 12–45× faster.
   - **Diagnostic Analyzer**: Provides actionable corrective guidance on 0-hit queries (detects whether exact matches exist under different directories or advises on exact matching).
-  - **Profiler Tool & Slash Command**: Registered `fsearch_metrics` tool and `/fsearch` slash command (`metrics`, `audit`, `reset`, `status`) to observe p50/p90/p95 latency and anti-patterns.
+  - **Profiler Tool & Slash Command**: Registered `fsearch_metrics` tool and `/ultrasearch` (and `/fsearch`) slash command (`metrics`, `audit`, `reset`, `status`) to observe p50/p90/p95 latency and anti-patterns.
 
 ---
 
@@ -29,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Resilience Watchdog & Fail-Open Fallback (#7)**: Implemented auto-reconnecting socket watchdog with exponential backoff and seamless fallback to native `ripgrep`/`find` on daemon disconnection.
 
 ### Added
-- **QuickJS WASM Code Mode Declarations (#6)**: Exported `renderFSearchDeclarations()` and `getFSearchCodemodeTools()` in `src/codemode.ts` for zero-shot single-turn agent workflows in `@earendil-works/pi-codemode`.
+- **QuickJS WASM Code Mode Declarations (#6)**: Exported `renderUltraSearchDeclarations()` and `getFSearchCodemodeTools()` in `src/codemode.ts` for zero-shot single-turn agent workflows in `@earendil-works/pi-codemode`.
 - **Git Status Query Filters (#8)**: Native support for `git:modified`, `git:staged`, and `git:untracked` query filters directly in `fsearch_query`.
 - **Frecency Lifecycle Tracking (#9)**: Automated hook into `tool_execution_end` tracking file operations (`read`, `edit`, `write`, `view_file`) and forwarding touches to daemon `{"op": "open"}`.
 - **Proximity Re-Ranking (#10)**: Directory-distance scoring algorithm (`near: <path>` / `near` option) prioritizing files closer in tree hierarchy to active editing context.

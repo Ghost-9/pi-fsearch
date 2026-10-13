@@ -1,8 +1,8 @@
-# pi-fsearch
+# pi-ultrasearch
 
 > Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for **Pi Agent** and **T3 Code**, backed by the persistent resident Rust daemon `fsearch`.
 
-[![Version](https://img.shields.io/badge/version-0.2.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.2-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tested on Apple Silicon](https://img.shields.io/badge/platform-macOS%20Apple%20Silicon-black.svg)]()
 [![CI Gate](https://img.shields.io/badge/CI%20Gate-p95%20%3C%2010ms-brightgreen.svg)]()
@@ -13,11 +13,11 @@
 
 Modern LLM coding agents spend **35%–60% of turn latency** executing repetitive shell commands (`find`, `ripgrep`, `grep -rn`) across massive repository trees. Each shell invocation spawns a subprocess, scans disk directories, and dumps raw text lines into LLM prompts.
 
-`pi-fsearch` bridges the high-performance native Rust daemon `fsearch` directly into **Pi Agent's extension system**, **Code Mode** (QuickJS WASM sandbox), and **Model Context Protocol (MCP)**.
+`pi-ultrasearch` bridges the high-performance native Rust daemon `fsearch` directly into **Pi Agent's extension system**, **Code Mode** (QuickJS WASM sandbox), and **Model Context Protocol (MCP)**.
 
 ### Measured Performance (Apple Silicon, 2.85M Files Indexed)
 
-| Operation | Native Subprocess (`find` / `rg`) | Code Mode (In-Process AST) | `pi-fsearch` (Daemon Socket) | Speedup |
+| Operation | Native Subprocess (`find` / `rg`) | Code Mode (In-Process AST) | `pi-ultrasearch` (Daemon Socket) | Speedup |
 |:---|:---:|:---:|:---:|:---:|
 | **File Path Discovery (p50)** | 14.40 ms | 6.46 ms | **0.15 ms** | **45.3× faster** |
 | **Trigram Grep Search (p50)** | 1.27 ms | 45.00 ms | **0.09 ms** | **11.9× faster** |
@@ -60,17 +60,17 @@ Toolchain audit profiler & self-learning advice. Inspects session latency percen
 
 ## Observability & Toolchain Shadow Detector
 
-`pi-fsearch` includes an autonomous observability engine:
-- **Persistent JSONL Telemetry**: Logs all search operations and latencies to `~/.pi/agent/cache/pi-fsearch/audit.jsonl`.
+`pi-ultrasearch` includes an autonomous observability engine:
+- **Persistent JSONL Telemetry**: Logs all search operations and latencies to `~/.pi/agent/cache/pi-ultrasearch/audit.jsonl`.
 - **Toolchain Shadow Detector**: Hooks into `tool_execution_end` to monitor agent `bash` calls. Whenever an agent falls back to slow shell commands (`find . -name ...` or `rg ...`), it logs an anti-pattern event and calculates the latency gap.
 - **Dynamic Diagnostic Hints**: When queries produce 0 hits, the engine inspects the workspace, verifies if the target exists in another directory, and attaches actionable corrective guidance in the tool result.
-- **Slash Command**: Run `/fsearch metrics` or `/fsearch audit` in Pi Agent to view real-time profiler statistics.
+- **Slash Commands**: Run `/ultrasearch metrics` or `/ultrasearch audit` (alias: `/fsearch`) in Pi Agent to view real-time profiler statistics.
 
 ---
 
 ## Code Mode Integration
 
-In Pi Agent Code Mode, model-written JavaScript executes inside QuickJS WebAssembly. With `pi-fsearch`, agents can perform entire multi-stage discovery pipelines in a **single turn**:
+In Pi Agent Code Mode, model-written JavaScript executes inside QuickJS WebAssembly. With `pi-ultrasearch`, agents can perform entire multi-stage discovery pipelines in a **single turn**:
 
 ```javascript
 // Inside Pi Agent QuickJS Sandbox:
@@ -84,22 +84,22 @@ if (matches.length > 0) {
 
 TypeScript declarations can be dynamically retrieved for QuickJS via:
 ```typescript
-import { renderFSearchDeclarations } from "pi-fsearch/src/codemode.ts";
-console.log(renderFSearchDeclarations());
+import { renderUltraSearchDeclarations } from "pi-ultrasearch/src/codemode.ts";
+console.log(renderUltraSearchDeclarations());
 ```
 
 ---
 
 ## Model Context Protocol (MCP) Server
 
-`pi-fsearch` includes a native stdio MCP server for T3 Code, Antigravity, and Claude Desktop:
+`pi-ultrasearch` includes a native stdio MCP server for T3 Code, Antigravity, and Claude Desktop:
 
 ```json
 {
   "mcpServers": {
-    "fsearch": {
+    "ultrasearch": {
       "command": "node",
-      "args": ["/Users/batra/.pi/agent/extensions/pi-fsearch/bin/mcp-server.ts"]
+      "args": ["/Users/batra/.pi/agent/extensions/pi-ultrasearch/bin/mcp-server.ts"]
     }
   }
 }

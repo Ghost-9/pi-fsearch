@@ -53,13 +53,13 @@ async function runBenchmark() {
   const p50 = (arr: number[]) => [...arr].sort((a, b) => a - b)[Math.floor(arr.length * 0.5)];
   const p95 = (arr: number[]) => [...arr].sort((a, b) => a - b)[Math.floor(arr.length * 0.95)];
 
-  console.log(`Native find (subprocess):    mean: ${avg(nativeFindTimes).toFixed(2)}ms | p50: ${p50(nativeFindTimes).toFixed(2)}ms | p95: ${p95(nativeFindTimes).toFixed(2)}ms`);
-  console.log(`pi-fsearch search (socket):  mean: ${avg(fsearchFindTimes).toFixed(2)}ms | p50: ${p50(fsearchFindTimes).toFixed(2)}ms | p95: ${p95(fsearchFindTimes).toFixed(2)}ms`);
-  console.log(`Speedup (Find):             ${(avg(nativeFindTimes) / avg(fsearchFindTimes)).toFixed(1)}x faster\n`);
+  console.log(`Native find (subprocess):        mean: ${avg(nativeFindTimes).toFixed(2)}ms | p50: ${p50(nativeFindTimes).toFixed(2)}ms | p95: ${p95(nativeFindTimes).toFixed(2)}ms`);
+  console.log(`pi-ultrasearch search (socket):  mean: ${avg(fsearchFindTimes).toFixed(2)}ms | p50: ${p50(fsearchFindTimes).toFixed(2)}ms | p95: ${p95(fsearchFindTimes).toFixed(2)}ms`);
+  console.log(`Speedup (Find):                 ${(avg(nativeFindTimes) / avg(fsearchFindTimes)).toFixed(1)}x faster\n`);
 
-  console.log(`Native ripgrep (subprocess): mean: ${avg(nativeRgTimes).toFixed(2)}ms | p50: ${p50(nativeRgTimes).toFixed(2)}ms | p95: ${p95(nativeRgTimes).toFixed(2)}ms`);
-  console.log(`pi-fsearch grep (trigram):   mean: ${avg(fsearchGrepTimes).toFixed(2)}ms | p50: ${p50(fsearchGrepTimes).toFixed(2)}ms | p95: ${p95(fsearchGrepTimes).toFixed(2)}ms`);
-  console.log(`Speedup (Grep):             ${(avg(nativeRgTimes) / avg(fsearchGrepTimes)).toFixed(1)}x faster\n`);
+  console.log(`Native ripgrep (subprocess):     mean: ${avg(nativeRgTimes).toFixed(2)}ms | p50: ${p50(nativeRgTimes).toFixed(2)}ms | p95: ${p95(nativeRgTimes).toFixed(2)}ms`);
+  console.log(`pi-ultrasearch grep (trigram):   mean: ${avg(fsearchGrepTimes).toFixed(2)}ms | p50: ${p50(fsearchGrepTimes).toFixed(2)}ms | p95: ${p95(fsearchGrepTimes).toFixed(2)}ms`);
+  console.log(`Speedup (Grep):                 ${(avg(nativeRgTimes) / avg(fsearchGrepTimes)).toFixed(1)}x faster\n`);
 }
 
 runBenchmark().catch(console.error);

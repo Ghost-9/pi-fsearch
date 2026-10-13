@@ -1,6 +1,6 @@
-# Contributing to pi-fsearch
+# Contributing to pi-ultrasearch
 
-We welcome contributions to `pi-fsearch`!
+We welcome contributions to `pi-ultrasearch`!
 
 ## Development Workflow
 

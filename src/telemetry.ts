@@ -17,7 +17,8 @@ export interface FSearchAuditRow {
   diagnosticHint?: string;
 }
 
-const AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-fsearch", "audit.jsonl");
+const AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "audit.jsonl");
+const LEGACY_AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-fsearch", "audit.jsonl");
 const MAX_LINES = 5000;
 
 /**
@@ -27,6 +28,14 @@ const MAX_LINES = 5000;
 export function recordAudit(row: FSearchAuditRow): void {
   try {
     mkdirSync(dirname(AUDIT_FILE), { recursive: true });
+    // Migrate legacy log if it exists and target doesn't yet
+    if (!existsSync(AUDIT_FILE) && existsSync(LEGACY_AUDIT_FILE)) {
+      try {
+        const legacy = readFileSync(LEGACY_AUDIT_FILE, "utf-8");
+        writeFileSync(AUDIT_FILE, legacy, "utf-8");
+      } catch {}
+    }
+
     if (existsSync(AUDIT_FILE)) {
       const content = readFileSync(AUDIT_FILE, "utf-8");
       const lines = content.split("\n").filter(Boolean);
@@ -46,8 +55,9 @@ export function recordAudit(row: FSearchAuditRow): void {
  */
 export function loadAudit(limit = 1000): FSearchAuditRow[] {
   try {
-    if (!existsSync(AUDIT_FILE)) return [];
-    return readFileSync(AUDIT_FILE, "utf-8")
+    const target = existsSync(AUDIT_FILE) ? AUDIT_FILE : existsSync(LEGACY_AUDIT_FILE) ? LEGACY_AUDIT_FILE : null;
+    if (!target) return [];
+    return readFileSync(target, "utf-8")
       .split("\n")
       .filter(Boolean)
       .slice(-limit)
@@ -68,6 +78,9 @@ export function resetAudit(): void {
   try {
     if (existsSync(AUDIT_FILE)) {
       writeFileSync(AUDIT_FILE, "", "utf-8");
+    }
+    if (existsSync(LEGACY_AUDIT_FILE)) {
+      writeFileSync(LEGACY_AUDIT_FILE, "", "utf-8");
     }
   } catch {}
 }
@@ -177,7 +190,7 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
 
 export function formatAuditSummary(summary: FSearchSummary): string {
   const lines: string[] = [];
-  lines.push("=== FSearch Observability & Toolchain Audit ===");
+  lines.push("=== Pi-UltraSearch Observability & Toolchain Audit ===");
   lines.push(`Total recorded interactions: ${summary.totalCalls}`);
   if (summary.since) {
     lines.push(`Logging active since: ${new Date(summary.since).toISOString()}`);
