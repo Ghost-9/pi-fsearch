@@ -1,7 +1,7 @@
 {
   "name": "pi-ultrasearch",
-  "version": "0.2.2",
-  "description": "Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for Pi Agent & T3 Code, backed by fsearch daemon.",
+  "version": "0.3.0",
+  "description": "Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for Pi Agent, Antigravity & T3 Code, backed by fsearch daemon.",
   "type": "module",
   "repository": {
     "type": "git",
@@ -12,6 +12,8 @@
     "url": "https://github.com/Ghost-9/pi-ultrasearch/issues"
   },
   "bin": {
+    "ultrasearch": "./bin/cli.ts",
+    "ultrasearch-tui": "./bin/tui.ts",
     "ultrasearch-mcp": "./bin/mcp-server.ts",
     "fsearch-mcp": "./bin/mcp-server.ts"
   },
@@ -23,14 +25,17 @@
   "scripts": {
     "test": "node --test test/client.test.ts",
     "test:gate": "node --test test/benchmark-gate.test.ts",
+    "test:empirical": "node --test test/empirical-10-tests.ts",
     "bench": "node test/bench.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "pi-agent",
+    "antigravity",
     "t3-code",
     "pi-ultrasearch",
     "ultrasearch",
+    "ultrasearch-tui",
     "search",
     "fsearch",
     "grep",
@@ -39,7 +44,8 @@
     "fast-search",
     "codemode",
     "mcp",
-    "observability"
+    "observability",
+    "recursive-learning"
   ],
   "author": "Ghost-9",
   "license": "AGPL-3.0-or-later",

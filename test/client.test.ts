@@ -6,6 +6,9 @@ import { renderUltraSearchDeclarations, renderFSearchDeclarations, getFSearchCod
 import { recordAudit, loadAudit, summarizeAudit, formatAuditSummary, resetAudit } from "../src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "../src/observer.ts";
 import { formatGrepFiles } from "../src/formatter.ts";
+import { LsmCompactor } from "../src/compactor.ts";
+import { recordMistake, learnCorrection, getLearnedCorrection, formatRecursiveLearningReport } from "../src/recursive-learning.ts";
+import { UltraSearchTui } from "../src/tui.ts";
 
 const sharedClient = new FSearchClient();
 
@@ -236,4 +239,32 @@ test("formatter: symbol prioritization ranks declarations first", () => {
   const res = formatGrepFiles(dummy, { worktreeRoot: "/test/repo", compact: true, prioritizeSymbols: true });
   const lines = res.text.split("\n");
   assert.ok(lines[0].includes("export function search()"));
+});
+
+test("compactor: manual and automated compaction supervisor", async () => {
+  const compactor = new LsmCompactor(sharedClient);
+  const res = await compactor.compact();
+  assert.equal(res.ok, true);
+  assert.ok(res.stats && res.stats.durationMs > 0);
+  assert.ok(compactor.getHistory().length > 0);
+});
+
+test("recursive-learning: mistake recording, typo remapping, and memory reports", () => {
+  recordMistake("typo", "pckage.json", "User intended package.json");
+  learnCorrection("pckage.json", "package.json");
+  const correction = getLearnedCorrection("pckage.json");
+  assert.equal(correction, "package.json");
+
+  recordMistake("dlp_violation", "sk_live_test", "Intercepted stripe secret");
+  recordMistake("cli_bypass", "find . -name '*.ts'", "CLI bypass detected");
+
+  const report = formatRecursiveLearningReport();
+  assert.ok(report.includes("Recursive Learning"));
+  assert.ok(report.includes("package.json"));
+});
+
+test("tui: snapshot execution produces mission control dashboard", async () => {
+  const tui = new UltraSearchTui();
+  // Ensure run(true) completes without throwing in headless mode
+  await tui.run(true);
 });
