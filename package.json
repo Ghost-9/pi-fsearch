@@ -23,6 +23,7 @@
   "scripts": {
     "test": "node --test test/client.test.ts",
     "test:gate": "node --test test/benchmark-gate.test.ts",
+    "bench": "node test/bench.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [

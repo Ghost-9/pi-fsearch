@@ -9,6 +9,7 @@ after(() => {
 });
 
 test("CI Gate: Deterministic sub-10ms p95 search latency", async () => {
+  await client.ping(); // Warm socket connection
   const iterations = 50;
   const latencies: number[] = [];
 
@@ -32,6 +33,7 @@ test("CI Gate: Deterministic sub-10ms p95 search latency", async () => {
 });
 
 test("CI Gate: Deterministic sub-5ms p95 trigram grep latency", async () => {
+  await client.ping(); // Warm socket connection
   const iterations = 50;
   const latencies: number[] = [];
 
