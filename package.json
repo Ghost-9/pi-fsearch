@@ -1,0 +1,32 @@
+{
+  "name": "pi-fsearch",
+  "version": "0.1.0",
+  "description": "Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for Pi Agent & T3 Code, backed by fsearch daemon.",
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "index.ts"
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/client.test.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "keywords": [
+    "pi-agent",
+    "t3-code",
+    "search",
+    "fsearch",
+    "grep",
+    "ripgrep",
+    "tantivy",
+    "fast-search",
+    "codemode"
+  ],
+  "author": "Ghost-9",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
