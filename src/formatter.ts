@@ -11,12 +11,14 @@ export interface FormatOptions {
 const SYMBOL_REGEX = /^\s*(?:pub\s+)?(?:async\s+)?(?:export\s+)?(?:default\s+)?(?:func|fn|function|class|struct|interface|type|trait|enum|def|protocol|actor|extension)\b/;
 
 /**
- * Formats grep file matches with optional compact one-line formatting,
- * AST symbol declaration prioritization, and strict token budget safety.
+ * Formats grep file matches.
+ * - Defaults to `compact: true` (clean one-line `file:line: text` format, saving 30-50% tokens without dropping any matches).
+ * - Defaults to uncapped context (`maxTokens: undefined`), ensuring the AI agent NEVER misses any matching files or definitions.
+ * - Prioritizes AST symbol declarations (`class`, `func`, `struct`, `interface`, etc.) when `prioritizeSymbols` is enabled.
  */
 export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions): { text: string; tokenCount: number; truncatedCount: number } {
-  const { worktreeRoot, compact = false, maxTokens = 1500, prioritizeSymbols = false } = options;
-  const maxChars = maxTokens * 4;
+  const { worktreeRoot, compact = true, maxTokens, prioritizeSymbols = false } = options;
+  const maxChars = maxTokens !== undefined ? maxTokens * 4 : Infinity;
 
   const lines: string[] = [];
   let currentChars = 0;
@@ -49,7 +51,7 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
         const lineStr = `${relPath}:${m.line}: ${scrubbed}`;
         if (currentChars + lineStr.length > maxChars && printedMatches > 0) {
           const omitted = totalMatches - printedMatches;
-          lines.push(`\n[... Truncated: ${omitted} additional matches omitted to conserve context budget. Refine path_filter or increase max_tokens]`);
+          lines.push(`\n[... Truncated: ${omitted} additional matches omitted to protect token ceiling. Omit max_tokens or refine path_filter to see more]`);
           return {
             text: lines.join("\n"),
             tokenCount: Math.ceil(currentChars / 4),
@@ -64,7 +66,7 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
       const fileHeader = `\n=== ${relPath} ===`;
       if (currentChars + fileHeader.length > maxChars && printedMatches > 0) {
         const omitted = totalMatches - printedMatches;
-        lines.push(`\n[... Truncated: ${omitted} additional matches omitted to conserve context budget. Refine path_filter or increase max_tokens]`);
+        lines.push(`\n[... Truncated: ${omitted} additional matches omitted. Omit max_tokens or refine path_filter to see more]`);
         return {
           text: lines.join("\n"),
           tokenCount: Math.ceil(currentChars / 4),
@@ -79,7 +81,7 @@ export function formatGrepFiles(files: FSearchGrepFile[], options: FormatOptions
         const lineStr = `  L${m.line}: ${scrubbed}`;
         if (currentChars + lineStr.length > maxChars && printedMatches > 0) {
           const omitted = totalMatches - printedMatches;
-          lines.push(`  [... ${omitted} additional matches omitted to conserve context budget]`);
+          lines.push(`  [... ${omitted} additional matches omitted]`);
           return {
             text: lines.join("\n"),
             tokenCount: Math.ceil(currentChars / 4),

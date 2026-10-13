@@ -191,8 +191,8 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       })),
       limit: Type.Optional(Type.Number({ description: "Maximum files to match (default: 30)." })),
       global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository." })),
-      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format to minimize LLM context token consumption." })),
-      max_tokens: Type.Optional(Type.Number({ description: "Token budget ceiling for response (default: 1500). Gracefully truncates if exceeded." })),
+      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format (default: true). Set false for verbose blocks." })),
+      max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
     }),
     execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number; global?: boolean; compact?: boolean; max_tokens?: number }) => {
       const start = performance.now();
@@ -279,8 +279,8 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       patterns: Type.Array(Type.String({ description: "Identifiers or literals to search concurrently." })),
       path_filter: Type.Optional(Type.String({ description: "Optional folder filter." })),
       limit: Type.Optional(Type.Number({ description: "Maximum files to match." })),
-      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format to minimize LLM token usage." })),
-      max_tokens: Type.Optional(Type.Number({ description: "Token budget ceiling for response (default: 2000)." })),
+      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format (default: true). Set false for verbose blocks." })),
+      max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
     }),
     execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number; compact?: boolean; max_tokens?: number }) => {
       const start = performance.now();
