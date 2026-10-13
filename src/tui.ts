@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import * as readline from "node:readline";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -94,6 +95,13 @@ export class UltraSearchTui {
       } else if (key && key.name === "l") {
         this.showLearning = !this.showLearning;
         await this.render();
+      } else if (key && key.name === "p") {
+        this.statusMessage = "\x1B[1;36m🔐 Opening macOS Full Disk Access Settings & revealing daemon in Finder...\x1B[0m";
+        await this.render();
+        try {
+          execSync("open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'");
+          execSync("open -R ~/.local/bin/fsearch");
+        } catch {}
       } else if (key && key.name === "c") {
         this.statusMessage = "⏳ Running LSM Compaction...";
         await this.render();
@@ -182,11 +190,13 @@ export class UltraSearchTui {
 
     // Daemon Status Line
     const statusDot = connected ? "\x1B[32m● CONNECTED\x1B[0m" : "\x1B[31m○ DISCONNECTED\x1B[0m";
+    const fdaBadge = status?.full_disk_access
+      ? "\x1B[32m✅ GRANTED\x1B[0m"
+      : "\x1B[33m⚠️ MISSING (Press [p] to Grant)\x1B[0m";
     const entriesIndexed = status?.entries ? status.entries.toLocaleString() : "2,883,531";
     const segmentsCount = status?.content_segments ?? 38;
-    const overlayCount = status?.overlay ?? 0;
     lines.push(
-      ` Daemon Socket: ${statusDot} | Indexed: \x1B[1m${entriesIndexed}\x1B[0m files | Segments: \x1B[33m${segmentsCount}\x1B[0m | Overlay: ${overlayCount}`
+      ` Daemon Socket: ${statusDot} | FDA: ${fdaBadge} | Indexed: \x1B[1m${entriesIndexed}\x1B[0m files | Segments: \x1B[33m${segmentsCount}\x1B[0m`
     );
     lines.push("");
 
@@ -282,7 +292,7 @@ export class UltraSearchTui {
 
     lines.push("");
     lines.push(
-      "\x1B[90mControls: [↑/↓] Select Log | [Enter] Toggle Expanded Inspector | [c] LSM Compact | [l] Learnings | [q] Exit\x1B[0m"
+      "\x1B[90mControls: [↑/↓] Select Log | [Enter] Expand | [c] LSM Compact | [l] Learnings | [p] Grant FDA | [q] Exit\x1B[0m"
     );
 
     return lines.join("\n");

@@ -138,6 +138,56 @@ async function main() {
         return;
       }
 
+      case "authorize":
+      case "permissions": {
+        console.log("🔐 Checking macOS Full Disk Access status for UltraSearch daemon...");
+        try {
+          const status = await client.status();
+          if (status.full_disk_access) {
+            console.log("✅ Full Disk Access is ALREADY active! Downloads, Documents, and Desktop are indexed.");
+            break;
+          }
+        } catch {}
+
+        console.log("⚠️ Full Disk Access is currently missing on macOS.");
+        console.log("👉 Opening System Settings -> Privacy & Security -> Full Disk Access...");
+        try {
+          const { execSync } = await import("node:child_process");
+          execSync("open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'");
+          execSync("open -R ~/.local/bin/fsearch");
+          console.log("📂 Revealed ~/.local/bin/fsearch in Finder.");
+          console.log("💡 Simply toggle or drag 'fsearch' into the Full Disk Access list.");
+        } catch (e: any) {
+          console.error("Could not open settings:", e.message);
+        }
+        break;
+      }
+
+      case "daemon": {
+        const sub = args[1] || "status";
+        const { execSync } = await import("node:child_process");
+        if (sub === "status") {
+          try {
+            const status = await client.status();
+            console.log(JSON.stringify(status, null, 2));
+          } catch (e: any) {
+            console.error("Daemon is not reachable:", e.message);
+          }
+        } else if (sub === "restart") {
+          console.log("🔄 Restarting ultrasearch daemon...");
+          try {
+            execSync("pkill -f 'fsearch serve' || true");
+            execSync("fsearch serve >/dev/null 2>&1 &");
+            console.log("✅ Ultrasearch daemon restarted.");
+          } catch (e: any) {
+            console.error("Restart error:", e.message);
+          }
+        } else {
+          console.log("Usage: ultrasearch daemon [status|restart]");
+        }
+        break;
+      }
+
       case "install": {
         const localBin = path.join(os.homedir(), ".local/bin");
         if (!fs.existsSync(localBin)) fs.mkdirSync(localBin, { recursive: true });
@@ -162,6 +212,15 @@ async function main() {
 
         console.log(`✅ Installed 'ultrasearch' -> ${cliTarget}`);
         console.log(`✅ Installed 'ultrasearch-tui' -> ${tuiTarget}`);
+
+        const daemonTarget = path.join(localBin, "ultrasearch-daemon");
+        const fsearchBin = path.join(localBin, "fsearch");
+        if (fs.existsSync(fsearchBin)) {
+          try {
+            if (!fs.existsSync(daemonTarget)) fs.symlinkSync(fsearchBin, daemonTarget);
+            console.log(`✅ Linked 'ultrasearch-daemon' -> ${daemonTarget}`);
+          } catch {}
+        }
         break;
       }
 
