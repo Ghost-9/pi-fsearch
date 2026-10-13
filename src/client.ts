@@ -1,4 +1,3 @@
-
 import * as child_process from "node:child_process";
 
 export function resolveDefaultSocketPath(): string {
@@ -29,7 +28,7 @@ import type {
   SearchOptions,
   GrepOptions,
 } from "./types.ts";
-import { isPathSafe } from "./sanitize.ts";
+import { recordAudit } from "./telemetry.ts";
 
 export interface FSearchClientOptions {
   socketPath?: string;
@@ -237,6 +236,7 @@ export class FSearchClient {
    * Fast file search with STRICT ZERO TYPO TOLERANCE, globs, proximity ranking, and fail-open native fallback.
    */
   public async search(query: string, options: SearchOptions = {}): Promise<FSearchSearchResponse> {
+    const start = performance.now();
     try {
       const finalQuery = options.fuzzy ? query : enforceExactQuery(query);
       const exactWords = options.fuzzy ? [] : extractExactWords(query);
@@ -271,10 +271,38 @@ export class FSearchClient {
         res.hits = this.applyProximityRanking(res.hits, options.near);
       }
 
+      const elapsed = Math.round((performance.now() - start) * 100) / 100;
+      if (!options.skipAudit) {
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_query",
+          query,
+          scope: options.in,
+          ms: elapsed,
+          ok: res.ok,
+          hitCount: res.hits?.length ?? 0,
+          source: res.source ?? "index",
+        });
+      }
+
       return res;
     } catch (err) {
       if (this.enableFallback) {
-        return this.nativeFallbackSearch(query, options);
+        const fallbackRes = await this.nativeFallbackSearch(query, options);
+        const elapsed = Math.round((performance.now() - start) * 100) / 100;
+        if (!options.skipAudit) {
+          recordAudit({
+            ts: Date.now(),
+            tool: "fsearch_query",
+            query,
+            scope: options.in,
+            ms: elapsed,
+            ok: fallbackRes.ok,
+            hitCount: fallbackRes.hits?.length ?? 0,
+            source: "native_fallback",
+          });
+        }
+        return fallbackRes;
       }
       throw err;
     }
@@ -284,6 +312,7 @@ export class FSearchClient {
    * Fast indexed trigram content search with fail-open fallback.
    */
   public async grep(pattern: string, options: GrepOptions = {}): Promise<FSearchGrepResponse> {
+    const start = performance.now();
     try {
       const payload: Record<string, any> = {
         op: "grep",
@@ -295,10 +324,41 @@ export class FSearchClient {
         context: options.context ?? 1,
       };
 
-      return await this.request(payload);
+      const res: FSearchGrepResponse = await this.request(payload);
+      const elapsed = Math.round((performance.now() - start) * 100) / 100;
+
+      if (!options.skipAudit) {
+        const totalMatches = res.files?.reduce((acc, f) => acc + f.matches.length, 0) ?? 0;
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_grep",
+          pattern,
+          scope: options.in,
+          ms: elapsed,
+          ok: res.ok,
+          hitCount: totalMatches,
+          source: res.source ?? "index",
+        });
+      }
+
+      return res;
     } catch (err) {
       if (this.enableFallback) {
-        return this.nativeFallbackGrep(pattern, options);
+        const fallbackRes = await this.nativeFallbackGrep(pattern, options);
+        const elapsed = Math.round((performance.now() - start) * 100) / 100;
+        if (!options.skipAudit) {
+          recordAudit({
+            ts: Date.now(),
+            tool: "fsearch_grep",
+            pattern,
+            scope: options.in,
+            ms: elapsed,
+            ok: fallbackRes.ok,
+            hitCount: fallbackRes.files?.reduce((acc, f) => acc + f.matches.length, 0) ?? 0,
+            source: "native_fallback",
+          });
+        }
+        return fallbackRes;
       }
       throw err;
     }
@@ -308,7 +368,7 @@ export class FSearchClient {
    * Multi-pattern OR content search (fsearch_multi_grep)
    */
   public async multiGrep(patterns: string[], options: GrepOptions = {}): Promise<FSearchMultiGrepResponse> {
-    const start = Date.now();
+    const start = performance.now();
     try {
       const res: FSearchMultiGrepResponse = await this.request({
         op: "multi_grep",
@@ -318,14 +378,31 @@ export class FSearchClient {
         limit: options.limit ?? 30,
         budget_ms: options.budget_ms ?? 3000,
       });
-      if (res.ok) return res;
+
+      if (res.ok) {
+        const elapsed = Math.round((performance.now() - start) * 100) / 100;
+        if (!options.skipAudit) {
+          const totalMatches = res.files?.reduce((acc, f) => acc + f.matches.length, 0) ?? 0;
+          recordAudit({
+            ts: Date.now(),
+            tool: "fsearch_multi_grep",
+            pattern: patterns.join(" | "),
+            scope: options.in,
+            ms: elapsed,
+            ok: true,
+            hitCount: totalMatches,
+            source: "index",
+          });
+        }
+        return res;
+      }
     } catch {
       // Fallback: run individual greps concurrently and merge unique files
     }
 
     try {
       const results = await Promise.all(
-        patterns.map((p) => this.grep(p, { ...options, limit: Math.max(10, Math.floor((options.limit ?? 30) / patterns.length)) }))
+        patterns.map((p) => this.grep(p, { ...options, skipAudit: true, limit: Math.max(10, Math.floor((options.limit ?? 30) / patterns.length)) }))
       );
 
       const fileMap = new Map<string, { path: string; matches: any[] }>();
@@ -347,11 +424,28 @@ export class FSearchClient {
         }
       }
 
+      const elapsed = Math.round((performance.now() - start) * 100) / 100;
+      const mergedFiles = Array.from(fileMap.values());
+      const totalMatches = mergedFiles.reduce((acc, f) => acc + f.matches.length, 0);
+
+      if (!options.skipAudit) {
+        recordAudit({
+          ts: Date.now(),
+          tool: "fsearch_multi_grep",
+          pattern: patterns.join(" | "),
+          scope: options.in,
+          ms: elapsed,
+          ok: true,
+          hitCount: totalMatches,
+          source: "index",
+        });
+      }
+
       return {
         ok: true,
-        took_us: (Date.now() - start) * 1000,
+        took_us: Math.round(elapsed * 1000),
         patterns,
-        files: Array.from(fileMap.values()),
+        files: mergedFiles,
         source: "index",
       };
     } catch (err: any) {
@@ -373,8 +467,21 @@ export class FSearchClient {
   }
 
   public async recent(scopeDir: string, limit = 15): Promise<FSearchSearchResponse> {
+    const start = performance.now();
     try {
-      return await this.request({ op: "recent", in: scopeDir, limit });
+      const res: FSearchSearchResponse = await this.request({ op: "recent", in: scopeDir, limit });
+      const elapsed = Math.round((performance.now() - start) * 100) / 100;
+      recordAudit({
+        ts: Date.now(),
+        tool: "fsearch_recent",
+        query: `recent:${limit}`,
+        scope: scopeDir,
+        ms: elapsed,
+        ok: res.ok,
+        hitCount: res.hits?.length ?? 0,
+        source: "index",
+      });
+      return res;
     } catch (err) {
       if (this.enableFallback) {
         return this.nativeFallbackSearch("", { in: scopeDir, limit, sort: "mtime" });
@@ -410,50 +517,29 @@ export class FSearchClient {
       .sort((a, b) => b.score - a.score);
   }
 
-  /**
-   * Graceful fail-open fallback: performs deterministic file search using ripgrep or fs walk.
-   * Strict exact matching (zero typo tolerance).
-   */
   private nativeFallbackSearch(query: string, options: SearchOptions): FSearchSearchResponse {
     const start = Date.now();
-    const searchRoot = options.in ?? process.cwd();
-    const hits: FSearchHit[] = [];
+    const scope = options.in ? path.resolve(options.in) : process.cwd();
+    const limit = options.limit ?? 30;
 
     try {
-      let fileList: string[] = [];
-      try {
-        const out = execFileSync("git", ["ls-files"], { cwd: searchRoot, encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] });
-        fileList = out.split("\n").filter(Boolean).map((f) => path.join(searchRoot, f));
-      } catch {
-        fileList = this.walkDir(searchRoot, 3);
-      }
+      const out = execFileSync(
+        "find",
+        [scope, "-maxdepth", "6", "-not", "-path", "*/.*", "-not", "-path", "*/node_modules/*", "-print"],
+        { encoding: "utf-8", timeout: 3000, stdio: ["ignore", "pipe", "ignore"] }
+      );
 
-      const qLower = query.toLowerCase().replace(/['*]/g, "").trim();
+      const lines = out.split("\n").filter(Boolean);
+      const queryLower = query.toLowerCase().trim();
+      const matched = lines.filter((p) => (queryLower ? p.toLowerCase().includes(queryLower) : true)).slice(0, limit);
 
-      for (const f of fileList) {
-        if (!isPathSafe(f, options.in)) continue;
-        const base = path.basename(f).toLowerCase();
-        let matched = false;
-        let score = 50;
-
-        // Deterministic exact matching only
-        if (!qLower || base === qLower || base.includes(qLower)) {
-          matched = true;
-          if (base === qLower) score = 300;
-          else if (base.startsWith(qLower)) score = 200;
-        }
-
-        if (matched) {
-          hits.push({
-            kind: "file",
-            path: f,
-            score,
-            mtime: Date.now(),
-            size: 0,
-          });
-        }
-        if (hits.length >= (options.limit ?? 30)) break;
-      }
+      const hits: FSearchHit[] = matched.map((p) => ({
+        kind: "file",
+        mtime: Math.floor(Date.now() / 1000),
+        path: p,
+        score: p.toLowerCase().endsWith(queryLower) ? 100 : 50,
+        size: 0,
+      }));
 
       return {
         ok: true,
@@ -464,84 +550,55 @@ export class FSearchClient {
     } catch (err: any) {
       return {
         ok: false,
-        error: `Native search fallback failed: ${err?.message ?? err}`,
+        hits: [],
         source: "native_fallback",
+        error: `Fallback find failed: ${err.message}`,
       };
     }
   }
 
-  /**
-   * Graceful fail-open fallback: executes system `rg` (ripgrep) when daemon is unavailable.
-   */
   private nativeFallbackGrep(pattern: string, options: GrepOptions): FSearchGrepResponse {
     const start = Date.now();
-    const searchRoot = options.in ?? process.cwd();
+    const scope = options.in ? path.resolve(options.in) : process.cwd();
+    const limit = options.limit ?? 30;
 
     try {
-      const args = ["-n", "--no-heading", "--max-count", "10", pattern];
-      if (options.limit) {
-        args.push("--max-filesize", "2M");
-      }
-      args.push(searchRoot);
+      const out = execFileSync(
+        "grep",
+        ["-rn", "--exclude-dir=.*", "--exclude-dir=node_modules", pattern, scope],
+        { encoding: "utf-8", timeout: 3000, stdio: ["ignore", "pipe", "ignore"] }
+      );
 
-      const stdout = execFileSync("rg", args, {
-        encoding: "utf-8",
-        maxBuffer: 4 * 1024 * 1024,
-        stdio: ["ignore", "pipe", "ignore"],
-      });
-
+      const lines = out.split("\n").filter(Boolean).slice(0, limit * 3);
       const fileMap = new Map<string, { path: string; matches: any[] }>();
-      const lines = stdout.split("\n").filter(Boolean);
 
       for (const line of lines) {
-        const match = /^([^:]+):(\d+):(.*)$/.exec(line);
-        if (!match) continue;
-        const [, filePath, lineStr, text] = match;
-        if (!isPathSafe(filePath, options.in)) continue;
+        const parts = line.split(":");
+        if (parts.length >= 3) {
+          const filePath = parts[0];
+          const lineNum = parseInt(parts[1], 10) || 1;
+          const matchText = parts.slice(2).join(":");
 
-        if (!fileMap.has(filePath)) {
-          fileMap.set(filePath, { path: filePath, matches: [] });
+          if (!fileMap.has(filePath)) {
+            fileMap.set(filePath, { path: filePath, matches: [] });
+          }
+          fileMap.get(filePath)!.matches.push({ line: lineNum, text: matchText });
         }
-        fileMap.get(filePath)!.matches.push({
-          line: parseInt(lineStr, 10),
-          text: text.slice(0, 300),
-        });
-
-        if (fileMap.size >= (options.limit ?? 30)) break;
       }
 
       return {
         ok: true,
         took_us: (Date.now() - start) * 1000,
+        files: Array.from(fileMap.values()).slice(0, limit),
         source: "native_fallback",
-        files: Array.from(fileMap.values()),
       };
-    } catch {
+    } catch (err: any) {
       return {
-        ok: true,
-        took_us: (Date.now() - start) * 1000,
-        source: "native_fallback",
+        ok: false,
         files: [],
+        source: "native_fallback",
+        error: `Fallback grep failed: ${err.message}`,
       };
     }
-  }
-
-  private walkDir(dir: string, depthRemaining: number): string[] {
-    if (depthRemaining <= 0) return [];
-    const results: string[] = [];
-    try {
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
-      for (const e of entries) {
-        if (e.name.startsWith(".") || e.name === "node_modules" || e.name === "target") continue;
-        const full = path.join(dir, e.name);
-        if (e.isDirectory()) {
-          results.push(...this.walkDir(full, depthRemaining - 1));
-        } else if (e.isFile()) {
-          results.push(full);
-        }
-        if (results.length > 500) break;
-      }
-    } catch {}
-    return results;
   }
 }

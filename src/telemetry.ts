@@ -12,6 +12,7 @@ export interface FSearchAuditRow {
   ms: number;
   ok: boolean;
   hitCount: number;
+  tokensSaved?: number;
   source: "index" | "scan" | "native_fallback" | "cli_subprocess";
   bypassCommand?: string;
   diagnosticHint?: string;
@@ -24,11 +25,40 @@ const MAX_LINES = 5000;
 let estimatedLineCount = -1;
 
 /**
+ * Estimates LLM context tokens saved by using index-accelerated surgical search
+ * vs loading whole files or raw recursive directory dumps into context.
+ */
+export function estimateTokensSaved(
+  tool: string,
+  hitCount: number
+): number {
+  if (tool === "cli_bypass") return 0;
+  if (tool === "fsearch_grep" || tool === "fsearch_multi_grep") {
+    // A grep hit avoids loading entire files into agent context.
+    // Average source file: 1,200 tokens. Surgical grep match: ~30 tokens.
+    // Conservative estimated savings: ~75 tokens per hit, plus base 150 tokens for targeted hit list.
+    return hitCount > 0 ? 150 + hitCount * 75 : 50;
+  }
+  if (tool === "fsearch_query" || tool === "fsearch_locate") {
+    // Avoids massive recursive directory listings or find dumps in agent context.
+    return hitCount > 0 ? 100 + hitCount * 30 : 25;
+  }
+  if (tool === "fsearch_recent") {
+    return hitCount > 0 ? 120 + hitCount * 25 : 20;
+  }
+  return 0;
+}
+
+/**
  * Appends a telemetry row to the persistent audit log asynchronously/safely.
  * Never throws or blocks agent tool execution (<0.05ms).
  */
 export function recordAudit(row: FSearchAuditRow): void {
   try {
+    if (row.tokensSaved === undefined) {
+      row.tokensSaved = estimateTokensSaved(row.tool, row.hitCount);
+    }
+
     mkdirSync(dirname(AUDIT_FILE), { recursive: true });
 
     // Initialize line count once
@@ -110,7 +140,15 @@ function pct(values: number[], p: number): number {
 
 export interface FSearchSummary {
   totalCalls: number;
+  totalTokensSaved: number;
   since: number | null;
+  lastUsed: {
+    ts: number | null;
+    tool: string | null;
+    query: string | null;
+    ms: number;
+    hitCount: number;
+  } | null;
   toolStats: Array<{
     tool: string;
     calls: number;
@@ -139,11 +177,17 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
   const totalCalls = rows.length;
   const since = rows.length > 0 ? rows[0].ts : null;
 
+  let totalTokensSaved = 0;
+  let lastUsed: FSearchSummary["lastUsed"] = null;
+
   const byTool = new Map<string, FSearchAuditRow[]>();
   const cliBypasses: FSearchSummary["cliBypasses"] = [];
   const zeroHitQueries: FSearchSummary["zeroHitQueries"] = [];
 
   for (const r of rows) {
+    const saved = r.tokensSaved ?? estimateTokensSaved(r.tool, r.hitCount);
+    totalTokensSaved += saved;
+
     if (r.tool === "cli_bypass") {
       cliBypasses.push({
         command: r.bypassCommand ?? "unknown",
@@ -167,6 +211,19 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
     }
   }
 
+  // Find the latest active tool call (prefer actual fsearch tools over test/cli bypasses if available)
+  const nonBypassRows = rows.filter((r) => r.tool !== "cli_bypass");
+  const latestRow = nonBypassRows.length > 0 ? nonBypassRows[nonBypassRows.length - 1] : rows[rows.length - 1];
+  if (latestRow) {
+    lastUsed = {
+      ts: latestRow.ts,
+      tool: latestRow.tool,
+      query: latestRow.query ?? latestRow.pattern ?? latestRow.bypassCommand ?? null,
+      ms: latestRow.ms,
+      hitCount: latestRow.hitCount,
+    };
+  }
+
   const toolStats: FSearchSummary["toolStats"] = [];
   for (const [tool, toolRows] of byTool.entries()) {
     const latencies = toolRows.map((r) => r.ms);
@@ -188,7 +245,6 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
 
   const advice: string[] = [];
 
-  // Generate actionable recursive advice
   if (cliBypasses.length > 0) {
     advice.push(`Detected ${cliBypasses.length} CLI subprocess searches (find/rg). Directing agent to fsearch tools will save 10-40ms per call.`);
   }
@@ -212,7 +268,9 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
 
   return {
     totalCalls,
+    totalTokensSaved,
     since,
+    lastUsed,
     toolStats,
     cliBypasses: cliBypasses.slice(-10),
     zeroHitQueries: zeroHitQueries.slice(-10),
@@ -224,6 +282,10 @@ export function formatAuditSummary(summary: FSearchSummary): string {
   const parts: string[] = [];
   parts.push("=== Pi-UltraSearch Observability & Toolchain Audit ===");
   parts.push(`Total Monitored Calls: ${summary.totalCalls}`);
+  parts.push(`Estimated Tokens Saved: ${summary.totalTokensSaved.toLocaleString()}`);
+  if (summary.lastUsed && summary.lastUsed.ts) {
+    parts.push(`Last Used: ${new Date(summary.lastUsed.ts).toISOString()} (${summary.lastUsed.tool})`);
+  }
   if (summary.since) {
     parts.push(`Recording Since: ${new Date(summary.since).toISOString()}`);
   }

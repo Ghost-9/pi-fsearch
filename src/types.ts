@@ -63,6 +63,8 @@ export interface FSearchStatusResponse {
   event_id?: number;
   full_disk_access?: boolean;
   owner?: boolean;
+  overlay?: number;
+  removed?: number;
   error?: string;
 }
 
@@ -74,6 +76,7 @@ export interface SearchOptions {
   near?: string;
   fuzzy?: boolean;
   sort?: "score" | "mtime" | "path" | "frecency";
+  skipAudit?: boolean;
 }
 
 export interface GrepOptions {
@@ -82,4 +85,5 @@ export interface GrepOptions {
   limit?: number;
   budget_ms?: number;
   context?: number;
+  skipAudit?: boolean;
 }
