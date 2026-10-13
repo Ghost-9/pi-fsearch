@@ -123,7 +123,10 @@ export class FSearchClient {
   private trySpawnDaemon(): void {
     try {
       const candidates = [
+        path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch"),
+        path.join(os.homedir(), ".local/bin/ultrasearch-daemon"),
         path.join(os.homedir(), ".local/bin/fsearch"),
+        "/usr/local/bin/ultrasearch-daemon",
         "/usr/local/bin/fsearch",
         "/opt/homebrew/bin/fsearch",
       ];

@@ -11,6 +11,7 @@ import { LsmCompactor } from "../src/compactor.ts";
 import { recordMistake, learnCorrection, getLearnedCorrection, formatRecursiveLearningReport } from "../src/recursive-learning.ts";
 import { UltraSearchTui } from "../src/tui.ts";
 import { expandIntentKeywords, searchSemanticIntent } from "../src/semantic.ts";
+import { FSearchMcpServer } from "../src/mcp.ts";
 
 const sharedClient = new FSearchClient();
 
@@ -136,6 +137,25 @@ test("codemode: sandbox tool definitions", async () => {
   assert.ok(typeof tools.fsearch_query === "function");
   assert.ok(typeof tools.fsearch_grep === "function");
   assert.ok(typeof tools.fsearch_multi_grep === "function");
+});
+
+test("mcp: supports both ultrasearch_* and fsearch_* JSON-RPC tools", async () => {
+  const server = new FSearchMcpServer(sharedClient);
+  const listResp = await server.handleMessage({ jsonrpc: "2.0", id: 1, method: "tools/list" });
+  assert.ok(listResp && listResp.result && listResp.result.tools);
+  const toolNames = listResp.result.tools.map((t: any) => t.name);
+  assert.ok(toolNames.includes("ultrasearch_query"));
+  assert.ok(toolNames.includes("ultrasearch_grep"));
+  assert.ok(toolNames.includes("fsearch_query"));
+  assert.ok(toolNames.includes("fsearch_grep"));
+
+  const callResp = await server.handleMessage({
+    jsonrpc: "2.0",
+    id: 2,
+    method: "tools/call",
+    params: { name: "ultrasearch_query", arguments: { query: "package.json" } },
+  });
+  assert.ok(callResp && callResp.result && callResp.result.content);
 });
 
 test("observability: telemetry logging and audit summary", () => {

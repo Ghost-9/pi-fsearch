@@ -100,7 +100,7 @@ export class UltraSearchTui {
         await this.render();
         try {
           execSync("open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'");
-          execSync("open -R ~/.local/bin/fsearch");
+          execSync("open -R ~/Applications/UltraSearch.app || open -R ~/.local/bin/ultrasearch-daemon");
         } catch {}
       } else if (key && key.name === "c") {
         this.statusMessage = "⏳ Running LSM Compaction...";

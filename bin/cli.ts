@@ -154,9 +154,9 @@ async function main() {
         try {
           const { execSync } = await import("node:child_process");
           execSync("open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'");
-          execSync("open -R ~/.local/bin/fsearch");
-          console.log("📂 Revealed ~/.local/bin/fsearch in Finder.");
-          console.log("💡 Simply toggle or drag 'fsearch' into the Full Disk Access list.");
+          execSync("open -R ~/Applications/UltraSearch.app || open -R ~/.local/bin/ultrasearch-daemon");
+          console.log("📂 Revealed 'UltraSearch' in Finder.");
+          console.log("💡 Simply toggle or drag 'UltraSearch' into the Full Disk Access list.");
         } catch (e: any) {
           console.error("Could not open settings:", e.message);
         }
@@ -176,8 +176,8 @@ async function main() {
         } else if (sub === "restart") {
           console.log("🔄 Restarting ultrasearch daemon...");
           try {
-            execSync("pkill -f 'fsearch serve' || true");
-            execSync("fsearch serve >/dev/null 2>&1 &");
+            execSync("pkill -f 'UltraSearch serve' || pkill -f 'ultrasearch-daemon serve' || pkill -f 'fsearch serve' || true");
+            execSync("~/Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve >/dev/null 2>&1 & || ultrasearch-daemon serve >/dev/null 2>&1 &");
             console.log("✅ Ultrasearch daemon restarted.");
           } catch (e: any) {
             console.error("Restart error:", e.message);

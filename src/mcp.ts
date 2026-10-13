@@ -85,11 +85,7 @@ export class FSearchMcpServer {
     }
 
     if (method === "tools/list") {
-      return {
-        jsonrpc: "2.0",
-        id,
-        result: {
-          tools: [
+      const fsearchTools = [
             {
               name: "fsearch_query",
               description: "Instant indexed whole-disk or workspace file search (<0.1ms). Strict zero typo tolerance. Supports globs, extension filters, and git filters.",
@@ -165,13 +161,26 @@ export class FSearchMcpServer {
                 properties: {},
               },
             },
-          ],
+          ];
+
+      const ultrasearchTools = fsearchTools.map((t) => ({
+        ...t,
+        name: t.name.replace(/^fsearch_/, "ultrasearch_"),
+        description: t.description,
+      }));
+
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          tools: [...ultrasearchTools, ...fsearchTools],
         },
       };
     }
 
     if (method === "tools/call") {
-      const toolName = params?.name;
+      const rawName = params?.name ?? "";
+      const toolName = rawName.startsWith("ultrasearch_") ? rawName.replace(/^ultrasearch_/, "fsearch_") : rawName;
       const args = params?.arguments ?? {};
       const activeRoot = args.path ? path.resolve(this.cwd, args.path) : this.cwd;
 
