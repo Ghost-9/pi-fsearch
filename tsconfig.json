@@ -20,6 +20,9 @@
     "src/client.ts",
     "src/types.ts",
     "src/sanitize.ts",
+    "src/codemode.ts",
+    "src/mcp.ts",
+    "bin/mcp-server.ts",
     "type-stubs.d.ts"
   ]
 }

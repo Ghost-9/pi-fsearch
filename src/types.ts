@@ -5,6 +5,7 @@ export interface FSearchHit {
   score: number;
   size: number;
   git?: string;
+  distance?: number;
 }
 
 export interface FSearchSearchResponse {
@@ -12,6 +13,7 @@ export interface FSearchSearchResponse {
   ok: boolean;
   took_us?: number;
   hits?: FSearchHit[];
+  source?: "index" | "scan" | "native_fallback";
   error?: string;
 }
 
@@ -29,11 +31,21 @@ export interface FSearchGrepResponse {
   id?: number | string | null;
   ok: boolean;
   took_us?: number;
-  source?: "index" | "scan";
+  source?: "index" | "scan" | "native_fallback";
   candidates?: number;
   read?: number;
   complete?: boolean;
   indexing?: number;
+  files?: FSearchGrepFile[];
+  error?: string;
+}
+
+export interface FSearchMultiGrepResponse {
+  id?: number | string | null;
+  ok: boolean;
+  took_us?: number;
+  source?: "index" | "scan" | "native_fallback";
+  patterns: string[];
   files?: FSearchGrepFile[];
   error?: string;
 }
@@ -52,4 +64,21 @@ export interface FSearchStatusResponse {
   full_disk_access?: boolean;
   owner?: boolean;
   error?: string;
+}
+
+export interface SearchOptions {
+  in?: string;
+  limit?: number;
+  git?: boolean | string;
+  boost?: boolean;
+  near?: string;
+  sort?: "score" | "mtime" | "path" | "frecency";
+}
+
+export interface GrepOptions {
+  in?: string;
+  mode?: "literal" | "regex" | "symbol";
+  limit?: number;
+  budget_ms?: number;
+  context?: number;
 }

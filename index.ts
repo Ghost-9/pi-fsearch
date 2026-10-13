@@ -1,33 +1,71 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { execFileSync } from "node:child_process";
+import * as path from "node:path";
 import { FSearchClient } from "./src/client.ts";
-import { scrubSecrets } from "./src/sanitize.ts";
+import { scrubSecrets, isPathSafe } from "./src/sanitize.ts";
+
+/**
+ * Resolves the top-level repository worktree root to prevent cross-repo context leaks.
+ */
+function resolveWorktreeRoot(startDir = process.cwd()): string {
+  try {
+    const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      cwd: startDir,
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (root) return root;
+  } catch {
+    // Not a git repo or git unavailable
+  }
+  return startDir;
+}
 
 export default function piFsearchExtension(pi: ExtensionAPI): void {
   const client = new FSearchClient();
 
-  // 1. fsearch_query: Fast path/file discovery with fuzzy matching and globs
-  pi.defineTool({
+  // Helper to register tools cleanly across all Pi versions
+  const register = (toolDef: any) => {
+    if (typeof (pi as any).registerTool === "function") {
+      (pi as any).registerTool(toolDef);
+    }
+  };
+
+  // 1. fsearch_query: Fast path/file discovery with fuzzy matching, globs, git filters, and proximity ranking
+  register({
     name: "fsearch_query",
     label: "FSearch Query",
     description:
-      "Instant indexed whole-disk or workspace file search (<0.1ms). Supports typos (forgives 1-2 typos), globs (src/**/*.{ts,tsx}), extension filters (*.rs), and git filters (git:modified, git:staged). By default scoped to current working directory.",
+      "Instant indexed whole-disk or workspace file search (<0.1ms). Supports typos (forgives 1-2 typos), globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.",
     parameters: Type.Object({
       query: Type.String({
-        description: "Search keywords, globs, or filters (e.g., 'Omnibox *.swift', 'git:modified', 'src/**/*.{ts,tsx} !test/').",
+        description: "Search keywords, globs, or filters (e.g. 'Omnibox *.swift', 'git:modified', 'near:index.ts', 'src/**/*.{ts,tsx} !test/').",
       }),
       limit: Type.Optional(Type.Number({ description: "Maximum results to return (default: 30)." })),
-      global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current working directory." })),
+      global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository worktree." })),
+      near: Type.Optional(Type.String({ description: "Optional active file path to re-rank results by folder proximity." })),
     }),
-    execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean }) => {
+    execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string }) => {
       try {
-        const cwd = process.cwd();
-        const searchScope = params.global ? undefined : cwd;
-        const res = await client.search(params.query, {
+        const worktreeRoot = resolveWorktreeRoot();
+        const searchScope = params.global ? undefined : worktreeRoot;
+
+        // Parse optional inline near: filter if present in query string
+        let cleanedQuery = params.query;
+        let proximityTarget = params.near;
+        const nearMatch = /\bnear:([^\s]+)/.exec(cleanedQuery);
+        if (nearMatch) {
+          proximityTarget = nearMatch[1];
+          cleanedQuery = cleanedQuery.replace(nearMatch[0], "").trim();
+        }
+
+        const res = await client.search(cleanedQuery, {
           in: searchScope,
           limit: params.limit ?? 30,
           git: true,
           boost: true,
+          near: proximityTarget ? path.resolve(worktreeRoot, proximityTarget) : undefined,
         });
 
         if (!res.ok && res.error) {
@@ -41,34 +79,36 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
 
         const formatted = hits
           .map((h) => {
-            const rel = h.path.startsWith(cwd) ? h.path.slice(cwd.length).replace(/^\//, "") : h.path;
+            const rel = h.path.startsWith(worktreeRoot) ? h.path.slice(worktreeRoot.length).replace(/^\//, "") : h.path;
             const gitTag = h.git ? ` [git:${h.git}]` : "";
-            return `${rel}${gitTag} (${h.kind}, score: ${h.score})`;
+            const distTag = h.distance !== undefined ? ` [dist:${h.distance}]` : "";
+            return `${rel}${gitTag}${distTag} (${h.kind}, score: ${h.score})`;
           })
           .join("\n");
 
+        const sourceNotice = res.source === "native_fallback" ? " (via native fallback)" : "";
         return {
           content: [
             {
               type: "text",
-              text: `Found ${hits.length} matches in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms:\n${formatted}`,
+              text: `Found ${hits.length} matches in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice}:\n${formatted}`,
             },
           ],
         };
       } catch (err: any) {
         return {
-          content: [{ type: "text", text: `FSearch unavailable (fallback recommended): ${err?.message ?? err}` }],
+          content: [{ type: "text", text: `FSearch query unavailable: ${err?.message ?? err}` }],
         };
       }
     },
   });
 
   // 2. fsearch_grep: Instant indexed trigram text content search (<1ms)
-  pi.defineTool({
+  register({
     name: "fsearch_grep",
     label: "FSearch Grep",
     description:
-      "Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk greps. Results scrubbed for credentials.",
+      "Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk walks. Results scrubbed for credentials.",
     parameters: Type.Object({
       pattern: Type.String({ description: "Literal text or identifier to search for." }),
       path_filter: Type.Optional(Type.String({ description: "Optional subfolder or file pattern (e.g. 'src/', 'Sources/Search')." })),
@@ -76,15 +116,20 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
         description: "Search mode: 'literal' (default), 'regex', or 'symbol' (function/class definitions first).",
       })),
       limit: Type.Optional(Type.Number({ description: "Maximum files to match (default: 30)." })),
-      global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current working directory." })),
+      global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository." })),
     }),
     execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number; global?: boolean }) => {
       try {
-        const cwd = process.cwd();
-        const baseScope = params.global ? undefined : cwd;
+        const worktreeRoot = resolveWorktreeRoot();
+        const baseScope = params.global ? undefined : worktreeRoot;
         const searchScope = params.path_filter
-          ? (params.path_filter.startsWith("/") ? params.path_filter : `${cwd}/${params.path_filter}`)
+          ? (path.isAbsolute(params.path_filter) ? params.path_filter : path.join(worktreeRoot, params.path_filter))
           : baseScope;
+
+        // Path safety containment check
+        if (searchScope && !isPathSafe(searchScope, worktreeRoot) && !params.global) {
+          return { content: [{ type: "text", text: "Security violation: path filter cannot escape workspace root." }] };
+        }
 
         const res = await client.grep(params.pattern, {
           in: searchScope,
@@ -105,7 +150,7 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
 
         const outputParts: string[] = [];
         for (const file of files) {
-          const relPath = file.path.startsWith(cwd) ? file.path.slice(cwd.length).replace(/^\//, "") : file.path;
+          const relPath = file.path.startsWith(worktreeRoot) ? file.path.slice(worktreeRoot.length).replace(/^\//, "") : file.path;
           outputParts.push(`\n=== ${relPath} ===`);
           for (const m of file.matches) {
             const scrubbed = scrubSecrets(m.text);
@@ -113,11 +158,12 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
           }
         }
 
+        const sourceNotice = res.source === "native_fallback" ? " (native fallback)" : "";
         return {
           content: [
             {
               type: "text",
-              text: `Found matches across ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms (source: ${res.source ?? "index"}):\n${outputParts.join("\n")}`,
+              text: `Found matches across ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice}:\n${outputParts.join("\n")}`,
             },
           ],
         };
@@ -129,19 +175,71 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 3. fsearch_locate: O(1) exact file resolution
-  pi.defineTool({
+  // 3. fsearch_multi_grep: Simultaneous multi-pattern OR content retrieval
+  register({
+    name: "fsearch_multi_grep",
+    label: "FSearch Multi Grep",
+    description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
+    parameters: Type.Object({
+      patterns: Type.Array(Type.String({ description: "Identifiers or literals to search concurrently." })),
+      path_filter: Type.Optional(Type.String({ description: "Optional folder filter." })),
+      limit: Type.Optional(Type.Number({ description: "Maximum files to match." })),
+    }),
+    execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number }) => {
+      try {
+        const worktreeRoot = resolveWorktreeRoot();
+        const searchScope = params.path_filter ? path.join(worktreeRoot, params.path_filter) : worktreeRoot;
+
+        const res = await client.multiGrep(params.patterns, {
+          in: searchScope,
+          limit: params.limit ?? 30,
+        });
+
+        if (!res.ok && res.error) {
+          return { content: [{ type: "text", text: `Multi-grep error: ${res.error}` }] };
+        }
+
+        const files = res.files ?? [];
+        if (files.length === 0) {
+          return { content: [{ type: "text", text: `No occurrences of [${params.patterns.join(", ")}] found.` }] };
+        }
+
+        const outputParts: string[] = [];
+        for (const file of files) {
+          const relPath = file.path.startsWith(worktreeRoot) ? file.path.slice(worktreeRoot.length).replace(/^\//, "") : file.path;
+          outputParts.push(`\n=== ${relPath} ===`);
+          for (const m of file.matches) {
+            outputParts.push(`  L${m.line}: ${scrubSecrets(m.text).trim()}`);
+          }
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Multi-grep matched ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms:\n${outputParts.join("\n")}`,
+            },
+          ],
+        };
+      } catch (err: any) {
+        return { content: [{ type: "text", text: `Multi-grep error: ${err?.message ?? err}` }] };
+      }
+    },
+  });
+
+  // 4. fsearch_locate: O(1) exact file resolution
+  register({
     name: "fsearch_locate",
     label: "FSearch Locate",
-    description: "Instant O(1) lookup for exact filenames (e.g., 'package.json', 'Cargo.toml', 'ROADMAP.md') within the project or disk.",
+    description: "Instant O(1) lookup for exact filenames (e.g., 'package.json', 'Cargo.toml', 'ROADMAP.md') within current workspace.",
     parameters: Type.Object({
       filename: Type.String({ description: "Exact filename to locate." }),
       global: Type.Optional(Type.Boolean({ description: "Search entire disk (default: false, scopes to project)." })),
     }),
     execute: async (_toolCallId: string, params: { filename: string; global?: boolean }) => {
       try {
-        const cwd = process.cwd();
-        const searchScope = params.global ? undefined : cwd;
+        const worktreeRoot = resolveWorktreeRoot();
+        const searchScope = params.global ? undefined : worktreeRoot;
         const res = await client.search(`'${params.filename}`, {
           in: searchScope,
           limit: 10,
@@ -160,8 +258,8 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 4. fsearch_recent: Recently worked files in the workspace / git branch
-  pi.defineTool({
+  // 5. fsearch_recent: Recently worked files in the workspace / git branch
+  register({
     name: "fsearch_recent",
     label: "FSearch Recent",
     description: "Returns files recently edited or touched in the current workspace or git branch (frecency-ranked).",
@@ -170,13 +268,13 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
     }),
     execute: async (_toolCallId: string, params: { limit?: number }) => {
       try {
-        const cwd = process.cwd();
-        const res = await client.recent(cwd, params.limit ?? 15);
+        const worktreeRoot = resolveWorktreeRoot();
+        const res = await client.recent(worktreeRoot, params.limit ?? 15);
         const hits = res.hits ?? [];
         if (hits.length === 0) {
           return { content: [{ type: "text", text: "No recent activity recorded for this workspace." }] };
         }
-        const lines = hits.map((h) => h.path.replace(cwd, "").replace(/^\//, "")).join("\n");
+        const lines = hits.map((h) => h.path.replace(worktreeRoot, "").replace(/^\//, "")).join("\n");
         return { content: [{ type: "text", text: `Recent workspace files:\n${lines}` }] };
       } catch (err: any) {
         return { content: [{ type: "text", text: `Recent activity query error: ${err?.message ?? err}` }] };
@@ -184,14 +282,31 @@ export default function piFsearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // Track file opens to feed frecency engine
-  if (typeof pi.on === "function") {
-    pi.on("tool_execution_end", async (event: any) => {
+  // 6. Automated file-touch lifecycle tracking via tool_execution_end
+  if (typeof (pi as any).on === "function") {
+    (pi as any).on("tool_execution_end", async (event: any) => {
       const toolName = event?.toolName;
-      const filePath = event?.params?.path || event?.params?.target_file || event?.params?.file;
-      if ((toolName === "read" || toolName === "edit" || toolName === "write") && typeof filePath === "string") {
+      const filePath =
+        event?.params?.path ||
+        event?.params?.target_file ||
+        event?.params?.file ||
+        event?.params?.absolute_path;
+
+      if (
+        (toolName === "read" ||
+          toolName === "edit" ||
+          toolName === "write" ||
+          toolName === "view_file" ||
+          toolName === "edit_file" ||
+          toolName === "create_file" ||
+          toolName === "client_view_file" ||
+          toolName === "client_edit_file" ||
+          toolName === "client_create_file") &&
+        typeof filePath === "string"
+      ) {
         try {
-          await client.open(filePath);
+          const resolved = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+          await client.open(resolved);
         } catch {
           // Non-blocking frecency recording
         }
