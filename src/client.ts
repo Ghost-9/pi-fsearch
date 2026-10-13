@@ -206,7 +206,9 @@ export class FSearchClient {
 
       const payload: Record<string, any> = {
         op: "search",
+        q: finalQuery,
         query: finalQuery,
+        path: options.in,
         in: options.in,
         limit: options.limit ?? 30,
         git: options.git ?? true,

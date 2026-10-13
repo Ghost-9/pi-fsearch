@@ -5,6 +5,7 @@ import { scrubSecrets, isPathSafe, matchesIgnorePattern } from "../src/sanitize.
 import { renderUltraSearchDeclarations, renderFSearchDeclarations, getFSearchCodemodeTools } from "../src/codemode.ts";
 import { recordAudit, loadAudit, summarizeAudit, formatAuditSummary, resetAudit } from "../src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "../src/observer.ts";
+import { formatGrepFiles } from "../src/formatter.ts";
 
 const sharedClient = new FSearchClient();
 
@@ -153,4 +154,50 @@ test("observability: shadow detector detects CLI find and rg bypasses", () => {
 test("observability: diagnostic analyzer generates zero-typo guidance", async () => {
   const hint = await diagnoseEmptyQuery("Cargo.toml", process.cwd(), sharedClient);
   assert.ok(hint && (hint.includes("Exact match exists") || hint.includes("Zero typo tolerance")));
+});
+
+test("formatter: compact mode produces clean file:line output", () => {
+  const dummy = [
+    {
+      path: "/test/repo/src/index.ts",
+      matches: [
+        { line: 10, text: "export function search() {}" },
+        { line: 20, text: "const a = 1;" },
+      ],
+    },
+  ];
+  const res = formatGrepFiles(dummy, { worktreeRoot: "/test/repo", compact: true });
+  assert.ok(res.text.includes("src/index.ts:10: export function search() {}"));
+  assert.ok(res.text.includes("src/index.ts:20: const a = 1;"));
+  assert.ok(!res.text.includes("==="));
+});
+
+test("formatter: token budget truncation triggers gracefully", () => {
+  const dummy = [
+    {
+      path: "/test/repo/src/large.ts",
+      matches: Array.from({ length: 50 }, (_, i) => ({
+        line: i + 1,
+        text: "line " + i + " content with long text padding for token limit",
+      })),
+    },
+  ];
+  const res = formatGrepFiles(dummy, { worktreeRoot: "/test/repo", compact: true, maxTokens: 40 });
+  assert.ok(res.truncatedCount > 0);
+  assert.ok(res.text.includes("[... Truncated:"));
+});
+
+test("formatter: symbol prioritization ranks declarations first", () => {
+  const dummy = [
+    {
+      path: "/test/repo/src/symbols.ts",
+      matches: [
+        { line: 5, text: "callSearchFunction();" },
+        { line: 12, text: "export function search() {}" },
+      ],
+    },
+  ];
+  const res = formatGrepFiles(dummy, { worktreeRoot: "/test/repo", compact: true, prioritizeSymbols: true });
+  const lines = res.text.split("\n");
+  assert.ok(lines[0].includes("export function search()"));
 });

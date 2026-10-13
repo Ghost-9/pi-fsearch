@@ -4,7 +4,8 @@ import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { FSearchClient } from "./src/client.ts";
-import { scrubSecrets, isPathSafe } from "./src/sanitize.ts";
+import { isPathSafe } from "./src/sanitize.ts";
+import { formatGrepFiles } from "./src/formatter.ts";
 import { recordAudit, summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "./src/observer.ts";
 
@@ -190,8 +191,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       })),
       limit: Type.Optional(Type.Number({ description: "Maximum files to match (default: 30)." })),
       global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository." })),
+      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format to minimize LLM context token consumption." })),
+      max_tokens: Type.Optional(Type.Number({ description: "Token budget ceiling for response (default: 1500). Gracefully truncates if exceeded." })),
     }),
-    execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number; global?: boolean }) => {
+    execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number; global?: boolean; compact?: boolean; max_tokens?: number }) => {
       const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
@@ -244,22 +247,18 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           return { content: [{ type: "text", text: `No occurrences of "${params.pattern}" found.` }] };
         }
 
-        const outputParts: string[] = [];
-        for (const file of files) {
-          const relPath = file.path.startsWith(worktreeRoot) ? file.path.slice(worktreeRoot.length).replace(/^\//, "") : file.path;
-          outputParts.push(`\n=== ${relPath} ===`);
-          for (const m of file.matches) {
-            const scrubbed = scrubSecrets(m.text);
-            outputParts.push(`  L${m.line}: ${scrubbed.trim()}`);
-          }
-        }
-
+        const formatted = formatGrepFiles(files, {
+          worktreeRoot,
+          compact: params.compact,
+          maxTokens: params.max_tokens,
+          prioritizeSymbols: params.mode === "symbol",
+        });
         const sourceNotice = res.source === "native_fallback" ? " (native fallback)" : "";
         return {
           content: [
             {
               type: "text",
-              text: `Found matches across ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice}:\n${outputParts.join("\n")}`,
+              text: `Found matches across ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice} (~${formatted.tokenCount} tokens):\n${formatted.text}`,
             },
           ],
         };
@@ -280,8 +279,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       patterns: Type.Array(Type.String({ description: "Identifiers or literals to search concurrently." })),
       path_filter: Type.Optional(Type.String({ description: "Optional folder filter." })),
       limit: Type.Optional(Type.Number({ description: "Maximum files to match." })),
+      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format to minimize LLM token usage." })),
+      max_tokens: Type.Optional(Type.Number({ description: "Token budget ceiling for response (default: 2000)." })),
     }),
-    execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number }) => {
+    execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number; compact?: boolean; max_tokens?: number }) => {
       const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
@@ -314,20 +315,16 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           return { content: [{ type: "text", text: `No occurrences of [${params.patterns.join(", ")}] found.` }] };
         }
 
-        const outputParts: string[] = [];
-        for (const file of files) {
-          const relPath = file.path.startsWith(worktreeRoot) ? file.path.slice(worktreeRoot.length).replace(/^\//, "") : file.path;
-          outputParts.push(`\n=== ${relPath} ===`);
-          for (const m of file.matches) {
-            outputParts.push(`  L${m.line}: ${scrubSecrets(m.text).trim()}`);
-          }
-        }
-
+        const formatted = formatGrepFiles(files, {
+          worktreeRoot,
+          compact: params.compact,
+          maxTokens: params.max_tokens,
+        });
         return {
           content: [
             {
               type: "text",
-              text: `Multi-grep matched ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms:\n${outputParts.join("\n")}`,
+              text: `Multi-grep matched ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms (~${formatted.tokenCount} tokens):\n${formatted.text}`,
             },
           ],
         };

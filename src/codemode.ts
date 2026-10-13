@@ -46,6 +46,10 @@ declare namespace tools {
     limit?: number;
     /** Search whole disk instead of workspace */
     global?: boolean;
+    /** Compact one-line formatting */
+    compact?: boolean;
+    /** Token budget limit */
+    max_tokens?: number;
   }): Promise<{
     files: Array<{
       path: string;
@@ -61,6 +65,8 @@ declare namespace tools {
     patterns: string[];
     path_filter?: string;
     limit?: number;
+    compact?: boolean;
+    max_tokens?: number;
   }): Promise<{
     files: Array<{ path: string; matches: Array<{ line: number; text: string }> }>;
   }>;
