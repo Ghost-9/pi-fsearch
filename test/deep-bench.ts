@@ -12,6 +12,8 @@ export interface BenchmarkResult {
   p50Ms: number;
   p90Ms: number;
   p95Ms: number;
+  /** True when the sample was too small for p95 to differ from the maximum. */
+  p95IsMax?: boolean;
   minMs: number;
   maxMs: number;
   opsPerSec: number;
@@ -43,9 +45,13 @@ export async function runFullBenchmark(options: { iterations?: number } = {}): P
   ): BenchmarkResult {
     const sorted = [...times].sort((a, b) => a - b);
     const mean = sorted.reduce((a, b) => a + b, 0) / sorted.length;
-    const p50 = sorted[Math.floor(sorted.length * 0.5)];
-    const p90 = sorted[Math.floor(sorted.length * 0.9)];
-    const p95 = sorted[Math.floor(sorted.length * 0.95)];
+    // Nearest-rank percentiles. The old `floor(n * p)` form returned the maximum
+    // for p95 at small n; a p95 that equals the max is labelled, never presented
+    // as a tail (advisor finding #1).
+    const rank = (p: number) => sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1))];
+    const p50 = rank(50);
+    const p90 = rank(90);
+    const p95 = rank(95);
     const min = sorted[0];
     const max = sorted[sorted.length - 1];
     const ops = 1000 / (mean || 1);
@@ -59,6 +65,7 @@ export async function runFullBenchmark(options: { iterations?: number } = {}): P
       p50Ms: Number(p50.toFixed(2)),
       p90Ms: Number(p90.toFixed(2)),
       p95Ms: Number(p95.toFixed(2)),
+      p95IsMax: p95 === max,
       minMs: Number(min.toFixed(2)),
       maxMs: Number(max.toFixed(2)),
       opsPerSec: Math.round(ops),

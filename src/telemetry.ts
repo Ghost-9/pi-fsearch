@@ -2,8 +2,16 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
+/**
+ * Row provenance (issue #31).
+ * - `organic`: a real agent session.
+ * - `synthetic`: a gate/test/benchmark run (PI_ULTRASEARCH_TEST=1 or PI_ULTRASEARCH_BENCH=1).
+ */
+export type AuditOrigin = "organic" | "synthetic";
+
 export interface UltraSearchAuditRow {
   ts: number;
+  origin?: AuditOrigin;
   sessionId?: string;
   tool: "ultrasearch_query" | "ultrasearch_grep" | "ultrasearch_locate" | "ultrasearch_recent" | "ultrasearch_multi_grep" | "ultrasearch_compact" | "cli_bypass";
   query?: string;
@@ -22,13 +30,35 @@ export type AuditTool = UltraSearchAuditRow["tool"];
 
 export function getAuditFilePath(): string {
   if (process.env.PI_ULTRASEARCH_TEST === "1") {
-    return join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "test_audit.jsonl");
+    return TEST_AUDIT_FILE;
   }
   return join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "audit.jsonl");
 }
 
+const TEST_AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "test_audit.jsonl");
 const LEGACY_AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-fsearch", "audit.jsonl");
 const MAX_LINES = 5000;
+
+/** Reads one audit file, parsing the last `limit` usable rows. */
+function readAuditFile(file: string, limit: number): UltraSearchAuditRow[] {
+  try {
+    if (!existsSync(file)) return [];
+    return readFileSync(file, "utf-8")
+      .split("\n")
+      .filter(Boolean)
+      .slice(-limit)
+      .map((line) => {
+        try {
+          return JSON.parse(line) as UltraSearchAuditRow;
+        } catch {
+          return null;
+        }
+      })
+      .filter((r): r is UltraSearchAuditRow => r !== null);
+  } catch {
+    return [];
+  }
+}
 
 let estimatedLineCount = -1;
 
@@ -61,10 +91,18 @@ export function estimateTokensSaved(
  * Appends a telemetry row to the persistent audit log asynchronously/safely.
  * Never throws or blocks agent tool execution (<0.05ms).
  */
+/** The env var that isolates benchmark/gate traffic from the production audit log. */
+export function isSyntheticEnvironment(): boolean {
+  return process.env.PI_ULTRASEARCH_TEST === "1" || process.env.PI_ULTRASEARCH_BENCH === "1";
+}
+
 export function recordAudit(row: UltraSearchAuditRow): void {
   try {
     if (row.tokensSaved === undefined) {
       row.tokensSaved = estimateTokensSaved(row.tool, row.hitCount);
+    }
+    if (row.origin === undefined) {
+      row.origin = isSyntheticEnvironment() ? "synthetic" : "organic";
     }
 
     const auditFile = getAuditFilePath();
@@ -116,18 +154,7 @@ export function loadAudit(limit = 1000): UltraSearchAuditRow[] {
       ? LEGACY_AUDIT_FILE
       : null;
     if (!target) return [];
-    return readFileSync(target, "utf-8")
-      .split("\n")
-      .filter(Boolean)
-      .slice(-limit)
-      .map((line) => {
-        try {
-          return JSON.parse(line) as UltraSearchAuditRow;
-        } catch {
-          return null;
-        }
-      })
-      .filter((r): r is UltraSearchAuditRow => r !== null);
+    return readAuditFile(target, limit);
   } catch {
     return [];
   }
@@ -151,6 +178,38 @@ function pct(values: number[], p: number): number {
   const sorted = [...values].sort((a, b) => a - b);
   const idx = Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1));
   return sorted[idx];
+}
+
+export type AuditView = "real" | "synthetic" | "all";
+
+/**
+ * Historical signature rows written into the production audit file by the
+ * pre-0.3.1 benchmark gate (before PI_ULTRASEARCH_TEST isolation existed).
+ * Only consulted when `legacySyntheticQueries: true` is passed explicitly.
+ */
+// FROZEN MEASUREMENT STRING: "FSearchClient" is the literal query written into
+// the production audit log by the pre-rename (0a16e50) benchmark gate. It is kept
+// un-renamed on purpose so the legacy synthetic-row heuristic still recognises
+// historical gate rows; it does not name any current type or tool.
+export const GATE_SIGNATURE_QUERIES: string[] = ["package.json", "FSearchClient", "scrubSecrets"];
+
+export interface AuditOriginCounts {
+  organic: number;
+  synthetic: number;
+  unmarked: number;
+}
+
+export function classifyAuditOrigin(
+  row: UltraSearchAuditRow,
+  opts: { testEnv?: boolean; legacySyntheticQueries?: boolean } = {}
+): AuditOrigin {
+  if (row.origin === "synthetic" || row.origin === "organic") return row.origin;
+  if (opts.testEnv) return "synthetic";
+  if (opts.legacySyntheticQueries) {
+    const q = row.query ?? row.pattern ?? "";
+    if (GATE_SIGNATURE_QUERIES.some((sig) => q === sig || q.includes(sig))) return "synthetic";
+  }
+  return "organic";
 }
 
 export interface UltraSearchSummary {
@@ -185,10 +244,60 @@ export interface UltraSearchSummary {
     hint?: string;
   }>;
   optimizationAdvice: string[];
+  /** Which provenance slice this summary describes. */
+  view?: AuditView;
+  /** Row provenance counts across the whole loaded set (before the view filter). */
+  originCounts?: AuditOriginCounts;
+  /** Rows excluded by the view filter. */
+  filteredOutRows?: number;
 }
 
-export function summarizeAudit(limit = 1000): UltraSearchSummary {
-  const rows = loadAudit(limit);
+/**
+ * Loads production and test audit rows together, tagging test-file rows as
+ * synthetic regardless of their stored value. Used by the real-vs-synthetic view.
+ */
+export function loadAllAudit(
+  limit = 1000,
+  opts: { includeTest?: boolean; includeProduction?: boolean } = {}
+): UltraSearchAuditRow[] {
+  const syntheticEnv = isSyntheticEnvironment();
+  const includeProduction = opts.includeProduction ?? !syntheticEnv;
+  const includeTest = opts.includeTest ?? true;
+  const productionFile = join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "audit.jsonl");
+
+  const rows: UltraSearchAuditRow[] = [];
+  if (includeProduction) rows.push(...readAuditFile(productionFile, limit));
+  if (includeTest) {
+    rows.push(...readAuditFile(TEST_AUDIT_FILE, limit).map((r) => ({ ...r, origin: "synthetic" as AuditOrigin })));
+  }
+  return rows.sort((a, b) => a.ts - b.ts).slice(-limit);
+}
+
+export interface SummarizeAuditOptions {
+  /** "real" (default) shows organic rows only; "all" and "synthetic" widen it. */
+  view?: AuditView;
+  /** Inject rows directly (tests/benches) instead of reading the audit files. */
+  rows?: UltraSearchAuditRow[];
+  /** Treat known pre-0.3.1 gate signature queries as synthetic. */
+  legacySyntheticQueries?: boolean;
+}
+
+export function summarizeAudit(limit = 1000, opts: SummarizeAuditOptions = {}): UltraSearchSummary {
+  const view: AuditView = opts.view ?? "real";
+  const allRows = opts.rows ?? loadAllAudit(limit);
+  const originCounts: AuditOriginCounts = { organic: 0, synthetic: 0, unmarked: 0 };
+
+  const classified = allRows.map((row) => {
+    if (row.origin === undefined) originCounts.unmarked++;
+    const origin = classifyAuditOrigin(row, { legacySyntheticQueries: opts.legacySyntheticQueries });
+    originCounts[origin]++;
+    return { row, origin };
+  });
+
+  const matchesView = (origin: AuditOrigin): boolean =>
+    view === "all" || (view === "real" ? origin === "organic" : origin === "synthetic");
+  const rows = classified.filter((c) => matchesView(c.origin)).map((c) => c.row);
+  const filteredOutRows = allRows.length - rows.length;
   const totalCalls = rows.length;
   const since = rows.length > 0 ? rows[0].ts : null;
 
@@ -300,14 +409,40 @@ export function summarizeAudit(limit = 1000): UltraSearchSummary {
     cliBypasses: cliBypasses.slice(-10),
     zeroHitQueries: zeroHitQueries.slice(-10),
     optimizationAdvice: advice,
+    view,
+    originCounts,
+    filteredOutRows,
+  };
+}
+
+/** Convenience: real, synthetic and combined summaries in one pass. */
+export function summarizeAuditViews(
+  rows: UltraSearchAuditRow[],
+  opts: { legacySyntheticQueries?: boolean } = {}
+): { real: UltraSearchSummary; synthetic: UltraSearchSummary; all: UltraSearchSummary } {
+  const views = { legacySyntheticQueries: opts.legacySyntheticQueries };
+  return {
+    real: summarizeAudit(rows.length || 1, { ...views, rows, view: "real" }),
+    synthetic: summarizeAudit(rows.length || 1, { ...views, rows, view: "synthetic" }),
+    all: summarizeAudit(rows.length || 1, { ...views, rows, view: "all" }),
   };
 }
 
 export function formatAuditSummary(summary: UltraSearchSummary): string {
   const parts: string[] = [];
+  const view = summary.view ?? "all";
+  const viewLabel = view === "real" ? "real sessions only" : view === "synthetic" ? "synthetic/gate runs only" : "all rows";
   parts.push("=== Pi-UltraSearch Observability & Toolchain Audit ===");
+  parts.push(`View: ${viewLabel}${summary.filteredOutRows ? ` (${summary.filteredOutRows} rows excluded)` : ""}`);
+  if (summary.originCounts) {
+    parts.push(
+      `Provenance: ${summary.originCounts.organic} organic · ${summary.originCounts.synthetic} synthetic · ${summary.originCounts.unmarked} unmarked`
+    );
+  }
   parts.push(`Total Monitored Calls: ${summary.totalCalls}`);
-  parts.push(`Estimated Tokens Saved: ${summary.totalTokensSaved.toLocaleString()}`);
+  parts.push(
+    `Tokens Saved (ESTIMATE ONLY — formula 150+75×hits, not measured; see bench/results/TOKENS.md): ${summary.totalTokensSaved.toLocaleString()}`
+  );
   if (summary.lastUsed && summary.lastUsed.ts) {
     parts.push(`Last Used: ${new Date(summary.lastUsed.ts).toISOString()} (${summary.lastUsed.tool})`);
   }

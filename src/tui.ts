@@ -159,7 +159,7 @@ export class UltraSearchTui {
   private async buildView(): Promise<string> {
     const { status, connected } = await this.getDaemonInfo();
     const rows = loadAudit();
-    const summary = summarizeAudit();
+    const summary = summarizeAudit(1000, { view: "real" });
     const learningState = loadLearningMemory();
     const logs = [...rows].reverse(); // Newest first
 
@@ -207,7 +207,7 @@ export class UltraSearchTui {
     // Metrics KPI Cards
     lines.push("\x1B[1;33m--- LIVE OBSERVABILITY & EFFICIENCY METRICS ---\x1B[0m");
     lines.push(
-      ` [💰 Tokens Saved]: \x1B[1;32m~${totalTokensSaved.toLocaleString()} tokens\x1B[0m   ` +
+      ` [💰 Tokens Saved (est)]: \x1B[1;32m~${totalTokensSaved.toLocaleString()} tokens\x1B[0m   ` +
         ` [⚡ Invocations]: \x1B[1;36m${summary.totalCalls}\x1B[0m   ` +
         ` [⏱️ P95 Latency]: \x1B[1;35m${(summary.toolStats[0]?.p95Ms ?? 0.28).toFixed(2)} ms\x1B[0m`
     );
@@ -288,7 +288,7 @@ export class UltraSearchTui {
         lines.push(`║ \x1B[1mScope/Root\x1B[0m:    ${sel.scope || "Workspace / Global"}`);
         lines.push(`║ \x1B[1mZero-Typo\x1B[0m:     ${sel.diagnosticHint || "Exact match verified; zero typo forgiveness enforced"}`);
         lines.push(`║ \x1B[1mDLP Status\x1B[0m:    ✅ Fully scrubbed; credentials & .env prevented from prompt leakage`);
-        lines.push(`║ \x1B[1mTokens Saved\x1B[0m:  +${savedCount} tokens saved vs raw subprocess dump`);
+        lines.push(`║ \x1B[1mTokens Saved (ESTIMATE)\x1B[0m:  +${savedCount} tokens (formula 150+75×hits, not measured)`);
         lines.push("\x1B[1;33m╚═════════════════════════════════════════════════════════════════════════════════╝\x1B[0m");
         lines.push("\x1B[90m(Press [Enter] or [Space] to collapse expanded inspector)\x1B[0m");
       }

@@ -1,0 +1,1668 @@
+{
+  "schema": "ultrasearch.bench.scopes/v1",
+  "status": "degraded",
+  "date": "2026-10-14",
+  "startedAt": "2026-10-14T21:06:00.208Z",
+  "method": {
+    "design": "paired counterbalanced A/B (AB/BA alternating), warmup pairs excluded",
+    "statistic": "median",
+    "ci": "BCa bootstrap, 10000 resamples, alpha=0.05, on paired deltas",
+    "decisionFloor": "max(0.2 ms, 5% of native median)",
+    "pairs": 30,
+    "warmupPairs": 2,
+    "equivalence": "path sets normalized by realpath; index must not invent paths (extraRate<=indexOnly tolerance); missing paths allowed only within the per-query nativeOnly tolerance (content-index coverage is partial)",
+    "relevance": "wave1 judgment corpus (recall@k, MRR@10, nDCG@10, zero-result, false-positive, reformulation)",
+    "audit": "PI_ULTRASEARCH_TEST=1 + skipAudit: production audit log untouched"
+  },
+  "environment": {
+    "checkedAt": "2026-10-14T21:05:59.841Z",
+    "platform": "darwin",
+    "arch": "arm64",
+    "hostname": "Mayanks-MacBook-Pro.local",
+    "cpuCount": 10,
+    "cpuModel": "Apple M1 Pro",
+    "onAC": true,
+    "powerSource": "AC Power",
+    "load1m": 11.91,
+    "load5m": 11.19,
+    "load15m": 9.941,
+    "competingProcesses": [],
+    "daemonPids": [
+      19684,
+      77206
+    ],
+    "daemonPid": 19684,
+    "socketOwnerPid": 77206,
+    "daemonWarnings": [
+      "multiple daemons running: 19684, 77206 (socket owner: 77206)",
+      "pgrep-first pid 19684 is not the socket owner 77206"
+    ],
+    "daemon": {
+      "pid": 77206,
+      "entries": 2861660,
+      "index_bytes": 77763200,
+      "content_docs": 69762,
+      "content_pending": 0
+    }
+  },
+  "environmentGate": {
+    "ok": false,
+    "reasons": [
+      "load1m 11.91 >= 1.5"
+    ]
+  },
+  "scopes": {
+    "home": {
+      "scope": "home",
+      "fixture": {
+        "root": "/Users/batra/ultrasearch-waves/measure/bench/.fixtures/home",
+        "fileCount": 4504,
+        "cached": true,
+        "generatorVersion": 2
+      },
+      "readiness": {
+        "home-path-exact": {
+          "indexReadyMs": 5,
+          "ready": true
+        },
+        "home-path-glob": {
+          "indexReadyMs": 2,
+          "ready": true
+        },
+        "home-grep": {
+          "indexReadyMs": 143,
+          "ready": true
+        }
+      },
+      "queries": [
+        {
+          "id": "home-path-exact",
+          "kind": "path",
+          "tolerance": {
+            "nativeOnly": 0
+          },
+          "n": 30,
+          "order": [
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA"
+          ],
+          "indexReadyMs": 5,
+          "ultra": {
+            "n": 30,
+            "median": 0.663499999999658,
+            "mean": 0.6823194000000512,
+            "p50": 0.663499999999658,
+            "p95": 1.2434580000008282,
+            "p95IsMax": false,
+            "min": 0.36733300000014424,
+            "max": 1.4873749999997017,
+            "stdev": 0.2852643210220937,
+            "sources": {
+              "index": 30
+            },
+            "fallbackRuns": 0,
+            "complete": false
+          },
+          "native": {
+            "n": 30,
+            "median": 13.956916999999521,
+            "mean": 14.765245933333244,
+            "p50": 13.956916999999521,
+            "p95": 22.529875000000175,
+            "p95IsMax": false,
+            "min": 12.16595899999993,
+            "max": 26.829625000000306,
+            "stdev": 3.006374584425317,
+            "bin": "find",
+            "args": [
+              "/Users/batra/ultrasearch-waves/measure/bench/.fixtures/home",
+              "(",
+              "-name",
+              ".*",
+              "-o",
+              "-name",
+              "node_modules",
+              "-o",
+              "-name",
+              "target",
+              "-o",
+              "-name",
+              "dist",
+              "-o",
+              "-name",
+              "build",
+              ")",
+              "-prune",
+              "-o",
+              "-iname",
+              "*notes-0421.md*",
+              "-print"
+            ],
+            "stdoutBytes": 102
+          },
+          "pairedDeltaMs": {
+            "n": 30,
+            "point": -13.293416999999863,
+            "lo": -13.74816699999974,
+            "hi": -12.906208000000333,
+            "method": "bca",
+            "resamples": 10000,
+            "alpha": 0.05,
+            "biasCorrection": -0.10471746894071438,
+            "acceleration": 0,
+            "quantity": "delta(a - b)"
+          },
+          "pairedRatio": {
+            "n": 30,
+            "point": 21.035293142436647,
+            "lo": 19.677689338721926,
+            "hi": 27.546582956017136,
+            "method": "bca",
+            "resamples": 10000,
+            "alpha": 0.05,
+            "biasCorrection": -0.21316277767161423,
+            "acceleration": -0.00001763519266310814,
+            "quantity": "ratio(medianB / medianA)"
+          },
+          "decisionFloorMs": 0.6978458499999761,
+          "significant": true,
+          "equivalence": {
+            "pass": true,
+            "indexCount": 1,
+            "nativeCount": 1,
+            "indexOnly": [],
+            "nativeOnly": [],
+            "indexOnlyCount": 0,
+            "nativeOnlyCount": 0,
+            "missRate": 0,
+            "extraRate": 0,
+            "jaccard": 1,
+            "tolerance": {
+              "nativeOnly": 0
+            }
+          },
+          "note": null
+        },
+        {
+          "id": "home-path-glob",
+          "kind": "path",
+          "tolerance": {
+            "nativeOnly": 0.05
+          },
+          "n": 30,
+          "order": [
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA"
+          ],
+          "indexReadyMs": 2,
+          "ultra": {
+            "n": 30,
+            "median": 1.2322919999996884,
+            "mean": 1.347984666666586,
+            "p50": 1.2322919999996884,
+            "p95": 2.5251250000001164,
+            "p95IsMax": false,
+            "min": 0.8162909999991825,
+            "max": 2.615250000000742,
+            "stdev": 0.41674051644732013,
+            "sources": {
+              "index": 30
+            },
+            "fallbackRuns": 0,
+            "complete": false
+          },
+          "native": {
+            "n": 30,
+            "median": 18.050500000000284,
+            "mean": 18.217466733333335,
+            "p50": 18.050500000000284,
+            "p95": 22.268416000000798,
+            "p95IsMax": false,
+            "min": 15.167209000000184,
+            "max": 22.497582999999395,
+            "stdev": 1.9557104151513856,
+            "bin": "find",
+            "args": [
+              "/Users/batra/ultrasearch-waves/measure/bench/.fixtures/home",
+              "(",
+              "-name",
+              ".*",
+              "-o",
+              "-name",
+              "node_modules",
+              "-o",
+              "-name",
+              "target",
+              "-o",
+              "-name",
+              "dist",
+              "-o",
+              "-name",
+              "build",
+              ")",
+              "-prune",
+              "-o",
+              "-iname",
+              "**proj-00**",
+              "-print"
+            ],
+            "stdoutBytes": 880
+          },
+          "pairedDeltaMs": {
+            "n": 30,
+            "point": -16.818208000000595,
+            "lo": -17.808250000000044,
+            "hi": -15.562251000000288,
+            "method": "bca",
+            "resamples": 10000,
+            "alpha": 0.05,
+            "biasCorrection": -0.053667596333067766,
+            "acceleration": 0,
+            "quantity": "delta(a - b)"
+          },
+          "pairedRatio": {
+            "n": 30,
+            "point": 14.647908125675446,
+            "lo": 13.17274155366804,
+            "hi": 15.851249049282591,
+            "method": "bca",
+            "resamples": 10000,
+            "alpha": 0.05,
+            "biasCorrection": -0.11177728324782571,
+            "acceleration": -0.0003770879483069491,
+            "quantity": "ratio(medianB / medianA)"
+          },
+          "decisionFloorMs": 0.9025250000000142,
+          "significant": true,
+          "equivalence": {
+            "pass": true,
+            "indexCount": 10,
+            "nativeCount": 10,
+            "indexOnly": [],
+            "nativeOnly": [],
+            "indexOnlyCount": 0,
+            "nativeOnlyCount": 0,
+            "missRate": 0,
+            "extraRate": 0,
+            "jaccard": 1,
+            "tolerance": {
+              "nativeOnly": 0.05
+            }
+          },
+          "note": null
+        },
+        {
+          "id": "home-grep",
+          "kind": "grep",
+          "tolerance": {
+            "nativeOnly": 0.25
+          },
+          "n": 30,
+          "order": [
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA",
+            "AB",
+            "BA"
+          ],
+          "indexReadyMs": 143,
+          "ultra": {
+            "n": 30,
+            "median": 52.10854199999994,
+            "mean": 55.49095150000003,
+            "p50": 52.10854199999994,
+            "p95": 86.13591699999961,
+            "p95IsMax": false,
+            "min": 48.19379200000003,
+            "max": 87.02470899999935,
+            "stdev": 10.340136756825578,
+            "sources": {
+              "scan": 30
+            },
+            "fallbackRuns": 0,
+            "complete": true
+          },
+          "native": {
+            "n": 30,
+            "median": 51.62012500000128,
+            "mean": 53.58053473333336,
+            "p50": 51.62012500000128,
+            "p95": 76.94141599999966,
+            "p95IsMax": false,
+            "min": 47.439667000000554,
+            "max": 77.69729200000074,
+            "stdev": 7.002928040975317,
+            "bin": "rg",
+            "args": [
+              "-n",
+              "--no-heading",
+              "--color",
+              "never",
+              "--glob",
+              "!.git",
+              "--glob",
+              "!node_modules",
+              "HOME_TOKEN_0421",
+              "/Users/batra/ultrasearch-waves/measure/bench/.fixtures/home"
+            ],
+            "stdoutBytes": 280
+          },
+          "pairedDeltaMs": {
+            "n": 30,
+            "point": 0.4884169999986625,
+            "lo": -1.186624999999367,
+            "hi": 2.291874999999891,
+            "method": "bca",
+            "resamples": 10000,
+            "alpha": 0.05,
+            "biasCorrection": 0.2572315883973315,
+            "acceleration": -3.817187519538972e-19,
+            "quantity": "delta(a - b)"
+          },
+          "pairedRatio": {
+            "n": 30,
+            "point": 0.9906269302257841,
+            "lo": 0.9532115926989845,
+            "hi": 1.0195045221011865,
+            "method": "bca",
+            "resamples": 10000,
+            "alpha": 0.05,
+            "biasCorrection": -0.3091597626845456,
+            "acceleration": -0.0000027180423191852312,
+            "quantity": "ratio(medianB / medianA)"
+          },
+          "decisionFloorMs": 2.581006250000064,
+          "significant": false,
+          "equivalence": {
+            "pass": true,
+            "indexCount": 2,
+            "nativeCount": 2,
+            "indexOnly": [],
+            "nativeOnly": [],
+            "indexOnlyCount": 0,
+            "nativeOnlyCount": 0,
+            "missRate": 0,
+            "extraRate": 0,
+            "jaccard": 1,
+            "tolerance": {
+              "nativeOnly": 0.25
+            }
+          },
+          "note": null
+        }
+      ],
+      "ignoreFiltering": {
+        "file": "root-junk.tmp",
+        "ultraReturned": 0,
+        "nativeReturned": 1,
+        "correctlyExcluded": true,
+        "nested": {
+          "file": "Documents/projects/proj-001/tmp-junk.tmp",
+          "ultraReturned": 1,
+          "honoured": false,
+          "note": "known gap: rules declared in a subdirectory .gitignore are not loaded (scope-root rules only)"
+        }
+      }
+    }
+  },
+  "relevance": {
+    "aggregate": {
+      "queries": 30,
+      "mustHitQueries": 26,
+      "negativeQueries": 4,
+      "recallAt1": 0.40865384615384615,
+      "recallAt3": 0.6121794871794871,
+      "recallAt5": 0.6875,
+      "recallAt10": 0.7211538461538461,
+      "mrr10": 0.6049145299145299,
+      "ndcg10": 0.6065218480206794,
+      "zeroResultRate": 0.038461538461538464,
+      "falsePositiveRate": 0.5,
+      "recallAt": {
+        "1": 0.40865384615384615,
+        "3": 0.6121794871794871,
+        "5": 0.6875,
+        "10": 0.7211538461538461
+      },
+      "reformulationSignal": 0.5,
+      "perLane": {
+        "path": {
+          "queries": 7,
+          "recallAt10": 0.9166666666666666,
+          "mrr10": 0.9166666666666666,
+          "ndcg10": 0.8695600469443064,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 0,
+          "reformulationSignal": 0.16666666666666666
+        },
+        "grep-literal": {
+          "queries": 6,
+          "recallAt10": 1,
+          "mrr10": 0.3833333333333333,
+          "ndcg10": 0.5396535536215119,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 1,
+          "reformulationSignal": 1
+        },
+        "grep-regex": {
+          "queries": 3,
+          "recallAt10": 0.625,
+          "mrr10": 0.5555555555555556,
+          "ndcg10": 0.5934665950620902,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 0,
+          "reformulationSignal": 0.5
+        },
+        "symbol": {
+          "queries": 4,
+          "recallAt10": 0.625,
+          "mrr10": 0.75,
+          "ndcg10": 0.636622777806004,
+          "zeroResultRate": 0.25,
+          "falsePositiveRate": 0,
+          "reformulationSignal": 0.25
+        },
+        "semantic": {
+          "queries": 6,
+          "recallAt10": 0.1,
+          "mrr10": 0.04,
+          "ndcg10": 0.08740525443740071,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 1,
+          "reformulationSignal": 1
+        },
+        "ranking-frecency": {
+          "queries": 1,
+          "recallAt10": 1,
+          "mrr10": 1,
+          "ndcg10": 0.9173194127129571,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 0,
+          "reformulationSignal": 0
+        },
+        "ranking-proximity": {
+          "queries": 1,
+          "recallAt10": 1,
+          "mrr10": 1,
+          "ndcg10": 0.8609101556836468,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 0,
+          "reformulationSignal": 0
+        },
+        "ranking-boost-ab": {
+          "queries": 1,
+          "recallAt10": 1,
+          "mrr10": 1,
+          "ndcg10": 0.9052598568324595,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 0,
+          "reformulationSignal": 0
+        },
+        "ranking-symbol-intrafile": {
+          "queries": 1,
+          "recallAt10": 1,
+          "mrr10": 1,
+          "ndcg10": 1,
+          "zeroResultRate": 0,
+          "falsePositiveRate": 0,
+          "reformulationSignal": 0
+        }
+      }
+    },
+    "baselineComparison": {
+      "source": "verifier baseline (provisional, directional)",
+      "recallAt10": {
+        "baseline": 0.674,
+        "value": 0.7211538461538461,
+        "delta": 0.0471538461538461,
+        "beats": true
+      },
+      "ndcg10": {
+        "baseline": 0.705,
+        "value": 0.6065218480206794,
+        "delta": -0.09847815197932053,
+        "beats": false
+      },
+      "falsePositiveRate": {
+        "baseline": 0.5,
+        "value": 0.5,
+        "delta": 0,
+        "beats": true
+      }
+    },
+    "checks": [
+      {
+        "name": "recall@10 == 1.00 on must-hit queries",
+        "value": 0.7211538461538461,
+        "threshold": 1,
+        "pass": false
+      },
+      {
+        "name": "zero_result_rate == 0.00 on must-hit queries",
+        "value": 0.038461538461538464,
+        "threshold": 0,
+        "pass": false
+      },
+      {
+        "name": "false_positive_rate == 0.00 on negative queries",
+        "value": 0.5,
+        "threshold": 0,
+        "pass": false
+      },
+      {
+        "name": "nDCG@10 >= 0.75 overall",
+        "value": 0.6065218480206794,
+        "threshold": 0.75,
+        "pass": false
+      },
+      {
+        "name": "nDCG@10 >= 0.60 semantic lane",
+        "value": 0.08740525443740071,
+        "threshold": 0.6,
+        "pass": false
+      },
+      {
+        "name": "reformulation_signal <= 0.20 overall",
+        "value": 0.5,
+        "threshold": 0.2,
+        "pass": false
+      }
+    ],
+    "pass": false,
+    "source": "/Users/batra/ultrasearch-waves/advisor/bench/judgments/wave1-judgments.json",
+    "schema": "ultrasearch.judgments/v1",
+    "corpus": {
+      "id": "ultrasearch-repo@0a16e50",
+      "root": "/Users/batra/ultrasearch-waves/advisor",
+      "files": 33,
+      "lines": 4949,
+      "note": "Frozen at commit 0a16e50. Markdown docs (AUDIT/OPTIMIZATIONS/ROADMAP/README/CHANGELOG) are present on purpose: they are the realistic distractor class for a code-search agent, because they quote the same identifiers as the source."
+    },
+    "corpusRoot": "/Users/batra/ultrasearch-waves/advisor",
+    "frecencyOpened": true,
+    "frecencyWaitSec": 0,
+    "rows": [
+      {
+        "id": "P1",
+        "lane": "path",
+        "difficulty": "head",
+        "query": "package.json",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "package.json",
+        "top5Paths": [
+          "package.json"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 1,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "P2",
+        "lane": "path",
+        "difficulty": "head",
+        "query": "ci.yml",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": ".github/workflows/ci.yml",
+        "top5Paths": [
+          ".github/workflows/ci.yml"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 1,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "P3",
+        "lane": "path",
+        "difficulty": "head",
+        "query": "client.ts",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "src/client.ts",
+        "top5Paths": [
+          "src/client.ts"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 0.5,
+          "3": 0.5,
+          "5": 0.5,
+          "10": 0.5
+        },
+        "mrr10": 1,
+        "ndcg10": 0.7871546029909718,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "P5",
+        "lane": "path",
+        "difficulty": "torso",
+        "query": "bench",
+        "resultCount": 4,
+        "top1Grade": 0,
+        "top1Path": "bench",
+        "top5Paths": [
+          "bench",
+          "test/bench.ts",
+          "test/benchmark-gate.test.ts",
+          "test/deep-bench.ts"
+        ],
+        "gains": [
+          0,
+          3,
+          3,
+          2
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0.6666666666666666,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0.5,
+        "ndcg10": 0.7129278093711621,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "P6",
+        "lane": "path",
+        "difficulty": "torso",
+        "query": "codemode",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "src/codemode.ts",
+        "top5Paths": [
+          "src/codemode.ts"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 0.8609101556836468,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "P7",
+        "lane": "path",
+        "difficulty": "tail",
+        "query": "src/**/*.ts",
+        "resultCount": 12,
+        "top1Grade": 3,
+        "top1Path": "src/client.ts",
+        "top5Paths": [
+          "src/client.ts",
+          "src/codemode.ts",
+          "src/compactor.ts",
+          "src/formatter.ts",
+          "src/mcp.ts"
+        ],
+        "gains": [
+          3,
+          0,
+          2,
+          3,
+          0,
+          2,
+          2,
+          2,
+          2,
+          3
+        ],
+        "recallAt": {
+          "1": 0.125,
+          "3": 0.25,
+          "5": 0.375,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 0.8563677136200579,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "P8",
+        "lane": "path",
+        "difficulty": "negative",
+        "query": "kubectl_helm_chart_values",
+        "resultCount": 0,
+        "top1Grade": null,
+        "top1Path": null,
+        "top5Paths": [],
+        "gains": [],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0,
+        "ndcg10": 1,
+        "zeroResult": true,
+        "mustHit": false,
+        "negative": true,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "G1",
+        "lane": "grep-literal",
+        "difficulty": "head",
+        "query": "estimateTokensSaved",
+        "resultCount": 3,
+        "top1Grade": 0,
+        "top1Path": "bench/judgments/wave1-judgments.json",
+        "top5Paths": [
+          "bench/judgments/wave1-judgments.json",
+          "AUDIT-2026-10-14.md",
+          "src/telemetry.ts"
+        ],
+        "gains": [
+          0,
+          1,
+          3
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0.3333333333333333,
+        "ndcg10": 0.5413402936435214,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "G2",
+        "lane": "grep-literal",
+        "difficulty": "head",
+        "query": "enforceExactQuery",
+        "resultCount": 2,
+        "top1Grade": 0,
+        "top1Path": "bench/judgments/wave1-judgments.json",
+        "top5Paths": [
+          "bench/judgments/wave1-judgments.json",
+          "src/client.ts"
+        ],
+        "gains": [
+          0,
+          3
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0.5,
+        "ndcg10": 0.6309297535714575,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "G3",
+        "lane": "grep-literal",
+        "difficulty": "head",
+        "query": "SYMBOL_REGEX",
+        "resultCount": 3,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "src/formatter.ts"
+        ],
+        "gains": [
+          0,
+          0,
+          3
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0.3333333333333333,
+        "ndcg10": 0.5,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "G4",
+        "lane": "grep-literal",
+        "difficulty": "torso",
+        "query": "fsearch.sock",
+        "resultCount": 4,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "CHANGELOG.md",
+          "src/client.ts"
+        ],
+        "gains": [
+          0,
+          0,
+          0,
+          3
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0.25,
+        "ndcg10": 0.3950679673211227,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "G5",
+        "lane": "grep-literal",
+        "difficulty": "torso",
+        "query": "150 + hitCount",
+        "resultCount": 2,
+        "top1Grade": 0,
+        "top1Path": "bench/judgments/wave1-judgments.json",
+        "top5Paths": [
+          "bench/judgments/wave1-judgments.json",
+          "src/telemetry.ts"
+        ],
+        "gains": [
+          0,
+          3
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0.5,
+        "ndcg10": 0.6309297535714575,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "G6",
+        "lane": "grep-literal",
+        "difficulty": "negative",
+        "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+        "resultCount": 1,
+        "top1Grade": 0,
+        "top1Path": "bench/judgments/wave1-judgments.json",
+        "top5Paths": [
+          "bench/judgments/wave1-judgments.json"
+        ],
+        "gains": [
+          0
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0,
+        "ndcg10": 1,
+        "zeroResult": false,
+        "mustHit": false,
+        "negative": true,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "R1",
+        "lane": "grep-regex",
+        "difficulty": "head",
+        "query": "class\\s+\\w+Client",
+        "resultCount": 2,
+        "top1Grade": 3,
+        "top1Path": "src/client.ts",
+        "top5Paths": [
+          "src/client.ts",
+          "test/benchmark-gate.test.ts"
+        ],
+        "gains": [
+          3,
+          0
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 1,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "R2",
+        "lane": "grep-regex",
+        "difficulty": "torso",
+        "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+        "resultCount": 10,
+        "top1Grade": 0,
+        "top1Path": "bench/judgments/wave1-judgments.json",
+        "top5Paths": [
+          "bench/judgments/wave1-judgments.json",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "OPTIMIZATIONS.md",
+          "README.md"
+        ],
+        "gains": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0.25
+        },
+        "mrr10": 0.1111111111111111,
+        "ndcg10": 0.18693319012418044,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "R3",
+        "lane": "grep-regex",
+        "difficulty": "adversarial",
+        "query": "(a+)+$",
+        "resultCount": 0,
+        "top1Grade": null,
+        "top1Path": null,
+        "top5Paths": [],
+        "gains": [],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0,
+        "ndcg10": 1,
+        "zeroResult": true,
+        "mustHit": false,
+        "negative": true,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "difficulty": "head",
+        "query": "FSearchClient",
+        "resultCount": 2,
+        "top1Grade": 3,
+        "top1Path": "src/client.ts",
+        "top5Paths": [
+          "src/client.ts",
+          "test/benchmark-gate.test.ts"
+        ],
+        "gains": [
+          3,
+          0
+        ],
+        "recallAt": {
+          "1": 0.5,
+          "3": 0.5,
+          "5": 0.5,
+          "10": 0.5
+        },
+        "mrr10": 1,
+        "ndcg10": 0.6855809555403688,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "S2",
+        "lane": "symbol",
+        "difficulty": "head",
+        "query": "detectSymbolTag",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "src/formatter.ts",
+        "top5Paths": [
+          "src/formatter.ts"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 1,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "S3",
+        "lane": "symbol",
+        "difficulty": "torso",
+        "query": "applyProximityRanking",
+        "resultCount": 0,
+        "top1Grade": null,
+        "top1Path": null,
+        "top5Paths": [],
+        "gains": [],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0
+        },
+        "mrr10": 0,
+        "ndcg10": 0,
+        "zeroResult": true,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "S4",
+        "lane": "symbol",
+        "difficulty": "torso",
+        "query": "resolveWorktreeRoot",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "index.ts",
+        "top5Paths": [
+          "index.ts"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 0.8609101556836468,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": "scan",
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "M1",
+        "lane": "semantic",
+        "difficulty": "head",
+        "query": "where are credentials scrubbed before results reach the model",
+        "resultCount": 10,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "LICENSE"
+        ],
+        "gains": [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0
+        },
+        "mrr10": 0,
+        "ndcg10": 0.0508985330863299,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "M2",
+        "lane": "semantic",
+        "difficulty": "head",
+        "query": "how is the token savings number computed",
+        "resultCount": 10,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "LICENSE"
+        ],
+        "gains": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0
+        },
+        "mrr10": 0,
+        "ndcg10": 0.037923472700262695,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "M3",
+        "lane": "semantic",
+        "difficulty": "torso",
+        "query": "what happens when the daemon socket dies mid-session",
+        "resultCount": 10,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "AUDIT-2026-10-14.md",
+          "LICENSE",
+          "README.md"
+        ],
+        "gains": [
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0
+        },
+        "mrr10": 0,
+        "ndcg10": 0.10907151262068121,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "M4",
+        "lane": "semantic",
+        "difficulty": "torso",
+        "query": "what does CI run on every push",
+        "resultCount": 10,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "AUDIT-2026-10-14.md",
+          "LICENSE",
+          "README.md"
+        ],
+        "gains": [
+          0,
+          0,
+          1,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 0.5,
+          "10": 0.5
+        },
+        "mrr10": 0.2,
+        "ndcg10": 0.17679076742932592,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "M5",
+        "lane": "semantic",
+        "difficulty": "tail",
+        "query": "keep search results inside the repository boundary",
+        "resultCount": 10,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "LICENSE"
+        ],
+        "gains": [
+          0,
+          0,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "recallAt": {
+          "1": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0
+        },
+        "mrr10": 0,
+        "ndcg10": 0.06234198635040381,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "M6",
+        "lane": "semantic",
+        "difficulty": "negative",
+        "query": "kubernetes helm chart values for a redis cluster",
+        "resultCount": 10,
+        "top1Grade": 0,
+        "top1Path": "ADVISOR-WAVE1.md",
+        "top5Paths": [
+          "ADVISOR-WAVE1.md",
+          "bench/judgments/wave1-judgments.json",
+          "README.md",
+          "src/client.ts",
+          "src/recursive-learning.ts"
+        ],
+        "gains": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 0,
+        "ndcg10": 1,
+        "zeroResult": false,
+        "mustHit": false,
+        "negative": true,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "K1",
+        "lane": "ranking-frecency",
+        "difficulty": "head",
+        "query": "readme",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "README.md",
+        "top5Paths": [
+          "README.md"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 0.9173194127129571,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "K2",
+        "lane": "ranking-proximity",
+        "difficulty": "torso",
+        "query": "sanitize",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "src/sanitize.ts",
+        "top5Paths": [
+          "src/sanitize.ts"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 0.8609101556836468,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "K3",
+        "lane": "ranking-boost-ab",
+        "difficulty": "torso",
+        "query": "client",
+        "resultCount": 2,
+        "top1Grade": 3,
+        "top1Path": "src/client.ts",
+        "top5Paths": [
+          "src/client.ts",
+          "test/client.test.ts"
+        ],
+        "gains": [
+          3,
+          2
+        ],
+        "recallAt": {
+          "1": 0.5,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 0.9052598568324595,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": null,
+        "intraFileTopText": null
+      },
+      {
+        "id": "K4",
+        "lane": "ranking-symbol-intrafile",
+        "difficulty": "torso",
+        "query": "FSearchClient",
+        "resultCount": 1,
+        "top1Grade": 3,
+        "top1Path": "src/client.ts",
+        "top5Paths": [
+          "src/client.ts"
+        ],
+        "gains": [
+          3
+        ],
+        "recallAt": {
+          "1": 1,
+          "3": 1,
+          "5": 1,
+          "10": 1
+        },
+        "mrr10": 1,
+        "ndcg10": 1,
+        "zeroResult": false,
+        "mustHit": true,
+        "negative": false,
+        "source": null,
+        "classDeclFirst": true,
+        "intraFileTopText": "export class FSearchClient {"
+      }
+    ],
+    "errors": [
+      {
+        "id": "R3",
+        "errorClass": "client_regex_rejected",
+        "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\"."
+      }
+    ]
+  },
+  "finishedAt": "2026-10-14T21:06:09.304Z"
+}

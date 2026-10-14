@@ -51,15 +51,24 @@ async function runBenchmark() {
   client.close();
 
   const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
-  const p50 = (arr: number[]) => [...arr].sort((a, b) => a - b)[Math.floor(arr.length * 0.5)];
-  const p95 = (arr: number[]) => [...arr].sort((a, b) => a - b)[Math.floor(arr.length * 0.95)];
+  // Nearest-rank percentiles (advisor finding #1: the old floor(n*0.95) form
+  // reported the maximum as p95 at small n). A p95 equal to the max is labelled.
+  const rank = (arr: number[], p: number) => {
+    const sorted = [...arr].sort((a, b) => a - b);
+    return sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1))];
+  };
+  const p50 = (arr: number[]) => rank(arr, 50);
+  const p95Label = (arr: number[]) => {
+    const v = rank(arr, 95);
+    return v === Math.max(...arr) ? `${v.toFixed(2)}ms (n=${arr.length}: p95==max)` : `${v.toFixed(2)}ms`;
+  };
 
-  console.log(`Native find (subprocess):        mean: ${avg(nativeFindTimes).toFixed(2)}ms | p50: ${p50(nativeFindTimes).toFixed(2)}ms | p95: ${p95(nativeFindTimes).toFixed(2)}ms`);
-  console.log(`pi-ultrasearch search (socket):  mean: ${avg(ultrasearchFindTimes).toFixed(2)}ms | p50: ${p50(ultrasearchFindTimes).toFixed(2)}ms | p95: ${p95(ultrasearchFindTimes).toFixed(2)}ms`);
+  console.log(`Native find (subprocess):        mean: ${avg(nativeFindTimes).toFixed(2)}ms | p50: ${p50(nativeFindTimes).toFixed(2)}ms | p95: ${p95Label(nativeFindTimes)}`);
+  console.log(`pi-ultrasearch search (socket):  mean: ${avg(ultrasearchFindTimes).toFixed(2)}ms | p50: ${p50(ultrasearchFindTimes).toFixed(2)}ms | p95: ${p95Label(ultrasearchFindTimes)}`);
   console.log(`Speedup (Find):                 ${(avg(nativeFindTimes) / avg(ultrasearchFindTimes)).toFixed(1)}x faster\n`);
 
-  console.log(`Native ripgrep (subprocess):     mean: ${avg(nativeRgTimes).toFixed(2)}ms | p50: ${p50(nativeRgTimes).toFixed(2)}ms | p95: ${p95(nativeRgTimes).toFixed(2)}ms`);
-  console.log(`pi-ultrasearch grep (trigram):   mean: ${avg(ultrasearchGrepTimes).toFixed(2)}ms | p50: ${p50(ultrasearchGrepTimes).toFixed(2)}ms | p95: ${p95(ultrasearchGrepTimes).toFixed(2)}ms`);
+  console.log(`Native ripgrep (subprocess):     mean: ${avg(nativeRgTimes).toFixed(2)}ms | p50: ${p50(nativeRgTimes).toFixed(2)}ms | p95: ${p95Label(nativeRgTimes)}`);
+  console.log(`pi-ultrasearch grep (trigram):   mean: ${avg(ultrasearchGrepTimes).toFixed(2)}ms | p50: ${p50(ultrasearchGrepTimes).toFixed(2)}ms | p95: ${p95Label(ultrasearchGrepTimes)}`);
   console.log(`Speedup (Grep):                 ${(avg(nativeRgTimes) / avg(ultrasearchGrepTimes)).toFixed(1)}x faster\n`);
 }
 

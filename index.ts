@@ -18,7 +18,7 @@ const CACHE_TTL_MS = 60_000;
  * Resolves the top-level repository worktree root in <0.1ms using upward filesystem inspection,
  * caching results to avoid expensive child process spawns on every query.
  */
-function resolveWorktreeRoot(startDir = process.cwd()): string {
+export function resolveWorktreeRoot(startDir = process.cwd()): string {
   const cached = worktreeCache.get(startDir);
   const now = performance.now();
   if (cached && now - cached.timestamp < CACHE_TTL_MS) {
@@ -81,8 +81,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       limit: Type.Optional(Type.Number({ description: "Maximum results to return (default: 30)." })),
       global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository worktree." })),
       near: Type.Optional(Type.String({ description: "Optional active file path to re-rank results by folder proximity." })),
+      budget_ms: Type.Optional(Type.Number({ description: "Optional server-side deadline in milliseconds. On expiry the result is partial and carries complete:false." })),
     }),
-    execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string }) => {
+    execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string; budget_ms?: number }) => {
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.global ? undefined : worktreeRoot;
@@ -100,7 +101,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           in: searchScope,
           limit: params.limit ?? 30,
           git: true,
-          boost: true,
+          budget_ms: params.budget_ms,
           near: proximityTarget ? path.resolve(worktreeRoot, proximityTarget) : undefined,
         });
 
@@ -122,9 +123,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
             content: [
               {
                 type: "text",
-                text: `No files matching "${params.query}" found (zero typo tolerance enforced).${hintText}`,
+                text: `No files matching "${params.query}" found (zero typo tolerance enforced).${hintText}${res.meta?.deadlineExceeded ? `\n[budget deadline ${res.meta.budgetMs}ms exceeded: no results before the deadline; narrow the scope or raise budget_ms]` : ""}`,
               },
             ],
+            details: { tool: "ultrasearch_query", hitCount: 0, complete: res.meta?.complete ?? false, deadlineExceeded: res.meta?.deadlineExceeded ?? false, budgetMs: res.meta?.budgetMs },
           };
         }
 
@@ -138,13 +140,31 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           .join("\n");
 
         const sourceNotice = res.source === "native_fallback" ? " (via native fallback)" : "";
+        const budgetNotice = res.meta?.deadlineExceeded
+          ? `\n[budget deadline ${res.meta.budgetMs}ms exceeded: partial results; narrow the scope or raise budget_ms]`
+          : res.truncated
+            ? `\n[truncated: ${res.meta?.truncatedCount ?? 0} more matches dropped by limit]`
+            : "";
         return {
           content: [
             {
               type: "text",
-              text: `Found ${hits.length} matches in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice}:\n${formatted}`,
+              text: `Found ${hits.length} matches in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice}:\n${formatted}${budgetNotice}`,
             },
           ],
+          details: {
+            tool: "ultrasearch_query",
+            hitCount: hits.length,
+            complete: res.meta?.complete ?? false,
+            truncated: res.meta?.truncated ?? false,
+            truncatedCount: res.meta?.truncatedCount ?? 0,
+            filteredCount: res.meta?.filteredCount ?? 0,
+            tokenCount: res.meta?.tokenCount ?? 0,
+            charCount: res.meta?.charCount ?? 0,
+            source: res.source,
+            budgetMs: res.meta?.budgetMs,
+            deadlineExceeded: res.meta?.deadlineExceeded ?? false,
+          },
         };
       } catch (err: any) {
         return {
@@ -172,8 +192,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
       context: Type.Optional(Type.Number({ description: "Lines of surrounding context to include per match (0-5, default: 0)." })),
       tag_symbols: Type.Optional(Type.Boolean({ description: "Tag matches with AST definition tags like [def:fn], [def:class]." })),
+      budget_ms: Type.Optional(Type.Number({ description: "Optional server-side deadline in milliseconds (default 2500). On expiry the result is partial and carries complete:false." })),
     }),
-    execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol" | "semantic"; limit?: number; global?: boolean; compact?: boolean; max_tokens?: number; context?: number; tag_symbols?: boolean }) => {
+    execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol" | "semantic"; limit?: number; global?: boolean; compact?: boolean; max_tokens?: number; context?: number; tag_symbols?: boolean; budget_ms?: number }) => {
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const baseScope = params.global ? undefined : worktreeRoot;
@@ -188,6 +209,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         let files: any[] = [];
         let tookUs = 0;
         let sourceNotice = "";
+        let resultMeta: any = undefined;
 
         if (params.mode === "semantic") {
           const t0 = performance.now();
@@ -203,15 +225,16 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
             in: searchScope,
             mode: (params.mode ?? "literal") as "literal" | "regex" | "symbol",
             limit: params.limit ?? 30,
-            budget_ms: 2500,
+            budget_ms: params.budget_ms ?? 2500,
             context: params.context ?? 0,
           });
           if (!res.ok && res.error) {
-            return { content: [{ type: "text", text: `UltraSearch grep error: ${res.error}` }] };
+            return { content: [{ type: "text", text: `UltraSearch grep error: ${res.error}` }], details: { tool: "ultrasearch_grep", error: res.error, complete: false } };
           }
           files = res.files ?? [];
           tookUs = res.took_us ?? 0;
           sourceNotice = res.source === "native_fallback" ? " (native fallback)" : "";
+          resultMeta = res.meta;
         }
 
         if (files.length === 0) {
@@ -233,13 +256,34 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         }
 
         const modeTag = params.mode === "semantic" ? " (semantic)" : "";
+        const notices: string[] = [];
+        if (resultMeta?.warning) notices.push(`[regex warning: ${resultMeta.warning}]`);
+        if (resultMeta?.deadlineExceeded) notices.push(`[budget deadline ${resultMeta.budgetMs}ms exceeded: partial results; narrow the scope or raise budget_ms]`);
+        else if (resultMeta?.truncated) notices.push(`[result truncated: ${resultMeta.truncatedCount ?? 0} files dropped by limit after ignoring ${resultMeta.filteredCount ?? 0} filtered]`);
+        if (formatted.truncatedCount > 0) notices.push(`[${formatted.truncatedCount} matches dropped by max_tokens]`);
+        const noticeText = notices.length > 0 ? `\n${notices.join("\n")}` : "";
         return {
           content: [
             {
               type: "text",
-              text: `Found matches across ${files.length} files in ${(tookUs / 1000).toFixed(2)}ms${sourceNotice}${modeTag} (~${formatted.tokenCount} tokens):\n${formatted.text}`,
+              text: `Found matches across ${files.length} files in ${(tookUs / 1000).toFixed(2)}ms${sourceNotice}${modeTag} (~${formatted.tokenCount} tokens):\n${formatted.text}${noticeText}`,
             },
           ],
+          details: {
+            tool: "ultrasearch_grep",
+            fileCount: files.length,
+            complete: resultMeta?.complete ?? false,
+            truncated: resultMeta?.truncated ?? false,
+            truncatedCount: resultMeta?.truncatedCount ?? 0,
+            filteredCount: resultMeta?.filteredCount ?? 0,
+            tokenCount: formatted.tokenCount,
+            charCount: resultMeta?.charCount ?? 0,
+            maxTokensDropped: formatted.truncatedCount,
+            source: resultMeta?.source,
+            budgetMs: resultMeta?.budgetMs,
+            deadlineExceeded: resultMeta?.deadlineExceeded ?? false,
+            regexWarning: resultMeta?.warning,
+          },
         };
       } catch (err: any) {
         return {
@@ -260,8 +304,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       limit: Type.Optional(Type.Number({ description: "Maximum files to match." })),
       compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format (default: true). Set false for verbose blocks." })),
       max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
+      budget_ms: Type.Optional(Type.Number({ description: "Optional server-side deadline in milliseconds (default 3000). On expiry the result is partial and carries complete:false." })),
     }),
-    execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number; compact?: boolean; max_tokens?: number }) => {
+    execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number; compact?: boolean; max_tokens?: number; budget_ms?: number }) => {
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.path_filter ? path.join(worktreeRoot, params.path_filter) : worktreeRoot;
@@ -269,12 +314,13 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         const res = await client.multiGrep(params.patterns, {
           in: searchScope,
           limit: params.limit ?? 30,
+          budget_ms: params.budget_ms,
         });
 
         const files = res.files ?? [];
 
         if (!res.ok && res.error) {
-          return { content: [{ type: "text", text: `Multi-grep error: ${res.error}` }] };
+          return { content: [{ type: "text", text: `Multi-grep error: ${res.error}` }], details: { tool: "ultrasearch_multi_grep", error: res.error, complete: false } };
         }
 
         if (files.length === 0) {
@@ -286,13 +332,31 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           compact: params.compact,
           maxTokens: params.max_tokens,
         });
+        const truncatedNotice = res.meta?.deadlineExceeded
+          ? `\n[budget deadline ${res.meta.budgetMs}ms exceeded: partial results]`
+          : res.meta?.truncated
+            ? `\n[truncated: ${res.meta.truncatedCount ?? 0} files dropped by limit]`
+            : "";
         return {
           content: [
             {
               type: "text",
-              text: `Multi-grep matched ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms (~${formatted.tokenCount} tokens):\n${formatted.text}`,
+              text: `Multi-grep matched ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms (~${formatted.tokenCount} tokens):\n${formatted.text}${truncatedNotice}`,
             },
           ],
+          details: {
+            tool: "ultrasearch_multi_grep",
+            fileCount: files.length,
+            complete: res.meta?.complete ?? false,
+            truncated: res.meta?.truncated ?? false,
+            truncatedCount: res.meta?.truncatedCount ?? 0,
+            filteredCount: res.meta?.filteredCount ?? 0,
+            tokenCount: formatted.tokenCount,
+            charCount: res.meta?.charCount ?? 0,
+            source: res.meta?.source,
+            budgetMs: res.meta?.budgetMs,
+            deadlineExceeded: res.meta?.deadlineExceeded ?? false,
+          },
         };
       } catch (err: any) {
         return { content: [{ type: "text", text: `Multi-grep error: ${err?.message ?? err}` }] };
@@ -365,11 +429,17 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     description: "Observability profiler: returns per-tool latencies (p50/p90/p95), error rates, 0-hit diagnostics, CLI bypasses (find/rg), and recursive self-learning recommendations.",
     parameters: Type.Object({
       limit: Type.Optional(Type.Number({ description: "Number of audit rows to analyze (default: 1000)." })),
+      view: Type.Optional(Type.Union([Type.Literal("real"), Type.Literal("all"), Type.Literal("synthetic")], { description: "Audit provenance view: 'real' (default, organic agent sessions only), 'synthetic' (gate/bench rows), or 'all'." })),
     }),
-    execute: async () => {
-      const summary = summarizeAudit();
+    execute: async (_toolCallId: string, params: { limit?: number; view?: "real" | "all" | "synthetic" } = {}) => {
+      const summary = summarizeAudit(params.limit ?? 1000, { view: params.view ?? "real" });
+      const pool = client.poolStats();
+      const text =
+        `${formatAuditSummary(summary)}\n\n--- IPC Lanes ---\n` +
+        `lanes: ${pool.lanes} (open: ${pool.open}) | in-flight: ${pool.inFlight} | created: ${pool.created} | closed: ${pool.closed} | active fallbacks: ${pool.activeFallbacks}`;
       return {
-        content: [{ type: "text", text: formatAuditSummary(summary) }],
+        content: [{ type: "text", text }],
+        details: { view: summary.view, originCounts: summary.originCounts, totalCalls: summary.totalCalls, pool },
       };
     },
   });
@@ -377,9 +447,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   // Slash command: /ultrasearch [metrics|audit|reset|status]
   if (typeof (pi as any).registerCommand === "function") {
     const handleCommand = async (args: string, ctx: any) => {
-      const action = args.trim().toLowerCase();
+      const [action, arg] = args.trim().toLowerCase().split(/\s+/);
       if (action === "metrics" || action === "audit") {
-        const summary = summarizeAudit();
+        const view = arg === "all" || arg === "synthetic" || arg === "real" ? (arg as "real" | "all" | "synthetic") : "real";
+        const summary = summarizeAudit(1000, { view });
         ctx?.ui?.notify(formatAuditSummary(summary), "info");
       } else if (action === "reset") {
         resetAudit();

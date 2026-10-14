@@ -128,38 +128,75 @@ export function isPathSafe(filePath: string, allowedRoot?: string): boolean {
 }
 
 /**
- * Simple glob-to-regex converter for gitignore patterns
+ * Simple glob-to-regex converter for gitignore patterns.
+ * `**` is replaced through a placeholder so the later `*` pass cannot mangle it.
  */
 function globToRegExp(glob: string): RegExp {
   const escaped = glob
     .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replace(/\*\*/g, ".*")
+    .replace(/\*\*/g, "\u0000")
     .replace(/\*/g, "[^/]*")
+    .replace(/\u0000/g, ".*")
     .replace(/\?/g, ".");
   return new RegExp(`(?:^|/)${escaped}(?:/|$)`);
 }
 
-/**
- * Checks if a relative or absolute file path matches any .gitignore / .ignore pattern.
- */
-export function matchesIgnorePattern(filePath: string, ignorePatterns: string[]): boolean {
-  const normalized = filePath.replace(/\\/g, "/");
-  for (const pattern of ignorePatterns) {
-    const trimmed = pattern.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-
-    if (normalized.endsWith(trimmed) || normalized.includes(`/${trimmed}/`)) {
-      return true;
+function matchesIgnorePatternSingle(normalized: string, pattern: string): boolean {
+  // Directory patterns (`node_modules/`, `build/`, `dist/`) ignore the directory
+  // and everything beneath it. Verifier finding F1: the old matcher only handled
+  // suffix/segment text, so `node_modules/` never matched `.../node_modules/pkg.js`.
+  if (pattern.endsWith("/")) {
+    const dir = pattern.replace(/\/+$/, "").replace(/^\/+/, "");
+    if (!dir) return false;
+    const pathSegs = normalized.split("/").filter(Boolean);
+    const dirSegs = pathSegs.slice(0, -1);
+    if (!dir.includes("/")) {
+      if (dirSegs.includes(dir)) return true;
+      return pathSegs.length > 0 && pathSegs[pathSegs.length - 1] === dir;
     }
-
     try {
-      const re = globToRegExp(trimmed);
-      if (re.test(normalized)) return true;
+      if (globToRegExp(dir).test(normalized)) return true;
     } catch {
-      // Ignore invalid regex
+      // invalid pattern falls through to the textual checks
     }
+    return normalized.includes(`/${dir}/`) || normalized.startsWith(`${dir}/`);
+  }
+
+  if (normalized.endsWith(pattern) || normalized.includes(`/${pattern}/`)) return true;
+
+  try {
+    const re = globToRegExp(pattern);
+    if (re.test(normalized)) return true;
+  } catch {
+    // Ignore invalid regex
   }
   return false;
+}
+
+/**
+ * Gitignore-style ordered evaluation: the last matching rule wins and `!pattern`
+ * re-includes a path. Returns true when the path is ignored.
+ */
+export function matchesIgnoreRules(filePath: string, ignorePatterns: string[]): boolean {
+  const normalized = filePath.replace(/\\/g, "/").replace(/^\.\//, "");
+  let ignored = false;
+  for (const raw of ignorePatterns) {
+    const trimmed = raw.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const negated = trimmed.startsWith("!");
+    const pattern = negated ? trimmed.slice(1).trim() : trimmed;
+    if (!pattern) continue;
+    if (matchesIgnorePatternSingle(normalized, pattern)) ignored = !negated;
+  }
+  return ignored;
+}
+
+/**
+ * Checks if a relative or absolute file path matches any .gitignore / .ignore pattern.
+ * Backwards-compatible wrapper over the ordered rule evaluation.
+ */
+export function matchesIgnorePattern(filePath: string, ignorePatterns: string[]): boolean {
+  return matchesIgnoreRules(filePath, ignorePatterns);
 }
 
 /**
