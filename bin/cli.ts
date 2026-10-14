@@ -179,7 +179,16 @@ async function main() {
           }
         } else if (sub === "restart") {
           console.log("🔄 Restarting ultrasearch daemon...");
+          client.close();
           try {
+            const plistPath = path.join(os.homedir(), "Library/LaunchAgents/com.pi.ultrasearch.plist");
+            if (fs.existsSync(plistPath)) {
+              try {
+                execSync("launchctl kickstart -k gui/$(id -u)/com.pi.ultrasearch");
+                console.log("✅ Ultrasearch daemon restarted cleanly via launchd service (PID 1 managed).");
+                break;
+              } catch {}
+            }
             execSync("pkill -9 -f 'UltraSearch serve' ; pkill -9 -f 'ultrasearch-daemon serve' ; pkill -9 -f 'fsearch serve' || true");
             const sysAppBin = "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch";
             const userAppBin = path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch");
@@ -230,6 +239,47 @@ async function main() {
             console.log(`✅ Linked 'ultrasearch-daemon' -> ${daemonTarget}`);
           } catch {}
         }
+
+        const launchAgentsDir = path.join(os.homedir(), "Library/LaunchAgents");
+        const plistPath = path.join(launchAgentsDir, "com.pi.ultrasearch.plist");
+        const sysAppBin = "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch";
+        const userAppBin = path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch");
+        const targetBin = fs.existsSync(sysAppBin) ? sysAppBin : (fs.existsSync(userAppBin) ? userAppBin : path.join(localBin, "ultrasearch-daemon"));
+        const logFile = path.join(os.homedir(), "Library/Application Support/FSearch/daemon.log");
+
+        if (!fs.existsSync(launchAgentsDir)) fs.mkdirSync(launchAgentsDir, { recursive: true });
+        const plistContent = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.pi.ultrasearch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${targetBin}</string>
+    <string>serve</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>${os.homedir()}</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>${logFile}</string>
+  <key>StandardErrorPath</key>
+  <string>${logFile}</string>
+  <key>ProcessType</key>
+  <string>Interactive</string>
+</dict>
+</plist>
+`;
+        fs.writeFileSync(plistPath, plistContent);
+        try {
+          const { execSync } = await import("node:child_process");
+          execSync(`launchctl bootstrap gui/$(id -u) "${plistPath}" 2>/dev/null || launchctl kickstart -k gui/$(id -u)/com.pi.ultrasearch 2>/dev/null || true`);
+          console.log(`✅ Registered LaunchAgent -> ${plistPath}`);
+        } catch {}
         break;
       }
 
