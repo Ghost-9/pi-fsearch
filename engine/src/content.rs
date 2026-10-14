@@ -1335,6 +1335,11 @@ pub fn eligible(path: &[u8], size: u64, home: &[u8]) -> bool {
     Scope::new(home, &on_disk).file(path, size)
 }
 
+/// The configured content policy (#17), for `op: status`.
+pub fn policy() -> &'static crate::coverage::Policy {
+    crate::coverage::policy()
+}
+
 /// Outside git repos, the text files are known by name and size.
 fn name_ok(name: &[u8], size: u64) -> bool {
     if size > MAX_FILE || SKIP_DIRS.contains(&name) {
@@ -1415,6 +1420,17 @@ fn skipped(rel: &[u8], name: &[u8], holds: impl Fn(&[u8]) -> bool) -> bool {
 /// holds that folder (then its ignore files decide, see `Scope`)? Cheap: it
 /// touches the disk only to look for a repo above a skipped folder.
 pub fn in_scope(path: &[u8], home: &[u8]) -> bool {
+    // A configured root list (#17) bounds the content index. `path` may be a
+    // folder, including one *above* a root — the traversal has to reach the
+    // root — so ancestors pass here and `Scope::file` applies the rule to
+    // each file.
+    if let Some(roots) = &crate::coverage::policy().roots
+        && !roots
+            .iter()
+            .any(|r| crate::deny::within(path, r) || crate::deny::within(r, path))
+    {
+        return false;
+    }
     let Some(rest) = path.strip_prefix(home) else { return false };
     if !rest.is_empty() && rest[0] != b'/' {
         return false;
@@ -1612,6 +1628,11 @@ impl<'a> Scope<'a> {
 
     /// Should the file at `path` be indexed?
     fn file(&mut self, path: &[u8], size: u64) -> bool {
+        // The configured coverage policy first (#17): roots, size cap and
+        // extension list, when any is set.
+        if !crate::coverage::policy().allows(path, size) {
+            return false;
+        }
         let cut = path.iter().rposition(|&b| b == b'/').unwrap_or(0);
         let (dir, name) = (&path[..cut], &path[cut + 1..]);
         let place = match &self.last {

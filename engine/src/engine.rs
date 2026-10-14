@@ -122,6 +122,12 @@ pub struct Status {
     /// Queries in flight right now. A compaction waits for this to be 0
     /// (best effort: at most `COMPACT_DRAIN`).
     pub queries_in_flight: usize,
+
+    // --- Coverage (#17) ---
+    /// The content-index policy in force: configured?, source, extension
+    /// count, size cap, root count and warm count. See
+    /// `docs/content-index-policy.md`.
+    pub content_policy: serde_json::Value,
 }
 
 /// What the last compaction cost, for `Status` (#34).
@@ -324,6 +330,11 @@ impl Engine {
     /// builds one.
     pub fn start(mut opts: Options) -> Result<Engine, String> {
         std::fs::create_dir_all(&opts.dir).map_err(|e| e.to_string())?;
+        // The coverage policy is process-wide and read once (#17). An
+        // unparsable one is an error, not a silent fallback: a coverage rule
+        // that does not apply is how a 0-hit grep gets mistaken for "the text
+        // is not on disk".
+        crate::coverage::set(crate::coverage::Policy::load(&opts.dir)?);
         // Home as paths are compared to it: "/h/" put nothing in content scope.
         if opts.home.len() > 1 && opts.home.ends_with('/') {
             opts.home = opts.home.trim_end_matches('/').to_string();
@@ -428,6 +439,7 @@ impl Engine {
             }
             if owner {
                 rescan_unskipped(&s);
+                Engine { s: s.clone() }.warm();
             }
             apply_loop(&s, rx);
         });
@@ -557,6 +569,7 @@ impl Engine {
             last_compact_secs_ago: cs.last_secs_ago,
             compactions_postponed: cs.postponed,
             queries_in_flight: self.s.inflight.load(Ordering::Relaxed),
+            content_policy: content::policy().summary(),
         }
     }
 
@@ -570,6 +583,17 @@ impl Engine {
     /// result may miss changes made during the window.
     pub fn staleness_ms(&self) -> u64 {
         self.s.staleness_ms()
+    }
+
+    /// Build the content index for the configured warm folders (#17), before
+    /// the general reconcile. Called at start; a no-op without a policy.
+    fn warm(&self) {
+        let warm = crate::coverage::policy().warm.clone();
+        if warm.is_empty() || !self.s.owner() {
+            return;
+        }
+        log(format!("warming the content index for {} configured folder(s)", warm.len()));
+        let _ = self.s.content_tx.send((Vec::new(), warm));
     }
 
     /// Compact and save the name index soon (on the background thread).

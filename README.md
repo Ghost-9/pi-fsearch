@@ -239,3 +239,71 @@ Operational detail and rollback steps: [`docs/engine-rebrand.md`](docs/engine-re
 pi-ultrasearch is licensed under the [GNU Affero General Public License v3.0](LICENSE) © 2026 Ghost-9.
 The upstream `fsearch` engine is MIT-licensed. Its copyright and licence text are preserved unmodified in
 [`NOTICE`](NOTICE) and in the engine working copy; rebranding never claims upstream authorship.
+
+## Engine behaviour (renamed MIT fork, vendored at `engine/`)
+
+The daemon is a **renamed fork of the upstream `fsearch` engine (MIT, © Noah Dunnagan, v0.2.1)**,
+vendored at `engine/` so its behaviour can be changed and tested in-tree and so the
+source that ships is the source that is reviewed (`engine/NOTICE`,
+`engine/BUILD.md`, and `docs/engine-changes.md` for every local change).
+Nothing below needs configuration: an operator who sets nothing gets upstream's
+searches.
+
+### One owner for proximity ranking
+
+`near:` re-ranks daemon-side, and the daemon reports what it added:
+
+| Component | Scale | Where |
+|---|---|---|
+| `nearness` | `+12` in the `near` file's folder, `-3` per folder of distance, clamped at 0; the `near` file itself `-20` | `server::nearness` |
+| `boost` | frecency: opens, your commits, and the file's mtime as one more open | `frecency::boost` |
+
+Each hit carries `near` and `boost`; `score` is the match score plus them. **A
+client must not re-rank a daemon result**: the extension's
+`applyProximityRanking` (+100, a different scale on the same signal) now runs
+only for the native `find`/`rg` fallback, where there is no daemon score to
+trust.
+
+### Bounded searches
+
+`op: search` accepts `budget_ms` (a deadline) and `candidates` (a cap on how
+many candidates are scored). The reply then carries `complete`, `scanned`,
+`considered` and `budget_ms`; `complete: false` means the deadline or the cap
+was reached and the hits are the best found so far. `grep` reports the same
+`scanned`/`considered` beside its own `candidates`/`read`, with `complete`
+already in place. See `docs/engine-changes.md` for the granularity.
+
+### Freshness and index health
+
+`op: status` reports `last_event_id`, `event_lag`, `staleness_ms` (0 when the
+index is caught up), `replay_in_progress`, `compactions`,
+`last_compact_ms`/`_bytes`/`_entries`/`_secs_ago`, `compactions_postponed` and
+`queries_in_flight`. A compaction that comes due waits up to 2 s for in-flight
+queries (best effort, never past a runaway overlay), and answers carry `stale`
+/`stale_ms` while a replay window is open. The extension appends a one-line
+freshness warning when it sees one.
+
+### Content coverage
+
+Grep covers a configurable subset of the disk. `coverage.json` (or
+`ULTRASEARCH_CONTENT_*` / `ULTRASEARCH_WARM`) sets extensions, a size cap,
+roots, and folders to warm at start; `status.content_policy` reports what is in
+force. Full policy and the built-in rules: `docs/content-index-policy.md`.
+
+### Security boundary
+
+A fail-closed deny-list (`ULTRASEARCH_DENY`, `ULTRASEARCH_DENY_FILE`, or
+`<index dir>/deny.txt`) is enforced in the engine before any result is written,
+and a request may name its allowed boundary (`root`): an escaping scope is a
+security error for every tool, and hits outside it are dropped and counted as
+`withheld`. `docs/security-deny-list.md` has the contract.
+
+### Running an isolated instance
+
+`ULTRASEARCH_DIR`, `ULTRASEARCH_HOME` and `ULTRASEARCH_SCAN_ROOT` run a real
+daemon over a fixture tree on its own socket without touching the live index or
+crawling the whole disk. `test/engine/harness.mjs` does exactly that, and
+`node bench/engine-ab.mjs` compares two binaries over one fixture with
+alternating rounds, medians, bootstrap CIs and an output-equivalence check
+(raw samples in `bench/results/engine/`).
+>>>>>>> d50249a (feat(index): configurable content coverage, warm-up, and the policy in status (#17))
