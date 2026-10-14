@@ -1,0 +1,128 @@
+{
+  "schema": "ultrasearch.bench.lanes/v1",
+  "status": "degraded",
+  "date": "2026-10-14",
+  "startedAt": "2026-10-14T20:58:50.469Z",
+  "method": {
+    "treatment": "client with lanes: 3",
+    "control": "client with lanes: 1 (legacy single socket)",
+    "workload": "Promise.all of 3 grep(limit=300) on /Users/batra/.pi",
+    "design": "counterbalanced paired A/B, warmup excluded",
+    "ci": "BCa bootstrap, 10000 resamples, alpha=0.05, on paired deltas",
+    "statistic": "median",
+    "decisionFloor": "max(0.2 ms, 5% of control median)"
+  },
+  "environment": {
+    "checkedAt": "2026-10-14T20:58:49.718Z",
+    "platform": "darwin",
+    "arch": "arm64",
+    "hostname": "Mayanks-MacBook-Pro.local",
+    "cpuCount": 10,
+    "cpuModel": "Apple M1 Pro",
+    "onAC": false,
+    "powerSource": "Battery Power",
+    "load1m": 15.828,
+    "load5m": 12.855,
+    "load15m": 9.667,
+    "competingProcesses": [],
+    "daemonPids": [
+      19684
+    ],
+    "daemonPid": 19684,
+    "daemon": {
+      "pid": 19684,
+      "entries": 3779930,
+      "index_bytes": 117731712,
+      "content_docs": 125949,
+      "content_pending": 0
+    }
+  },
+  "environmentGate": {
+    "ok": false,
+    "reasons": [
+      "power source is 'Battery Power', not AC",
+      "load1m 15.83 >= 1.5"
+    ]
+  },
+  "scope": "/Users/batra/.pi",
+  "pattern": "function",
+  "limit": 300,
+  "concurrent": 3,
+  "pairs": 30,
+  "pooled": {
+    "n": 30,
+    "median": 5.544208000000026,
+    "mean": 5.649480633333324,
+    "p50": 5.544208000000026,
+    "p95": 6.425041999999962,
+    "p95IsMax": false,
+    "min": 4.8163339999999835,
+    "max": 6.503583999999989,
+    "stdev": 0.43699385743836083,
+    "pool": {
+      "lanes": 3,
+      "open": 1,
+      "inFlight": 0,
+      "created": 1,
+      "closed": 0,
+      "activeFallbacks": 0,
+      "fallbackEnabled": true
+    }
+  },
+  "single": {
+    "n": 30,
+    "median": 6.126041999999984,
+    "mean": 6.226947199999997,
+    "p50": 6.126041999999984,
+    "p95": 7.477500000000077,
+    "p95IsMax": false,
+    "min": 5.160582999999974,
+    "max": 8.212625000000003,
+    "stdev": 0.6708326120816148,
+    "pool": {
+      "lanes": 1,
+      "open": 1,
+      "inFlight": 0,
+      "created": 1,
+      "closed": 0,
+      "activeFallbacks": 0,
+      "fallbackEnabled": true
+    }
+  },
+  "pairedDeltaMs": {
+    "n": 30,
+    "point": -0.581833999999958,
+    "lo": -0.8653339999999616,
+    "hi": -0.24666700000011588,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": -0.05140851474483964,
+    "acceleration": -1.0420810399486514e-18,
+    "quantity": "delta(a - b)"
+  },
+  "pairedRatio": {
+    "n": 30,
+    "point": 1.1049444753876396,
+    "lo": 1.0399443939792266,
+    "hi": 1.1557675091926214,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": 0.0005013256764912654,
+    "acceleration": -0.0000047822308729435895,
+    "quantity": "ratio(medianB / medianA)"
+  },
+  "decisionFloorMs": 0.30630209999999924,
+  "significant": true,
+  "concurrencyShape": {
+    "treatmentParallelMedianMs": 5.544208000000026,
+    "treatmentSingleMedianMs": 2.499416999999994,
+    "controlParallelMedianMs": 6.126041999999984,
+    "controlSingleMedianMs": 2.3750839999999585,
+    "treatmentRatioToSingle": 2.218200484352967,
+    "controlRatioToSingle": 2.579294879675873,
+    "interpretation": "ratio ~1 => batch time equals one call (max, no head-of-line blocking); ~N => serialized (sum)"
+  },
+  "finishedAt": "2026-10-14T20:58:50.469Z"
+}

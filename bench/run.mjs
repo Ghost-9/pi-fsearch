@@ -33,7 +33,7 @@ import { buildFixture, SCOPES } from "./lib/fixtures.mjs";
 import { runNative, compareSets, normalizePaths } from "./lib/native.mjs";
 import { environmentWithDaemon, formatEnvironmentGate } from "./lib/env-gate.mjs";
 import { counterbalancedAB, pairedDeltaCI, pairedRatioCI, summarize, decisionFloor, ciExcludesZero, fmt, fmtCI } from "./lib/stats.mjs";
-import { loadJudgments, evaluateRunnerJudgments, REPO_ROOT, CORPUS_ROOT } from "./lib/relevance-runner.mjs";
+import { loadJudgments, evaluateRunnerJudgments, REPO_ROOT } from "./lib/relevance-runner.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUT = path.join(HERE, "results");
@@ -95,13 +95,13 @@ async function ultraCall(client, spec, scope) {
   let res;
   if (spec.kind === "path") {
     res = await client.search(spec.ultra.query, { ...spec.ultra.options, in: scope, skipAudit: true });
-    return { ms: performance.now() - started, paths: normalizePaths((res.hits ?? []).map((h) => h.path)), source: res.source, complete: res.meta?.complete, truncated: res.meta?.truncated };
+    return { ms: performance.now() - started, paths: normalizePaths((res.hits ?? []).map((h) => h.path)), source: res.meta?.source ?? res.source ?? "index", complete: res.meta?.complete, truncated: res.meta?.truncated };
   }
   res = await client.grep(spec.ultra.pattern, { ...spec.ultra.options, in: scope, skipAudit: true });
   return {
     ms: performance.now() - started,
     paths: normalizePaths([...new Set((res.files ?? []).map((f) => f.path))]),
-    source: res.source,
+    source: res.meta?.source ?? res.source ?? "index",
     complete: res.meta?.complete,
     truncated: res.meta?.truncated,
     fileCount: (res.files ?? []).length,
@@ -191,6 +191,16 @@ async function main() {
         nativeReturned: native.paths.length,
         correctlyExcluded: (ultra.hits ?? []).length === 0,
       };
+      if (fixture.nestedIgnoreFile) {
+        const nestedName = path.basename(fixture.nestedIgnoreFile);
+        const ultraNested = await client.search(`*${nestedName}*`, { in: fixture.root, limit: 10, skipAudit: true });
+        scopeResult.ignoreFiltering.nested = {
+          file: fixture.nestedIgnoreFile,
+          ultraReturned: (ultraNested.hits ?? []).length,
+          honoured: (ultraNested.hits ?? []).length === 0,
+          note: "known gap: rules declared in a subdirectory .gitignore are not loaded (scope-root rules only)",
+        };
+      }
     }
 
     for (const spec of fixture.queries) {
@@ -203,17 +213,21 @@ async function main() {
       const { order } = await counterbalancedAB({
         pairs: args.pairs,
         warmupPairs: args.warmup,
-        runA: async () => {
+        runA: async (_i, phase) => {
           const r = await ultraCall(client, spec, fixture.root);
-          ultra.push(r.ms);
-          sources[r.source ?? "unknown"] = (sources[r.source ?? "unknown"] ?? 0) + 1;
-          if (!ultraResult) ultraResult = r;
+          if (phase === "measured") {
+            ultra.push(r.ms);
+            sources[r.source ?? "unknown"] = (sources[r.source ?? "unknown"] ?? 0) + 1;
+            if (!ultraResult) ultraResult = r;
+          }
           return r.ms;
         },
-        runB: async () => {
+        runB: async (_i, phase) => {
           const r = await runNative(spec.native, fixture.root);
-          native.push(r.ms);
-          if (!nativeResult) nativeResult = r;
+          if (phase === "measured") {
+            native.push(r.ms);
+            if (!nativeResult) nativeResult = r;
+          }
           return r.ms;
         },
       });

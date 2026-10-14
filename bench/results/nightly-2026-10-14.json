@@ -1,0 +1,154 @@
+{
+  "schema": "ultrasearch.telemetry.nightly/v1",
+  "date": "2026-10-14",
+  "generatedAt": "2026-10-14T20:59:49.410Z",
+  "source": {
+    "productionFile": "/Users/batra/.pi/agent/cache/pi-ultrasearch/audit.jsonl",
+    "testFile": "/Users/batra/.pi/agent/cache/pi-ultrasearch/test_audit.jsonl",
+    "rowsLoaded": 216
+  },
+  "note": "tokensSaved is the 150+75×hits ESTIMATE, not a measurement",
+  "real": {
+    "originCounts": {
+      "organic": 157,
+      "synthetic": 59,
+      "unmarked": 157
+    },
+    "calls": 157,
+    "fallbackCount": 11,
+    "fallbackRate": 0.07006369426751592,
+    "zeroHitCount": 9,
+    "zeroHitRate": 0.05732484076433121,
+    "tokensSavedEstimate": 202285,
+    "perTool": [
+      {
+        "tool": "fsearch_query",
+        "calls": 73,
+        "okRate": 100,
+        "emptyRate": 10.95890410958904,
+        "p50Ms": 0.56,
+        "p90Ms": 52.13,
+        "p95Ms": 177.15,
+        "fallbackCount": 4
+      },
+      {
+        "tool": "fsearch_compact",
+        "calls": 2,
+        "okRate": 100,
+        "emptyRate": 0,
+        "p50Ms": 602.12,
+        "p90Ms": 611.75,
+        "p95Ms": 611.75,
+        "fallbackCount": 0
+      },
+      {
+        "tool": "fsearch_multi_grep",
+        "calls": 8,
+        "okRate": 100,
+        "emptyRate": 0,
+        "p50Ms": 47.042749999905936,
+        "p90Ms": 76,
+        "p95Ms": 76,
+        "fallbackCount": 0
+      },
+      {
+        "tool": "fsearch_grep",
+        "calls": 71,
+        "okRate": 100,
+        "emptyRate": 1.4084507042253522,
+        "p50Ms": 0.42,
+        "p90Ms": 15.04,
+        "p95Ms": 19.02,
+        "fallbackCount": 7
+      },
+      {
+        "tool": "fsearch_locate",
+        "calls": 1,
+        "okRate": 100,
+        "emptyRate": 0,
+        "p50Ms": 12.2,
+        "p90Ms": 12.2,
+        "p95Ms": 12.2,
+        "fallbackCount": 0
+      }
+    ]
+  },
+  "synthetic": {
+    "originCounts": {
+      "organic": 157,
+      "synthetic": 59,
+      "unmarked": 157
+    },
+    "calls": 59,
+    "fallbackCount": 19,
+    "fallbackRate": 0.3220338983050847,
+    "zeroHitCount": 1,
+    "zeroHitRate": 0.01694915254237288,
+    "tokensSavedEstimate": 167335,
+    "perTool": [
+      {
+        "tool": "fsearch_compact",
+        "calls": 1,
+        "okRate": 100,
+        "emptyRate": 100,
+        "p50Ms": 602.08,
+        "p90Ms": 602.08,
+        "p95Ms": 602.08,
+        "fallbackCount": 0
+      },
+      {
+        "tool": "fsearch_multi_grep",
+        "calls": 19,
+        "okRate": 100,
+        "emptyRate": 0,
+        "p50Ms": 7.63,
+        "p90Ms": 36.88,
+        "p95Ms": 38.87,
+        "fallbackCount": 19
+      },
+      {
+        "tool": "fsearch_recent",
+        "calls": 1,
+        "okRate": 100,
+        "emptyRate": 0,
+        "p50Ms": 0.12,
+        "p90Ms": 0.12,
+        "p95Ms": 0.12,
+        "fallbackCount": 0
+      },
+      {
+        "tool": "fsearch_grep",
+        "calls": 18,
+        "okRate": 100,
+        "emptyRate": 0,
+        "p50Ms": 85.7,
+        "p90Ms": 140.96,
+        "p95Ms": 183.03,
+        "fallbackCount": 0
+      },
+      {
+        "tool": "fsearch_query",
+        "calls": 18,
+        "okRate": 100,
+        "emptyRate": 0,
+        "p50Ms": 1.19,
+        "p90Ms": 4.66,
+        "p95Ms": 6.83,
+        "fallbackCount": 0
+      }
+    ]
+  },
+  "all": {
+    "originCounts": {
+      "organic": 157,
+      "synthetic": 59,
+      "unmarked": 157
+    },
+    "calls": 216,
+    "fallbackCount": 30,
+    "fallbackRate": 0.1388888888888889,
+    "zeroHitCount": 10,
+    "zeroHitRate": 0.046296296296296294,
+    "tokensSavedEstimate": 369620
+  }
+}

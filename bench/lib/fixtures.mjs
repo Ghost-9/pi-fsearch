@@ -15,7 +15,7 @@ import * as path from "node:path";
 import { mulberry32 } from "./stats.mjs";
 
 export const SCOPES = ["small", "monorepo", "home"];
-export const GENERATOR_VERSION = 1;
+export const GENERATOR_VERSION = 2;
 
 function writeFile(root, rel, content) {
   const target = path.join(root, rel);
@@ -183,14 +183,20 @@ function genHome(root) {
     count++;
   }
   writeFile(root, "Documents/projects/proj-001/notes-0421.md", "# notes 0421\n\nHOME_TOKEN_0421 sentinel\n");
-  writeFile(root, "Documents/projects/proj-001/tmp-junk.tmp", "HOME_TMP_TOKEN_0421\n");
+  // Root-level rule: the supported case (rules declared at the scope root).
+  writeFile(root, "root-junk.tmp", "HOME_ROOT_IGNORED_TOKEN\n");
+  writeFile(root, ".gitignore", "root-junk.tmp\n");
   count += 2;
+  // Nested rule: known gap probe. The client only loads rules from the scope
+  // root, so this file is expected to be returned; recorded, not hidden.
+  writeFile(root, "Documents/projects/proj-001/tmp-junk.tmp", "HOME_TMP_TOKEN_0421\n");
   writeFile(root, "Documents/projects/.gitignore", "*.tmp\n");
-  count++;
+  count += 2;
 
   return {
     fileCount: count,
-    ignoredFile: "Documents/projects/proj-001/tmp-junk.tmp",
+    ignoredFile: "root-junk.tmp",
+    nestedIgnoreFile: "Documents/projects/proj-001/tmp-junk.tmp",
     queries: [
       {
         id: "home-path-exact",
@@ -222,7 +228,10 @@ const GENERATORS = { small: genSmall, monorepo: genMonorepo, home: genHome };
 export function buildFixture(scope, baseDir, options = {}) {
   if (!GENERATORS[scope]) throw new Error(`unknown fixture scope '${scope}' (expected one of ${SCOPES.join(", ")})`);
   const root = path.join(baseDir, scope);
-  const manifestPath = path.join(root, ".fixture-manifest.json");
+  // Manifest lives OUTSIDE the corpus: otherwise it is itself a matching file
+  // (it contains every query token) and breaks output equivalence vs rg, which
+  // skips dotfiles by default.
+  const manifestPath = path.join(baseDir, `${scope}.manifest.json`);
   if (!options.force && fs.existsSync(manifestPath)) {
     try {
       const cached = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
@@ -242,6 +251,7 @@ export function buildFixture(scope, baseDir, options = {}) {
     root,
     fileCount: spec.fileCount,
     ignoredFile: spec.ignoredFile ?? null,
+    nestedIgnoreFile: spec.nestedIgnoreFile ?? null,
     noIndexDir: spec.noIndexDir ?? null,
     queries: spec.queries,
     createdAt: new Date().toISOString(),

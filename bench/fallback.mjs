@@ -17,7 +17,6 @@ process.env.PI_ULTRASEARCH_TEST = "1";
 process.env.PI_ULTRASEARCH_BENCH = "1";
 
 import { execFileSync } from "node:child_process";
-import { monitorEventLoopDelay } from "node:perf_hooks";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -94,7 +93,25 @@ async function main() {
   syncFallback();
   await asyncFallback();
 
-  const loop = monitorEventLoopDelay({ resolution: 5 });
+  // Event-loop heartbeat. monitorEventLoopDelay cannot see a *synchronous*
+  // block (its own timer cannot fire while the loop is stuck), so the blocking
+  // window is measured as the gap between heartbeat ticks around each round.
+  const heartbeatMs = 5;
+  let lastTick = performance.now();
+  let tickSeq = 0;
+  const gaps = [];
+  const heartbeat = setInterval(() => {
+    const now = performance.now();
+    gaps.push({ seq: ++tickSeq, gapMs: now - lastTick, at: now });
+    lastTick = now;
+  }, heartbeatMs);
+
+  const maxGapSince = (fromSeq) => {
+    const relevant = gaps.filter((g) => g.seq > fromSeq);
+    return relevant.length === 0 ? 0 : Math.max(...relevant.map((g) => g.gapMs));
+  };
+  const settle = () => new Promise((r) => setTimeout(r, heartbeatMs * 2 + 5));
+
   const syncLatency = [];
   const asyncLatency = [];
   const syncLag = [];
@@ -105,35 +122,34 @@ async function main() {
     const syncFirst = i % 2 === 0;
     order.push(syncFirst ? "sync-async" : "async-sync");
 
-    const timeSync = () => {
-      loop.reset();
-      loop.enable();
+    const timeSync = async () => {
+      const from = tickSeq;
       const t = performance.now();
       syncFallback();
       const ms = performance.now() - t;
-      loop.disable();
       syncLatency.push(ms);
-      syncLag.push({ meanMs: loop.mean / 1e6, maxMs: loop.max / 1e6 });
+      await settle();
+      syncLag.push({ meanMs: 0, maxMs: maxGapSince(from) });
     };
     const timeAsync = async () => {
-      loop.reset();
-      loop.enable();
+      const from = tickSeq;
       const t = performance.now();
       await asyncFallback();
       const ms = performance.now() - t;
-      loop.disable();
       asyncLatency.push(ms);
-      asyncLag.push({ meanMs: loop.mean / 1e6, maxMs: loop.max / 1e6 });
+      await settle();
+      asyncLag.push({ meanMs: 0, maxMs: maxGapSince(from) });
     };
 
     if (syncFirst) {
-      timeSync();
+      await timeSync();
       await timeAsync();
     } else {
       await timeAsync();
-      timeSync();
+      await timeSync();
     }
   }
+  clearInterval(heartbeat);
 
   const deltaCI = pairedDeltaCI(asyncLatency, syncLatency, { resamples: 10000, alpha: 0.05, seed: 0xf00d });
   const ratioCI = pairedRatioCI(asyncLatency, syncLatency, { resamples: 10000, alpha: 0.05, seed: 0xf00e });
@@ -152,7 +168,7 @@ async function main() {
       after: "FSearchClient async spawn fallback (socket unreachable, lanes:1)",
       design: `counterbalanced paired rounds, n=${args.n}`,
       ci: "BCa bootstrap, 10000 resamples, alpha=0.05, on paired deltas",
-      eventLoop: "perf_hooks.monitorEventLoopDelay({resolution:5}) sampled per round; mean/max in ms",
+      eventLoop: `heartbeat interval ${heartbeatMs}ms; per-round metric = max gap between ticks covering the operation (a synchronous block shows up as one long gap)`,
     },
     environment: gate.info,
     environmentGate: { ok: gate.ok, reasons: gate.reasons },

@@ -1,0 +1,1186 @@
+{
+  "schema": "ultrasearch.bench.boost/v1",
+  "status": "degraded",
+  "date": "2026-10-14",
+  "startedAt": "2026-10-14T20:59:49.258Z",
+  "method": {
+    "treatment": "search boost:true (frecency + git history + mtime)",
+    "control": "search boost:false",
+    "corpus": "/Users/batra/ultrasearch-waves/advisor",
+    "judgmentSource": "/Users/batra/ultrasearch-waves/advisor/bench/judgments/wave1-judgments.json",
+    "design": "counterbalanced paired observations across 9 queries, 4 rounds, 36 pairs",
+    "ci": "BCa bootstrap, 10000 resamples, alpha=0.05, on paired deltas of per-query nDCG@10",
+    "decisionRule": "keep boost only if CI excludes 0 and point delta >= +0.05 nDCG@10"
+  },
+  "environment": {
+    "checkedAt": "2026-10-14T20:59:48.957Z",
+    "platform": "darwin",
+    "arch": "arm64",
+    "hostname": "Mayanks-MacBook-Pro.local",
+    "cpuCount": 10,
+    "cpuModel": "Apple M1 Pro",
+    "onAC": false,
+    "powerSource": "Battery Power",
+    "load1m": 11.135,
+    "load5m": 12.165,
+    "load15m": 9.632,
+    "competingProcesses": [],
+    "daemonPids": [
+      19684,
+      77206
+    ],
+    "daemonPid": 19684,
+    "daemon": {
+      "pid": 19684,
+      "entries": 2858573,
+      "index_bytes": 77630784,
+      "content_docs": 69747,
+      "content_pending": 0
+    }
+  },
+  "environmentGate": {
+    "ok": false,
+    "reasons": [
+      "power source is 'Battery Power', not AC",
+      "load1m 11.13 >= 1.5"
+    ]
+  },
+  "pairs": 36,
+  "ndcgOn": {
+    "n": 36,
+    "median": 0.8609101556836468,
+    "mean": 0.8778721896549891,
+    "p50": 0.8609101556836468,
+    "p95": 1,
+    "p95IsMax": true,
+    "min": 0.7129278093711621,
+    "max": 1,
+    "stdev": 0.08855072130997915
+  },
+  "ndcgOff": {
+    "n": 36,
+    "median": 0.8609101556836468,
+    "mean": 0.8778721896549891,
+    "p50": 0.8609101556836468,
+    "p95": 1,
+    "p95IsMax": true,
+    "min": 0.7129278093711621,
+    "max": 1,
+    "stdev": 0.08855072130997915
+  },
+  "deltaNdCG10": {
+    "n": 36,
+    "point": 0,
+    "lo": 0,
+    "hi": 0,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": -3.7190417430097926,
+    "acceleration": 0,
+    "quantity": "delta(a - b)"
+  },
+  "deltaRecall10": {
+    "n": 36,
+    "point": 0,
+    "lo": 0,
+    "hi": 0,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": -3.7190417430097926,
+    "acceleration": 0,
+    "quantity": "delta(a - b)"
+  },
+  "decision": {
+    "quantify": "paired delta of nDCG@10 (boost on - boost off)",
+    "ciExcludesZero": false,
+    "point": 0,
+    "meetsJudgmentBar": false,
+    "keepBoost": false
+  },
+  "perQuery": [
+    {
+      "id": "P1",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 1,
+        "mean": 1,
+        "p50": 1,
+        "p95": 1,
+        "p95IsMax": true,
+        "min": 1,
+        "max": 1,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 1,
+        "mean": 1,
+        "p50": 1,
+        "p95": 1,
+        "p95IsMax": true,
+        "min": 1,
+        "max": 1,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "package.json",
+      "top1Off": "package.json",
+      "top5On": [
+        "package.json"
+      ],
+      "top5Off": [
+        "package.json"
+      ]
+    },
+    {
+      "id": "P2",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 1,
+        "mean": 1,
+        "p50": 1,
+        "p95": 1,
+        "p95IsMax": true,
+        "min": 1,
+        "max": 1,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 1,
+        "mean": 1,
+        "p50": 1,
+        "p95": 1,
+        "p95IsMax": true,
+        "min": 1,
+        "max": 1,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": ".github/workflows/ci.yml",
+      "top1Off": ".github/workflows/ci.yml",
+      "top5On": [
+        ".github/workflows/ci.yml"
+      ],
+      "top5Off": [
+        ".github/workflows/ci.yml"
+      ]
+    },
+    {
+      "id": "P3",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 0.7871546029909718,
+        "mean": 0.7871546029909718,
+        "p50": 0.7871546029909718,
+        "p95": 0.7871546029909718,
+        "p95IsMax": true,
+        "min": 0.7871546029909718,
+        "max": 0.7871546029909718,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 0.7871546029909718,
+        "mean": 0.7871546029909718,
+        "p50": 0.7871546029909718,
+        "p95": 0.7871546029909718,
+        "p95IsMax": true,
+        "min": 0.7871546029909718,
+        "max": 0.7871546029909718,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts"
+      ],
+      "top5Off": [
+        "src/client.ts"
+      ]
+    },
+    {
+      "id": "P5",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 0.7129278093711621,
+        "mean": 0.7129278093711621,
+        "p50": 0.7129278093711621,
+        "p95": 0.7129278093711621,
+        "p95IsMax": true,
+        "min": 0.7129278093711621,
+        "max": 0.7129278093711621,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 0.7129278093711621,
+        "mean": 0.7129278093711621,
+        "p50": 0.7129278093711621,
+        "p95": 0.7129278093711621,
+        "p95IsMax": true,
+        "min": 0.7129278093711621,
+        "max": 0.7129278093711621,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "bench",
+      "top1Off": "bench",
+      "top5On": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "top5Off": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ]
+    },
+    {
+      "id": "P6",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 0.8609101556836468,
+        "mean": 0.8609101556836468,
+        "p50": 0.8609101556836468,
+        "p95": 0.8609101556836468,
+        "p95IsMax": true,
+        "min": 0.8609101556836468,
+        "max": 0.8609101556836468,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 0.8609101556836468,
+        "mean": 0.8609101556836468,
+        "p50": 0.8609101556836468,
+        "p95": 0.8609101556836468,
+        "p95IsMax": true,
+        "min": 0.8609101556836468,
+        "max": 0.8609101556836468,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "src/codemode.ts",
+      "top1Off": "src/codemode.ts",
+      "top5On": [
+        "src/codemode.ts"
+      ],
+      "top5Off": [
+        "src/codemode.ts"
+      ]
+    },
+    {
+      "id": "P7",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 0.8563677136200579,
+        "mean": 0.8563677136200579,
+        "p50": 0.8563677136200579,
+        "p95": 0.8563677136200579,
+        "p95IsMax": true,
+        "min": 0.8563677136200579,
+        "max": 0.8563677136200579,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 0.8563677136200579,
+        "mean": 0.8563677136200579,
+        "p50": 0.8563677136200579,
+        "p95": 0.8563677136200579,
+        "p95IsMax": true,
+        "min": 0.8563677136200579,
+        "max": 0.8563677136200579,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ]
+    },
+    {
+      "id": "K1",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 0.9173194127129571,
+        "mean": 0.9173194127129571,
+        "p50": 0.9173194127129571,
+        "p95": 0.9173194127129571,
+        "p95IsMax": true,
+        "min": 0.9173194127129571,
+        "max": 0.9173194127129571,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 0.9173194127129571,
+        "mean": 0.9173194127129571,
+        "p50": 0.9173194127129571,
+        "p95": 0.9173194127129571,
+        "p95IsMax": true,
+        "min": 0.9173194127129571,
+        "max": 0.9173194127129571,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "README.md",
+      "top1Off": "README.md",
+      "top5On": [
+        "README.md"
+      ],
+      "top5Off": [
+        "README.md"
+      ]
+    },
+    {
+      "id": "K2",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 0.8609101556836468,
+        "mean": 0.8609101556836468,
+        "p50": 0.8609101556836468,
+        "p95": 0.8609101556836468,
+        "p95IsMax": true,
+        "min": 0.8609101556836468,
+        "max": 0.8609101556836468,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 0.8609101556836468,
+        "mean": 0.8609101556836468,
+        "p50": 0.8609101556836468,
+        "p95": 0.8609101556836468,
+        "p95IsMax": true,
+        "min": 0.8609101556836468,
+        "max": 0.8609101556836468,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "src/sanitize.ts",
+      "top1Off": "src/sanitize.ts",
+      "top5On": [
+        "src/sanitize.ts"
+      ],
+      "top5Off": [
+        "src/sanitize.ts"
+      ]
+    },
+    {
+      "id": "K3",
+      "observations": 4,
+      "ndcgOn": {
+        "n": 4,
+        "median": 0.9052598568324595,
+        "mean": 0.9052598568324595,
+        "p50": 0.9052598568324595,
+        "p95": 0.9052598568324595,
+        "p95IsMax": true,
+        "min": 0.9052598568324595,
+        "max": 0.9052598568324595,
+        "stdev": 0
+      },
+      "ndcgOff": {
+        "n": 4,
+        "median": 0.9052598568324595,
+        "mean": 0.9052598568324595,
+        "p50": 0.9052598568324595,
+        "p95": 0.9052598568324595,
+        "p95IsMax": true,
+        "min": 0.9052598568324595,
+        "max": 0.9052598568324595,
+        "stdev": 0
+      },
+      "meanRankChanges": 0,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "P1",
+      "round": 0,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "package.json",
+      "top1Off": "package.json",
+      "top5On": [
+        "package.json"
+      ],
+      "top5Off": [
+        "package.json"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P2",
+      "round": 0,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": ".github/workflows/ci.yml",
+      "top1Off": ".github/workflows/ci.yml",
+      "top5On": [
+        ".github/workflows/ci.yml"
+      ],
+      "top5Off": [
+        ".github/workflows/ci.yml"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P3",
+      "round": 0,
+      "ndcgOn": 0.7871546029909718,
+      "ndcgOff": 0.7871546029909718,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 0.5,
+      "recallOff": 0.5,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts"
+      ],
+      "top5Off": [
+        "src/client.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P5",
+      "round": 0,
+      "ndcgOn": 0.7129278093711621,
+      "ndcgOff": 0.7129278093711621,
+      "mrrOn": 0.5,
+      "mrrOff": 0.5,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "bench",
+      "top1Off": "bench",
+      "top5On": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "top5Off": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P6",
+      "round": 0,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/codemode.ts",
+      "top1Off": "src/codemode.ts",
+      "top5On": [
+        "src/codemode.ts"
+      ],
+      "top5Off": [
+        "src/codemode.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P7",
+      "round": 0,
+      "ndcgOn": 0.8563677136200579,
+      "ndcgOff": 0.8563677136200579,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K1",
+      "round": 0,
+      "ndcgOn": 0.9173194127129571,
+      "ndcgOff": 0.9173194127129571,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "README.md",
+      "top1Off": "README.md",
+      "top5On": [
+        "README.md"
+      ],
+      "top5Off": [
+        "README.md"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K2",
+      "round": 0,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/sanitize.ts",
+      "top1Off": "src/sanitize.ts",
+      "top5On": [
+        "src/sanitize.ts"
+      ],
+      "top5Off": [
+        "src/sanitize.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K3",
+      "round": 0,
+      "ndcgOn": 0.9052598568324595,
+      "ndcgOff": 0.9052598568324595,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P1",
+      "round": 1,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "package.json",
+      "top1Off": "package.json",
+      "top5On": [
+        "package.json"
+      ],
+      "top5Off": [
+        "package.json"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P2",
+      "round": 1,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": ".github/workflows/ci.yml",
+      "top1Off": ".github/workflows/ci.yml",
+      "top5On": [
+        ".github/workflows/ci.yml"
+      ],
+      "top5Off": [
+        ".github/workflows/ci.yml"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P3",
+      "round": 1,
+      "ndcgOn": 0.7871546029909718,
+      "ndcgOff": 0.7871546029909718,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 0.5,
+      "recallOff": 0.5,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts"
+      ],
+      "top5Off": [
+        "src/client.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P5",
+      "round": 1,
+      "ndcgOn": 0.7129278093711621,
+      "ndcgOff": 0.7129278093711621,
+      "mrrOn": 0.5,
+      "mrrOff": 0.5,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "bench",
+      "top1Off": "bench",
+      "top5On": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "top5Off": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P6",
+      "round": 1,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/codemode.ts",
+      "top1Off": "src/codemode.ts",
+      "top5On": [
+        "src/codemode.ts"
+      ],
+      "top5Off": [
+        "src/codemode.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P7",
+      "round": 1,
+      "ndcgOn": 0.8563677136200579,
+      "ndcgOff": 0.8563677136200579,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K1",
+      "round": 1,
+      "ndcgOn": 0.9173194127129571,
+      "ndcgOff": 0.9173194127129571,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "README.md",
+      "top1Off": "README.md",
+      "top5On": [
+        "README.md"
+      ],
+      "top5Off": [
+        "README.md"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K2",
+      "round": 1,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/sanitize.ts",
+      "top1Off": "src/sanitize.ts",
+      "top5On": [
+        "src/sanitize.ts"
+      ],
+      "top5Off": [
+        "src/sanitize.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K3",
+      "round": 1,
+      "ndcgOn": 0.9052598568324595,
+      "ndcgOff": 0.9052598568324595,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P1",
+      "round": 2,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "package.json",
+      "top1Off": "package.json",
+      "top5On": [
+        "package.json"
+      ],
+      "top5Off": [
+        "package.json"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P2",
+      "round": 2,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": ".github/workflows/ci.yml",
+      "top1Off": ".github/workflows/ci.yml",
+      "top5On": [
+        ".github/workflows/ci.yml"
+      ],
+      "top5Off": [
+        ".github/workflows/ci.yml"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P3",
+      "round": 2,
+      "ndcgOn": 0.7871546029909718,
+      "ndcgOff": 0.7871546029909718,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 0.5,
+      "recallOff": 0.5,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts"
+      ],
+      "top5Off": [
+        "src/client.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P5",
+      "round": 2,
+      "ndcgOn": 0.7129278093711621,
+      "ndcgOff": 0.7129278093711621,
+      "mrrOn": 0.5,
+      "mrrOff": 0.5,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "bench",
+      "top1Off": "bench",
+      "top5On": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "top5Off": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P6",
+      "round": 2,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/codemode.ts",
+      "top1Off": "src/codemode.ts",
+      "top5On": [
+        "src/codemode.ts"
+      ],
+      "top5Off": [
+        "src/codemode.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P7",
+      "round": 2,
+      "ndcgOn": 0.8563677136200579,
+      "ndcgOff": 0.8563677136200579,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K1",
+      "round": 2,
+      "ndcgOn": 0.9173194127129571,
+      "ndcgOff": 0.9173194127129571,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "README.md",
+      "top1Off": "README.md",
+      "top5On": [
+        "README.md"
+      ],
+      "top5Off": [
+        "README.md"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K2",
+      "round": 2,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/sanitize.ts",
+      "top1Off": "src/sanitize.ts",
+      "top5On": [
+        "src/sanitize.ts"
+      ],
+      "top5Off": [
+        "src/sanitize.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K3",
+      "round": 2,
+      "ndcgOn": 0.9052598568324595,
+      "ndcgOff": 0.9052598568324595,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P1",
+      "round": 3,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "package.json",
+      "top1Off": "package.json",
+      "top5On": [
+        "package.json"
+      ],
+      "top5Off": [
+        "package.json"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P2",
+      "round": 3,
+      "ndcgOn": 1,
+      "ndcgOff": 1,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": ".github/workflows/ci.yml",
+      "top1Off": ".github/workflows/ci.yml",
+      "top5On": [
+        ".github/workflows/ci.yml"
+      ],
+      "top5Off": [
+        ".github/workflows/ci.yml"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P3",
+      "round": 3,
+      "ndcgOn": 0.7871546029909718,
+      "ndcgOff": 0.7871546029909718,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 0.5,
+      "recallOff": 0.5,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts"
+      ],
+      "top5Off": [
+        "src/client.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P5",
+      "round": 3,
+      "ndcgOn": 0.7129278093711621,
+      "ndcgOff": 0.7129278093711621,
+      "mrrOn": 0.5,
+      "mrrOff": 0.5,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "bench",
+      "top1Off": "bench",
+      "top5On": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "top5Off": [
+        "bench",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P6",
+      "round": 3,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/codemode.ts",
+      "top1Off": "src/codemode.ts",
+      "top5On": [
+        "src/codemode.ts"
+      ],
+      "top5Off": [
+        "src/codemode.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "P7",
+      "round": 3,
+      "ndcgOn": 0.8563677136200579,
+      "ndcgOff": 0.8563677136200579,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K1",
+      "round": 3,
+      "ndcgOn": 0.9173194127129571,
+      "ndcgOff": 0.9173194127129571,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "README.md",
+      "top1Off": "README.md",
+      "top5On": [
+        "README.md"
+      ],
+      "top5Off": [
+        "README.md"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K2",
+      "round": 3,
+      "ndcgOn": 0.8609101556836468,
+      "ndcgOff": 0.8609101556836468,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/sanitize.ts",
+      "top1Off": "src/sanitize.ts",
+      "top5On": [
+        "src/sanitize.ts"
+      ],
+      "top5Off": [
+        "src/sanitize.ts"
+      ],
+      "rankChanges": 0
+    },
+    {
+      "id": "K3",
+      "round": 3,
+      "ndcgOn": 0.9052598568324595,
+      "ndcgOff": 0.9052598568324595,
+      "mrrOn": 1,
+      "mrrOff": 1,
+      "recallOn": 1,
+      "recallOff": 1,
+      "top1On": "src/client.ts",
+      "top1Off": "src/client.ts",
+      "top5On": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "top5Off": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "rankChanges": 0
+    }
+  ],
+  "finishedAt": "2026-10-14T20:59:49.259Z"
+}

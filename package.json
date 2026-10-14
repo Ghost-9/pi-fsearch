@@ -50,6 +50,7 @@
     "bench": "node test/bench.ts",
     "bench:scopes": "node bench/run.mjs",
     "bench:scopes:json": "node bench/run.mjs --json",
+    "bench:report": "node bench/report.mjs",
     "bench:tokens": "node bench/tokens.mjs",
     "bench:lanes": "node bench/lanes.mjs",
     "bench:fallback": "node bench/fallback.mjs",

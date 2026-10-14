@@ -47,11 +47,11 @@ export function legacyHeuristic(tool, hits) {
 
 const TASKS = [
   { id: "find-file", tool: "query", params: { query: "package.json", limit: 10 }, native: { bin: "find", args: [".", "-name", "package.json"] } },
-  { id: "find-definition", tool: "grep", params: { pattern: "applyProximityRanking", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "applyProximityRanking", "src"] }, heuristic: "fsearch_grep" },
+  { id: "find-definition", tool: "grep", params: { pattern: "applyProximityRanking", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "applyProximityRanking", "."] }, heuristic: "fsearch_grep" },
   { id: "locate-config", tool: "query", params: { query: ".gitignore", limit: 10 }, native: { bin: "find", args: [".", "-name", ".gitignore"] } },
-  { id: "grep-literal", tool: "grep", params: { pattern: "estimateTokensSaved", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "estimateTokensSaved", "."] }, heuristic: "fsearch_grep" },
+  { id: "grep-literal", tool: "grep", params: { pattern: "estimateTokensSaved", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "estimateTokensSaved", "."] }, heuristic: "fsearch_grep" },
   { id: "find-config", tool: "query", params: { query: "tsconfig.json", limit: 10 }, native: { bin: "find", args: [".", "-name", "tsconfig.json"] } },
-  { id: "grep-symbol", tool: "grep", params: { pattern: "FSearchClient", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "FSearchClient", "."] }, heuristic: "fsearch_grep" },
+  { id: "grep-symbol", tool: "grep", params: { pattern: "FSearchClient", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "FSearchClient", "."] }, heuristic: "fsearch_grep" },
 ];
 
 function parseArgs(argv) {
@@ -92,7 +92,9 @@ async function main() {
   const observations = [];
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const roundFor = (i) => TASKS[i % TASKS.length];
-  const maxRounds = Math.max(1, Math.ceil(args.pairs / TASKS.length));
+  // One observation per round, cycling through the task set: `pairs` is the
+  // number of paired observations the contract requires (>=30 for scenario runs).
+  const maxRounds = Math.max(1, args.pairs);
 
   const runUltra = async (task) => {
     const result = await harness.callTool(task.tool === "query" ? "_query" : task.tool === "grep" ? "_grep" : "_multi_grep", task.params);
