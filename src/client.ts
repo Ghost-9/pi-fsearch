@@ -150,8 +150,10 @@ export class UltraSearchClient {
 
   private trySpawnDaemon(): void {
     try {
+      // Never spawn from ~/Applications: that path historically held a stale
+      // pre-rename build that bound the legacy socket and started a second,
+      // divergent index (issue #45). Only spawn from a known-fresh install.
       const candidates = [
-        path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch"),
         "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch",
         path.join(os.homedir(), ".local/bin/ultrasearch-daemon"),
         "/usr/local/bin/ultrasearch-daemon",
