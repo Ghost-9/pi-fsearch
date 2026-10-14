@@ -532,6 +532,10 @@ export class UltraSearchClient {
     budgetMs?: number;
     deadlineExceeded?: boolean;
     warning?: string;
+    /** Results the daemon's policy held back (#23). */
+    withheld?: number;
+    /** Milliseconds the index was behind a replay for this answer (#19). */
+    staleMs?: number;
   }): SearchResultMeta {
     return {
       complete: params.complete,
@@ -546,6 +550,8 @@ export class UltraSearchClient {
       deadlineExceeded: params.deadlineExceeded ?? false,
       warning: params.warning,
       rawCount: params.rawCount,
+      withheld: params.withheld,
+      staleMs: params.staleMs,
     };
   }
 
@@ -612,8 +618,11 @@ export class UltraSearchClient {
       // when the caller asks, so the engine default applies and the A/B can measure it.
       if (options.boost !== undefined) payload.boost = options.boost;
       if (options.near) payload.near = options.near;
-      // Advisor finding #4: `sort` was declared but never forwarded on the wire.
-      if (options.sort) payload.sort = options.sort;
+      // `sort` was removed: the engine's protocol has no sort field (ranking is
+      // the match score plus its `boost`/`near` components), so forwarding it
+      // did nothing except make the option look supported. See
+      // docs/engine-changes.md.
+      if (options.root) payload.root = options.root;
       if (budgetMs !== undefined) payload.budget_ms = budgetMs;
 
       let res: UltraSearchSearchResponse = await this.request<UltraSearchSearchResponse>(
@@ -679,6 +688,8 @@ export class UltraSearchClient {
         charCount: kept.reduce((acc, h) => acc + h.path.length + 1, 0),
         source: res.source ?? "index",
         budgetMs,
+        withheld: res.withheld,
+        staleMs: res.stale_ms,
       });
 
       const elapsed = round2(performance.now() - start);
@@ -717,7 +728,7 @@ export class UltraSearchClient {
           source: "index",
           budgetMs,
           deadlineExceeded: true,
-        });
+      });
         if (!options.skipAudit) {
           recordAudit({
             ts: Date.now(),
@@ -790,7 +801,7 @@ export class UltraSearchClient {
             source: "index",
             budgetMs,
             warning: validation.error,
-          }),
+      }),
         };
       }
       warning = validation.warning;
@@ -801,6 +812,9 @@ export class UltraSearchClient {
         op: "grep",
         pattern,
         in: options.in,
+        // The engine refuses a scope outside `root` and drops hits outside it
+        // (#23), so a caller bug cannot widen a search.
+        root: options.root,
         mode,
         limit: overscan,
         budget_ms: budgetMs,
@@ -858,6 +872,8 @@ export class UltraSearchClient {
         source: res.source ?? "index",
         budgetMs,
         warning,
+        withheld: res.withheld,
+        staleMs: res.stale_ms,
       });
 
       const elapsed = round2(performance.now() - start);
@@ -898,7 +914,7 @@ export class UltraSearchClient {
           budgetMs,
           deadlineExceeded: true,
           warning,
-        });
+      });
         if (!options.skipAudit) {
           recordAudit({
             ts: Date.now(),
@@ -979,6 +995,8 @@ export class UltraSearchClient {
         charCount: UltraSearchClient.countGrepChars(kept),
         source,
         budgetMs,
+        withheld: res.withheld,
+        staleMs: res.stale_ms,
       });
       return {
         ...res,
@@ -1015,6 +1033,7 @@ export class UltraSearchClient {
           op: "multi_grep",
           patterns,
           in: options.in,
+          root: options.root,
           mode,
           limit: overscan,
           budget_ms: budgetMs,
@@ -1062,12 +1081,18 @@ export class UltraSearchClient {
       }
 
       const elapsed = round2(performance.now() - start);
+      // Across the fan-out: withholding is additive, freshness is the worst
+      // lag seen (#23, #19).
+      const withheld = results.reduce((n, r) => n + (r.meta?.withheld ?? 0), 0);
+      const staleMs = results.reduce((n, r) => Math.max(n, r.meta?.staleMs ?? 0), 0);
       const merged = finalize(
         {
           ok: true,
           took_us: Math.round(elapsed * 1000),
           patterns,
           source: "native_fallback",
+          withheld,
+          stale_ms: staleMs,
         },
         Array.from(fileMap.values()),
         "native_fallback",
@@ -1106,6 +1131,8 @@ export class UltraSearchClient {
         truncated: false,
         charCount: hits.reduce((acc, h) => acc + h.path.length + 1, 0),
         source: res.source ?? "index",
+        withheld: res.withheld,
+        staleMs: res.stale_ms,
       });
       const elapsed = round2(performance.now() - start);
       recordAudit({
@@ -1121,7 +1148,7 @@ export class UltraSearchClient {
       return { ...res, complete: meta.complete, meta };
     } catch (err) {
       if (this.enableFallback) {
-        return this.nativeFallbackSearch("", { in: scopeDir, limit, sort: "mtime" });
+        return this.nativeFallbackSearch("", { in: scopeDir, limit });
       }
       throw err;
     }

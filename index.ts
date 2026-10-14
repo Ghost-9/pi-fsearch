@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { UltraSearchClient } from "./src/client.ts";
-import { isPathSafe } from "./src/sanitize.ts";
+import { isPathSafe, unsafeQueryScope, scrubSecrets } from "./src/sanitize.ts";
 import { formatGrepFiles } from "./src/formatter.ts";
 import { summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "./src/observer.ts";
@@ -58,6 +58,26 @@ export function resolveWorktreeRoot(startDir = process.cwd()): string {
   return startDir;
 }
 
+/**
+ * A one-line freshness warning when the daemon's index is behind a replay
+ * (issue #19): an agent can then decide to re-run rather than trust a result
+ * that may miss recent changes. Empty when the index is caught up.
+ */
+function freshnessHint(meta: any): string {
+  const ms = meta?.staleMs ?? 0;
+  return ms > 0 ? `\n[UltraSearch: index replay in progress, ${ms}ms behind; results may miss changes from that window]` : "";
+}
+
+/**
+ * A one-line note when the daemon's policy withheld results (#23): the count
+ * is reported rather than the rows being dropped silently, so "denied" is
+ * never mistaken for "nothing matched".
+ */
+function withheldHint(meta: any): string {
+  const n = meta?.withheld ?? 0;
+  return n > 0 ? `\n[UltraSearch: ${n} path${n === 1 ? "" : "s"} withheld by policy]` : "";
+}
+
 export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   const client = new UltraSearchClient();
 
@@ -97,8 +117,27 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           cleanedQuery = cleanedQuery.replace(nearMatch[0], "").trim();
         }
 
+        // A query can name its own scope with `in:` (the daemon's own query
+        // language), which a check on the tool parameters alone would miss.
+        // Refused here for an actionable error, and again by the daemon via
+        // `root` below: a caller bug must not widen a search.
+        if (!params.global) {
+          const escape = unsafeQueryScope(cleanedQuery, worktreeRoot);
+          if (escape) {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: `Security violation: query scope "${escape}" escapes the workspace root. Pass global: true for a disk-wide search.`,
+                },
+              ],
+            };
+          }
+        }
+
         const res = await client.search(cleanedQuery, {
           in: searchScope,
+          root: params.global ? undefined : worktreeRoot,
           limit: params.limit ?? 30,
           git: true,
           budget_ms: params.budget_ms,
@@ -130,16 +169,26 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           };
         }
 
+        // A path can carry credential-shaped text (a token in a file name).
+        // The same redactor that protects grep output applies to paths too, and
+        // how many it changed is reported rather than silently masked.
+        let dlpMasked = 0;
         const formatted = hits
           .map((h) => {
             const rel = h.path.startsWith(worktreeRoot) ? h.path.slice(worktreeRoot.length).replace(/^\//, "") : h.path;
+            const safe = scrubSecrets(rel);
+            if (safe !== rel) dlpMasked++;
             const gitTag = h.git ? ` [git:${h.git}]` : "";
             const distTag = h.distance !== undefined ? ` [dist:${h.distance}]` : "";
-            return `${rel}${gitTag}${distTag} (${h.kind}, score: ${h.score})`;
+            // The daemon owns proximity ranking; its component is reported so
+            // the ordering is explainable (see `server::nearness`).
+            const nearTag = proximityTarget && h.near !== undefined ? ` [near:${h.near >= 0 ? "+" : ""}${h.near}]` : "";
+            return `${safe}${gitTag}${distTag}${nearTag} (${h.kind}, score: ${h.score})`;
           })
           .join("\n");
 
         const sourceNotice = res.source === "native_fallback" ? " (via native fallback)" : "";
+        const dlpNote = dlpMasked > 0 ? ` [DLP: ${dlpMasked} path${dlpMasked === 1 ? "" : "s"} redacted]` : "";
         const budgetNotice = res.meta?.deadlineExceeded
           ? `\n[budget deadline ${res.meta.budgetMs}ms exceeded: partial results; narrow the scope or raise budget_ms]`
           : res.truncated
@@ -149,7 +198,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           content: [
             {
               type: "text",
-              text: `Found ${hits.length} matches in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice}:\n${formatted}${budgetNotice}`,
+              text: `Found ${hits.length} matches in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice}${dlpNote}:\n${formatted}${budgetNotice}${freshnessHint(res.meta)}${withheldHint(res.meta)}`,
             },
           ],
           details: {
@@ -223,6 +272,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         } else {
           const res = await client.grep(params.pattern, {
             in: searchScope,
+            root: params.global ? undefined : worktreeRoot,
             mode: (params.mode ?? "literal") as "literal" | "regex" | "symbol",
             limit: params.limit ?? 30,
             budget_ms: params.budget_ms ?? 2500,
@@ -261,6 +311,11 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         if (resultMeta?.deadlineExceeded) notices.push(`[budget deadline ${resultMeta.budgetMs}ms exceeded: partial results; narrow the scope or raise budget_ms]`);
         else if (resultMeta?.truncated) notices.push(`[result truncated: ${resultMeta.truncatedCount ?? 0} files dropped by limit after ignoring ${resultMeta.filteredCount ?? 0} filtered]`);
         if (formatted.truncatedCount > 0) notices.push(`[${formatted.truncatedCount} matches dropped by max_tokens]`);
+        // Freshness (#19) and policy withholding (#23) are one line each, at
+        // the end, where an agent reads them.
+        for (const note of [freshnessHint(resultMeta), withheldHint(resultMeta)]) {
+          if (note) notices.push(note.trim());
+        }
         const noticeText = notices.length > 0 ? `\n${notices.join("\n")}` : "";
         return {
           content: [
@@ -313,6 +368,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
 
         const res = await client.multiGrep(params.patterns, {
           in: searchScope,
+          root: worktreeRoot,
           limit: params.limit ?? 30,
           budget_ms: params.budget_ms,
         });
@@ -379,6 +435,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         const searchScope = params.global ? undefined : worktreeRoot;
         const res = await client.search(`'${params.filename}`, {
           in: searchScope,
+          root: params.global ? undefined : worktreeRoot,
           limit: 10,
           auditTool: "ultrasearch_locate",
         });
@@ -389,7 +446,8 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           return { content: [{ type: "text", text: `File "${params.filename}" not found.` }] };
         }
 
-        const lines = hits.map((h) => h.path).join("\n");
+        // Paths go through the redactor like any other output (#23).
+        const lines = hits.map((h) => scrubSecrets(h.path)).join("\n");
         return { content: [{ type: "text", text: `Located:\n${lines}` }] };
       } catch (err: any) {
         return { content: [{ type: "text", text: `Locate error: ${err?.message ?? err}` }] };
@@ -414,7 +472,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         if (hits.length === 0) {
           return { content: [{ type: "text", text: "No recent activity recorded for this workspace." }] };
         }
-        const lines = hits.map((h) => h.path.replace(worktreeRoot, "").replace(/^\//, "")).join("\n");
+        const lines = hits.map((h) => scrubSecrets(h.path.replace(worktreeRoot, "").replace(/^\//, ""))).join("\n");
         return { content: [{ type: "text", text: `Recent workspace files:\n${lines}` }] };
       } catch (err: any) {
         return { content: [{ type: "text", text: `Recent activity query error: ${err?.message ?? err}` }] };
