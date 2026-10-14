@@ -3,7 +3,7 @@
 // Owned by wave1/baseline (verifier). Does NOT import any repo bench harness.
 //
 // Every script that imports this library MUST call ensureTestEnv() before
-// touching the FSearch client so the production audit log is never written.
+// touching the UltraSearch client so the production audit log is never written.
 
 import { execFileSync } from "node:child_process";
 import { performance } from "node:perf_hooks";
@@ -44,8 +44,8 @@ export async function initClientModule() {
 }
 
 export function makeClient(overrides = {}) {
-  const { FSearchClient } = globalThis.__US_MOD__;
-  return new FSearchClient({ timeoutMs: 15000, ...overrides });
+  const { UltraSearchClient } = globalThis.__US_MOD__;
+  return new UltraSearchClient({ timeoutMs: 15000, ...overrides });
 }
 
 // ---------------------------------------------------------------- statistics

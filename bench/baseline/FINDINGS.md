@@ -191,6 +191,11 @@ would.
 report records `other_writers_rows`; later waves should prefer the same per-run snapshot
 pattern and treat any externally reset log as a failed measurement window.
 
+**Recommendation (product-side, for `src/telemetry.ts`):** give each process its own test log
+instead of one shared append-only file — e.g. `test_audit.<pid>.jsonl` or a path selected by
+`PI_ULTRASEARCH_TEST_LOG` — so concurrent waves and concurrent scripts cannot truncate or
+interleave each other's evidence window. The verifier only records this; it is not fixed here.
+
 ---
 
 ## F8 — The advisor worktree root contains the judgment file, which spoils every query

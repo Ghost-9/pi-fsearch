@@ -93,6 +93,13 @@ Fixture: `make-fixture.mjs` regenerates `~/.cache/pi-ultrasearch-bench/fixture-5
 The judgment corpus is frozen at `/Users/batra/ultrasearch-waves/advisor`
 (`ultrasearch-repo@0a16e50`, 33 files); the scorer records the corpus commit and dirty flag.
 
+**Compatibility (945faba, UltraSearch rename):** the harness now imports `UltraSearchClient`
+and labels calls with `ultrasearch_*` tool names. Query sets, scopes, statistics and golden
+files were intentionally **not** changed: entries such as `FSearchClient` remain because they
+are frozen measures of the `0a16e50` corpus, and the K4 detector still matches
+`class FSearchClient` in the clean-archive corpus. A wave must decide whether it is measuring
+the old or the new corpus before re-running the suite.
+
 ---
 
 ## 4. Latency verification
@@ -299,3 +306,4 @@ raw JSON path, and the equivalence diff (if retrieval changed).
 | --- | --- | --- |
 | 2026-10-14 | Initial protocol, frozen baseline at `0a16e50`, gate added per advisor directive | wave1/baseline (verifier) |
 | 2026-10-14 | Clean-archive judgment corpus mandatory (F8); judgment scoring added | wave1/baseline (verifier) |
+| 2026-10-15 | Rebased onto `945faba` (UltraSearch rename): client class + tool labels updated, measurement logic and goldens untouched; smoke-verified against the migrated daemon | wave1/baseline (verifier) |

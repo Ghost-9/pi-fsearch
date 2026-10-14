@@ -40,14 +40,14 @@ const ABSENT_GREP_TOKEN = "zzz_absent_" + "token_9c3f";
 const TASKS = [
   {
     id: "t01",
-    tool: "fsearch_query",
+    tool: "ultrasearch_query",
     scope: REPO_ROOT,
     params: { query: "package.json", limit: 30 },
     run: (c) => c.search("package.json", { in: REPO_ROOT, limit: 30, git: true, boost: true }),
   },
   {
     id: "t02",
-    tool: "fsearch_query",
+    tool: "ultrasearch_query",
     scope: FIXTURE_ROOT,
     params: { query: FIXTURE_SPECIAL.markerFile, limit: 30 },
     run: (c) =>
@@ -55,7 +55,7 @@ const TASKS = [
   },
   {
     id: "t03",
-    tool: "fsearch_query",
+    tool: "ultrasearch_query",
     scope: REPO_ROOT,
     params: { query: "zzz_absent_alpha_9c3f.ts", limit: 30 },
     run: (c) =>
@@ -63,7 +63,7 @@ const TASKS = [
   },
   {
     id: "t04",
-    tool: "fsearch_grep",
+    tool: "ultrasearch_grep",
     scope: REPO_ROOT,
     params: { pattern: "FSearchClient", limit: 30, context: 0, mode: "literal" },
     run: (c) =>
@@ -71,7 +71,7 @@ const TASKS = [
   },
   {
     id: "t05",
-    tool: "fsearch_grep",
+    tool: "ultrasearch_grep",
     scope: FIXTURE_ROOT,
     params: { pattern: FIXTURE_SPECIAL.marker, limit: 30, context: 0, mode: "literal" },
     run: (c) =>
@@ -79,7 +79,7 @@ const TASKS = [
   },
   {
     id: "t06",
-    tool: "fsearch_grep",
+    tool: "ultrasearch_grep",
     scope: FIXTURE_ROOT,
     params: { pattern: ABSENT_GREP_TOKEN, limit: 30, context: 0, mode: "literal" },
     run: (c) =>
@@ -87,14 +87,14 @@ const TASKS = [
   },
   {
     id: "t07",
-    tool: "fsearch_multi_grep",
+    tool: "ultrasearch_multi_grep",
     scope: REPO_ROOT,
     params: { patterns: ["recordAudit", "formatGrepFiles"], limit: 30 },
     run: (c) => c.multiGrep(["recordAudit", "formatGrepFiles"], { in: REPO_ROOT, limit: 30 }),
   },
   {
     id: "t08",
-    tool: "fsearch_multi_grep",
+    tool: "ultrasearch_multi_grep",
     scope: FIXTURE_ROOT,
     params: { patterns: [FIXTURE_SPECIAL.marker, FIXTURE_SPECIAL.marker2], limit: 30 },
     run: (c) =>
@@ -102,14 +102,14 @@ const TASKS = [
   },
   {
     id: "t09",
-    tool: "fsearch_locate",
+    tool: "ultrasearch_locate",
     scope: null,
     params: { filename: "package.json", global: true, limit: 10 },
-    run: (c) => c.search("'package.json", { limit: 10, auditTool: "fsearch_locate" }),
+    run: (c) => c.search("'package.json", { limit: 10, auditTool: "ultrasearch_locate" }),
   },
   {
     id: "t10",
-    tool: "fsearch_recent",
+    tool: "ultrasearch_recent",
     scope: REPO_ROOT,
     params: { limit: 15 },
     run: (c) => c.recent(REPO_ROOT, 15),
@@ -228,15 +228,15 @@ async function main() {
   const results = [];
   for (const t of TASKS) {
     const res = await t.run(client);
-    if (t.tool === "fsearch_query") res.__query = t.params.query;
-    if (t.tool === "fsearch_grep") res.__pattern = t.params.pattern;
-    if (t.tool === "fsearch_multi_grep") res.__patterns = t.params.patterns;
+    if (t.tool === "ultrasearch_query") res.__query = t.params.query;
+    if (t.tool === "ultrasearch_grep") res.__pattern = t.params.pattern;
+    if (t.tool === "ultrasearch_multi_grep") res.__patterns = t.params.patterns;
 
     let built;
-    if (t.tool === "fsearch_query") built = pathSearchText(res, t.scope ?? REPO_ROOT);
-    else if (t.tool === "fsearch_grep") built = grepText(res, formatter, t.scope ?? REPO_ROOT);
-    else if (t.tool === "fsearch_multi_grep") built = multiText(res, formatter, t.scope ?? REPO_ROOT);
-    else if (t.tool === "fsearch_locate") built = locateText(res);
+    if (t.tool === "ultrasearch_query") built = pathSearchText(res, t.scope ?? REPO_ROOT);
+    else if (t.tool === "ultrasearch_grep") built = grepText(res, formatter, t.scope ?? REPO_ROOT);
+    else if (t.tool === "ultrasearch_multi_grep") built = multiText(res, formatter, t.scope ?? REPO_ROOT);
+    else if (t.tool === "ultrasearch_locate") built = locateText(res);
     else built = recentText(res, t.scope ?? REPO_ROOT);
 
     const text = built.text;

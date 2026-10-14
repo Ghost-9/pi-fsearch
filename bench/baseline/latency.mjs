@@ -247,13 +247,13 @@ async function main() {
     await sleep(250);
   }
 
-  // 4. locate (global, mirrors fsearch_locate tool: search("'name", limit 50)).
+  // 4. locate (global, mirrors ultrasearch_locate tool: search("'name", limit 50)).
   {
     const client = makeClient();
     try {
       const out = await runAB({
         label: "global__locate",
-        usFn: () => client.search("'package.json", { limit: 50, auditTool: "fsearch_locate" }),
+        usFn: () => client.search("'package.json", { limit: 50, auditTool: "ultrasearch_locate" }),
         nativeFn: () => timeExec("mdfind", ["-name", "package.json"]),
       });
       out.native_cmd = "mdfind -name package.json (Spotlight)";
