@@ -2,6 +2,7 @@
 //! `fsearch stdio`, `fsearch mcp` and the CLI are thin clients.
 
 use crate::frecency::{self, Frecency};
+use fsearch::deny::{self, DenyList};
 use crate::git::{self, Git};
 use fsearch::walk::{KIND_DIR, KIND_FILE, KIND_LINK, KIND_OTHER};
 use fsearch::{Engine, Found, GrepMode, Options, Query};
@@ -41,7 +42,7 @@ pub fn serve(dir: PathBuf, home: String) {
     };
     let g = git.clone();
     engine.on_change(move |dirs| g.changed(dirs));
-    let cx = Arc::new(Ctx { engine, git, frecency: Frecency::load(dir.join("frecency")) });
+    let cx = Arc::new(Ctx { engine, git, frecency: Frecency::load(dir.join("frecency")), deny: deny::DenyCache::new(dir.clone()) });
     let sock = socket_path(&dir);
     let _ = std::fs::remove_file(&sock);
     let listener = match UnixListener::bind(&sock) {
@@ -63,6 +64,8 @@ struct Ctx {
     engine: Engine,
     git: Arc<Git>,
     frecency: Arc<Frecency>,
+    /// The configurable deny-list (#23), checked before any result leaves.
+    deny: deny::DenyCache,
 }
 
 fn try_lock(f: &std::fs::File) -> bool {
@@ -128,6 +131,16 @@ fn waiting(conn: &UnixStream) -> bool {
     n < 0 && std::io::Error::last_os_error().kind() == std::io::ErrorKind::WouldBlock
 }
 
+/// A scope the deny-list blocks is refused outright: a caller must not be
+/// able to tell "nothing matched" from "policy withheld it" (#23).
+fn guard_denied(deny: &DenyList, scope: Option<&[u8]>) -> Result<(), String> {
+    let Some(scope) = scope else { return Ok(()) };
+    if deny.blocked(scope) {
+        return Err(format!("security: {} is denied by policy", String::from_utf8_lossy(scope)));
+    }
+    Ok(())
+}
+
 /// The answer to one request line, as one line of JSON.
 fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
     let v: Value = match serde_json::from_str(line) {
@@ -135,8 +148,43 @@ fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
         Err(e) => return put(out, &json!({"ok": false, "error": format!("bad json: {e}")})),
     };
     let id = v.get("id").unwrap_or(&Value::Null);
-    match run(&v, cx) {
-        Ok(Reply::Hits(found, took_us, next, annotate)) => {
+    // Load the policy first: an unusable deny-list fails the request closed,
+    // before any result is computed (let alone written) (#23). Only
+    // diagnostics, which return no indexed path, stay reachable — an operator
+    // must be able to ask `status` why everything stopped working.
+    let deny = match cx.deny.get() {
+        Ok(d) => d,
+        Err(e) => {
+            let op = v.get("op").and_then(Value::as_str).unwrap_or("search");
+            return if matches!(op, "ping" | "status" | "save") {
+                match run(&v, cx, None, &DenyList::none()) {
+                    Ok(Reply::Value(mut r)) => {
+                        // A policy is configured; it just cannot be used.
+                        r["deny_configured"] = true.into();
+                        r["deny_rules"] = 0.into();
+                        r["deny_error"] = e.into();
+                        r["id"] = id.clone();
+                        put(out, &r)
+                    }
+                    Ok(Reply::Hits(..)) => put(out, &json!({"ok": false, "error": e, "id": id})),
+                    Err(e2) => put(out, &json!({"ok": false, "error": e2, "id": id})),
+                }
+            } else {
+                put(out, &json!({"ok": false, "error": e, "id": id}))
+            };
+        }
+    };
+    // A request may name the boundary it is allowed to see (`root`); hits
+    // outside it are dropped even if the daemon's own scope was wider.
+    let root = v.get("root").and_then(Value::as_str).filter(|r| !r.is_empty()).map(real);
+    match run(&v, cx, root.as_deref(), &deny) {
+        Ok(Reply::Hits(mut found, took_us, next, annotate)) => {
+            let mut withheld = deny.retain(&mut found, |f| f.path.as_os_str().as_bytes());
+            if let Some(r) = &root {
+                let n = found.len();
+                found.retain(|f| deny::within(f.path.as_os_str().as_bytes(), r));
+                withheld += n - found.len();
+            }
             let hits = found
                 .iter()
                 .map(|f| Hit {
@@ -150,14 +198,39 @@ fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
                     size: f.size,
                 })
                 .collect();
-            put(out, &Hits { hits, id, next, ok: true, took_us })
+            let stale = cx.engine.staleness_ms();
+            put(out, &Hits { hits, id, next, ok: true, took_us, withheld, stale })
         }
         Ok(Reply::Value(mut r)) => {
+            // Grep and `recent` answers carry paths too: the same policy
+            // applies, and the count of what was held back is reported
+            // rather than dropped silently.
+            let withheld = censor_files(&mut r, &deny, root.as_deref());
+            if withheld > 0 {
+                r["withheld"] = withheld.into();
+            }
             r["id"] = id.clone();
+            let stale = cx.engine.staleness_ms();
+            if stale > 0 {
+                r["stale_ms"] = stale.into();
+            }
             put(out, &r)
         }
         Err(e) => put(out, &json!({"ok": false, "error": e, "id": id})),
     }
+}
+
+/// Apply the deny-list and any caller `root` to the `files` of a `Value`
+/// answer (grep, recent). Returns how many were withheld.
+fn censor_files(r: &mut Value, deny: &DenyList, root: Option<&[u8]>) -> usize {
+    let Some(files) = r.get_mut("files").and_then(Value::as_array_mut) else { return 0 };
+    let before = files.len();
+    files.retain(|f| {
+        let Some(p) = f.get("path").and_then(Value::as_str) else { return false };
+        let p = p.as_bytes();
+        !deny.blocked(p) && root.is_none_or(|r| deny::within(p, r))
+    });
+    before - files.len()
 }
 
 fn put(out: &mut Vec<u8>, v: &impl serde::Serialize) {
@@ -183,6 +256,21 @@ struct Hits<'a> {
     next: Option<usize>,
     ok: bool,
     took_us: u64,
+    /// Results held back by the deny-list or the caller's `root` (#23).
+    #[serde(skip_serializing_if = "is_zero_usize")]
+    withheld: usize,
+    /// Milliseconds the index has been behind a replay, when it is (#19):
+    /// a result may miss changes made during the window.
+    #[serde(skip_serializing_if = "is_zero_u64")]
+    stale: u64,
+}
+
+fn is_zero_usize(v: &usize) -> bool {
+    *v == 0
+}
+
+fn is_zero_u64(v: &u64) -> bool {
+    *v == 0
 }
 
 #[derive(serde::Serialize)]
@@ -211,7 +299,32 @@ fn is_zero(v: &i32) -> bool {
     *v == 0
 }
 
-fn run(v: &Value, cx: &Ctx) -> Result<Reply, String> {
+/// A request's scope against the caller's boundary. An escaping scope is an
+/// error, never a silently narrowed search (#23): the acceptance criterion is
+/// that *every* tool refuses, so a caller cannot mistake "denied" for "no
+/// results".
+fn guard_scope(root: Option<&[u8]>, scope: Option<&[u8]>) -> Result<(), String> {
+    let (Some(root), Some(scope)) = (root, scope) else { return Ok(()) };
+    if deny::within(scope, root) {
+        return Ok(());
+    }
+    Err(format!(
+        "security: scope {} is outside the allowed root {} (pass \"global\": true or a scope inside it)",
+        String::from_utf8_lossy(scope),
+        String::from_utf8_lossy(root)
+    ))
+}
+
+/// A request's single-file target against the boundary (grep `file:`).
+fn guard_file(root: Option<&[u8]>, file: Option<&str>) -> Result<(), String> {
+    let (Some(root), Some(file)) = (root, file) else { return Ok(()) };
+    if file.as_bytes().starts_with(b"/") && !deny::within(file.as_bytes(), root) {
+        return Err(format!("security: file {file} is outside the allowed root {}", String::from_utf8_lossy(root)));
+    }
+    Ok(())
+}
+
+fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Reply, String> {
     let engine = &cx.engine;
     let op = v.get("op").and_then(Value::as_str).unwrap_or("search");
     let is_grep = op == "grep"
@@ -223,7 +336,7 @@ fn run(v: &Value, cx: &Ctx) -> Result<Reply, String> {
             engine.save();
             Ok(Reply::Value(json!({"ok": true, "scheduled": true})))
         }
-        _ if is_grep => grep(v, cx).map(Reply::Value),
+        _ if is_grep => grep(v, cx, root, deny).map(Reply::Value),
         "open" => {
             // An editor or agent opened these: they rank higher for a while.
             let paths: Vec<&str> = match (v.get("path"), v.get("paths")) {
@@ -239,6 +352,8 @@ fn run(v: &Value, cx: &Ctx) -> Result<Reply, String> {
             // What you worked on lately (under `in:`, passing the query),
             // best first: opens and your commits (see `frecent`).
             let (q, _) = parse_request(v, engine.home())?;
+            guard_scope(root, q.scope.as_deref())?;
+            guard_denied(deny, q.scope.as_deref())?;
             let top = frecent(cx, q.scope.as_deref(), fsearch::query::now_secs());
             let hits = top.into_iter().filter_map(|(p, s)| Some(Found { score: (s * 100.0) as i32, ..found(&q, &p)? }));
             Ok(Reply::Hits(hits.take(q.limit).collect(), 0, None, v.get("git") == Some(&Value::Bool(true))))
@@ -263,11 +378,23 @@ fn run(v: &Value, cx: &Ctx) -> Result<Reply, String> {
             }
             let mut v = serde_json::to_value(s).map_err(|e| e.to_string())?;
             v["ok"] = true.into();
+            // The policy boundary is part of the daemon's state, including a
+            // list that cannot be used: an operator must be able to see why
+            // every search is now failing closed (#23).
+            if !deny.configured() {
+                v["deny_configured"] = false.into();
+                v["deny_rules"] = 0.into();
+            } else {
+                v["deny_configured"] = true.into();
+                v["deny_rules"] = deny.len().into();
+            }
             Ok(Reply::Value(v))
         }
         "search" | "glob" => {
             let (mut q, sels) = parse_request(v, engine.home())?;
             let x = Extras::parse(v, &mut q, sels, op == "glob", false)?;
+            guard_scope(root, q.scope.as_deref())?;
+            guard_denied(deny, q.scope.as_deref())?;
             let t = Instant::now();
             if x.plain() {
                 let found = engine.search(&q)?;
@@ -552,13 +679,15 @@ fn git_root(dir: &[u8]) -> Option<Vec<u8>> {
     }
 }
 
-/// A path as the index has it: `~` expanded, symlinks resolved.
+/// A path as the index has it: `~` expanded, symlinks resolved (as much of
+/// the path as exists, so a caller's `root` matches the real paths the index
+/// stores even when the folder itself does not exist).
 fn real(p: &str) -> Vec<u8> {
     let p = match p.strip_prefix('~') {
         Some(rest) => format!("{}{rest}", fsearch::env::home()),
         None => p.to_string(),
     };
-    std::fs::canonicalize(&p).map_or_else(|_| p.into_bytes(), |c| c.as_os_str().as_bytes().to_vec())
+    deny::normalize(&p)
 }
 
 /// The most hits a search looks through for a page that passes its globs.
@@ -774,10 +903,18 @@ fn glob_exts(g: &str) -> Vec<Vec<u8>> {
 /// matches), `defs` (mark definitions),
 /// `cursor` (the `next` of the page before; with `offset`, globs or `git:`
 /// the `next` is an offset instead).
-fn grep(v: &Value, cx: &Ctx) -> Result<Value, String> {
+fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Value, String> {
     let engine = &cx.engine;
     let (mut q, sels) = parse_request(v, engine.home())?;
     let x = Extras::parse(v, &mut q, sels, false, true)?;
+    guard_scope(root, q.scope.as_deref())?;
+    guard_denied(deny, q.scope.as_deref())?;
+    guard_file(root, v.get("file").and_then(Value::as_str))?;
+    if let Some(f) = v.get("file").and_then(Value::as_str)
+        && deny.blocked(real(f).as_slice())
+    {
+        return Err("security: that file is denied by policy".into());
+    }
     let mode = match v.get("mode").and_then(Value::as_str) {
         Some("regex") => GrepMode::Regex,
         Some("symbol") => GrepMode::Symbol,

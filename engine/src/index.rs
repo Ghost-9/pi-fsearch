@@ -641,7 +641,14 @@ impl Index {
     }
 
     /// Resolve an absolute path to its entry.
+    ///
+    /// The crawl root (entry 0) is a prefix of every path, so it is stripped
+    /// first: `/Users/me` walks two components under a whole-disk index, and
+    /// under an isolated root (`ULTRASEARCH_SCAN_ROOT`) the root itself
+    /// resolves to entry 0 instead of nothing.
     pub fn lookup(&self, path: &[u8]) -> Option<u32> {
+        let root = self.name(0);
+        let path = path.strip_prefix(&root[..]).unwrap_or(path);
         let mut e = 0u32;
         for comp in path.split(|&b| b == b'/').filter(|c| !c.is_empty()) {
             let r = self.children(self.dir_of(e)?);

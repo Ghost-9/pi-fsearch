@@ -200,6 +200,12 @@ struct Shared {
     /// `now_ns` the index last fell behind a replay (0: caught up). The
     /// non-zero window is `Status::staleness_ms` (#19).
     stale_since: AtomicU64,
+    /// The crawl root. The FSEvents stream watches all of `/` (that is how a
+    /// whole-disk index stays live), so for an isolated root
+    /// (`ULTRASEARCH_SCAN_ROOT`) changes outside it are dropped: otherwise
+    /// the overlay would answer with paths outside the index's own area.
+    /// `/` (the default) filters nothing.
+    keep: Vec<u8>,
 }
 
 /// Counts one query as in flight for as long as it lives (#34).
@@ -370,6 +376,7 @@ impl Engine {
             inflight: AtomicUsize::new(0),
             compact: Mutex::new(CompactStats::default()),
             stale_since: AtomicU64::new(0),
+            keep: crate::env::scan_root(),
         });
         if owner {
             start_content(&shared);
@@ -556,6 +563,13 @@ impl Engine {
     /// The answer while the first index builds, with its progress.
     pub fn indexing(&self) -> String {
         indexing()
+    }
+
+    /// Milliseconds the index has been behind a replay (#19); 0 when it is
+    /// caught up. Every answer carries this so a client can warn that a
+    /// result may miss changes made during the window.
+    pub fn staleness_ms(&self) -> u64 {
+        self.s.staleness_ms()
     }
 
     /// Compact and save the name index soon (on the background thread).
@@ -1247,6 +1261,11 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
             let mut last_good = shared.live.read().unwrap().as_ref().map_or(0, |l| l.event_id);
             let current = shared.streams.load(Ordering::Relaxed);
             for e in events {
+                // An isolated crawl root: only its own changes may be applied
+                // (see `Shared::keep`).
+                if !crate::deny::within(&e.path, &shared.keep) {
+                    continue;
+                }
                 if e.path == b"/" && e.flags & MUST_SCAN_SUBDIRS != 0 {
                     // fseventsd still logged what it dropped for us (a kernel
                     // drop never reached it): replay from the last event we
