@@ -18,7 +18,7 @@ process.env.PI_ULTRASEARCH_BENCH = "1";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { loadJudgments, scoreQuery, toRepoRelative } from "./lib/judgments.mjs";
 import { pairedDeltaCI, ciExcludesZero, summarize, fmt, fmtCI } from "./lib/stats.mjs";
 import { environmentWithDaemon, formatEnvironmentGate } from "./lib/env-gate.mjs";
@@ -42,7 +42,7 @@ function parseArgs(argv) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const client = new FSearchClient({ autoSpawnDaemon: false });
+  const client = new UltraSearchClient({ autoSpawnDaemon: false });
   if (!(await client.ping())) {
     console.error("REFUSED: daemon not running; the boost A/B needs the live ranking engine.");
     process.exit(2);

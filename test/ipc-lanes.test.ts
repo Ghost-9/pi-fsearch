@@ -2,11 +2,11 @@ process.env.PI_ULTRASEARCH_TEST = "1";
 
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { MockDaemon } from "./helpers/mock-daemon.ts";
 
 const daemons: MockDaemon[] = [];
-const clients: FSearchClient[] = [];
+const clients: UltraSearchClient[] = [];
 
 after(async () => {
   for (const c of clients) c.close();
@@ -20,8 +20,8 @@ async function newDaemon(options: ConstructorParameters<typeof MockDaemon>[0]): 
   return daemon;
 }
 
-function newClient(socketPath: string, extra: Record<string, unknown> = {}): FSearchClient {
-  const client = new FSearchClient({ socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0, ...extra });
+function newClient(socketPath: string, extra: Record<string, unknown> = {}): UltraSearchClient {
+  const client = new UltraSearchClient({ socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0, ...extra });
   clients.push(client);
   return client;
 }

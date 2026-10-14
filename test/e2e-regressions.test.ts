@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { MockDaemon } from "./helpers/mock-daemon.ts";
 import { loadPiHarness, waitFor } from "./helpers/pi-harness.ts";
 
@@ -17,7 +17,7 @@ import { loadPiHarness, waitFor } from "./helpers/pi-harness.ts";
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "ults-e2e-"));
 const daemons: MockDaemon[] = [];
-const clients: FSearchClient[] = [];
+const clients: UltraSearchClient[] = [];
 
 after(async () => {
   for (const c of clients) c.close();
@@ -34,12 +34,12 @@ async function newMock(options: ConstructorParameters<typeof MockDaemon>[0]): Pr
   return daemon;
 }
 
-function track(client: FSearchClient): FSearchClient {
+function track(client: UltraSearchClient): UltraSearchClient {
   clients.push(client);
   return client;
 }
 
-const liveClient = track(new FSearchClient());
+const liveClient = track(new UltraSearchClient());
 const daemonUp = await liveClient.ping();
 const liveOnly = daemonUp ? false : "UltraSearch daemon not running (live regression skipped)";
 
@@ -162,7 +162,7 @@ test("ignore rules: declared .gitignore patterns filter results (hermetic)", asy
       ],
     }),
   });
-  const client = track(new FSearchClient({ socketPath: daemon.socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0 }));
+  const client = track(new UltraSearchClient({ socketPath: daemon.socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0 }));
   const res = await client.search("*.txt", { in: dir, limit: 20, skipAudit: true });
   assert.deepEqual((res.hits ?? []).map((h) => path.basename(h.path)), ["visible.txt"]);
   assert.equal(res.filteredCount, 2, "both the secret file and the ignored build dir must be filtered");

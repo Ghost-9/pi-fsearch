@@ -16,7 +16,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { counterbalancedAB, pairedDeltaCI, pairedRatioCI, summarize, decisionFloor, ciExcludesZero, fmt, fmtCI } from "./lib/stats.mjs";
 import { environmentWithDaemon, formatEnvironmentGate } from "./lib/env-gate.mjs";
 
@@ -56,8 +56,8 @@ function bytesOf(res) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const pooled = new FSearchClient({ lanes: 3, autoSpawnDaemon: false });
-  const single = new FSearchClient({ lanes: 1, autoSpawnDaemon: false });
+  const pooled = new UltraSearchClient({ lanes: 3, autoSpawnDaemon: false });
+  const single = new UltraSearchClient({ lanes: 1, autoSpawnDaemon: false });
   if (!(await pooled.ping())) {
     console.error("REFUSED: daemon not running; the lane benchmark needs the live daemon.");
     process.exit(2);

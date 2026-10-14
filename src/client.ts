@@ -212,6 +212,8 @@ export class UltraSearchClient {
   }
 
   private ignoreCache = new Map<string, { rules: string[]; ts: number }>();
+  /** Exponentially-weighted observed ignore density per scope (filtered / raw). */
+  private ignoreDensity = new Map<string, number>();
   private realScopeCache = new Map<string, { root: string; ts: number }>();
 
   /** Cached per-scope .gitignore/.ignore evaluation (declared rules only). */
@@ -280,7 +282,19 @@ export class UltraSearchClient {
     return files.filter((f) => !this.isIgnoredPath(f.path, scope));
   }
 
+  /** Records what fraction of a result set the ignore rules removed, per scope. */
+  private noteIgnoreDensity(scope: string | undefined, rawCount: number, filteredCount: number): void {
+    if (!scope || rawCount <= 0) return;
+    const observed = Math.min(1, Math.max(0, filteredCount / rawCount));
+    const prev = this.ignoreDensity.get(scope);
+    this.ignoreDensity.set(scope, prev === undefined ? observed : prev * 0.7 + observed * 0.3);
+  }
+
   private trySpawnDaemon(): void {
+    // One spawn attempt per client, and never when the caller opted out (benchmarks
+    // and tests must not start a competing daemon mid-measurement).
+    if (!this.autoSpawnDaemon || this.spawnAttempted) return;
+    this.spawnAttempted = true;
     try {
       // Never spawn from ~/Applications: that path historically held a stale
       // pre-rename build that bound the legacy socket and started a second,
@@ -518,8 +532,6 @@ export class UltraSearchClient {
     budgetMs?: number;
     deadlineExceeded?: boolean;
     warning?: string;
-    /** A wider re-query was issued because ignore filtering dropped results. */
-    refetched?: boolean;
   }): SearchResultMeta {
     return {
       complete: params.complete,
@@ -533,7 +545,6 @@ export class UltraSearchClient {
       budgetMs: params.budgetMs,
       deadlineExceeded: params.deadlineExceeded ?? false,
       warning: params.warning,
-      refetched: params.refetched ?? false,
       rawCount: params.rawCount,
     };
   }
@@ -555,7 +566,18 @@ export class UltraSearchClient {
   private overscanLimit(limit: number, respectIgnore: boolean, scope?: string, kind: "search" | "grep" = "grep"): number {
     if (!respectIgnore || !scope) return limit;
     if (this.getIgnoreRules(scope).length === 0) return limit;
-    if (kind === "grep") return limit;
+    if (kind === "grep") {
+      // Measured on the resident daemon: grep cost is flat from limit 10 to 20
+      // (~3.4 -> 3.6 ms) and cliffs at ~25-30 returned files (~77 ms), while a
+      // second round trip doubles the call. Over-fetch only when the scope's
+      // observed ignore density is low enough for a bounded margin to fill the
+      // limit; at high density the result stays short and `filteredCount` says so
+      // (issue #25). Never re-query.
+      const density = this.ignoreDensity.get(scope) ?? 0;
+      if (density > 0.25) return limit;
+      const margin = Math.ceil(limit * density) + 5;
+      return Math.min(limit + margin, Math.max(limit, 20), this.maxOverscan);
+    }
     return Math.min(Math.max(limit * 2, limit + 20), this.maxOverscan);
   }
 
@@ -813,46 +835,17 @@ export class UltraSearchClient {
         files = this.filterIgnoredFiles(files, options.in!);
         filteredCount += before - files.length;
       }
+      this.noteIgnoreDensity(options.in, rawFiles.length, filteredCount);
 
-      let truncatedCount = Math.max(0, files.length - limit);
-      let kept = files.slice(0, limit);
-      let engineCapped = rawFiles.length >= overscan && kept.length >= limit;
-      let truncated = truncatedCount > 0 || engineCapped;
-      let rawCount = rawFiles.length;
-      let refetched = false;
-
-      // Issue #25 without the over-fetch tax: only when ignore filtering pushed
-      // the result below `limit` do we pay for one wider re-query.
-      if (
-        res.ok &&
-        respectIgnore &&
-        scoped &&
-        kept.length < limit &&
-        rawFiles.length >= overscan &&
-        filteredCount > 0
-      ) {
-        const refetchLimit = Math.min(limit + filteredCount + 5, this.maxOverscan);
-        if (refetchLimit > overscan) {
-          const res2 = await this.request<UltraSearchGrepResponse>({ ...payload, limit: refetchLimit }, deadlineOpts);
-          if (res2.ok) {
-            res = res2;
-            refetched = true;
-            const raw2 = res2.files ?? [];
-            let files2 = raw2;
-            filteredCount = 0;
-            if (respectIgnore && scoped && files2.length > 0) {
-              const before = files2.length;
-              files2 = this.filterIgnoredFiles(files2, options.in!);
-              filteredCount = before - files2.length;
-            }
-            rawCount = raw2.length;
-            truncatedCount = Math.max(0, files2.length - limit);
-            kept = files2.slice(0, limit);
-            engineCapped = raw2.length >= refetchLimit && kept.length >= limit;
-            truncated = truncatedCount > 0 || engineCapped;
-          }
-        }
-      }
+      // Filter first, then limit (issue #25). The bounded over-fetch above gives
+      // the filter room; when a high ignore density still pushes the result below
+      // `limit`, `filteredCount` reports it honestly instead of paying a second
+      // round trip (which measured 2x the call latency for no correctness gain).
+      const truncatedCount = Math.max(0, files.length - limit);
+      const kept = files.slice(0, limit);
+      const engineCapped = rawFiles.length >= overscan && kept.length >= limit;
+      const truncated = truncatedCount > 0 || engineCapped;
+      const rawCount = rawFiles.length;
 
       const meta = this.buildMeta({
         complete: res.complete === true,
@@ -865,7 +858,6 @@ export class UltraSearchClient {
         source: res.source ?? "index",
         budgetMs,
         warning,
-        refetched,
       });
 
       const elapsed = round2(performance.now() - start);
@@ -972,6 +964,7 @@ export class UltraSearchClient {
         files = this.filterIgnoredFiles(files, options.in!);
         filteredCount = before - files.length;
       }
+      this.noteIgnoreDensity(options.in, rawFiles.length, filteredCount);
       const truncatedCount = Math.max(0, files.length - limit);
       const kept = files.slice(0, limit);
       const engineCapped = rawFiles.length >= requestLimit && kept.length >= limit;
@@ -1030,24 +1023,7 @@ export class UltraSearchClient {
       );
 
       if (res.ok) {
-        let finalized = finalize(res, res.files ?? [], "index", overscan);
-        // Same re-query-on-shortfall rule as grep (issue #25).
-        if (
-          respectIgnore &&
-          scoped &&
-          (finalized.files ?? []).length < limit &&
-          (res.files ?? []).length >= overscan &&
-          (finalized.filteredCount ?? 0) > 0
-        ) {
-          const refetchLimit = Math.min(limit + (finalized.filteredCount ?? 0) + 5, this.maxOverscan);
-          if (refetchLimit > overscan) {
-            const res2 = await this.request<UltraSearchMultiGrepResponse>(
-              { op: "multi_grep", patterns, in: options.in, mode, limit: refetchLimit, budget_ms: budgetMs },
-              deadlineOpts
-            );
-            if (res2.ok) finalized = finalize(res2, res2.files ?? [], "index", refetchLimit);
-          }
-        }
+        const finalized = finalize(res, res.files ?? [], "index", overscan);
         audit(finalized, "index");
         return finalized;
       }

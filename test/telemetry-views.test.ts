@@ -12,13 +12,13 @@ import {
   resetAudit,
   GATE_SIGNATURE_QUERIES,
   estimateTokensSaved,
-  type FSearchAuditRow,
+  type UltraSearchAuditRow,
 } from "../src/telemetry.ts";
 
-const rows: FSearchAuditRow[] = [
-  { ts: 3, tool: "fsearch_query", query: "readme", ms: 5, ok: true, hitCount: 2, source: "index", origin: "organic" },
-  { ts: 2, tool: "fsearch_grep", pattern: "x", ms: 20, ok: true, hitCount: 0, source: "native_fallback", origin: "synthetic" },
-  { ts: 1, tool: "fsearch_query", query: "package.json", ms: 3, ok: true, hitCount: 1, source: "index" },
+const rows: UltraSearchAuditRow[] = [
+  { ts: 3, tool: "ultrasearch_query", query: "readme", ms: 5, ok: true, hitCount: 2, source: "index", origin: "organic" },
+  { ts: 2, tool: "ultrasearch_grep", pattern: "x", ms: 20, ok: true, hitCount: 0, source: "native_fallback", origin: "synthetic" },
+  { ts: 1, tool: "ultrasearch_query", query: "package.json", ms: 3, ok: true, hitCount: 1, source: "index" },
 ];
 
 test("telemetry views: real is the default and excludes synthetic rows", () => {
@@ -55,7 +55,7 @@ test("telemetry views: explicit origin wins over the legacy query heuristic", ()
 
 test("telemetry: recordAudit stamps synthetic provenance inside PI_ULTRASEARCH_TEST", () => {
   resetAudit();
-  recordAudit({ ts: Date.now(), tool: "fsearch_query", query: "prov", ms: 1, ok: true, hitCount: 1, source: "index" });
+  recordAudit({ ts: Date.now(), tool: "ultrasearch_query", query: "prov", ms: 1, ok: true, hitCount: 1, source: "index" });
   const stored = loadAudit(10);
   assert.equal(stored.length, 1);
   assert.equal(stored[0].origin, "synthetic");
@@ -69,5 +69,5 @@ test("tokens-saved is labelled an estimate everywhere it is displayed", () => {
   assert.match(text, /not measured/);
   assert.match(text, /View: real sessions only/);
   assert.match(text, /Provenance/);
-  assert.equal(estimateTokensSaved("fsearch_grep", 4), 150 + 4 * 75);
+  assert.equal(estimateTokensSaved("ultrasearch_grep", 4), 150 + 4 * 75);
 });

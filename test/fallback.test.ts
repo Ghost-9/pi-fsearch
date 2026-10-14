@@ -5,20 +5,20 @@ import assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { spawnCapture, activeChildCount } from "../src/spawn.ts";
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "ults-fallback-"));
 const bogusSocket = path.join(os.tmpdir(), `ults-bogus-${process.pid}-${Date.now()}.sock`);
-const clients: FSearchClient[] = [];
+const clients: UltraSearchClient[] = [];
 
 after(async () => {
   for (const c of clients) c.close();
   fs.rmSync(tmp, { recursive: true, force: true });
 });
 
-function fallbackClient(extra: Record<string, unknown> = {}): FSearchClient {
-  const client = new FSearchClient({
+function fallbackClient(extra: Record<string, unknown> = {}): UltraSearchClient {
+  const client = new UltraSearchClient({
     socketPath: bogusSocket,
     autoSpawnDaemon: false,
     maxReconnectRetries: 0,

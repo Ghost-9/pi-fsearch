@@ -27,7 +27,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { searchSemanticIntent } from "../src/semantic.ts";
 import { buildFixture, SCOPES } from "./lib/fixtures.mjs";
 import { runNative, compareSets, normalizePaths } from "./lib/native.mjs";
@@ -116,7 +116,7 @@ async function main() {
     process.exit(1);
   }
 
-  const client = new FSearchClient({ autoSpawnDaemon: false });
+  const client = new UltraSearchClient({ autoSpawnDaemon: false });
   const daemonUp = await client.ping();
   if (!daemonUp) {
     console.error("REFUSED: UltraSearch daemon is not running; multi-scope benchmarks require the resident index.");

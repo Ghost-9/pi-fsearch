@@ -5,13 +5,13 @@ import assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { validateRegexPattern } from "../src/validate.ts";
 import { matchesIgnorePattern } from "../src/sanitize.ts";
 import { MockDaemon } from "./helpers/mock-daemon.ts";
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ults-features-"));
-const openClients: FSearchClient[] = [];
+const openClients: UltraSearchClient[] = [];
 const openDaemons: MockDaemon[] = [];
 
 after(async () => {
@@ -50,8 +50,8 @@ function file(filePath: string, text: string, line = 1) {
   return { path: filePath, matches: [{ line, text }] };
 }
 
-function openClient(daemon: MockDaemon, extra: Record<string, unknown> = {}): FSearchClient {
-  const client = new FSearchClient({ socketPath: daemon.socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0, ...extra });
+function openClient(daemon: MockDaemon, extra: Record<string, unknown> = {}): UltraSearchClient {
+  const client = new UltraSearchClient({ socketPath: daemon.socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0, ...extra });
   openClients.push(client);
   return client;
 }
@@ -338,7 +338,7 @@ test("ignore matcher: directory patterns cover dir and contents; negation re-inc
 // ---------------------------------------------------------------------------
 
 test("multiGrep: returns every match up to the requested limit (no default truncation)", async () => {
-  const dir = makeRepo("multi-limit", ["a.ts"]);
+  const dir = makeRepo("multi-limit", ["a.ts"], "nothing-*.tmp\n");
   const all = Array.from({ length: 19 }, (_, i) => file(path.join(dir, `f${String(i).padStart(2, "0")}.ts`), "hit"));
   const daemon = await newMock({
     reply: (req) => ({ ok: true, files: all.slice(0, req.limit) }),
@@ -350,14 +350,52 @@ test("multiGrep: returns every match up to the requested limit (no default trunc
   assert.equal((wide.files ?? []).length, 19);
   assert.equal(wide.meta?.truncated, false);
 
+  // A scope with ignore rules gets a bounded over-fetch (limit 10 -> 20), so the
+  // true dropped count is reported instead of the old silent truncation at the
+  // engine's requested limit.
   const narrow = await client.multiGrep(["hit"], { in: dir, limit: 10, skipAudit: true });
+  assert.equal(daemon.lastOp("multi_grep").limit, 15, "first call in a rule-bearing scope: bounded over-fetch (+5)");
   assert.equal((narrow.files ?? []).length, 10);
-  // The engine returned exactly the requested limit, so more may exist: the
-  // response is marked truncated with the *known* dropped count (0) and
-  // engineCapped true. The old client silently dropped 3 of the 19 matches.
-  assert.equal(narrow.meta?.truncatedCount, 0);
-  assert.equal(narrow.meta?.engineCapped, true);
+  assert.equal(narrow.meta?.truncatedCount, 5);
   assert.equal(narrow.truncated, true);
+
+  // Without ignore rules there is nothing to filter, so the request is exact and
+  // the engine-capped signal carries the "more may exist" information.
+  const bare = makeRepo("multi-limit-bare", ["a.ts"]);
+  const daemon2 = await newMock({ reply: (req) => ({ ok: true, files: all.map((f) => ({ ...f, path: f.path.replace(dir, bare) })).slice(0, req.limit) }) });
+  const client2 = openClient(daemon2);
+  const exact = await client2.multiGrep(["hit"], { in: bare, limit: 10, skipAudit: true });
+  assert.equal(daemon2.lastOp("multi_grep").limit, 10, "no over-fetch without declared rules");
+  assert.equal(exact.meta?.engineCapped, true);
+  assert.equal(exact.meta?.truncatedCount, 0);
+
+  client.close();
+  client2.close();
+  await daemon.close();
+  await daemon2.close();
+});
+
+test("grep: over-fetch is skipped once the scope's ignore density is high", async () => {
+  const dir = makeRepo("density", ["a.txt"], "secret-*\n");
+  const visible = Array.from({ length: 10 }, (_, i) => file(path.join(dir, `v${String(i).padStart(2, "0")}.txt`), "x"));
+  const secret = Array.from({ length: 6 }, (_, i) => file(path.join(dir, `secret-${i}.txt`), "x"));
+  // Interleaved so a smaller response still contains ignored files (a realistic
+  // index ordering); otherwise the short request would look clean by luck.
+  const all = visible.flatMap((v, i) => (i < secret.length ? [v, secret[i]] : [v]));
+  const daemon = await newMock({ reply: (req) => ({ ok: true, files: all.slice(0, req.limit) }) });
+  const client = openClient(daemon);
+
+  // First call: density unknown, so a bounded margin is requested.
+  await client.grep("x", { in: dir, limit: 10, skipAudit: true });
+  assert.equal(daemon.lastOp("grep").limit, 15);
+
+  // The observed density is 6/15 = 0.4 > 0.25, so a wider request would not fill
+  // the limit: stop paying for it and report the filtered count instead.
+  const short = await client.grep("x", { in: dir, limit: 10, skipAudit: true });
+  assert.equal(daemon.lastOp("grep").limit, 10, "high ignore density must not trigger an over-fetch");
+  assert.equal((short.files ?? []).length, 5);
+  assert.equal(short.meta?.filteredCount, 5, "the filtered count is the honest signal when the result stays short");
+  assert.equal(short.meta?.truncated, false);
 
   client.close();
   await daemon.close();

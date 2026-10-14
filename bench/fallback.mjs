@@ -5,7 +5,7 @@
  * Before: the 0.3.1 fallback executed `find` with execFileSync inside the
  * request path — measured here with an inline execFileSync reference so the
  * comparison is apples to apples.
- * After: the same search through FSearchClient with an unreachable socket,
+ * After: the same search through UltraSearchClient with an unreachable socket,
  * which forces the async spawn fallback.
  *
  * Both arms are timed over n paired rounds; event-loop delay is sampled with
@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { activeChildCount } from "../src/spawn.ts";
 import { buildFixture } from "./lib/fixtures.mjs";
 import { pairedDeltaCI, pairedRatioCI, summarize, fmt, fmtCI } from "./lib/stats.mjs";
@@ -82,7 +82,7 @@ async function main() {
     }
   };
 
-  const asyncClient = new FSearchClient({ socketPath: path.join(OUT, "does-not-exist.sock"), maxReconnectRetries: 0, enableFallback: true, lanes: 1 });
+  const asyncClient = new UltraSearchClient({ socketPath: path.join(OUT, "does-not-exist.sock"), maxReconnectRetries: 0, enableFallback: true, lanes: 1 });
   const asyncFallback = async () => {
     const res = await asyncClient.search("*mod-001*", { in: fixture.root, limit: 20, skipAudit: true });
     if (!res.ok) throw new Error(res.error ?? "async fallback failed");
@@ -165,7 +165,7 @@ async function main() {
     method: {
       workload: `find '*mod-001*' over the small fixture (${fixture.fileCount} files)`,
       before: "inline execFileSync reference of the 0.3.1 fallback (request-path blocking)",
-      after: "FSearchClient async spawn fallback (socket unreachable, lanes:1)",
+      after: "UltraSearchClient async spawn fallback (socket unreachable, lanes:1)",
       design: `counterbalanced paired rounds, n=${args.n}`,
       ci: "BCa bootstrap, 10000 resamples, alpha=0.05, on paired deltas",
       eventLoop: `heartbeat interval ${heartbeatMs}ms; per-round metric = max gap between ticks covering the operation (a synchronous block shows up as one long gap)`,

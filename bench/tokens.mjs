@@ -19,7 +19,7 @@ process.env.PI_ULTRASEARCH_BENCH = "1";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { spawnCapture } from "../src/spawn.ts";
 import { loadPiTools } from "./lib/pi-tools.mjs";
 import { pairedDeltaCI, pairedRatioCI, summarize, fmt, fmtCI } from "./lib/stats.mjs";
@@ -41,17 +41,19 @@ export function estimateTokensAlt(chars) {
 
 /** The legacy heuristic from src/telemetry.ts (an estimate, not a measurement). */
 export function legacyHeuristic(tool, hits) {
-  if (tool === "fsearch_grep") return hits > 0 ? 150 + hits * 75 : 50;
+  if (tool === "ultrasearch_grep") return hits > 0 ? 150 + hits * 75 : 50;
   return hits > 0 ? 100 + hits * 30 : 25;
 }
 
 const TASKS = [
   { id: "find-file", tool: "query", params: { query: "package.json", limit: 10 }, native: { bin: "find", args: [".", "-name", "package.json"] } },
-  { id: "find-definition", tool: "grep", params: { pattern: "applyProximityRanking", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "applyProximityRanking", "."] }, heuristic: "fsearch_grep" },
+  { id: "find-definition", tool: "grep", params: { pattern: "applyProximityRanking", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "applyProximityRanking", "."] }, heuristic: "ultrasearch_grep" },
   { id: "locate-config", tool: "query", params: { query: ".gitignore", limit: 10 }, native: { bin: "find", args: [".", "-name", ".gitignore"] } },
-  { id: "grep-literal", tool: "grep", params: { pattern: "estimateTokensSaved", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "estimateTokensSaved", "."] }, heuristic: "fsearch_grep" },
+  { id: "grep-literal", tool: "grep", params: { pattern: "estimateTokensSaved", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "estimateTokensSaved", "."] }, heuristic: "ultrasearch_grep" },
   { id: "find-config", tool: "query", params: { query: "tsconfig.json", limit: 10 }, native: { bin: "find", args: [".", "-name", "tsconfig.json"] } },
-  { id: "grep-symbol", tool: "grep", params: { pattern: "FSearchClient", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "FSearchClient", "."] }, heuristic: "fsearch_grep" },
+  // Query targets the current (post-rename) symbol in this repository. The committed
+  // TOKENS.md predates the rename and is not regenerated here; the task set follows the live surface.
+  { id: "grep-symbol", tool: "grep", params: { pattern: "UltraSearchClient", mode: "literal", limit: 10 }, native: { bin: "rg", args: ["-n", "--no-heading", "--glob", "!.git", "UltraSearchClient", "."] }, heuristic: "ultrasearch_grep" },
 ];
 
 function parseArgs(argv) {
@@ -68,7 +70,7 @@ function parseArgs(argv) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const client = new FSearchClient({ autoSpawnDaemon: false });
+  const client = new UltraSearchClient({ autoSpawnDaemon: false });
   if (!(await client.ping())) {
     console.error("REFUSED: daemon not running; token A/B needs the live tool path.");
     client.close();

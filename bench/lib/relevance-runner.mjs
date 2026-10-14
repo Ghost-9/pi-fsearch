@@ -54,6 +54,8 @@ export async function runJudgmentQuery(client, q, corpusRoot, options = {}) {
     return {
       paths: [...new Set(files.map((f) => rel(f.path)))],
       intraFileTopText: firstMatch?.text ?? null,
+      // FROZEN MEASUREMENT STRING: the wave1 judgment corpus is pinned at 0a16e50,
+      // where src/client.ts declares `class FSearchClient`. Kept un-renamed on purpose.
       classDeclFirst: Boolean(firstMatch && /class\s+FSearchClient/.test(firstMatch.text)),
     };
   }

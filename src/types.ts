@@ -20,7 +20,12 @@ export interface SearchResultMeta {
   complete: boolean;
   /** The result set was clipped (by `limit` or the scan ceiling). */
   truncated: boolean;
-  /** Number of matching items the client dropped to honour `limit` (known count). */
+  /**
+   * Number of matching items the client dropped to honour `limit` (known count).
+   * When `filteredCount > 0` and the result is shorter than `limit`, the caller
+   * can raise `limit`: the client over-fetches by a bounded margin but never
+   * issues a second round trip.
+   */
   truncatedCount: number;
   /** The engine returned exactly the requested limit, so more matches may exist (count unknown). */
   engineCapped?: boolean;
@@ -37,8 +42,6 @@ export interface SearchResultMeta {
   deadlineExceeded?: boolean;
   /** Non-fatal diagnostics, e.g. a regex backtracking warning. */
   warning?: string;
-  /** A wider re-query was issued because ignore filtering dropped results. */
-  refetched?: boolean;
   /** Raw item count returned by the engine before client-side filtering. */
   rawCount?: number;
 }
