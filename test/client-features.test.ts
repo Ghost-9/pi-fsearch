@@ -265,15 +265,27 @@ test("regex validator: direct unit checks", () => {
 // SearchOptions.sort forwarding (advisor finding #4)
 // ---------------------------------------------------------------------------
 
-test("sort is forwarded on the wire when provided and omitted when not", async () => {
+test("no `sort` is sent: the engine's protocol has no sort field", async () => {
+  // Advisor finding #4 asked whether `sort` reached the wire. It did (a
+  // declared option that looked supported), but the engine has no `sort`
+  // request field at all: `Query::filter` ignores unknown keys, so every value
+  // was silently discarded and ranking stayed the match score plus its
+  // `boost`/`near` components. The option was therefore removed from
+  // `SearchOptions` rather than left as a no-op — this asserts the removal so
+  // it cannot creep back in unnoticed.
   const daemon = await newMock({ reply: () => ({ ok: true, hits: [] }) });
   const client = openClient(daemon);
 
-  await client.search("a", { in: tmpRoot, limit: 5, sort: "mtime", skipAudit: true });
-  assert.equal(daemon.lastOp("search").sort, "mtime");
+  const payload = { in: tmpRoot, limit: 5, skipAudit: true } as Record<string, unknown>;
+  // A caller that still passes it (untyped JS, a stale caller) must not break
+  // the request; it is simply not forwarded.
+  payload.sort = "mtime";
+  await client.search("a", payload as never);
+  assert.equal("sort" in daemon.lastOp("search"), false, "sort must not be sent: the engine ignores it");
 
-  await client.search("a", { in: tmpRoot, limit: 5, skipAudit: true });
-  assert.equal("sort" in daemon.lastOp("search"), false);
+  // The engine's real ranking inputs are forwarded.
+  await client.search("a", { in: tmpRoot, limit: 5, near: "/tmp/prox/src/a.ts", skipAudit: true });
+  assert.equal(daemon.lastOp("search").near, "/tmp/prox/src/a.ts");
 
   client.close();
   await daemon.close();

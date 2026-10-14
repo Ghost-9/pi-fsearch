@@ -31,7 +31,9 @@ Legend: ✅ shipped & reachable · 🟡 partial / limited · ❌ not delivered a
 - [x] #1 Line-buffered UNIX socket client with correlation ids (`src/client.ts`)
 - [x] #2 Core tools: `ultrasearch_query`, `ultrasearch_grep`, `ultrasearch_locate`, `ultrasearch_recent`
 - [x] #3 Secret scrubbing and sensitive-file masking (`src/sanitize.ts`)
-- [x] #4 Upstream fsearch v0.2.1 engine (MIT; tracked in `~/.cache/fsearch`)
+- [x] #4 Upstream v0.2.1 engine, MIT © Noah Dunnagan — **renamed fork vendored in-repo at `engine/`**
+      (source that ships == source reviewed; `engine/rebrand.sh` regenerates it from an upstream checkout,
+      `engine/NOTICE` holds the attribution, `engine/LICENSE` is byte-identical to upstream)
 
 ### Milestone 2 — Hardening, Code Mode, resilience (v0.2.0) — ✅ released
 - [x] #5 Worktree scoping via nearest-`.git` walk (cached)
@@ -84,6 +86,12 @@ Legend: ✅ shipped & reachable · 🟡 partial / limited · ❌ not delivered a
 ## Next: v0.4.0 — hardening & performance overhaul
 
 Full detail, evidence and expected impact in [`OPTIMIZATIONS.md`](OPTIMIZATIONS.md).
+
+**Engine**
+0. The daemon that ships is the vendored fork at `engine/` (Wave 1 engine work: `budget_ms`/`candidates` with
+   `complete`/`scanned`/`considered`, `status` freshness + compaction metrics, fail-closed deny-list and caller
+   `root` containment, configurable content coverage + warm-up). Upstream sync re-applies
+   `docs/engine-changes.md` after `engine/rebrand.sh`; the two README fixups it needs are in `engine/BUILD.md`.
 
 **Performance (engine & client)**
 1. Search-side `budget_ms` deadlines and partial-result streaming for cold/global queries (tail: 1.7–4.0 s observed).

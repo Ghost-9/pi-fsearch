@@ -44,7 +44,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepack": "npm run build",
-    "test": "node --test test/client.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/e2e-regressions.test.ts",
+    "test": "node --test test/client.test.ts test/sanitize.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/e2e-regressions.test.ts",
+    "test:engine": "node --test --test-concurrency=1 test/engine/*.test.mjs",
+    "bench:engine": "node bench/engine-ab.mjs",
     "test:gate": "node --test test/benchmark-gate.test.ts",
     "test:empirical": "node --test test/empirical-10-tests.ts",
     "bench": "node test/bench.ts",
@@ -56,7 +58,8 @@
     "bench:fallback": "node bench/fallback.mjs",
     "bench:boost": "node bench/boost.mjs",
     "metrics:nightly": "node bench/nightly-summary.mjs",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "test:all": "npm run typecheck && npm test && npm run test:gate && npm run test:engine"
   },
   "keywords": [
     "pi-agent",

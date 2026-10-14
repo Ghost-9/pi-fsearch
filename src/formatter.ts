@@ -1,4 +1,4 @@
-import { scrubSecrets, isSensitiveFile } from "./sanitize.ts";
+import { SecretGuard, isSensitiveFile } from "./sanitize.ts";
 import type { UltraSearchGrepFile } from "./types.ts";
 
 export interface FormatOptions {
@@ -58,6 +58,11 @@ export function formatGrepFiles(
       : file.path;
 
     const isSensitive = isSensitiveFile(file.path);
+    // One DLP pass for this file's output, in the order it is printed: a
+    // PEM body line can only be recognised as one by the lines that came
+    // before it (the header is often outside the matched range).
+    const guard = new SecretGuard();
+    const scrub = (text: string) => guard.line(text);
 
     // Sort matches in file if symbol prioritization is enabled
     let sortedMatches = [...file.matches];
@@ -71,7 +76,7 @@ export function formatGrepFiles(
 
     if (compact) {
       for (const m of sortedMatches) {
-        let scrubbed = scrubSecrets(m.text).trim();
+        let scrubbed = scrub(m.text).trim();
         if (isSensitive) {
           scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
         }
@@ -84,7 +89,7 @@ export function formatGrepFiles(
           if (m.before && m.before.length > 0) {
             for (let bIdx = 0; bIdx < m.before.length; bIdx++) {
               const bLineNum = m.line - m.before.length + bIdx;
-              const bLine = `${relPath}-${bLineNum}- ${scrubSecrets(m.before[bIdx]).trim()}`;
+              const bLine = `${relPath}-${bLineNum}- ${scrub(m.before[bIdx]).trim()}`;
               lines.push(bLine);
               currentChars += bLine.length + 1;
             }
@@ -109,7 +114,7 @@ export function formatGrepFiles(
           if (m.after && m.after.length > 0) {
             for (let aIdx = 0; aIdx < m.after.length; aIdx++) {
               const aLineNum = m.line + 1 + aIdx;
-              const aLine = `${relPath}-${aLineNum}- ${scrubSecrets(m.after[aIdx]).trim()}`;
+              const aLine = `${relPath}-${aLineNum}- ${scrub(m.after[aIdx]).trim()}`;
               lines.push(aLine);
               currentChars += aLine.length + 1;
             }
@@ -132,7 +137,7 @@ export function formatGrepFiles(
       currentChars += fileHeader.length + 1;
 
       for (const m of sortedMatches) {
-        let scrubbed = scrubSecrets(m.text).trim();
+        let scrubbed = scrub(m.text).trim();
         if (isSensitive) {
           scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
         }
@@ -143,7 +148,7 @@ export function formatGrepFiles(
         if (showContext && !isSensitive && m.before && m.before.length > 0) {
           for (let bIdx = 0; bIdx < m.before.length; bIdx++) {
             const bLineNum = m.line - m.before.length + bIdx;
-            lines.push(`  L${bLineNum}- ${scrubSecrets(m.before[bIdx]).trim()}`);
+            lines.push(`  L${bLineNum}- ${scrub(m.before[bIdx]).trim()}`);
           }
         }
 
@@ -164,7 +169,7 @@ export function formatGrepFiles(
         if (showContext && !isSensitive && m.after && m.after.length > 0) {
           for (let aIdx = 0; aIdx < m.after.length; aIdx++) {
             const aLineNum = m.line + 1 + aIdx;
-            lines.push(`  L${aLineNum}- ${scrubSecrets(m.after[aIdx]).trim()}`);
+            lines.push(`  L${aLineNum}- ${scrub(m.after[aIdx]).trim()}`);
           }
         }
       }

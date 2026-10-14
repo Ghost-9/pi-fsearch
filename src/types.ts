@@ -8,6 +8,15 @@ export interface UltraSearchHit {
   size: number;
   git?: string;
   distance?: number;
+  /**
+   * The nearness component the daemon added to `score` (issue: one owner for
+   * proximity). Scale: +12 in the `near` file's folder, -3 per folder of
+   * distance, clamped at 0; the `near` file itself is -20. Absent when no
+   * `near` was given or nothing was added.
+   */
+  near?: number;
+  /** The frecency component the daemon added to `score` (`boost: true`). */
+  boost?: number;
 }
 
 /**
@@ -44,6 +53,10 @@ export interface SearchResultMeta {
   warning?: string;
   /** Raw item count returned by the engine before client-side filtering. */
   rawCount?: number;
+  /** Results the daemon's policy held back: deny-list, or the caller `root` (#23). */
+  withheld?: number;
+  /** Milliseconds the index was behind a replay for this answer (#19); 0/absent when caught up. */
+  staleMs?: number;
 }
 
 export interface UltraSearchSearchResponse {
@@ -57,6 +70,10 @@ export interface UltraSearchSearchResponse {
   truncatedCount?: number;
   filteredCount?: number;
   meta?: SearchResultMeta;
+  /** Results the daemon's policy held back: deny-list, or the caller `root` (#23). */
+  withheld?: number;
+  /** Milliseconds the index was behind a replay for this answer (#19); 0/absent when caught up. */
+  stale_ms?: number;
   error?: string;
 }
 
@@ -88,6 +105,10 @@ export interface UltraSearchGrepResponse {
   indexing?: number;
   files?: UltraSearchGrepFile[];
   meta?: SearchResultMeta;
+  /** Results the daemon's policy held back: deny-list, or the caller `root` (#23). */
+  withheld?: number;
+  /** Milliseconds the index was behind a replay for this answer (#19); 0/absent when caught up. */
+  stale_ms?: number;
   error?: string;
 }
 
@@ -97,6 +118,10 @@ export interface UltraSearchMultiGrepResponse {
   took_us?: number;
   source?: "index" | "scan" | "native_fallback";
   patterns: string[];
+  /** Results the daemon's policy held back across the fan-out (#23). */
+  withheld?: number;
+  /** The longest replay lag seen across the fan-out (#19). */
+  stale_ms?: number;
   complete?: boolean;
   truncated?: boolean;
   truncatedCount?: number;
@@ -123,14 +148,28 @@ export interface UltraSearchStatusResponse {
   overlay?: number;
   removed?: number;
   error?: string;
+  /**
+   * Milliseconds the index has been behind a replay when this answer was
+   * made (issue #19). Absent or 0: the index is caught up. Non-zero: the
+   * result may miss changes made during that window.
+   */
+  stale_ms?: number;
+  /** Results the daemon's policy held back: deny-list, or the caller `root` (#23). */
+  withheld?: number;
 }
 
 export interface SearchOptions {
   in?: string;
   limit?: number;
   near?: string;
+  /**
+   * The caller's allowed boundary (an absolute path). The daemon refuses a
+   * scope outside it and drops any hit outside it, so a bug in a caller's own
+   * containment check cannot widen the search. Omit for a deliberate
+   * disk-wide (`global`) query. See issue #23.
+   */
+  root?: string;
   fuzzy?: boolean;
-  sort?: "score" | "mtime" | "path" | "frecency";
   git?: boolean;
   /** Ranking boost (frecency + git + mtime). Omitted means the engine default applies. */
   boost?: boolean;
@@ -150,6 +189,8 @@ export interface GrepOptions {
   mode?: "literal" | "regex" | "symbol";
   limit?: number;
   budget_ms?: number;
+  /** The caller's allowed boundary; see `SearchOptions.root`. */
+  root?: string;
   context?: number;
   skipAudit?: boolean;
   /** Tool name recorded in the audit log (single-recording layer). Defaults to ultrasearch_grep. */
