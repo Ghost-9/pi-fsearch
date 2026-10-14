@@ -25,10 +25,12 @@ import type {
   FSearchMultiGrepResponse,
   FSearchStatusResponse,
   FSearchHit,
+  FSearchGrepFile,
   SearchOptions,
   GrepOptions,
 } from "./types.ts";
 import { recordAudit } from "./telemetry.ts";
+import { loadIgnoreRules, matchesIgnorePattern } from "./sanitize.ts";
 
 export interface FSearchClientOptions {
   socketPath?: string;
@@ -119,7 +121,33 @@ export class FSearchClient {
     this.enableFallback = options.enableFallback ?? true;
   }
 
-  
+  private ignoreCache = new Map<string, { rules: string[]; ts: number }>();
+  private static IGNORE_TTL_MS = 60_000;
+
+  /** Cached per-scope .gitignore/.ignore evaluation (declared rules only). */
+  private getIgnoreRules(dir: string): string[] {
+    const cached = this.ignoreCache.get(dir);
+    const now = Date.now();
+    if (cached && now - cached.ts < FSearchClient.IGNORE_TTL_MS) return cached.rules;
+    const rules = loadIgnoreRules(dir, { includeDefaults: false });
+    this.ignoreCache.set(dir, { rules, ts: now });
+    return rules;
+  }
+
+  private isIgnoredPath(absOrRel: string, scope: string): boolean {
+    const rel = path.isAbsolute(absOrRel) ? path.relative(scope, absOrRel) : absOrRel;
+    if (!rel || rel.startsWith("..")) return false;
+    return matchesIgnorePattern(rel, this.getIgnoreRules(scope));
+  }
+
+  private filterIgnoredHits(hits: FSearchHit[], scope: string): FSearchHit[] {
+    return hits.filter((h) => !this.isIgnoredPath(h.path, scope));
+  }
+
+  private filterIgnoredFiles(files: FSearchGrepFile[], scope: string): FSearchGrepFile[] {
+    return files.filter((f) => !this.isIgnoredPath(f.path, scope));
+  }
+
   private trySpawnDaemon(): void {
     try {
       const candidates = [
@@ -307,11 +335,14 @@ export class FSearchClient {
       ) {
         const fallbackRes = this.nativeFallbackSearch(query, options);
         if (fallbackRes.ok && fallbackRes.hits && fallbackRes.hits.length > 0) {
+          if (options.in && options.respectIgnore !== false) {
+            fallbackRes.hits = this.filterIgnoredHits(fallbackRes.hits, options.in);
+          }
           const elapsed = Math.round((performance.now() - start) * 100) / 100;
           if (!options.skipAudit) {
             recordAudit({
               ts: Date.now(),
-              tool: "fsearch_query",
+              tool: options.auditTool ?? "fsearch_query",
               query,
               scope: options.in,
               ms: elapsed,
@@ -324,11 +355,16 @@ export class FSearchClient {
         }
       }
 
+      // Respect declared .gitignore/.ignore rules for scopes outside git repositories
+      if (res.ok && res.hits && res.hits.length > 0 && options.in && options.respectIgnore !== false) {
+        res.hits = this.filterIgnoredHits(res.hits, options.in);
+      }
+
       const elapsed = Math.round((performance.now() - start) * 100) / 100;
       if (!options.skipAudit) {
         recordAudit({
           ts: Date.now(),
-          tool: "fsearch_query",
+          tool: options.auditTool ?? "fsearch_query",
           query,
           scope: options.in,
           ms: elapsed,
@@ -346,7 +382,7 @@ export class FSearchClient {
         if (!options.skipAudit) {
           recordAudit({
             ts: Date.now(),
-            tool: "fsearch_query",
+            tool: options.auditTool ?? "fsearch_query",
             query,
             scope: options.in,
             ms: elapsed,
@@ -388,12 +424,15 @@ export class FSearchClient {
       ) {
         const fallbackRes = this.nativeFallbackGrep(pattern, options);
         if (fallbackRes.ok && fallbackRes.files && fallbackRes.files.length > 0) {
+          if (options.in && options.respectIgnore !== false) {
+            fallbackRes.files = this.filterIgnoredFiles(fallbackRes.files, options.in);
+          }
           const elapsed = Math.round((performance.now() - start) * 100) / 100;
           const totalMatches = fallbackRes.files.reduce((acc, f) => acc + f.matches.length, 0);
           if (!options.skipAudit) {
             recordAudit({
               ts: Date.now(),
-              tool: "fsearch_grep",
+              tool: options.auditTool ?? "fsearch_grep",
               pattern,
               scope: options.in,
               ms: elapsed,
@@ -406,13 +445,18 @@ export class FSearchClient {
         }
       }
 
+      // Respect declared .gitignore/.ignore rules for scopes outside git repositories
+      if (res.ok && res.files && res.files.length > 0 && options.in && options.respectIgnore !== false) {
+        res.files = this.filterIgnoredFiles(res.files, options.in);
+      }
+
       const elapsed = Math.round((performance.now() - start) * 100) / 100;
 
       if (!options.skipAudit) {
         const totalMatches = res.files?.reduce((acc, f) => acc + f.matches.length, 0) ?? 0;
         recordAudit({
           ts: Date.now(),
-          tool: "fsearch_grep",
+          tool: options.auditTool ?? "fsearch_grep",
           pattern,
           scope: options.in,
           ms: elapsed,
@@ -430,7 +474,7 @@ export class FSearchClient {
         if (!options.skipAudit) {
           recordAudit({
             ts: Date.now(),
-            tool: "fsearch_grep",
+            tool: options.auditTool ?? "fsearch_grep",
             pattern,
             scope: options.in,
             ms: elapsed,
@@ -461,12 +505,15 @@ export class FSearchClient {
       });
 
       if (res.ok) {
+        if (res.files && options.in && options.respectIgnore !== false) {
+          res.files = this.filterIgnoredFiles(res.files, options.in);
+        }
         const elapsed = Math.round((performance.now() - start) * 100) / 100;
         if (!options.skipAudit) {
           const totalMatches = res.files?.reduce((acc, f) => acc + f.matches.length, 0) ?? 0;
           recordAudit({
             ts: Date.now(),
-            tool: "fsearch_multi_grep",
+            tool: options.auditTool ?? "fsearch_multi_grep",
             pattern: patterns.join(" | "),
             scope: options.in,
             ms: elapsed,
@@ -506,13 +553,15 @@ export class FSearchClient {
       }
 
       const elapsed = Math.round((performance.now() - start) * 100) / 100;
-      const mergedFiles = Array.from(fileMap.values());
+      const mergedFiles = (options.in && options.respectIgnore !== false)
+        ? this.filterIgnoredFiles(Array.from(fileMap.values()), options.in)
+        : Array.from(fileMap.values());
       const totalMatches = mergedFiles.reduce((acc, f) => acc + f.matches.length, 0);
 
       if (!options.skipAudit) {
         recordAudit({
           ts: Date.now(),
-          tool: "fsearch_multi_grep",
+          tool: options.auditTool ?? "fsearch_multi_grep",
           pattern: patterns.join(" | "),
           scope: options.in,
           ms: elapsed,
@@ -618,7 +667,6 @@ export class FSearchClient {
     try {
       const args = [
         scope,
-        "-maxdepth", "6",
         "-not", "-path", "*/.*",
         "-not", "-path", "*/node_modules/*",
         "-not", "-path", "*/target/*",
@@ -677,26 +725,46 @@ export class FSearchClient {
 
     try {
       let out = "";
-      try {
-        out = execFileSync(
-          "grep",
-          [
-            "-rn",
-            "--exclude-dir=.git",
-            "--exclude-dir=node_modules",
-            "--exclude-dir=target",
-            "--exclude-dir=dist",
-            "--exclude-dir=build",
-            pattern,
-            scope,
-          ],
-          { encoding: "utf-8", timeout: 4000, maxBuffer: 32 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] }
-        );
-      } catch (err: any) {
-        if (err.stdout) {
-          out = err.stdout.toString();
-        } else {
+
+      // Prefer rg (single fast binary) and fall back to grep only if rg is unavailable.
+      const runSearch = (bin: string, args: string[]): string => {
+        try {
+          return execFileSync(bin, args, {
+            encoding: "utf-8",
+            timeout: 4000,
+            maxBuffer: 32 * 1024 * 1024,
+            stdio: ["ignore", "pipe", "ignore"],
+          });
+        } catch (err: any) {
+          if (err?.status === 1) return err.stdout?.toString() ?? ""; // rg/grep: no matches
           throw err;
+        }
+      };
+
+      const rgArgs = [
+        "-n", "--no-heading", "--color", "never",
+        "--glob", "!.git", "--glob", "!node_modules",
+        "--glob", "!target", "--glob", "!dist", "--glob", "!build",
+        pattern, scope,
+      ];
+      const grepArgs = [
+        "-rn",
+        "--exclude-dir=.git",
+        "--exclude-dir=node_modules",
+        "--exclude-dir=target",
+        "--exclude-dir=dist",
+        "--exclude-dir=build",
+        pattern,
+        scope,
+      ];
+
+      try {
+        out = runSearch("rg", rgArgs);
+      } catch (rgErr: any) {
+        if (rgErr?.code === "ENOENT") {
+          out = runSearch("grep", grepArgs);
+        } else {
+          throw rgErr;
         }
       }
 

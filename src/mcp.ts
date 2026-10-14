@@ -2,6 +2,7 @@ import * as readline from "node:readline";
 import * as path from "node:path";
 import { FSearchClient } from "./client.ts";
 import { formatGrepFiles } from "./formatter.ts";
+import { searchSemanticIntent } from "./semantic.ts";
 import { summarizeAudit, formatAuditSummary } from "./telemetry.ts";
 import { diagnoseEmptyQuery } from "./observer.ts";
 
@@ -67,7 +68,7 @@ export class FSearchMcpServer {
           protocolVersion: "2024-11-05",
           serverInfo: {
             name: "pi-ultrasearch",
-            version: "0.3.0",
+            version: "0.3.1",
           },
           capabilities: {
             tools: {},
@@ -95,6 +96,7 @@ export class FSearchMcpServer {
                   query: { type: "string", description: "Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified')" },
                   limit: { type: "number", description: "Max results (default: 30)" },
                   global: { type: "boolean", description: "Search whole disk instead of workspace" },
+                  near: { type: "string", description: "Optional file path to re-rank results by folder proximity" },
                 },
                 required: ["query"],
               },
@@ -107,7 +109,7 @@ export class FSearchMcpServer {
                 properties: {
                   pattern: { type: "string", description: "Literal or identifier to search" },
                   path_filter: { type: "string", description: "Subdirectory or file filter" },
-                  mode: { type: "string", enum: ["literal", "regex", "symbol"], description: "Search mode" },
+                  mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "Search mode (semantic = intent keyword expansion)" },
                   limit: { type: "number", description: "Max files to return" },
                   compact: { type: "boolean", description: "Compact one-line format (default: true)" },
                   max_tokens: { type: "number", description: "Optional token budget ceiling" },
@@ -186,7 +188,7 @@ export class FSearchMcpServer {
 
       if (toolName === "fsearch_query") {
         const searchScope = args.global ? undefined : activeRoot;
-        const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30 });
+        const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30, near: args.near });
         const hits = res.hits ?? [];
         if (hits.length === 0) {
           const hint = await diagnoseEmptyQuery(args.query, activeRoot, this.client);
@@ -216,13 +218,19 @@ export class FSearchMcpServer {
       if (toolName === "fsearch_grep") {
         const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
         const ctxCount = typeof args.context === "number" ? args.context : 0;
-        const res = await this.client.grep(args.pattern, {
-          in: searchScope,
-          mode: args.mode ?? "literal",
-          limit: args.limit ?? 30,
-          context: ctxCount,
-        });
-        const files = res.files ?? [];
+        let files: any[] = [];
+        if (args.mode === "semantic") {
+          const semantic = await searchSemanticIntent(this.client, args.pattern, { in: searchScope, limit: args.limit ?? 30, auditTool: "fsearch_grep" });
+          files = semantic.files ?? [];
+        } else {
+          const res = await this.client.grep(args.pattern, {
+            in: searchScope,
+            mode: args.mode ?? "literal",
+            limit: args.limit ?? 30,
+            context: ctxCount,
+          });
+          files = res.files ?? [];
+        }
         if (files.length === 0) {
           const hint = await diagnoseEmptyQuery(args.pattern, activeRoot, this.client);
           return {

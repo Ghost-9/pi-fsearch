@@ -1,3 +1,4 @@
+process.env.PI_ULTRASEARCH_TEST = "1";
 import { execFileSync } from "node:child_process";
 import { performance } from "node:perf_hooks";
 import { FSearchClient } from "../src/client.ts";

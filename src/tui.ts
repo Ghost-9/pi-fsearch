@@ -70,6 +70,9 @@ export class UltraSearchTui {
     process.stdout.write("\x1B[?25l"); // Hide cursor
     process.stdout.write("\x1B[2J\x1B[H"); // Clear screen
 
+    // Start the LSM compaction supervisor for this long-lived interactive session
+    this.compactor.startAutoCompaction();
+
     await this.render();
 
     process.stdin.on("keypress", async (str, key) => {
@@ -128,6 +131,7 @@ export class UltraSearchTui {
     }
     process.stdout.write("\x1B[?25h"); // Restore cursor
     process.stdout.write("\x1B[0m\n"); // Reset colors
+    this.compactor.stopAutoCompaction();
     this.client.close();
     process.exit(0);
   }

@@ -6,8 +6,10 @@ import * as path from "node:path";
 import { FSearchClient } from "./src/client.ts";
 import { isPathSafe } from "./src/sanitize.ts";
 import { formatGrepFiles } from "./src/formatter.ts";
-import { recordAudit, summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.ts";
+import { summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "./src/observer.ts";
+import { searchSemanticIntent } from "./src/semantic.ts";
+import { recordMistake } from "./src/recursive-learning.ts";
 
 const worktreeCache = new Map<string, { root: string; timestamp: number }>();
 const CACHE_TTL_MS = 60_000;
@@ -81,7 +83,6 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       near: Type.Optional(Type.String({ description: "Optional active file path to re-rank results by folder proximity." })),
     }),
     execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string }) => {
-      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.global ? undefined : worktreeRoot;
@@ -103,19 +104,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           near: proximityTarget ? path.resolve(worktreeRoot, proximityTarget) : undefined,
         });
 
-        const elapsed = performance.now() - start;
-
         if (!res.ok && res.error) {
-          recordAudit({
-            ts: Date.now(),
-            tool: "fsearch_query",
-            query: params.query,
-            scope: searchScope,
-            ms: elapsed,
-            ok: false,
-            hitCount: 0,
-            source: res.source ?? "index",
-          });
           return { content: [{ type: "text", text: `UltraSearch error: ${res.error}` }] };
         }
 
@@ -127,18 +116,6 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           const hint = await diagnoseEmptyQuery(params.query, worktreeRoot, client);
           if (hint) hintText = `\n[UltraSearch Diagnostic: ${hint}]`;
         }
-
-        recordAudit({
-          ts: Date.now(),
-          tool: "fsearch_query",
-          query: params.query,
-          scope: searchScope,
-          ms: elapsed,
-          ok: true,
-          hitCount: hits.length,
-          source: res.source ?? "index",
-          diagnosticHint: hintText.trim() || undefined,
-        });
 
         if (hits.length === 0) {
           return {
@@ -182,20 +159,21 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     name: "fsearch_grep",
     label: "UltraSearch Grep",
     description:
-      "Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk walks. Results scrubbed for credentials.",
+      "Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk walks. Modes: literal, regex, symbol (definitions first), semantic (intent expansion). Optional context lines (-C) and AST symbol tags. Results scrubbed for credentials.",
     parameters: Type.Object({
       pattern: Type.String({ description: "Literal text or identifier to search for." }),
       path_filter: Type.Optional(Type.String({ description: "Optional subfolder or file pattern (e.g. 'src/', 'Sources/Search')." })),
-      mode: Type.Optional(Type.Union([Type.Literal("literal"), Type.Literal("regex"), Type.Literal("symbol")], {
-        description: "Search mode: 'literal' (default), 'regex', or 'symbol' (function/class definitions first).",
+      mode: Type.Optional(Type.Union([Type.Literal("literal"), Type.Literal("regex"), Type.Literal("symbol"), Type.Literal("semantic")], {
+        description: "Search mode: 'literal' (default), 'regex', 'symbol' (definitions first), or 'semantic' (intent keyword expansion).",
       })),
       limit: Type.Optional(Type.Number({ description: "Maximum files to match (default: 30)." })),
       global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository." })),
       compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format (default: true). Set false for verbose blocks." })),
       max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
+      context: Type.Optional(Type.Number({ description: "Lines of surrounding context to include per match (0-5, default: 0)." })),
+      tag_symbols: Type.Optional(Type.Boolean({ description: "Tag matches with AST definition tags like [def:fn], [def:class]." })),
     }),
-    execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number; global?: boolean; compact?: boolean; max_tokens?: number }) => {
-      const start = performance.now();
+    execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol" | "semantic"; limit?: number; global?: boolean; compact?: boolean; max_tokens?: number; context?: number; tag_symbols?: boolean }) => {
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const baseScope = params.global ? undefined : worktreeRoot;
@@ -207,41 +185,34 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           return { content: [{ type: "text", text: "Security violation: path filter cannot escape workspace root." }] };
         }
 
-        const res = await client.grep(params.pattern, {
-          in: searchScope,
-          mode: params.mode ?? "literal",
-          limit: params.limit ?? 30,
-          budget_ms: 2500,
-          context: 1,
-        });
+        let files: any[] = [];
+        let tookUs = 0;
+        let sourceNotice = "";
 
-        const elapsed = performance.now() - start;
-
-        if (!res.ok && res.error) {
-          recordAudit({
-            ts: Date.now(),
-            tool: "fsearch_grep",
-            pattern: params.pattern,
-            scope: searchScope,
-            ms: elapsed,
-            ok: false,
-            hitCount: 0,
-            source: res.source ?? "index",
+        if (params.mode === "semantic") {
+          const t0 = performance.now();
+          const semantic = await searchSemanticIntent(client, params.pattern, {
+            in: searchScope,
+            limit: params.limit ?? 30,
+            auditTool: "fsearch_grep",
           });
-          return { content: [{ type: "text", text: `UltraSearch grep error: ${res.error}` }] };
+          files = semantic.files ?? [];
+          tookUs = Math.round((performance.now() - t0) * 1000);
+        } else {
+          const res = await client.grep(params.pattern, {
+            in: searchScope,
+            mode: (params.mode ?? "literal") as "literal" | "regex" | "symbol",
+            limit: params.limit ?? 30,
+            budget_ms: 2500,
+            context: params.context ?? 0,
+          });
+          if (!res.ok && res.error) {
+            return { content: [{ type: "text", text: `UltraSearch grep error: ${res.error}` }] };
+          }
+          files = res.files ?? [];
+          tookUs = res.took_us ?? 0;
+          sourceNotice = res.source === "native_fallback" ? " (native fallback)" : "";
         }
-
-        const files = res.files ?? [];
-        recordAudit({
-          ts: Date.now(),
-          tool: "fsearch_grep",
-          pattern: params.pattern,
-          scope: searchScope,
-          ms: elapsed,
-          ok: true,
-          hitCount: files.length,
-          source: res.source ?? "index",
-        });
 
         if (files.length === 0) {
           return { content: [{ type: "text", text: `No occurrences of "${params.pattern}" found.` }] };
@@ -252,13 +223,21 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           compact: params.compact,
           maxTokens: params.max_tokens,
           prioritizeSymbols: params.mode === "symbol",
+          showContext: (params.context ?? 0) > 0,
+          tagSymbols: params.tag_symbols ?? (params.mode === "symbol"),
         });
-        const sourceNotice = res.source === "native_fallback" ? " (native fallback)" : "";
+
+        // Feed the recursive learner with real DLP interceptions instead of test fixtures
+        if (formatted.text.includes("[DLP_PROTECTED") || formatted.text.includes("[REDACTED_")) {
+          recordMistake("dlp_violation", params.pattern, `DLP masked credential material while grepping ${searchScope ?? "workspace"}`);
+        }
+
+        const modeTag = params.mode === "semantic" ? " (semantic)" : "";
         return {
           content: [
             {
               type: "text",
-              text: `Found matches across ${files.length} files in ${((res.took_us ?? 0) / 1000).toFixed(2)}ms${sourceNotice} (~${formatted.tokenCount} tokens):\n${formatted.text}`,
+              text: `Found matches across ${files.length} files in ${(tookUs / 1000).toFixed(2)}ms${sourceNotice}${modeTag} (~${formatted.tokenCount} tokens):\n${formatted.text}`,
             },
           ],
         };
@@ -283,7 +262,6 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
     }),
     execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number; compact?: boolean; max_tokens?: number }) => {
-      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.path_filter ? path.join(worktreeRoot, params.path_filter) : worktreeRoot;
@@ -293,19 +271,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           limit: params.limit ?? 30,
         });
 
-        const elapsed = performance.now() - start;
         const files = res.files ?? [];
-
-        recordAudit({
-          ts: Date.now(),
-          tool: "fsearch_multi_grep",
-          pattern: params.patterns.join(" | "),
-          scope: searchScope,
-          ms: elapsed,
-          ok: res.ok,
-          hitCount: files.length,
-          source: res.source ?? "index",
-        });
 
         if (!res.ok && res.error) {
           return { content: [{ type: "text", text: `Multi-grep error: ${res.error}` }] };
@@ -344,28 +310,16 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       global: Type.Optional(Type.Boolean({ description: "Search entire disk (default: false, scopes to project)." })),
     }),
     execute: async (_toolCallId: string, params: { filename: string; global?: boolean }) => {
-      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.global ? undefined : worktreeRoot;
         const res = await client.search(`'${params.filename}`, {
           in: searchScope,
           limit: 10,
+          auditTool: "fsearch_locate",
         });
 
-        const elapsed = performance.now() - start;
         const hits = res.hits ?? [];
-
-        recordAudit({
-          ts: Date.now(),
-          tool: "fsearch_locate",
-          query: params.filename,
-          scope: searchScope,
-          ms: elapsed,
-          ok: res.ok,
-          hitCount: hits.length,
-          source: res.source ?? "index",
-        });
 
         if (hits.length === 0) {
           return { content: [{ type: "text", text: `File "${params.filename}" not found.` }] };
@@ -388,22 +342,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       limit: Type.Optional(Type.Number({ description: "Maximum recent files (default: 15)." })),
     }),
     execute: async (_toolCallId: string, params: { limit?: number }) => {
-      const start = performance.now();
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const res = await client.recent(worktreeRoot, params.limit ?? 15);
-        const elapsed = performance.now() - start;
         const hits = res.hits ?? [];
-
-        recordAudit({
-          ts: Date.now(),
-          tool: "fsearch_recent",
-          scope: worktreeRoot,
-          ms: elapsed,
-          ok: res.ok,
-          hitCount: hits.length,
-          source: res.source ?? "index",
-        });
 
         if (hits.length === 0) {
           return { content: [{ type: "text", text: "No recent activity recorded for this workspace." }] };
@@ -445,7 +387,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       } else {
         const status = await client.status();
         ctx?.ui?.notify(
-          `UltraSearch v0.2.2 daemon active: ${status.entries ?? 0} files indexed; index size: ${((status.index_bytes ?? 0) / 1024 / 1024).toFixed(1)}MB`,
+          `UltraSearch v0.3.1 daemon active: ${status.entries ?? 0} files indexed; index size: ${((status.index_bytes ?? 0) / 1024 / 1024).toFixed(1)}MB`,
           "info"
         );
       }

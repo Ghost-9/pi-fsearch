@@ -4,25 +4,37 @@ We welcome contributions to `pi-ultrasearch`!
 
 ## Development Workflow
 
-1. Ensure the `fsearch` daemon is installed and running:
+1. Install dependencies and check types:
    ```bash
-   fsearch status
-   ```
-
-2. Run type checking:
-   ```bash
+   npm install
    npm run typecheck
    ```
 
-3. Run test suite:
+2. Run the test suite. Integration tests require the resident `fsearch` daemon and are **skipped cleanly** when it is
+   not running, so the suite is safe on a bare machine:
    ```bash
    npm test
    ```
 
-4. Run empirical benchmark:
+3. Run the latency gate. This always executes a hermetic mock-socket gate (client IPC round-trip, p95 < 10 ms search /
+   < 5 ms grep) and additionally runs the live daemon gates when a daemon is available:
    ```bash
-   node test/bench.ts
+   npm run test:gate
    ```
+
+4. Run empirical benchmarks (requires the daemon; these are developer tools, not CI):
+   ```bash
+   npm run bench
+   node test/deep-bench.ts
+   ```
+
+### Rules
+- Benchmark and gate code must set `process.env.PI_ULTRASEARCH_TEST = "1"` so it never writes into the production
+  audit log at `~/.pi/agent/cache/pi-ultrasearch/audit.jsonl`.
+- Do not record telemetry twice: the client is the single audit-recording layer (use `auditTool` for tool-specific
+  names instead of wrapping `recordAudit` around a client call).
+- New performance claims must cite repeatable measurements (median over repeated runs, scope, date) — see
+  `OPTIMIZATIONS.md` §E.
 
 ## Commit Guidelines
 

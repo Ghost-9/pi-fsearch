@@ -164,9 +164,14 @@ export function matchesIgnorePattern(filePath: string, ignorePatterns: string[])
 
 /**
  * Loads ignore patterns from a directory if .gitignore or .ignore exists.
+ * Built-in defaults can be disabled with { includeDefaults: false } so callers
+ * only honour rules the user actually declared in the workspace.
  */
-export function loadIgnoreRules(dirPath: string): string[] {
-  const patterns: string[] = ["node_modules", ".git", ".DS_Store", "target", "dist", "build"];
+export function loadIgnoreRules(dirPath: string, options: { includeDefaults?: boolean } = {}): string[] {
+  const includeDefaults = options.includeDefaults !== false;
+  const patterns: string[] = includeDefaults
+    ? ["node_modules", ".git", ".DS_Store", "target", "dist", "build"]
+    : [];
   for (const filename of [".gitignore", ".ignore"]) {
     const p = path.join(dirPath, filename);
     if (fs.existsSync(p)) {

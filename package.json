@@ -1,6 +1,6 @@
 {
   "name": "pi-ultrasearch",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for Pi Agent, Antigravity & T3 Code, backed by fsearch daemon.",
   "type": "module",
   "repository": {

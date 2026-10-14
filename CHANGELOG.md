@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.1] - 2026-10-14
+
+Honesty + reliability release driven by the full repository audit (`AUDIT-2026-10-14.md`).
+
+### Fixed
+- **CI**: daemon-dependent integration tests now skip cleanly on a bare runner and a **hermetic mock-socket latency gate** runs everywhere, so the GitHub Actions job can pass and the benchmark gate actually executes. Previously 18/18 runs failed and the gate step was unreachable.
+- **Telemetry integrity**: benchmark-gate runs are isolated with `PI_ULTRASEARCH_TEST=1`; audit rows are recorded in a **single layer** (client) instead of client + tool wrapper duplicates; `fsearch_compact` rows no longer report the whole index as `hitCount`.
+- **Recursive learning**: `recordMistake()` is invoked by real failure paths (empty results, path mismatch, DLP interception, CLI bypass) instead of only tests.
+- **`.gitignore` / `.ignore` evaluation** was dead code; it is now applied to `query`, `grep`, and `multi_grep` results for the declared scope, with a 60-second per-scope cache.
+- **Fallback quality**: native fallback prefers `rg` (with `grep` fallback) and the `find` max-depth cap was removed.
+- **Rich results**: `fsearch_grep` no longer requests and discards context lines; optional `context` and `tag_symbols` parameters are exposed to Pi and MCP clients.
+- **MCP registration**: registered in Antigravity (`~/.gemini/antigravity/mcp_config.json`, `~/.gemini/config/mcp_config.json`), VS Code user `mcp.json`, and Claude Desktop. Pi deliberately keeps the native extension rather than a duplicate MCP tool surface.
+- Documentation: README and ROADMAP rewritten against measured evidence; `OPTIMIZATIONS.md` added; version metadata reconciled to 0.3.1.
+
+### Added
+- `mode: "semantic"` in `fsearch_grep` (Pi + MCP) wiring the intent-expansion module into a reachable path.
+- `near` parameter on the MCP `fsearch_query` tool.
+- Auto-compaction supervisor started/stopped with the interactive TUI lifecycle.
+
+---
+
+## [0.3.0] - 2026-10-13
+
+Retroactive entry for work that shipped after 0.2.2 without a changelog update.
+
+### Added
+- Interactive observability TUI (`src/tui.ts`, `bin/tui.ts`): live metrics, audit inspector, learning store, one-key LSM compaction, FDA helper.
+- LSM compaction supervisor (`src/compactor.ts`) with manual and automated modes and compaction history.
+- Recursive learning store (`src/recursive-learning.ts`) with typo remappings, mistake patterns, and CLI bypass/DLP counters.
+- Semantic intent expansion (`src/semantic.ts`) — concept dictionary to code-token expansion.
+- Rich grep results: code context windows (`-C`), AST symbol tags, and MCP support (`src/formatter.ts`, `src/mcp.ts`).
+- Daemon management: launchd `com.pi.ultrasearch` LaunchAgent with `KeepAlive`, `authorize` command, and unified `UltraSearch.app` branding for stable Full Disk Access attribution.
+- Dynamic native fallback for consent-gated workspaces (Downloads/Documents/Desktop).
+- CLI surface (`bin/cli.ts`): `query`, `grep`, `metrics`, `audit`, `compact`, `learnings`, `tui`.
+
+---
+
 ## [0.2.2] - 2026-10-13
 
 ### Changed

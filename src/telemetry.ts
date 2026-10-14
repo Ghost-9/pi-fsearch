@@ -18,6 +18,8 @@ export interface FSearchAuditRow {
   diagnosticHint?: string;
 }
 
+export type AuditTool = FSearchAuditRow["tool"];
+
 export function getAuditFilePath(): string {
   if (process.env.PI_ULTRASEARCH_TEST === "1") {
     return join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "test_audit.jsonl");

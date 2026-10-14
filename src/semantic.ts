@@ -1,5 +1,6 @@
 import { FSearchClient } from "./client.ts";
-import type { FSearchGrepMatch } from "./types.ts";
+import type { FSearchGrepFile } from "./types.ts";
+import type { AuditTool } from "./telemetry.ts";
 
 /**
  * Common code intent mappings to bridge natural language questions
@@ -19,7 +20,7 @@ const INTENT_CONCEPT_MAP: Record<string, string[]> = {
 export interface SemanticSearchResult {
   term: string;
   matchedTokens: string[];
-  files: FSearchGrepMatch[];
+  files: FSearchGrepFile[];
   confidence: number;
 }
 
@@ -51,7 +52,7 @@ export function expandIntentKeywords(naturalQuery: string): string[] {
 export async function searchSemanticIntent(
   client: FSearchClient,
   naturalQuery: string,
-  options: { in?: string; limit?: number } = {}
+  options: { in?: string; limit?: number; auditTool?: AuditTool } = {}
 ): Promise<SemanticSearchResult> {
   const expanded = expandIntentKeywords(naturalQuery);
   const searchLimit = options.limit ?? 20;
@@ -69,6 +70,7 @@ export async function searchSemanticIntent(
   const grepRes = await client.multiGrep(expanded, {
     in: options.in,
     limit: searchLimit,
+    auditTool: options.auditTool,
   });
 
   const files = grepRes.files || [];

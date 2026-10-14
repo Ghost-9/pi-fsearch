@@ -67,9 +67,9 @@ export class LsmCompactor {
         query: `compact (automated=${automated})`,
         ms: durationMs,
         ok: true,
-        hitCount: stats.entries,
+        hitCount: 0,
         source: "index",
-        tokenCount: 0,
+        diagnosticHint: `entries=${stats.entries} segments=${stats.segments} overlay=${stats.overlay} removed=${stats.removed}`,
       });
 
       return {

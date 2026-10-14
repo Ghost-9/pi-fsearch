@@ -1,3 +1,5 @@
+import type { AuditTool } from "./telemetry.ts";
+
 export interface FSearchHit {
   kind: "file" | "dir" | "link" | "other";
   mtime: number;
@@ -82,6 +84,10 @@ export interface SearchOptions {
   git?: boolean;
   boost?: boolean;
   skipAudit?: boolean;
+  /** Tool name recorded in the audit log (single-recording layer). Defaults to fsearch_query. */
+  auditTool?: AuditTool;
+  /** Respect local .gitignore/.ignore rules declared in the scope root (default: true). */
+  respectIgnore?: boolean;
 }
 
 export interface GrepOptions {
@@ -91,4 +97,8 @@ export interface GrepOptions {
   budget_ms?: number;
   context?: number;
   skipAudit?: boolean;
+  /** Tool name recorded in the audit log (single-recording layer). Defaults to fsearch_grep. */
+  auditTool?: AuditTool;
+  /** Respect local .gitignore/.ignore rules declared in the scope root (default: true). */
+  respectIgnore?: boolean;
 }
