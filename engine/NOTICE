@@ -1,0 +1,28 @@
+NOTICE
+======
+
+This directory contains a **vendored, renamed fork** of the `fsearch` engine.
+
+Upstream
+--------
+- Project: `fsearch` — whole-disk file search for macOS
+- Version vendored: **v0.2.1** (upstream commit `88e63fd`, tag `v0.2.1`)
+- Author / copyright: **Copyright (c) 2026 Noah Dunnagan**
+- License: **MIT** (see `LICENSE` in this directory, kept verbatim)
+- Upstream source on this machine: `~/.cache/fsearch`
+- Upstream URL: https://github.com/noahdunnagan/fsearch (see upstream README for the canonical remote)
+
+Changes made by this fork
+-------------------------
+The engine is vendored into `pi-ultrasearch` so that engine behaviour can be
+changed and tested in-tree. Modifications to upstream source are behavioural
+(additive protocol fields, security filtering, metrics and budgets) and are
+listed in `docs/engine-changes.md`. The vendored `LICENSE` and the copyright
+notice above are kept intact; the MIT terms permit modification and
+redistribution provided the copyright notice and permission notice are
+retained.
+
+What is *not* vendored
+----------------------
+`target/` (build output), `.git/`, and `.cargo/` are excluded. Build with
+`cargo build --release`; see `BUILD.md`.
