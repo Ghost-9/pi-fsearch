@@ -1,6 +1,6 @@
 //! Whole-disk file search for macOS: a fuzzy name index over every entry on
 //! disk, kept live from FSEvents, plus a trigram content index for text
-//! files. `Engine` runs it all in-process; the `fsearch` binary wraps one in
+//! files. `Engine` runs it all in-process; the `ultrasearch` binary wraps one in
 //! a daemon with a JSON-lines socket.
 
 pub mod alloc;

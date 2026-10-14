@@ -19,12 +19,18 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(HERE, "..", "..");
 export const ENGINE_DIR = path.join(REPO_ROOT, "engine");
-export const ENGINE_BIN = path.join(ENGINE_DIR, "target", "release", "fsearch");
+/** The renamed daemon. `FSEARCH_BIN` accepted for a pre-rebrand checkout. */
+export const ENGINE_BIN =
+  process.env.ULTRASEARCH_ENGINE_BIN ??
+  [path.join(ENGINE_DIR, "target", "release", "ultrasearch"), path.join(ENGINE_DIR, "target", "release", "fsearch")].find((p) => fs.existsSync(p)) ??
+  path.join(ENGINE_DIR, "target", "release", "ultrasearch");
+/** The socket the daemon binds; the fork renamed it with everything else. */
+export const SOCKET_NAME = path.basename(ENGINE_BIN) === "fsearch" ? "fsearch.sock" : "ultrasearch.sock";
 export const HAS_ENGINE = fs.existsSync(ENGINE_BIN);
 
 /** Build the engine if the release binary is missing. */
 export function ensureEngineBuilt() {
-  if (HAS_ENGINE) return;
+  if (fs.existsSync(ENGINE_BIN)) return;
   execFileSync("cargo", ["build", "--release"], { cwd: ENGINE_DIR, stdio: "inherit" });
 }
 
@@ -72,7 +78,7 @@ export class EngineHarness {
     fs.mkdirSync(this.dir, { recursive: true });
     this.env = { ...(opts.env ?? {}) };
     this.child = null;
-    this.socket = path.join(this.dir, "fsearch.sock");
+    this.socket = path.join(this.dir, opts.socketName ?? SOCKET_NAME);
   }
 
   async start({ waitMs = 30_000 } = {}) {

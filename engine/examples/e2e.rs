@@ -6,7 +6,7 @@
 //!   e2e dual <transport A> <transport B> <corpus.json> <out.json> <plan...>
 //!       two daemons side by side, every request asked of both in turn
 //!   e2e cli <bin A> <bin B> <HOME A> <HOME B> <corpus.json> <out.json> <rounds> [cats]
-//!       `fsearch <query>` as a shell runs it, A and B in turn
+//!       `ultrasearch <query>` as a shell runs it, A and B in turn
 //!   e2e launch <rounds> <command>...    process launch to exit, in turn
 //!
 //! transport: `stdio:<bin>[@<HOME>][#arg#arg]` spawns `<bin> stdio [args]`

@@ -567,7 +567,7 @@ mod tests {
     /// content is resynced.
     #[test]
     fn folder_gone_takes_what_was_added() {
-        let d = std::env::temp_dir().join(format!("fsearch-live-{}", std::process::id()));
+        let d = std::env::temp_dir().join(format!("ultrasearch-live-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         for f in ["sub/old", "swap/old"] {
             std::fs::create_dir_all(d.join(f).parent().unwrap()).unwrap();

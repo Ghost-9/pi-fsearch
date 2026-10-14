@@ -13,11 +13,11 @@
 //!   snap grep <dir> <home> <patterns.txt>   per pattern (one a line; `regex:` for a regex),
 //!                                           every file holding it, as JSON lines (smart case)
 
-use fsearch::content::{self, Content};
-use fsearch::index::Index;
-use fsearch::live::Live;
-use fsearch::walk::{self, KIND_DIR, Listing, RawEnt};
-use fsearch::{Grep, GrepMode, Query};
+use ultrasearch::content::{self, Content};
+use ultrasearch::index::Index;
+use ultrasearch::live::Live;
+use ultrasearch::walk::{self, KIND_DIR, Listing, RawEnt};
+use ultrasearch::{Grep, GrepMode, Query};
 use std::path::Path;
 use std::time::Instant;
 
@@ -58,7 +58,7 @@ fn build(home: &str, dir: &Path) {
     assert!(!dir.join("index.bin").exists(), "{} already holds an index", dir.display());
     std::fs::create_dir_all(dir).unwrap();
     let t = Instant::now();
-    let idx = Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes(), b"/");
+    let idx = Index::build(scan_home(home.as_bytes()), 0, ultrasearch::query::now_secs(), home.as_bytes(), b"/");
     idx.save(&dir.join("index.bin")).unwrap();
     let live = Live::new(Index::load(&dir.join("index.bin")).unwrap());
     let names_s = t.elapsed().as_secs_f64();
@@ -101,7 +101,7 @@ fn build(home: &str, dir: &Path) {
 fn wants(home: &str, dir: &Path) {
     if !dir.join("index.bin").exists() {
         std::fs::create_dir_all(dir).unwrap();
-        Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes(), b"/").save(&dir.join("index.bin")).unwrap();
+        Index::build(scan_home(home.as_bytes()), 0, ultrasearch::query::now_secs(), home.as_bytes(), b"/").save(&dir.join("index.bin")).unwrap();
     }
     let live = Live::new(Index::load(&dir.join("index.bin")).unwrap());
     let t = Instant::now();
@@ -118,7 +118,7 @@ fn wants(home: &str, dir: &Path) {
 }
 
 fn measure(home: &str, dir: &Path) {
-    let live = Live::new(Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes(), b"/"));
+    let live = Live::new(Index::build(scan_home(home.as_bytes()), 0, ultrasearch::query::now_secs(), home.as_bytes(), b"/"));
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(8)
         .start_handler(|_| unsafe {
@@ -153,9 +153,9 @@ fn try_grep(dir: &Path, home: &str, req: &str) {
     let mut q = Query::parse(v["q"].as_str().unwrap_or(""), home).unwrap();
     q.limit = v["limit"].as_u64().map_or(q.limit, |n| n as usize);
     let case = match v["case"].as_str() {
-        Some("sensitive") => fsearch::Case::Sensitive,
-        Some("insensitive") => fsearch::Case::Insensitive,
-        _ => fsearch::Case::Smart,
+        Some("sensitive") => ultrasearch::Case::Sensitive,
+        Some("insensitive") => ultrasearch::Case::Insensitive,
+        _ => ultrasearch::Case::Smart,
     };
     let mode = match v["mode"].as_str() {
         Some("regex") => GrepMode::Regex,
@@ -179,7 +179,7 @@ fn try_grep(dir: &Path, home: &str, req: &str) {
     };
     let files: Vec<Value> = (r.files.iter())
         .map(|f| {
-            let hit = |((n, t), h): (&(usize, String), &fsearch::Hit)| {
+            let hit = |((n, t), h): (&(usize, String), &ultrasearch::Hit)| {
                 json!({"line": n, "text": t, "col": h.col, "ranges": h.ranges, "def": h.def, "before": h.before, "after": h.after})
             };
             let m: Vec<Value> = f.lines.iter().zip(&f.hits).map(hit).collect();

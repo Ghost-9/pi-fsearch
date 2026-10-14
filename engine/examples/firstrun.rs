@@ -18,7 +18,7 @@
 //! prompt are skipped for the real home as well as `<home>` (the rig runs
 //! without Full Disk Access; opening them could pop a prompt).
 
-use fsearch::{Engine, GrepMode, Options, Query};
+use ultrasearch::{Engine, GrepMode, Options, Query};
 use serde_json::{Value, json};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -71,7 +71,7 @@ fn main() {
     assert!(!data.exists(), "{} exists: a first run needs an empty data dir", data.display());
     let t0 = Instant::now();
     let real = std::env::var("REAL_HOME").or_else(|_| std::env::var("HOME")).unwrap();
-    let skip = fsearch::gated(&real).into_iter().chain(fsearch::gated(&home)).map(|p| PathBuf::from(String::from_utf8(p).unwrap())).collect();
+    let skip = ultrasearch::gated(&real).into_iter().chain(ultrasearch::gated(&home)).map(|p| PathBuf::from(String::from_utf8(p).unwrap())).collect();
     let e = Engine::start(Options { dir: data, home: home.clone(), skip: Some(skip) }).unwrap();
     let peak = sampler();
     match a[0].as_str() {
@@ -194,7 +194,7 @@ fn main() {
             while grep_s.is_none() && t0.elapsed() < deadline {
                 let mut q = Query::parse(&format!("in:{root}"), &home).unwrap();
                 q.limit = usize::MAX >> 1;
-                let mut g = fsearch::Grep::new(&s("pattern"), GrepMode::Literal).unwrap();
+                let mut g = ultrasearch::Grep::new(&s("pattern"), GrepMode::Literal).unwrap();
                 (g.max_per_file, g.budget) = (1, None);
                 let r = e.grep(&q, &g);
                 let got: std::collections::BTreeSet<String> =
@@ -301,7 +301,7 @@ fn ask(e: &Engine, spec: &str, home: &str) -> Result<Value, String> {
     let (pattern, scope) = rest.rsplit_once(" in:").ok_or("grep spec needs in:")?;
     let mut q = Query::parse(&format!("in:{scope}"), home)?;
     q.limit = limit.parse().map_err(|_| "bad limit")?;
-    let mut g = fsearch::Grep::new(pattern, GrepMode::Literal)?;
+    let mut g = ultrasearch::Grep::new(pattern, GrepMode::Literal)?;
     g.budget = None;
     let (r, _) = e.grep(&q, &g)?;
     if !r.complete {

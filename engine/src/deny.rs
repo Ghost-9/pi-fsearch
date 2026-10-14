@@ -86,13 +86,10 @@ impl DenyList {
     /// The configured list, or the reason it could not be used. Never returns
     /// a partial list: an unusable source is an error (see the module docs).
     pub fn load(dir: &Path) -> Result<DenyList, String> {
-        if let Some(v) = std::env::var_os("ULTRASEARCH_DENY").or_else(|| std::env::var_os("FSEARCH_DENY")) {
+        if let Some(v) = std::env::var_os("ULTRASEARCH_DENY") {
             return DenyList::parse(&v.to_string_lossy(), "ULTRASEARCH_DENY");
         }
-        let file = std::env::var_os("ULTRASEARCH_DENY_FILE")
-            .or_else(|| std::env::var_os("FSEARCH_DENY_FILE"))
-            .map(PathBuf::from)
-            .unwrap_or_else(|| dir.join("deny.txt"));
+        let file = std::env::var_os("ULTRASEARCH_DENY_FILE").map(PathBuf::from).unwrap_or_else(|| dir.join("deny.txt"));
         if !file.exists() {
             // A file named explicitly but missing is a misconfiguration; the
             // implicit `<dir>/deny.txt` simply may not exist.
@@ -142,14 +139,11 @@ impl DenyCache {
 
     /// The file the list would come from, when it is file-based.
     fn source(&self) -> Option<PathBuf> {
-        if std::env::var_os("ULTRASEARCH_DENY").is_some() || std::env::var_os("FSEARCH_DENY").is_some() {
+        if std::env::var_os("ULTRASEARCH_DENY").is_some() {
             return None;
         }
         Some(
-            std::env::var_os("ULTRASEARCH_DENY_FILE")
-                .or_else(|| std::env::var_os("FSEARCH_DENY_FILE"))
-                .map(PathBuf::from)
-                .unwrap_or_else(|| self.dir.join("deny.txt")),
+            std::env::var_os("ULTRASEARCH_DENY_FILE").map(PathBuf::from).unwrap_or_else(|| self.dir.join("deny.txt")),
         )
     }
 }
@@ -248,7 +242,6 @@ mod tests {
         // SAFETY: test-local variable names.
         unsafe {
             std::env::remove_var("ULTRASEARCH_DENY");
-            std::env::remove_var("FSEARCH_DENY");
             std::env::set_var("ULTRASEARCH_DENY_FILE", "/nonexistent/us-deny-file");
         }
         let e = DenyList::load(Path::new("/tmp")).unwrap_err();

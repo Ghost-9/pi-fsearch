@@ -1,11 +1,11 @@
 //! The daemon: one `Engine`, answering JSON lines over a unix socket.
-//! `fsearch stdio`, `fsearch mcp` and the CLI are thin clients.
+//! `ultrasearch stdio`, `ultrasearch mcp` and the CLI are thin clients.
 
 use crate::frecency::{self, Frecency};
-use fsearch::deny::{self, DenyList};
+use ultrasearch::deny::{self, DenyList};
 use crate::git::{self, Git};
-use fsearch::walk::{KIND_DIR, KIND_FILE, KIND_LINK, KIND_OTHER};
-use fsearch::{Engine, Found, GrepMode, Options, Query};
+use ultrasearch::walk::{KIND_DIR, KIND_FILE, KIND_LINK, KIND_OTHER};
+use ultrasearch::{Engine, Found, GrepMode, Options, Query};
 use regex::bytes::Regex;
 use serde_json::{Value, json};
 use std::io::{BufRead, BufReader, Write};
@@ -16,17 +16,17 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 pub fn socket_path(dir: &Path) -> PathBuf {
-    dir.join("fsearch.sock")
+    dir.join("ultrasearch.sock")
 }
 
 pub fn serve(dir: PathBuf, home: String) {
     // One daemon per socket. (The engine's own lock decides who writes the
-    // index: an app embedding fsearch may own it while the daemon follows.)
+    // index: an app embedding ultrasearch may own it while the daemon follows.)
     std::fs::create_dir_all(&dir).ok();
     // Opened without truncating: a loser must not wipe the owner's pid.
     let Ok(mut lock) = std::fs::OpenOptions::new().write(true).create(true).truncate(false).open(dir.join("socket.lock")) else { return };
     if !try_lock(&lock) {
-        eprintln!("{} another fsearch daemon is running", fsearch::query::now_secs());
+        eprintln!("{} another ultrasearch daemon is running", ultrasearch::query::now_secs());
         return;
     }
     // The pid lets `stop` find us.
@@ -36,7 +36,7 @@ pub fn serve(dir: PathBuf, home: String) {
     let engine = match Engine::start(Options { dir: dir.clone(), home, skip: None }) {
         Ok(e) => e,
         Err(e) => {
-            eprintln!("{} {e}", fsearch::query::now_secs());
+            eprintln!("{} {e}", ultrasearch::query::now_secs());
             return;
         }
     };
@@ -48,7 +48,7 @@ pub fn serve(dir: PathBuf, home: String) {
     let listener = match UnixListener::bind(&sock) {
         Ok(l) => l,
         Err(e) => {
-            eprintln!("{} {}: {e}", fsearch::query::now_secs(), sock.display());
+            eprintln!("{} {}: {e}", ultrasearch::query::now_secs(), sock.display());
             return;
         }
     };
@@ -385,7 +385,7 @@ fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Repl
                 (_, Some(Value::Array(a))) => a.iter().filter_map(Value::as_str).collect(),
                 _ => return Err("open needs a path (or paths)".into()),
             };
-            let now = fsearch::query::now_secs();
+            let now = ultrasearch::query::now_secs();
             let scores: Vec<f32> = paths.iter().map(|p| cx.frecency.open(&real(p), now)).collect();
             Ok(Reply::Value(json!({"ok": true, "scores": scores})))
         }
@@ -395,13 +395,13 @@ fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Repl
             let (q, _) = parse_request(v, engine.home())?;
             guard_scope(root, q.scope.as_deref())?;
             guard_denied(deny, q.scope.as_deref())?;
-            let top = frecent(cx, q.scope.as_deref(), fsearch::query::now_secs());
+            let top = frecent(cx, q.scope.as_deref(), ultrasearch::query::now_secs());
             let hits = top.into_iter().filter_map(|(p, s)| Some(Found { score: (s * 100.0) as i32, ..found(&q, &p)? }));
             Ok(Reply::Hits(hits.take(q.limit).collect(), 0, None, v.get("git") == Some(&Value::Bool(true)), None))
         }
         "git" => {
             // The repo holding a folder, its status read in the background
-            // (`fsearch mcp` asks at start, so the first search has it).
+            // (`ultrasearch mcp` asks at start, so the first search has it).
             let p = v.get("path").and_then(Value::as_str).ok_or("git needs a path")?;
             let r = cx.git.load(&[&real(p)[..], b"/."].concat());
             let snap = r.as_ref().and_then(|r| r.snap(Duration::ZERO));
@@ -446,7 +446,7 @@ fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Repl
                 if ms > 0 {
                     q.deadline = Some(Instant::now() + Duration::from_millis(ms));
                 }
-                let p = std::sync::Arc::new(fsearch::query::Progress::budget(ms).cap_candidates(cap));
+                let p = std::sync::Arc::new(ultrasearch::query::Progress::budget(ms).cap_candidates(cap));
                 q.progress = Some(p.clone());
                 (ms, p)
             });
@@ -747,7 +747,7 @@ fn git_root(dir: &[u8]) -> Option<Vec<u8>> {
 /// stores even when the folder itself does not exist).
 fn real(p: &str) -> Vec<u8> {
     let p = match p.strip_prefix('~') {
-        Some(rest) => format!("{}{rest}", fsearch::env::home()),
+        Some(rest) => format!("{}{rest}", ultrasearch::env::home()),
         None => p.to_string(),
     };
     deny::normalize(&p)
@@ -804,7 +804,7 @@ fn frecent(cx: &Ctx, dir: Option<&[u8]>, now: u32) -> Vec<(Vec<u8>, f32)> {
 /// (`nearness`). What it can't do: lift a file the query ranks below them
 /// (the ranking in `query.rs` knows nothing of either).
 fn rerank(cx: &Ctx, hits: &mut [Found], boost: bool, near: Option<&[u8]>) {
-    let now = fsearch::query::now_secs();
+    let now = ultrasearch::query::now_secs();
     let n = hits.len().min(RERANK);
     for f in &mut hits[..n] {
         let p = f.path.as_os_str().as_bytes();
@@ -986,15 +986,15 @@ fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Val
         None => q.grep_mode,
     };
     let case = match v.get("case").and_then(Value::as_str) {
-        None | Some("smart") => fsearch::Case::Smart,
-        Some("sensitive") => fsearch::Case::Sensitive,
-        Some("insensitive") => fsearch::Case::Insensitive,
+        None | Some("smart") => ultrasearch::Case::Smart,
+        Some("sensitive") => ultrasearch::Case::Sensitive,
+        Some("insensitive") => ultrasearch::Case::Insensitive,
         Some(c) => return Err(format!("unknown case {c}")),
     };
     let pattern = v.get("pattern").and_then(Value::as_str).map(str::to_string).or(q.grep.take());
     let mut g = match (v.get("patterns").and_then(Value::as_array), pattern) {
-        (Some(ps), _) => fsearch::Grep::any_of(&ps.iter().filter_map(Value::as_str).collect::<Vec<_>>(), case)?,
-        (None, Some(p)) => fsearch::Grep::with_case(&p, mode, case)?,
+        (Some(ps), _) => ultrasearch::Grep::any_of(&ps.iter().filter_map(Value::as_str).collect::<Vec<_>>(), case)?,
+        (None, Some(p)) => ultrasearch::Grep::with_case(&p, mode, case)?,
         (None, None) => return Err("grep needs a pattern".into()),
     };
     let file = v.get("file").and_then(Value::as_str).map(|f| match f.strip_prefix('~') {
@@ -1014,7 +1014,7 @@ fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Val
     let t = Instant::now();
     let source = |indexed| if indexed { "index" } else { "scan" };
     let (r, source, next) = if let Some(f) = &file {
-        let r = fsearch::content::grep_file(&g, f.as_bytes());
+        let r = ultrasearch::content::grep_file(&g, f.as_bytes());
         let next = r.next;
         (r, "file", next)
     } else if x.plain() {
@@ -1025,10 +1025,10 @@ fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Val
         // Only the files git lists (modified...), newest first: read them.
         x.ready(cx, &q)?;
         let mut paths = from_git(cx, &q.clone_for_scan(), &x, MAX_GREP);
-        paths.retain(|f| f.kind & 3 == KIND_FILE && f.size <= fsearch::content::MAX_FILE && x.keep(&cx.git, f.path.as_os_str().as_bytes()));
+        paths.retain(|f| f.kind & 3 == KIND_FILE && f.size <= ultrasearch::content::MAX_FILE && x.keep(&cx.git, f.path.as_os_str().as_bytes()));
         paths.sort_by_key(|f| std::cmp::Reverse(f.mtime));
         let paths: Vec<Vec<u8>> = paths.into_iter().map(|f| f.path.as_os_str().as_bytes().to_vec()).collect();
-        let mut r = fsearch::content::verify(&g, &paths, x.offset.saturating_add(q.limit).saturating_add(1));
+        let mut r = ultrasearch::content::verify(&g, &paths, x.offset.saturating_add(q.limit).saturating_add(1));
         let next = x.cut(&mut r.files, q.limit).or((!r.complete).then_some(x.offset + r.files.len()));
         (r, "scan", next)
     } else {
@@ -1039,7 +1039,7 @@ fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Val
             &x,
             x.offset.saturating_add(limit),
             MAX_GREP,
-            |f: &fsearch::FileMatches| x.keep(&cx.git, &f.path),
+            |f: &ultrasearch::FileMatches| x.keep(&cx.git, &f.path),
             |n| {
                 q.limit = n;
                 let (mut r, indexed) = engine.grep(&q, &g)?;

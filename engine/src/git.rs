@@ -215,7 +215,7 @@ impl Git {
         let g =
             Arc::new(Git { home: home.as_bytes().to_vec(), bin: git_bin(), repos: Mutex::default(), dirs: Mutex::default(), work: Mutex::new(tx) });
         let w = g.clone();
-        std::thread::Builder::new().name("fsearch-git".into()).spawn(move || w.worker(rx)).expect("spawn");
+        std::thread::Builder::new().name("ultrasearch-git".into()).spawn(move || w.worker(rx)).expect("spawn");
         g
     }
 
@@ -425,7 +425,7 @@ impl Git {
         let first = !std::mem::replace(&mut *r.loaded.0.lock().unwrap(), true);
         r.loaded.1.notify_all();
         if first || t.elapsed() > Duration::from_millis(500) {
-            eprintln!("{} git: read {} in {:.2?}", fsearch::query::now_secs(), String::from_utf8_lossy(&r.root), t.elapsed());
+            eprintln!("{} git: read {} in {:.2?}", ultrasearch::query::now_secs(), String::from_utf8_lossy(&r.root), t.elapsed());
         }
     }
 
@@ -450,7 +450,7 @@ impl Git {
     fn trusted(&self, root: &[u8]) -> bool {
         let filters = self.run(root, &["config", "--local", "--includes", "--get-regexp", r"^filter\..*\.(clean|smudge|process)$"], &[]);
         if filters.as_ref().is_some_and(|f| !f.is_empty()) {
-            eprintln!("{} git: {} configures its own filters; not reading its status", fsearch::query::now_secs(), String::from_utf8_lossy(root));
+            eprintln!("{} git: {} configures its own filters; not reading its status", ultrasearch::query::now_secs(), String::from_utf8_lossy(root));
             return false;
         }
         true
@@ -540,7 +540,7 @@ impl Git {
     /// See `Snap::history`. By author time (a rebase isn't new work), as
     /// `user.email`; none without one.
     fn history_of(&self, root: &[u8]) -> (HashMap<Box<[u8]>, f32>, u32) {
-        let (mut out, now) = (HashMap::new(), fsearch::query::now_secs());
+        let (mut out, now) = (HashMap::new(), ultrasearch::query::now_secs());
         let me = self.run(root, &["config", "user.email"], &[]).map(|e| String::from_utf8_lossy(&e).trim().to_string());
         let Some(me) = me.filter(|e| !e.is_empty()) else { return (out, now) };
         let author = format!("--author=<{me}>");

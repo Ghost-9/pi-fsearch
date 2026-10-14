@@ -3147,7 +3147,7 @@ fn helpers() -> &'static Helpers {
         let h: &'static Helpers = Box::leak(Box::new(Helpers { latest: Default::default(), bell: Default::default() }));
         let n = std::thread::available_parallelism().map_or(1, |n| n.get()).max(SCAN_READERS);
         for i in 1..n {
-            let spawned = std::thread::Builder::new().name(format!("fsearch-help-{i}")).spawn(move || {
+            let spawned = std::thread::Builder::new().name(format!("ultrasearch-help-{i}")).spawn(move || {
                 // Someone is waiting: keep off the slow cores and out of the
                 // throttled IO tiers, and never download iCloud placeholders.
                 unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INITIATED, 0) };
@@ -4781,7 +4781,7 @@ mod tests {
     /// were.
     #[test]
     fn case_folds_through_the_index() {
-        let d = std::env::temp_dir().join(format!("fsearch-fold-{}", std::process::id()));
+        let d = std::env::temp_dir().join(format!("ultrasearch-fold-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         let mut docs = Docs::default();
@@ -4835,7 +4835,7 @@ mod tests {
     /// whole, so a corrupt one) are not counted as dead docs.
     #[test]
     fn dead_bits_past_the_docs() {
-        let d = std::env::temp_dir().join(format!("fsearch-dead-{}", std::process::id()));
+        let d = std::env::temp_dir().join(format!("ultrasearch-dead-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         let p = d.join("a.txt");

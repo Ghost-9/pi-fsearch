@@ -15,11 +15,11 @@
 //! into one segment: what the index would be with nothing dead.
 #![allow(clippy::type_complexity)]
 
-use fsearch::Grep;
-use fsearch::content::{self, Content};
-use fsearch::index::Index;
-use fsearch::live::Live;
-use fsearch::query::Query;
+use ultrasearch::Grep;
+use ultrasearch::content::{self, Content};
+use ultrasearch::index::Index;
+use ultrasearch::live::Live;
+use ultrasearch::query::Query;
 use serde_json::json;
 use std::collections::BTreeSet;
 use std::io::Write;

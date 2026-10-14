@@ -264,7 +264,7 @@ fn pool() -> &'static rayon::ThreadPool {
     static POOL: std::sync::OnceLock<rayon::ThreadPool> = std::sync::OnceLock::new();
     POOL.get_or_init(|| {
         rayon::ThreadPoolBuilder::new()
-            .thread_name(|i| format!("fsearch-search-{i}"))
+            .thread_name(|i| format!("ultrasearch-search-{i}"))
             .start_handler(|_| {
                 unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INTERACTIVE, 0) };
                 crate::alloc::keep_on_this_thread();
@@ -288,7 +288,7 @@ fn now_ns() -> u64 {
 fn warmer() -> &'static std::thread::Thread {
     static T: std::sync::OnceLock<std::thread::Thread> = std::sync::OnceLock::new();
     T.get_or_init(|| {
-        let t = std::thread::Builder::new().name("fsearch-warm".into()).spawn(|| {
+        let t = std::thread::Builder::new().name("ultrasearch-warm".into()).spawn(|| {
             unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INTERACTIVE, 0) };
             loop {
                 let (from, until, now) = (WARM_FROM.load(Ordering::SeqCst), WARM_UNTIL.load(Ordering::SeqCst), now_ns());
@@ -348,7 +348,7 @@ impl Engine {
             Some(v) => v.iter().map(|p| crate::live::normalize(p.as_os_str().as_bytes())).filter(|p| !p.is_empty()).collect(),
             None if has_full_disk_access() && !crate::env::restrict() => Vec::new(),
             None => {
-                log("no Full Disk Access: skipping consent-gated folders (grant it to fsearch to index everything)");
+                log("no Full Disk Access: skipping consent-gated folders (grant it to ultrasearch to index everything)");
                 gated(&opts.home)
             }
         };
@@ -395,9 +395,9 @@ impl Engine {
         let s = shared.clone();
         // Starting the stream (loading CoreServices) and faulting a saved
         // index in take ms each: done once searches run on the index as
-        // mapped, so a restart's first answer needn't wait (`fsearch <query>`
+        // mapped, so a restart's first answer needn't wait (`ultrasearch <query>`
         // with no daemon running: 33 -> 27 ms on the M6).
-        spawn("fsearch-apply", move || {
+        spawn("ultrasearch-apply", move || {
             let (live, replay) = match loading {
                 Some(b) => {
                     log(format!("loaded {} entries, replaying events since {}", b.n, b.event_id));
@@ -763,7 +763,7 @@ impl Shared {
 fn start_content(s: &Arc<Shared>) {
     let Some(rx) = s.content_rx.lock().unwrap().take() else { return };
     let s = s.clone();
-    spawn("fsearch-content", move || content_loop(&s, rx));
+    spawn("ultrasearch-content", move || content_loop(&s, rx));
 }
 
 /// A follower takes over the index files once their owner is gone.
@@ -1473,9 +1473,9 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
     }
 }
 
-/// Default data dir: `~/Library/Application Support/FSearch`.
+/// Default data dir: `~/Library/Application Support/UltraSearch`.
 pub fn default_dir(home: &str) -> PathBuf {
-    Path::new(home).join("Library/Application Support/FSearch")
+    Path::new(home).join("Library/Application Support/UltraSearch")
 }
 
 #[cfg(test)]
@@ -1497,13 +1497,13 @@ mod tests {
     /// crawls the disk). walk::SKIP is set once per process, so every test
     /// passes the same list: folders that don't exist, written oddly.
     fn follower(name: &str, home: &str) -> Engine {
-        let d = std::env::temp_dir().join(format!("fsearch-engine-{}-{name}", std::process::id()));
+        let d = std::env::temp_dir().join(format!("ultrasearch-engine-{}-{name}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         let held = std::fs::File::create(d.join("daemon.lock")).unwrap();
         assert!(try_lock(&held));
         std::mem::forget(held);
-        let skip = Some(vec![PathBuf::from("/nonexistent-fsearch-skip/"), PathBuf::new()]);
+        let skip = Some(vec![PathBuf::from("/nonexistent-ultrasearch-skip/"), PathBuf::new()]);
         let e = Engine::start(Options { dir: d.clone(), home: home.into(), skip }).unwrap();
         let _ = std::fs::remove_dir_all(&d);
         e
@@ -1522,6 +1522,6 @@ mod tests {
     #[test]
     fn skip_entries() {
         follower("skip", "/h");
-        assert!(walk::blocked(b"/nonexistent-fsearch-skip/x") && !walk::blocked(b"/usr"));
+        assert!(walk::blocked(b"/nonexistent-ultrasearch-skip/x") && !walk::blocked(b"/usr"));
     }
 }

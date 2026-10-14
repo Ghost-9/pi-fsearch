@@ -107,7 +107,6 @@ impl Policy {
     pub fn load(dir: &Path) -> Result<Policy, String> {
         let env = |k: &str| std::env::var(k).ok().filter(|v| !v.trim().is_empty());
         let file: Option<PathBuf> = env("ULTRASEARCH_COVERAGE_FILE")
-            .or_else(|| env("FSEARCH_COVERAGE_FILE"))
             .map(PathBuf::from)
             .or_else(|| {
                 let p = dir.join("coverage.json");
@@ -145,21 +144,21 @@ impl Policy {
             None => Policy::built_in(),
         };
         // The environment overrides the file, field by field.
-        if let Some(v) = env("ULTRASEARCH_CONTENT_EXTS").or_else(|| env("FSEARCH_CONTENT_EXTS")) {
+        if let Some(v) = env("ULTRASEARCH_CONTENT_EXTS") {
             let exts = split(&v);
             policy.extensions = Some(exts);
             policy.source = Some("environment".into());
         }
-        if let Some(v) = env("ULTRASEARCH_CONTENT_MAX_BYTES").or_else(|| env("FSEARCH_CONTENT_MAX_BYTES")) {
+        if let Some(v) = env("ULTRASEARCH_CONTENT_MAX_BYTES") {
             let n: u64 = v.parse().map_err(|_| "coverage: ULTRASEARCH_CONTENT_MAX_BYTES must be a number".to_string())?;
             policy.max_file_bytes = Some(n);
             policy.source = Some("environment".into());
         }
-        if let Some(v) = env("ULTRASEARCH_CONTENT_ROOTS").or_else(|| env("FSEARCH_CONTENT_ROOTS")) {
+        if let Some(v) = env("ULTRASEARCH_CONTENT_ROOTS") {
             policy.roots = Some(split(&v).iter().map(|p| crate::deny::normalize(&String::from_utf8_lossy(p))).collect());
             policy.source = Some("environment".into());
         }
-        if let Some(v) = env("ULTRASEARCH_WARM").or_else(|| env("FSEARCH_WARM")) {
+        if let Some(v) = env("ULTRASEARCH_WARM") {
             policy.warm = split(&v).iter().map(|p| crate::deny::normalize(&String::from_utf8_lossy(p))).collect();
             policy.source = Some("environment".into());
         }

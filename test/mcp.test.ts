@@ -197,6 +197,46 @@ test("mcp: no fsearch alias is registered on any surface (source-level guard)", 
   }
 });
 
+test("engine: the vendored daemon carries no upstream name (source-level guard)", async () => {
+  // The daemon that ships is the renamed fork at `engine/`, so its *source* must
+  // not name the upstream project either — a stray token means a path, a socket,
+  // a package name or a data directory that the rebrand missed, and those become
+  // silent surprises on the next build (a second index directory, a listener on
+  // the old socket name, an unresolvable binary).
+  //
+  // Allowed exceptions, each checked, not assumed:
+  //   * NOTICE            — attribution, and where the upstream name belongs
+  //   * README.md         — the upstream URL it keeps for provenance
+  //   * rebrand.sh        — the tool whose whole job is the old -> new mapping
+  //   * LICENSE           — upstream licence text, byte-identical to upstream
+  const allow = new Set(["NOTICE", "README.md", "rebrand.sh", "LICENSE"]);
+  const engine = path.join(repoRoot, "engine");
+  const offenders: string[] = [];
+  const walk = (dir: string) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.name === "target" || e.name === ".git") continue;
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) {
+        walk(full);
+        continue;
+      }
+      if (allow.has(e.name)) continue;
+      // Only text: a binary in the tree would be a build artefact, not source.
+      const buf = fs.readFileSync(full);
+      if (buf.includes(0)) continue;
+      const text = buf.toString("utf-8");
+      // The upstream URL is provenance wherever it appears; the token itself is not.
+      const withoutUrls = text.replace(/noahdunnagan\/fsearch/g, "").replace(/fsearch-aarch64-apple-darwin/g, "");
+      if (/fsearch/i.test(withoutUrls)) {
+        const line = withoutUrls.split("\n").findIndex((l) => /fsearch/i.test(l)) + 1;
+        offenders.push(`${path.relative(repoRoot, full)}:${line}`);
+      }
+    }
+  };
+  walk(engine);
+  assert.deepEqual(offenders, [], `upstream name leaked into the vendored engine: ${offenders.join(", ")}`);
+});
+
 test("mcp: codemode declarations match the MCP tool names", async () => {
   const { renderUltraSearchDeclarations } = await import("../src/codemode.ts");
   const decls = renderUltraSearchDeclarations();

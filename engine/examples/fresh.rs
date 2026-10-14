@@ -8,7 +8,7 @@
 //! folder. Each trial writes a new token, alternately into a new file and
 //! appended to a file the index already holds, then greps until it is found.
 
-use fsearch::{Engine, Grep, GrepMode, Options, Query};
+use ultrasearch::{Engine, Grep, GrepMode, Options, Query};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 

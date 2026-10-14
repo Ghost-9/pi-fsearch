@@ -10,7 +10,7 @@ people type for them, and score where a build ranks the file meant.
 Targets are tracked files whose name is unique there;
 `dup` targets share their name but not their folder/name. A query wants the
 target, and for stem queries any file with the same stem (foo.c, foo.h).
-fsearch's ranks come from examples/quality.rs.
+ultrasearch's ranks come from examples/quality.rs.
 """
 
 import json, os, random, re, subprocess, sys

@@ -188,7 +188,7 @@ stops scoring (`considered` far below the fixture size).
 5. **The daemon's unix-socket accept queue is the OS default** (`libc::listen` is never called with a
    larger backlog): a burst past ~128 simultaneous connects is *refused*, not queued. Found while
    writing the #34 burst test. A client pool (measure wave, `OPTIMIZATIONS.md` A5) is the right fix.
-6. **The engine test suite is not in CI.** It needs `cargo build --release`; the CI workflow is not
+6. **The engine test suite is not in CI.** It needs `cargo build --release` (binary `ultrasearch`); the CI workflow is not
    mine to change. `npm run test:engine` runs it locally; `test/engine/harness.mjs` has
    `ensureEngineBuilt()` so a CI job would only need cargo + a longer timeout.
 7. **No upstream sync tooling** beyond `docs/engine-changes.md`: the file lists every local change so
@@ -197,6 +197,22 @@ stops scoring (`considered` far below the fixture size).
 8. **Content-index warm-up is best-effort per folder**: `warm` folders are queued at start and
    indexed by the content worker, so the window is "seconds", not a guaranteed deadline. The test
    asserts the folder becomes searchable with `content_pending == 0`, not a time bound.
+
+## Follow-up: rebase onto main + the engine becomes canonical in-repo
+
+Rebased onto `origin/main` (`bf1949b`: the UltraSearch rename, daemon migration, verifier baseline and
+the measure wave). Conflicts were resolved by re-applying this wave's delta onto main's renamed code —
+keeping measure's `budget_ms` end-to-end, `meta`, IPC lanes, async fallback, telemetry views and
+ignore-density over-fetch, and foundation's naming and six-tool MCP surface — rather than by hand-merging
+markers. `src/types.ts` and `src/client.ts` auto-merged in part; `index.ts`, `package.json`, `src/sanitize.ts`,
+`src/formatter.ts`, `README.md` needed real resolution. `SearchOptions.sort` was **removed**: main forwarded
+it, the engine has no `sort` request field (unknown keys are ignored by `Query::filter`), and the test that
+asserted forwarding now asserts the removal and that the real ranking inputs (`near`) still go out.
+
+The vendored engine was then rebranded with `engine/rebrand.sh` and installed as the in-repo canonical source:
+crate/binary `ultrasearch`, data dir `UltraSearch`, socket `ultrasearch.sock`, `ULTRASEARCH_*` only.
+`LICENSE` stayed byte-identical (md5 `0dc34369214adc92ff6442e372cd3989`); the token scan is clean outside
+`NOTICE`, the upstream URL, `rebrand.sh` and `LICENSE`; and the source-level guard now covers `engine/`.
 
 ## Notes for the other waves
 

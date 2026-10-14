@@ -1,13 +1,15 @@
 # Building the vendored engine
 
-The engine is the upstream `fsearch` v0.2.1 Rust daemon (MIT © Noah Dunnagan,
-see `NOTICE` and `LICENSE`), vendored under `engine/` so engine behaviour can be
-changed and tested in-tree.
+`engine/` is the UltraSearch daemon: a **renamed fork of the upstream MIT engine**
+(© Noah Dunnagan, v0.2.1 — the upstream project name, URL and licence text are in
+`NOTICE` and `LICENSE`). It is vendored here so the source that ships is the source
+that is reviewed, and so engine behaviour can be changed and tested in-tree.
+`../docs/engine-changes.md` lists every behavioural change this fork carries.
 
 ## Requirements
 
-- macOS (the daemon uses `getattrlistbulk(2)`, FSEvents and `libc` APIs that
-  only exist on Darwin; there is no Linux build today)
+- macOS (the daemon uses `getattrlistbulk(2)`, FSEvents and `libc` APIs that only
+  exist on Darwin; there is no Linux build today)
 - Rust 1.98.1 or newer (`edition = "2024"`; tested with `rustc 1.98.1`)
 - No other toolchain: the only dependencies are `libc`, `rayon`, `memchr`,
   `memmap2`, `regex`, `regex-syntax`, `serde`, `serde_json`.
@@ -16,58 +18,80 @@ changed and tested in-tree.
 
 ```bash
 cd engine
-cargo build --release          # ~26 s warm, ~1 min cold on an M-series Mac
-cargo test --release           # unit tests (no daemon required)
+cargo build --release          # ~30 s warm, ~1 min cold on an M-series Mac
+cargo test --release           # unit tests, no daemon required
 ```
 
-The binary lands at `engine/target/release/fsearch`. Build output is **not**
+The binary lands at `engine/target/release/ultrasearch`. Build output is **not**
 committed (`.gitignore`: `engine/target/`).
 
-## Install (optional, replaces the system daemon)
+## Install (replaces the resident daemon)
 
 ```bash
-cd engine
-cargo build --release
-./target/release/fsearch install --login
+install -m 0755 engine/target/release/ultrasearch ~/.local/bin/ultrasearch-daemon
+install -m 0755 engine/target/release/ultrasearch /Applications/UltraSearch.app/Contents/MacOS/UltraSearch
 ```
 
-`install` copies the binary to `~/.local/bin/fsearch`, writes the
-`mt.nd.fsearch` LaunchAgent and stops the previously running daemon so the next
-one is the new binary. It needs Full Disk Access granted to that path for a
-whole-disk index. Do not run this unless you mean to replace the daemon that is
-serving your live index.
+Then re-sign and restart exactly as `../docs/engine-rebrand.md` §2 describes: the app
+bundle's Full Disk Access grant is stored against `identifier "com.pi.ultrasearch"`, so
+the signature must keep that identifier and an **identifier-only designated
+requirement**. Do not skip that step, and do not delete the backup first.
 
-## Running an isolated instance (recommended for tests and benchmarks)
+## Running an isolated instance (tests and benchmarks)
 
-The daemon writes its index to `~/Library/Application Support/FSearch` by
-default. Every part of that is overridable so a test can run its own daemon
-without touching the live index or walking the whole disk:
+The daemon writes its index to `~/Library/Application Support/UltraSearch` by default.
+Every part of that is overridable so a test can run its own daemon without touching
+the live index or walking the whole disk:
 
 | Variable | Effect |
 |---|---|
-| `ULTRASEARCH_DIR` | index directory (holds `index.bin`, `content/`, `fsearch.sock`, `socket.lock`). Default: `$HOME/Library/Application Support/FSearch`. |
+| `ULTRASEARCH_DIR` | index directory (`index.bin`, `content/`, `ultrasearch.sock`, `socket.lock`). Default: `$HOME/Library/Application Support/UltraSearch`. |
 | `ULTRASEARCH_HOME` | the "home" paths are compared against for content scope. Default: `$HOME`. |
 | `ULTRASEARCH_SCAN_ROOT` | the directory the first full crawl lists instead of `/`. Default: `/`. |
-| `ULTRASEARCH_DENY` | colon/comma-separated absolute path prefixes never returned (see `docs/security-deny-list.md`). |
-| `FSEARCH_RESTRICT=1` | force the consent-gated folder skip list (the default without Full Disk Access). |
+| `ULTRASEARCH_DENY` | path prefixes never returned (see `../docs/security-deny-list.md`). |
+| `ULTRASEARCH_CONTENT_*`, `ULTRASEARCH_WARM` | content-index coverage (see `../docs/content-index-policy.md`). |
+| `ULTRASEARCH_RESTRICT=1` | force the consent-gated folder skip list. |
 
 Example — a fully isolated daemon over a fixture tree:
 
 ```bash
 FIX=/tmp/us-fix
-mkdir -p $FIX/data $FIX/root
-ULTRASEARCH_DIR=$FIX/data ULTRASEARCH_HOME=$FIX/root ULTRASEARCH_SCAN_ROOT=$FIX/root \
-  ./target/release/fsearch serve &
-# talk to it directly (the socket lives in the index dir)
-printf '{"op":"ping"}\n' | nc -U $FIX/data/fsearch.sock
+mkdir -p "$FIX/data" "$FIX/root"
+ULTRASEARCH_DIR="$FIX/data" ULTRASEARCH_HOME="$FIX/root" ULTRASEARCH_SCAN_ROOT="$FIX/root" \
+  ./engine/target/release/ultrasearch serve &
+printf '{"op":"ping"}\n' | nc -U "$FIX/data/ultrasearch.sock"
 ```
 
-`test/engine/harness.mjs` in the repository root does exactly this and is what
-the engine integration tests use.
+`test/engine/harness.mjs` does exactly this and is what the engine integration tests
+use.
+
+## Regenerating this tree from upstream (and the two script fixups)
+
+`rebrand.sh` is deterministic and idempotent *at its fixpoint*:
+
+```bash
+engine/rebrand.sh <upstream-checkout> /tmp/engine-renamed
+engine/rebrand.sh /tmp/engine-renamed /tmp/engine-renamed   # second pass converges
+```
+
+Two ordering defects in the script leave the *first* pass slightly wrong; both are
+in `README.md` only, and both are recorded here so a re-run can be repaired
+deliberately rather than by hand:
+
+1. The fork header it prepends says "rebranded <upstream> fork", and the token swap
+   that follows rewrites the header it just wrote, so it ends up naming the fork
+   after itself. Correct it to "renamed fork".
+2. The `.local/bin/<binary>` → `.local/bin/ultrasearch-daemon` rewrite runs after the
+   header is prepended, so the first pass leaves the upstream README's own install
+   paths pointing at the wrong binary. The second pass fixes them.
+
+Copy the converged tree over `engine/`, then restore `engine/rebrand.sh` (it is the
+tool, not engine source, and it is excluded from the rebranded output on purpose: its
+job is to hold the old-name → new-name mapping, so its own text must keep the old
+name).
 
 ## Upstream sync policy
 
-`engine/` tracks upstream v0.2.1 plus local behavioural patches. When syncing a
-newer upstream release, re-apply the local patches listed in
-`docs/engine-changes.md`; do not merge upstream naming back over the
-`ultrasearch_*` rebrand applied by `engine/rebrand.sh`.
+`engine/` tracks upstream v0.2.1 plus the local patches in
+`../docs/engine-changes.md`. When syncing a newer upstream release, re-apply those
+patches after a rebrand; do not merge upstream naming back in.

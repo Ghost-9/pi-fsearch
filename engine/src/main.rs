@@ -3,38 +3,38 @@ mod git;
 mod mcp;
 mod server;
 
-use fsearch::{index, live, query};
+use ultrasearch::{index, live, query};
 
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 use std::time::Instant;
 
-/// See `fsearch::alloc`.
+/// See `ultrasearch::alloc`.
 #[global_allocator]
-static GLOBAL: fsearch::alloc::Alloc = fsearch::alloc::Alloc;
+static GLOBAL: ultrasearch::alloc::Alloc = ultrasearch::alloc::Alloc;
 
 const USAGE: &str = "usage:
-  fsearch <query...> [--json]   search (starts the daemon if needed)
-  fsearch stdio                 JSON lines on stdin/stdout
-  fsearch mcp                   MCP server on stdin/stdout, for coding agents
-  fsearch serve                 run the daemon in the foreground
-  fsearch status
-  fsearch install [--login]      copy to ~/.local/bin; --login also starts the daemon at login
-                                (needs Full Disk Access granted to ~/.local/bin/fsearch)
-  fsearch uninstall             remove the login agent (keeps the index)
-  fsearch bench <query...>      time a query in-process against the saved index";
+  ultrasearch <query...> [--json]   search (starts the daemon if needed)
+  ultrasearch stdio                 JSON lines on stdin/stdout
+  ultrasearch mcp                   MCP server on stdin/stdout, for coding agents
+  ultrasearch serve                 run the daemon in the foreground
+  ultrasearch status
+  ultrasearch install [--login]      copy to ~/.local/bin; --login also starts the daemon at login
+                                (needs Full Disk Access granted to ~/.local/bin/ultrasearch-daemon)
+  ultrasearch uninstall             remove the login agent (keeps the index)
+  ultrasearch bench <query...>      time a query in-process against the saved index";
 
-const LABEL: &str = "mt.nd.fsearch";
+const LABEL: &str = "mt.nd.ultrasearch";
 
 fn home() -> String {
-    fsearch::env::home()
+    ultrasearch::env::home()
 }
 
-/// The index directory (`ULTRASEARCH_DIR` / `FSEARCH_DIR`, else the default).
+/// The index directory (`ULTRASEARCH_DIR` / `ULTRASEARCH_DIR`, else the default).
 /// The daemon, the CLI, the MCP server and the tests all resolve it here, so
 /// an isolated instance is one environment variable away.
 fn data_dir() -> PathBuf {
-    let d = fsearch::env::data_dir();
+    let d = ultrasearch::env::data_dir();
     std::fs::create_dir_all(&d).ok();
     d
 }
@@ -137,18 +137,18 @@ fn stdio() {
 
 fn bench(qs: &str) {
     let dir = data_dir();
-    let idx = index::Index::load(&dir.join("index.bin")).unwrap_or_else(|| die("no index yet; run fsearch serve"));
+    let idx = index::Index::load(&dir.join("index.bin")).unwrap_or_else(|| die("no index yet; run ultrasearch serve"));
     let live = live::Live::new(idx);
     let home = home();
     let mut q = query::Query::parse(qs, &home).unwrap_or_else(|e| die(&e));
     // Like the daemon: a content search when the query has a pattern, on
     // user-interactive threads, paths included.
-    let grep = q.grep.take().map(|p| fsearch::Grep::new(&p, q.grep_mode).unwrap_or_else(|e| die(&e)));
-    let content = grep.as_ref().map(|_| fsearch::content::Content::open_shared(dir.join("content")));
+    let grep = q.grep.take().map(|p| ultrasearch::Grep::new(&p, q.grep_mode).unwrap_or_else(|e| die(&e)));
+    let content = grep.as_ref().map(|_| ultrasearch::content::Content::open_shared(dir.join("content")));
     let pool = rayon::ThreadPoolBuilder::new()
         .start_handler(|_| {
             unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INTERACTIVE, 0) };
-            fsearch::alloc::keep_on_this_thread();
+            ultrasearch::alloc::keep_on_this_thread();
         })
         .build()
         .unwrap();
@@ -164,13 +164,13 @@ fn bench(qs: &str) {
                 })
                 .collect();
         };
-        let r = if q.scope.as_ref().is_none_or(|s| fsearch::content::in_scope(s, home.as_bytes())) {
+        let r = if q.scope.as_ref().is_none_or(|s| ultrasearch::content::in_scope(s, home.as_bytes())) {
             pool.install(|| c.search(g, &q))
         } else {
-            let paths = pool.install(|| fsearch::content::scan_paths(&live, q.clone_for_scan()));
-            fsearch::content::verify(g, &paths, q.limit)
+            let paths = pool.install(|| ultrasearch::content::scan_paths(&live, q.clone_for_scan()));
+            ultrasearch::content::verify(g, &paths, q.limit)
         };
-        let first = |f: &fsearch::FileMatches| f.lines.first().map_or(String::new(), |(n, t)| format!("{n}: {}", t.trim()));
+        let first = |f: &ultrasearch::FileMatches| f.lines.first().map_or(String::new(), |(n, t)| format!("{n}: {}", t.trim()));
         r.files.iter().map(|f| format!("{}:{}", String::from_utf8_lossy(&f.path), first(f))).collect()
     };
     // Between runs, another name search: a repeat would be answered from
@@ -207,7 +207,7 @@ fn domain() -> String {
 fn install(login: bool) {
     // A plain reinstall keeps an existing login agent.
     let login = login || plist_path().exists();
-    let bin = PathBuf::from(home()).join(".local/bin/fsearch");
+    let bin = PathBuf::from(home()).join(".local/bin/ultrasearch-daemon");
     // Stop the old daemon so the next one runs the new binary. Unload the
     // login agent first, or KeepAlive would restart it straight away.
     let target = format!("{}/{LABEL}", domain());
@@ -220,7 +220,7 @@ fn install(login: bool) {
     let tmp = bin.with_extension("new");
     std::fs::copy(std::env::current_exe().unwrap(), &tmp).and_then(|_| std::fs::rename(&tmp, &bin)).unwrap_or_else(|e| die(&format!("copy: {e}")));
     let agents =
-        format!("for coding agents: claude mcp add -s user fsearch -- {0} mcp\n                   codex mcp add fsearch -- {0} mcp", bin.display());
+        format!("for coding agents: claude mcp add -s user ultrasearch -- {0} mcp\n                   codex mcp add ultrasearch -- {0} mcp", bin.display());
     if !login {
         println!("installed {}; the daemon starts on first use\n{agents}", bin.display());
         return;
@@ -265,6 +265,6 @@ fn uninstall() {
 }
 
 fn die(msg: &str) -> ! {
-    eprintln!("fsearch: {msg}");
+    eprintln!("ultrasearch: {msg}");
     std::process::exit(1)
 }

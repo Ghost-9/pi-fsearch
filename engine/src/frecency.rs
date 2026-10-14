@@ -98,7 +98,7 @@ impl Frecency {
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_secs(2));
             me.saving.store(false, Ordering::Relaxed);
-            let now = fsearch::query::now_secs();
+            let now = ultrasearch::query::now_secs();
             let mut out = Vec::new();
             {
                 let mut map = me.map.lock().unwrap();
@@ -132,10 +132,10 @@ mod tests {
 
     #[test]
     fn decays_and_persists() {
-        let dir = std::env::temp_dir().join(format!("fsearch-frecency-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("ultrasearch-frecency-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let f = Frecency::load(dir.join("frecency"));
-        let t = fsearch::query::now_secs() - 1000;
+        let t = ultrasearch::query::now_secs() - 1000;
         assert_eq!(f.open(b"/p/src/a.rs", t), 1.0);
         assert_eq!(f.open(b"/p/src/a.rs", t + 10), 1.0, "refocusing isn't an open");
         assert!((f.open(b"/p/src/a.rs", t + 1000) - 2.0).abs() < 0.01);

@@ -1,19 +1,32 @@
-# FSearch
+<!-- ultrasearch-fork -->
+# UltraSearch engine (renamed fork)
+
+This tree is a locally patched working copy of the upstream engine by **Noah Dunnagan**
+(MIT — see `LICENSE`): https://github.com/noahdunnagan/fsearch
+It is renamed to `ultrasearch` for the `pi-ultrasearch` extension; upstream authorship and
+copyright are unchanged, the upstream project name, version and URL are recorded in `NOTICE`,
+and `../docs/engine-changes.md` lists every behavioural change this fork carries.
+
+Everything below is the upstream README, kept verbatim except for renamed paths/labels.
+
+---
+
+# UltraSearch
 
 Whole-disk file search for macOS: names in about 0.1 ms, typo-tolerant,
 plus indexed search inside files. A CLI with a small daemon, a Rust crate,
 or an MCP server for coding agents.
 
 ```
-cargo build --release && ./target/release/fsearch install   # -> ~/.local/bin/fsearch
-fsearch fsearch main              # find files by name
-fsearch 'ext:rs grep:apply_dir'   # search inside files
+cargo build --release && ./target/release/ultrasearch install   # -> ~/.local/bin/ultrasearch-daemon
+ultrasearch ultrasearch main              # find files by name
+ultrasearch 'ext:rs grep:apply_dir'   # search inside files
 ```
 
 Or skip the Rust toolchain with a release build for Apple Silicon:
 
 ```
-curl -L https://github.com/noahdunnagan/fsearch/releases/latest/download/fsearch-aarch64-apple-darwin.tar.gz | tar xz && ./fsearch install
+curl -L https://github.com/noahdunnagan/fsearch/releases/latest/download/fsearch-aarch64-apple-darwin.tar.gz | tar xz && ./ultrasearch install
 ```
 
 ## Speed
@@ -44,12 +57,12 @@ files for it, and the deeper typo search costs a little on names.
 ## Queries
 
 ```
-fsearch 'readme in:~/Developer'          # inside a folder
-fsearch 'type:image size:>5mb mtime:<7d'
-fsearch 'ext:rs regex:fn\s+\w+_dir'      # regex inside files
-fsearch 'sym:apply_dir'                  # where it's defined
-fsearch 'src/**/*.{c,h} !test/ init'     # globs, in or out
-fsearch 'git:modified in:~/Developer/app'
+ultrasearch 'readme in:~/Developer'          # inside a folder
+ultrasearch 'type:image size:>5mb mtime:<7d'
+ultrasearch 'ext:rs regex:fn\s+\w+_dir'      # regex inside files
+ultrasearch 'sym:apply_dir'                  # where it's defined
+ultrasearch 'src/**/*.{c,h} !test/ init'     # globs, in or out
+ultrasearch 'git:modified in:~/Developer/app'
 ```
 
 Words are fuzzy and forgive a typo at any letter, two in words of 8+
@@ -66,24 +79,24 @@ Text files up to 1 MB, and up to 10 MB inside git repos, minus what git
 ignores. It leaves out lockfiles, JSON of 100 KB and up, minified or
 bundled assets, linked git worktrees (their main checkout is indexed), and
 build-output folders outside repos. To leave out more, list folders in
-`~/Library/Application Support/FSearch/content-skip.txt`, one per line
+`~/Library/Application Support/UltraSearch/content-skip.txt`, one per line
 (`~` and `#` comments work). Names are always indexed, and a grep inside
 a file you name still reads it.
 
 ## Full Disk Access
 
 From a terminal with Full Disk Access it indexes everything. As a login
-item (`fsearch install --login`), grant `~/.local/bin/fsearch` access in
+item (`ultrasearch install --login`), grant `~/.local/bin/ultrasearch-daemon` access in
 System Settings > Privacy & Security, again after each rebuild. Without
 access it skips protected folders instead of prompting.
 
 ## API
 
-JSON lines over `~/Library/Application Support/FSearch/fsearch.sock`, or
-`fsearch stdio`:
+JSON lines over `~/Library/Application Support/UltraSearch/ultrasearch.sock`, or
+`ultrasearch stdio`:
 
 ```json
-{"q": "fsearch main", "limit": 20, "offset": 20}
+{"q": "ultrasearch main", "limit": 20, "offset": 20}
 {"op": "grep", "pattern": "apply_dir", "in": "~/Developer", "context": 2}
 {"q": "main.rs", "boost": true, "near": "~/Developer/app/src/lib.rs", "git": true}
 {"op": "open", "path": "~/Developer/app/src/main.rs"}
@@ -94,14 +107,14 @@ JSON lines over `~/Library/Application Support/FSearch/fsearch.sock`, or
 while, `near` favors files close to the one you're in, and `recent` lists
 what you worked on lately. `"git": true` adds each hit's git status.
 
-For coding agents, `fsearch mcp` is an MCP server on stdio with
+For coding agents, `ultrasearch mcp` is an MCP server on stdio with
 `find_files`, `grep` and `multi_grep`.
 
 Or link the crate:
 
 ```rust
-let engine = fsearch::Engine::start(fsearch::Options { dir: fsearch::default_dir(&home), home: home.clone(), skip: None })?;
-let hits = engine.search(&fsearch::Query::parse("fsearch main", &home)?)?;
+let engine = ultrasearch::Engine::start(ultrasearch::Options { dir: ultrasearch::default_dir(&home), home: home.clone(), skip: None })?;
+let hits = engine.search(&ultrasearch::Query::parse("ultrasearch main", &home)?)?;
 ```
 
 An app and the CLI share one index: the first process owns it, the rest

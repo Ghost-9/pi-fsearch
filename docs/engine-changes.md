@@ -1,8 +1,12 @@
 # What this fork changes in the vendored engine
 
-`engine/` is upstream `fsearch` v0.2.1 (MIT © Noah Dunnagan; see
-`engine/NOTICE` and `engine/LICENSE`), vendored so engine behaviour can be
-changed and tested in-tree. This is the list of behavioural changes, so a
+`engine/` is a **renamed fork of the upstream MIT engine** (© Noah Dunnagan,
+v0.2.1 — the upstream project name, version and URL are in `engine/NOTICE`,
+and `engine/LICENSE` is byte-identical to upstream, md5
+`0dc34369214adc92ff6442e372cd3989`). It is vendored so engine behaviour can be
+changed and tested in-tree and so the source that ships is the source that is
+reviewed; `engine/rebrand.sh` regenerates it deterministically from an upstream
+checkout (`engine/BUILD.md` has the two post-run fixups it needs). This is the list of behavioural changes, so a
 future upstream sync can re-apply them. Naming (binary, crate, socket, env
 prefix) is handled separately by `engine/rebrand.sh`.
 
@@ -14,7 +18,7 @@ config file sees the same searches and the same index as v0.2.1.
 
 | Change | File | Why |
 |---|---|---|
-| `ULTRASEARCH_DIR` / `HOME` / `SCAN_ROOT` (+ `FSEARCH_*` fallbacks) | `env.rs`, `main.rs`, `mcp.rs`, `server.rs`, `walk.rs` | Run a real daemon over a fixture tree on its own socket, without touching the live index or crawling the whole disk. `SCAN_ROOT` is canonicalized: the crawl opens the root with `O_NOFOLLOW_ANY`, which refuses a path containing a symlink (`/tmp`). |
+| `ULTRASEARCH_DIR` / `HOME` / `SCAN_ROOT` (one name each; the pre-rebrand spellings went with the rename) | `env.rs`, `main.rs`, `mcp.rs`, `server.rs`, `walk.rs` | Run a real daemon over a fixture tree on its own socket, without touching the live index or crawling the whole disk. `SCAN_ROOT` is canonicalized: the crawl opens the root with `O_NOFOLLOW_ANY`, which refuses a path containing a symlink (`/tmp`). |
 | `Index::build(…, root)` and `Index::path(0)` return the crawl root | `index.rs` | Paths must exist on disk; before this, a fixture scan root produced `/file.txt`. |
 | `Index::lookup` strips the crawl root | `index.rs` | Otherwise `lookup(home)` failed under an isolated root and the content index never built. |
 | `Live::to_listings` starts at the index's own root, not `/` | `live.rs` | Otherwise a `save`/compaction folded no overlay entry under an isolated root: files added since the build were silently dropped. |
@@ -58,6 +62,27 @@ config file sees the same searches and the same index as v0.2.1.
 |---|---|---|
 | `coverage.json` / `ULTRASEARCH_CONTENT_*` / `ULTRASEARCH_WARM`, applied in `Scope::file` and `in_scope`, summarized in `status.content_policy` | `coverage.rs`, `content.rs`, `engine.rs` | Coverage was a fixed heuristic with no way to see or change it, so a 0-hit grep was ambiguous. A folder above a configured root still passes `in_scope` — the traversal has to reach the root — while `Scope::file` applies the rule to each file. |
 | Warm folders are queued for content at start | `engine.rs` | A freshly opened repo becomes greppable without waiting for a general reconcile. |
+
+## What the rename changes in this tree
+
+`engine/rebrand.sh` renames the crate, binary, data directory, socket and
+user-facing strings. Concretely, for anything that talks to the daemon:
+
+| Thing | Value in this tree |
+|---|---|
+| Crate / binary | `ultrasearch` (`engine/target/release/ultrasearch`) |
+| Default data dir | `$HOME/Library/Application Support/UltraSearch` |
+| Socket | `ultrasearch.sock` (Linux: `$XDG_RUNTIME_DIR/ultrasearch.sock`, else `~/.local/share/ultrasearch/ultrasearch.sock`) |
+| Install paths | `~/.local/bin/ultrasearch-daemon`, `/Applications/UltraSearch.app/Contents/MacOS/UltraSearch` |
+| LaunchAgent | `com.pi.ultrasearch` (the app bundle keeps `identifier "com.pi.ultrasearch"`, which is what its Full Disk Access grant is stored against) |
+| Environment | `ULTRASEARCH_*` only |
+| MCP `serverInfo` | `ultrasearch` |
+
+The vendored source carries no upstream token outside `NOTICE`, the upstream URL
+in `README.md`, `rebrand.sh` (the mapping tool) and `LICENSE`; a source-level
+test enforces that (`test/mcp.test.ts`, "the vendored daemon carries no upstream
+name"), because a stray token means a path, socket, package name or data
+directory the rename missed.
 
 ## Known limitations (not fixed here)
 

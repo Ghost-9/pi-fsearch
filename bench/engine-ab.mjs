@@ -37,8 +37,12 @@ const OUT_DIR = path.join(REPO_ROOT, "bench", "results", "engine");
 /** Build a baseline daemon from `ref` into a throwaway checkout. */
 function baselineBinary(ref) {
   const dir = path.join(os.tmpdir(), `us-baseline-${ref}`);
-  const bin = path.join(dir, "engine", "target", "release", "fsearch");
-  if (fs.existsSync(bin)) return bin;
+  // A pre-rebrand ref builds `fsearch`; a rebranded one builds `ultrasearch`.
+  // The socket name follows the binary (see `startDaemon`).
+  const bin = [path.join(dir, "engine", "target", "release", "ultrasearch"), path.join(dir, "engine", "target", "release", "fsearch")].find((p) =>
+    fs.existsSync(p),
+  );
+  if (bin) return bin;
   fs.mkdirSync(dir, { recursive: true });
   const tar = execFileSync("git", ["-C", REPO_ROOT, "archive", ref], { maxBuffer: 1 << 30 });
   fs.writeFileSync(path.join(dir, "src.tar"), tar);
@@ -54,6 +58,8 @@ function digest(hits) {
 
 async function startDaemon(binary, dir, root, extraEnv = {}) {
   fs.mkdirSync(dir, { recursive: true });
+  // The fork renamed the socket too, and a baseline may be either side of that.
+  const socketName = path.basename(binary) === "fsearch" ? "fsearch.sock" : "ultrasearch.sock";
   const child = spawn(binary, ["serve"], {
     env: {
       ...process.env,
@@ -71,7 +77,7 @@ async function startDaemon(binary, dir, root, extraEnv = {}) {
   });
   let stderr = "";
   child.stderr.on("data", (b) => (stderr += b.toString()));
-  const probe = new EngineHarness({ root, dir });
+  const probe = new EngineHarness({ root, dir, socketName });
   probe.child = child;
   const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
@@ -84,7 +90,7 @@ async function startDaemon(binary, dir, root, extraEnv = {}) {
 }
 
 async function main() {
-  const binaryB = path.join(ENGINE_DIR, "target", "release", "fsearch");
+  const binaryB = path.join(ENGINE_DIR, "target", "release", "ultrasearch");
   if (!fs.existsSync(binaryB)) throw new Error("build the engine first: cargo build --release --manifest-path engine/Cargo.toml");
   const binaryA = baselineBinary(BASELINE_REF);
   const load = os.loadavg()[0];

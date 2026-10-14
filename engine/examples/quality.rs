@@ -1,4 +1,4 @@
-//! Name-search quality rig: how high fsearch ranks the file a query means.
+//! Name-search quality rig: how high ultrasearch ranks the file a query means.
 //!
 //!   quality snap <snap dir> <home>                    crawl the disk into <snap>/index.bin
 //!   quality run <snap dir> <root> <queries.json> <out.json>
@@ -9,9 +9,9 @@
 //! `<root>` and records where the wanted paths (relative to it) rank; the
 //! queries and fff's answers come from examples/quality.py.
 
-use fsearch::index::Index;
-use fsearch::live::Live;
-use fsearch::query::{Query, Searcher};
+use ultrasearch::index::Index;
+use ultrasearch::live::Live;
+use ultrasearch::query::{Query, Searcher};
 use serde_json::{Value, json};
 use std::path::Path;
 use std::time::Instant;
@@ -28,10 +28,10 @@ fn main() {
 
 fn snap(dir: &Path, home: &str) {
     let real = std::env::var("REAL_HOME").or_else(|_| std::env::var("HOME")).unwrap();
-    let _ = fsearch::walk::SKIP.set(fsearch::gated(&real).into_iter().chain(fsearch::gated(home)).collect());
+    let _ = ultrasearch::walk::SKIP.set(ultrasearch::gated(&real).into_iter().chain(ultrasearch::gated(home)).collect());
     let t = Instant::now();
-    let ls = fsearch::walk::scan(b"/", 8);
-    let idx = Index::build(ls, 0, fsearch::query::now_secs(), home.as_bytes(), b"/");
+    let ls = ultrasearch::walk::scan(b"/", 8);
+    let idx = Index::build(ls, 0, ultrasearch::query::now_secs(), home.as_bytes(), b"/");
     std::fs::create_dir_all(dir.join("content")).unwrap();
     idx.save(&dir.join("index.bin")).unwrap();
     eprintln!("{} entries, {} names, {:.1} s", idx.n, idx.u, t.elapsed().as_secs_f64());
