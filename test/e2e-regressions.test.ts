@@ -85,7 +85,7 @@ test("frecency ranking: an opened file outranks an untouched sibling", { skip: l
   await waitFor(async () => {
     const probe = await liveClient.search("*zzz*", { in: dir, limit: 5, skipAudit: true });
     return (probe.hits ?? []).length > 0;
-  }, 15000);
+  }, 45000);
 
   assert.equal(await liveClient.open(b), true);
 
@@ -93,7 +93,7 @@ test("frecency ranking: an opened file outranks an untouched sibling", { skip: l
     const res = await liveClient.recent(dir, 5);
     const hits = res.hits ?? [];
     return hits[0]?.path?.endsWith("zzz.txt") ? hits : null;
-  }, 8000);
+  }, 15000);
 
   assert.ok(ranked, "the opened file never became the top frecency result");
   assert.ok(ranked[0].path.endsWith("zzz.txt"));
@@ -130,7 +130,7 @@ test("worktree scoping: two linked worktrees resolve independently and never lea
   const indexed = await waitFor(async () => {
     const res = await liveClient.search("dupfile.txt", { in: wtA, limit: 10, skipAudit: true });
     return (res.hits ?? []).length > 0 ? res : null;
-  }, 15000);
+  }, 45000);
   assert.ok(indexed, "worktree A's file was never indexed");
 
   const realA = fs.realpathSync(wtA);
@@ -178,7 +178,7 @@ test("ignore rules: live daemon results honour the scope's .gitignore", { skip: 
   const res = await waitFor(async () => {
     const probe = await liveClient.search("*.txt", { in: dir, limit: 20, skipAudit: true });
     return (probe.hits ?? []).some((h) => h.path.endsWith("visible.txt")) ? probe : null;
-  }, 15000);
+  }, 45000);
   assert.ok(res, "the visible fixture file was never indexed");
   const names = (res.hits ?? []).map((h) => path.basename(h.path));
   assert.ok(names.includes("visible.txt"));

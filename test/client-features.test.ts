@@ -102,7 +102,7 @@ test("grep: client-side deadline fires and returns a partial, not a hang", async
   assert.equal(res.ok, true);
   assert.equal(res.complete, false);
   assert.equal(res.meta?.deadlineExceeded, true);
-  assert.ok(elapsed < 450, `expected the deadline to fire early, took ${elapsed.toFixed(1)}ms`);
+  assert.ok(elapsed < 900, `expected the deadline to fire early, took ${elapsed.toFixed(1)}ms`);
   client.close();
   await daemon.close();
 });

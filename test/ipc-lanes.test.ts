@@ -39,7 +39,10 @@ test("lanes: 3 concurrent greps fan out and complete in ~max(t), not sum(t)", as
   assert.ok(results.every((r) => r.ok));
   assert.equal(daemon.maxConcurrent, 3, "all three requests must be in flight at once");
   assert.ok(daemon.lanesSeen.size >= 2, "requests must be spread across sockets");
-  assert.ok(elapsed < 120 * 2, `expected ~max(t) (120ms), got ${elapsed.toFixed(1)}ms (sum(t) would be ~360ms)`);
+  // The deterministic proof is maxConcurrent === 3 above; the wall-clock check is
+  // corroboration. A 2.5x margin still separates max(t) (~120ms) from sum(t)
+  // (~360ms) while tolerating scheduler jitter on a loaded machine.
+  assert.ok(elapsed < 120 * 2.5, `expected ~max(t) (120ms), got ${elapsed.toFixed(1)}ms (sum(t) would be ~360ms)`);
   assert.equal(client.poolStats().inFlight, 0);
 });
 
