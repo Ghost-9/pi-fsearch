@@ -178,7 +178,7 @@ fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
     // outside it are dropped even if the daemon's own scope was wider.
     let root = v.get("root").and_then(Value::as_str).filter(|r| !r.is_empty()).map(real);
     match run(&v, cx, root.as_deref(), &deny) {
-        Ok(Reply::Hits(mut found, took_us, next, annotate)) => {
+        Ok(Reply::Hits(mut found, took_us, next, annotate, budget)) => {
             let mut withheld = deny.retain(&mut found, |f| f.path.as_os_str().as_bytes());
             if let Some(r) = &root {
                 let n = found.len();
@@ -199,7 +199,22 @@ fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
                 })
                 .collect();
             let stale = cx.engine.staleness_ms();
-            put(out, &Hits { hits, id, next, ok: true, took_us, withheld, stale })
+            put(
+                out,
+                &Hits {
+                    hits,
+                    id,
+                    next,
+                    ok: true,
+                    took_us,
+                    withheld,
+                    stale,
+                    complete: budget.map(|b| b.complete),
+                    scanned: budget.map(|b| b.scanned),
+                    considered: budget.map(|b| b.considered),
+                    budget_ms: budget.map(|b| b.ms),
+                },
+            )
         }
         Ok(Reply::Value(mut r)) => {
             // Grep and `recent` answers carry paths too: the same policy
@@ -243,7 +258,19 @@ enum Reply {
     /// Name-search results, the search's own time (µs), for a paged request
     /// where the next page starts, and whether to give each hit's git
     /// status: the hot path, written straight from the results.
-    Hits(Vec<Found>, u64, Option<usize>, bool),
+    Hits(Vec<Found>, u64, Option<usize>, bool, Option<Budget>),
+}
+
+/// What a `budget_ms` search did (#16, #35).
+#[derive(Debug, Clone, Copy)]
+struct Budget {
+    ms: u64,
+    /// False: the deadline passed, the hits are the best found so far.
+    complete: bool,
+    /// Entries the scan examined.
+    scanned: usize,
+    /// Candidates that passed the cheap per-name filter and were scored.
+    considered: usize,
 }
 
 /// The JSON of a name-search answer. Keys in sorted order, the order every
@@ -256,6 +283,20 @@ struct Hits<'a> {
     next: Option<usize>,
     ok: bool,
     took_us: u64,
+    /// The `budget_ms` outcome, when one was set (#16). `complete: false`
+    /// means the deadline passed and the hits are the best found so far, not
+    /// the top-k of the whole index: a client may widen the budget or re-run.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    complete: Option<bool>,
+    /// Entries the scan examined (#35). 0 when the query was answered by a
+    /// strategy that visits names rather than entries.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    scanned: Option<usize>,
+    /// Candidates that passed the cheap per-name filter and were scored.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    considered: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    budget_ms: Option<u64>,
     /// Results held back by the deny-list or the caller's `root` (#23).
     #[serde(skip_serializing_if = "is_zero_usize")]
     withheld: usize,
@@ -356,7 +397,7 @@ fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Repl
             guard_denied(deny, q.scope.as_deref())?;
             let top = frecent(cx, q.scope.as_deref(), fsearch::query::now_secs());
             let hits = top.into_iter().filter_map(|(p, s)| Some(Found { score: (s * 100.0) as i32, ..found(&q, &p)? }));
-            Ok(Reply::Hits(hits.take(q.limit).collect(), 0, None, v.get("git") == Some(&Value::Bool(true))))
+            Ok(Reply::Hits(hits.take(q.limit).collect(), 0, None, v.get("git") == Some(&Value::Bool(true)), None))
         }
         "git" => {
             // The repo holding a folder, its status read in the background
@@ -395,10 +436,31 @@ fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Repl
             let x = Extras::parse(v, &mut q, sels, op == "glob", false)?;
             guard_scope(root, q.scope.as_deref())?;
             guard_denied(deny, q.scope.as_deref())?;
+            // `budget_ms` (#16): a deadline the scan honours, so a cold or
+            // whole-disk query cannot run for seconds. The counters (#35) ride
+            // along only when a budget was asked for.
+            let budget = v.get("budget_ms").and_then(Value::as_u64).filter(|&ms| ms > 0);
+            let cap = v.get("candidates").and_then(Value::as_u64).filter(|&n| n > 0).map(|n| n as usize);
+            let progress = (budget.is_some() || cap.is_some()).then(|| {
+                let ms = budget.unwrap_or(0);
+                if ms > 0 {
+                    q.deadline = Some(Instant::now() + Duration::from_millis(ms));
+                }
+                let p = std::sync::Arc::new(fsearch::query::Progress::budget(ms).cap_candidates(cap));
+                q.progress = Some(p.clone());
+                (ms, p)
+            });
+            let outcome = || {
+                progress.as_ref().map(|(ms, p)| {
+                    let (scanned, considered) = p.counted();
+                    Budget { ms: *ms, complete: !p.expired(), scanned, considered }
+                })
+            };
             let t = Instant::now();
             if x.plain() {
                 let found = engine.search(&q)?;
-                return Ok(Reply::Hits(found, t.elapsed().as_micros() as u64, None, false));
+                let took = t.elapsed().as_micros() as u64;
+                return Ok(Reply::Hits(found, took, None, false, outcome()));
             }
             x.ready(cx, &q)?;
             let path = |f: &Found| f.path.as_os_str().as_bytes().to_vec();
@@ -425,7 +487,8 @@ fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Repl
                 rerank(cx, &mut found, x.boost, x.near.as_deref());
             }
             let next = x.cut(&mut found, limit).or(cut.then_some(x.offset + found.len()));
-            Ok(Reply::Hits(found, t.elapsed().as_micros() as u64, next, x.annotate))
+            let took = t.elapsed().as_micros() as u64;
+            Ok(Reply::Hits(found, took, next, x.annotate, outcome()))
         }
         _ => Err(format!("unknown op {op}")),
     }
@@ -458,7 +521,7 @@ struct Extras {
 }
 
 /// Request fields `Extras` reads, not query filters.
-const EXTRAS: &[&str] = &["offset", "cursor", "glob", "cwd", "git", "ignored", "boost", "near"];
+const EXTRAS: &[&str] = &["offset", "cursor", "glob", "cwd", "git", "ignored", "boost", "near", "budget_ms", "candidates", "root"];
 /// Frecency reorders this many of the best hits (a fixed window, so pages
 /// agree). Replays did as well with 32-200: a file needs to be among them.
 const RERANK: usize = 256;
@@ -1021,6 +1084,10 @@ fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Val
         "candidates": r.candidates,
         "read": r.read,
         "complete": r.complete,
+        // The same vocabulary `op: search` uses (#16, #35): `considered` is
+        // what the index proposed, `scanned` how many files were read.
+        "considered": r.candidates,
+        "scanned": r.read,
         "indexing": engine.status().content_pending,
         "files": files,
     });

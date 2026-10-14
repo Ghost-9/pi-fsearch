@@ -373,6 +373,122 @@ fn typo_edits(text: &[u8], mode: Mode) -> u32 {
     (text.len() >= TYPO_MIN_LEN) as u32 + (text.len() >= TYPO2_MIN_LEN) as u32
 }
 
+/// The most entries between two clock checks in a budgeted scan. A piece of
+/// `top_k` is at most this long in practice for a whole-disk index (4096
+/// entries is well under a millisecond of scanning), and each piece also
+/// checks at its first entry, so a query's overshoot past its deadline is a
+/// small fraction of a piece rather than a whole one.
+pub const PROGRESS_TICK: u32 = 4096;
+
+/// How many times a piece of `top_k` checks the clock within its own range,
+/// so that the granularity does not degrade when a piece is huge (a
+/// whole-disk scan splits into 40 pieces of ~93k entries).
+const PROGRESS_CHECKS_PER_PIECE: usize = 8;
+
+/// Entries between two clock checks for a piece covering `len` entries.
+#[inline]
+fn progress_every(len: usize) -> u32 {
+    (len.div_ceil(PROGRESS_CHECKS_PER_PIECE).clamp(64, PROGRESS_TICK as usize)) as u32
+}
+
+/// What a budgeted search did (#16, #35).
+///
+/// `None` on a `Query` unless the caller asked for `budget_ms`: an ordinary
+/// search then pays one predictable branch per entry and no atomics, which is
+/// why the counters live here rather than in the scan itself.
+#[derive(Debug, Default)]
+pub struct Progress {
+    /// Entries the scan looked at.
+    pub scanned: std::sync::atomic::AtomicUsize,
+    /// Candidates that passed the cheap per-name filter and were scored.
+    pub considered: std::sync::atomic::AtomicUsize,
+    /// The budget ran out: the results are partial (`complete: false`).
+    pub expired: std::sync::atomic::AtomicBool,
+    deadline: Option<std::time::Instant>,
+    /// The most candidates to score (`candidates`), if any (#35).
+    max_candidates: Option<usize>,
+}
+
+impl Progress {
+    /// A budget of `ms` from now (0: no deadline, counters still collected).
+    pub fn budget(ms: u64) -> Progress {
+        Progress {
+            scanned: Default::default(),
+            considered: Default::default(),
+            expired: Default::default(),
+            deadline: (ms > 0).then(|| std::time::Instant::now() + std::time::Duration::from_millis(ms)),
+            max_candidates: None,
+        }
+    }
+
+    /// A budget of `d`, for tests.
+    pub fn within(d: std::time::Duration) -> Progress {
+        Progress { deadline: Some(std::time::Instant::now() + d), ..Progress::default() }
+    }
+
+    /// Has the deadline passed? Cheap enough to call in a loop's periodic
+    /// check (`PROGRESS_TICK` entries apart), not per entry.
+    #[inline]
+    pub fn over(&self) -> bool {
+        let Some(d) = self.deadline else { return false };
+        if std::time::Instant::now() < d {
+            return false;
+        }
+        self.expired.store(true, std::sync::atomic::Ordering::Relaxed);
+        true
+    }
+
+    /// True once the budget ran out, whether or not this call asked.
+    #[inline]
+    pub fn expired(&self) -> bool {
+        self.expired.load(std::sync::atomic::Ordering::Relaxed)
+    }
+
+    /// Cap the candidates scored (#35): score-then-stop for a whole-disk
+    /// query that would otherwise walk millions of candidates.
+    pub fn cap_candidates(self, cap: Option<usize>) -> Progress {
+        Progress { max_candidates: cap, ..self }
+    }
+
+    /// Over the candidate cap? Cheap: one load, no clock.
+    #[inline]
+    pub fn capped(&self) -> bool {
+        self.max_candidates.is_some_and(|cap| self.considered.load(std::sync::atomic::Ordering::Relaxed) >= cap)
+    }
+
+    pub fn counted(&self) -> (usize, usize) {
+        use std::sync::atomic::Ordering::Relaxed;
+        (self.scanned.load(Relaxed), self.considered.load(Relaxed))
+    }
+
+    /// Add a `visits` count to `considered` once (a whole strategy's work).
+    pub fn consider(&self, n: usize) {
+        self.considered.fetch_add(n, std::sync::atomic::Ordering::Relaxed);
+    }
+}
+
+/// A scan's own tick counter and flush point: entries are counted locally and
+/// flushed every `PROGRESS_TICK`, where the deadline is checked too.
+#[inline(always)]
+fn budget_tick(progress: Option<&Progress>, seen: &mut usize, tick: &mut u32, every: u32) -> bool {
+    let Some(p) = progress else { return true };
+    *seen += 1;
+    *tick = tick.wrapping_add(1);
+    // The first entry of a piece too: a piece shorter than `every` would
+    // otherwise never check the clock at all (40 pieces of a whole-disk
+    // scan, 1250 entries each in a fixture: it never fired).
+    if *tick != 1 && *tick % every != 0 {
+        return true;
+    }
+    p.scanned.fetch_add(*seen, std::sync::atomic::Ordering::Relaxed);
+    *seen = 0;
+    if p.capped() {
+        p.expired.store(true, std::sync::atomic::Ordering::Relaxed);
+        return false;
+    }
+    !p.over()
+}
+
 #[derive(Clone, Default)]
 pub struct Query {
     pub tokens: Vec<Token>,
@@ -399,6 +515,36 @@ pub struct Query {
     /// The words in the other Unicode normalization form, if that differs
     /// (see `other_form`): `Searcher::search` looks for those too.
     pub alt: Option<Vec<Token>>,
+    /// A wall-clock budget (`budget_ms`): the scan stops as soon as it
+    /// passes and answers with what it has (#16). `None`: run to completion.
+    pub deadline: Option<std::time::Instant>,
+    /// Work counters for the budget and early-exit machinery (#16, #35).
+    /// `None` unless the caller asked for them, so a plain search pays
+    /// nothing.
+    pub progress: Option<std::sync::Arc<Progress>>,
+}
+
+impl Query {
+    /// Has this query's budget run out? False when it has none.
+    #[inline]
+    pub fn expired(&self) -> bool {
+        self.deadline.is_some_and(|d| std::time::Instant::now() >= d) || self.progress.as_ref().is_some_and(|p| p.expired())
+    }
+
+    /// Stop early if the budget or the candidate cap is spent: `true` once
+    /// it is.
+    #[inline]
+    pub fn stop(&self) -> bool {
+        let Some(p) = self.progress.as_deref() else { return self.expired() };
+        if p.expired() {
+            return true;
+        }
+        if p.capped() {
+            p.expired.store(true, std::sync::atomic::Ordering::Relaxed);
+            return true;
+        }
+        p.over()
+    }
 }
 
 #[derive(Clone, Copy, Default, PartialEq, Debug)]
@@ -2078,6 +2224,11 @@ impl Searcher<'_> {
 
     fn search_form(&self, q: &Query) -> Vec<Hit> {
         let hits = self.search_once(q);
+        // A second, wider pass is a luxury a spent budget cannot afford: the
+        // first pass's partial answer is better than an empty one (#16).
+        if q.stop() {
+            return hits;
+        }
         if q.tokens.iter().any(|t| !t.negate && t.edits > 0 && !t.deep) && !self.well_found(q, &hits) {
             return self.search_once(&q.deepen());
         }
@@ -2115,6 +2266,9 @@ impl Searcher<'_> {
     }
 
     fn search_once(&self, q: &Query) -> Vec<Hit> {
+        if q.stop() {
+            return Vec::new();
+        }
         let mut hits = self.search_base(q);
         hits.extend(self.search_overlay(q));
         // Each hit's key once: a scan for grep lists up to 200k hits.
@@ -2382,6 +2536,12 @@ impl Searcher<'_> {
             // cannot settle it.
             let least = if complete { 0 } else { bin(base + by_key.cover + 30) };
             while want <= LAST_BATCH && !done(floor, top) && top > least {
+                // A batch at a time: the cheapest place to stop when the
+                // budget runs out, with the batch that already ran kept
+                // (#35).
+                if q.stop() {
+                    break;
+                }
                 let low = if floor == i32::MIN { 0 } else { bin(floor) }.max(least);
                 let (mut cut, mut n) = (top, 0);
                 while cut > low && n < want {
@@ -2732,6 +2892,13 @@ impl Searcher<'_> {
         let (mut hits, mut floor, mut fkey): (Vec<Hit>, i32, u64) = (Vec::new(), i32::MIN, 0);
         let (mut want, mut work) = (SPREAD_FIRST, 0);
         loop {
+            // A round at a time: the cheapest place to stop when the budget
+            // runs out, keeping the best hits found so far (#35). Fewer than
+            // `limit` hits is a partial answer; the daemon marks it
+            // `complete: false`.
+            if q.stop() {
+                break Some(hits);
+            }
             // The next sources, about `want` entries: a word at a time, its
             // best one if it can lower the bound (above what its sources
             // cannot), then, when none can, any that can still hold a hit.
@@ -2944,6 +3111,11 @@ impl Searcher<'_> {
             v.into_iter().map(|x| x.1)
         };
         for t in order.into_iter().chain(std::iter::once_with(more).flatten()).take(DRIVEN_TRIES) {
+            // Each try scans a token's names: an expensive thing to start
+            // when the budget is already spent (#35).
+            if q.stop() {
+                return None;
+            }
             match self.drive(q, pos, neg, lo, hi, ranges, scope.as_deref(), t) {
                 Ok(hits) => return Some(hits),
                 Err(true) => continue,
@@ -3550,10 +3722,13 @@ impl<'a> Scan<'a> {
         let scan = Scan { ranges: None, ..*self };
         let ends: Vec<usize> = ranges.iter().scan(0, |n, r| Some(*n + (r.1 - r.0) as usize).inspect(|&e| *n = e)).collect();
         let n = ends.last().copied().unwrap_or(0);
+        let progress = q.progress.as_deref();
         top_k(n, q.limit, n, 0, |r, top| {
             let (mut pbuf, re) = (Vec::new(), q.path_re.clone());
+            let (mut seen, mut tick) = (0usize, 0u32);
+            let every = progress_every(r.end - r.start);
             let mut k = ends.partition_point(|&e| e <= r.start);
-            while let Some(&(ra, rb)) = ranges.get(k).filter(|_| k == 0 || ends[k - 1] < r.end) {
+            'scan: while let Some(&(ra, rb)) = ranges.get(k).filter(|_| k == 0 || ends[k - 1] < r.end) {
                 let from = if k == 0 { 0 } else { ends[k - 1] };
                 let (mut a, b) = (ra as usize + r.start.saturating_sub(from), (rb as usize).min(ra as usize + r.end - from));
                 k += 1;
@@ -3566,9 +3741,18 @@ impl<'a> Scan<'a> {
                     for (run, p) in idx.blocks(a, end) {
                         let m = memo.map_or(DirMemo::default(), |m| m[p as usize]);
                         for i in run {
+                            // The budget check (#16) and the entry counts
+                            // (#35). `budget_tick` is one branch when the
+                            // caller set no budget.
+                            if !budget_tick(progress, &mut seen, &mut tick, every) {
+                                break 'scan;
+                            }
                             let s = dense[ent_name.get(i) as usize];
                             if s.flags & NF_OK == 0 {
                                 continue;
+                            }
+                            if let Some(pg) = progress {
+                                pg.considered.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                             }
                             let nh = NameHit { score: s.score, bits: s.bits, flags: s.flags, best: [0; 4] };
                             if let Some(k) = scan.score(i, p, nh, m, top.floor, &mut pbuf, re.as_ref()) {
@@ -3579,6 +3763,9 @@ impl<'a> Scan<'a> {
                     a = end;
                 }
             }
+            if let Some(pg) = progress {
+                pg.scanned.fetch_add(seen, std::sync::atomic::Ordering::Relaxed);
+            }
         })
     }
 
@@ -3587,14 +3774,23 @@ impl<'a> Scan<'a> {
     fn selective(&self, lo: usize, hi: usize) -> Vec<Hit> {
         let idx = &self.live.base;
         let ok: Vec<(u32, NameHit)> = self.names.iter().filter(|(_, h)| h.flags & NF_OK != 0).collect();
+        let progress = self.q.progress.as_deref();
         top_k(ok.len(), self.q.limit, self.names.ok_entries, 0, |r, top| {
             let (mut pbuf, mut memo) = (Vec::new(), HashMap::<u32, DirMemo, crate::index::Fx>::default());
             let re = self.q.path_re.clone();
-            for &(id, nh) in &ok[r] {
+            let (mut seen, mut tick) = (0usize, 0u32);
+            let every = progress_every(r.end - r.start);
+            'scan: for &(id, nh) in &ok[r] {
                 for e in idx.ents(id) {
                     let i = e as usize;
                     if i < lo || i >= hi {
                         continue;
+                    }
+                    if !budget_tick(progress, &mut seen, &mut tick, every) {
+                        break 'scan;
+                    }
+                    if let Some(pg) = progress {
+                        pg.considered.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                     }
                     let p = idx.parent(i);
                     let m = if self.need_dirs { self.memo_of(p, &mut memo, &mut |k| self.names.get(k)) } else { DirMemo::default() };
@@ -3602,6 +3798,9 @@ impl<'a> Scan<'a> {
                         top.push(k);
                     }
                 }
+            }
+            if let Some(pg) = progress {
+                pg.scanned.fetch_add(seen, std::sync::atomic::Ordering::Relaxed);
             }
         })
     }
@@ -4087,5 +4286,87 @@ mod tests {
     fn app_links_only_as_folders() {
         assert!(Query::parse("type:app", "/h").unwrap().kind_ok(KIND_LINK));
         assert!(!Query::parse("type:app kind:file", "/h").unwrap().kind_ok(KIND_LINK));
+    }
+
+    /// An index of `/` holding `n` files named `alpha-00000.txt`...
+    fn many(n: usize) -> Live {
+        let mut names = Vec::new();
+        let mut ents = Vec::new();
+        for i in 0..n {
+            let name = format!("alpha-{i:05}.txt");
+            let off = names.len() as u32;
+            names.extend_from_slice(name.as_bytes());
+            ents.push(RawEnt { name_off: off, name_len: name.len() as u16, kind: KIND_FILE, size: 1, mtime: 1, child: NONE });
+        }
+        Live::new(Index::build(vec![Listing { id: 0, names, ents }], 0, 0, b"/h", b"/"))
+    }
+
+    /// A spent budget answers with what it has and says so (#16).
+    #[test]
+    fn a_spent_budget_marks_the_answer_partial() {
+        let l = many(4096);
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::within(std::time::Duration::ZERO));
+        q.progress = Some(p.clone());
+        q.deadline = Some(std::time::Instant::now());
+        let hits = Searcher { live: &l }.search(&q);
+        assert!(p.expired(), "the budget must be reported spent");
+        assert!(hits.len() <= q.limit);
+        // Either the scan stopped before it saw everything, or it was answered
+        // without visiting entries (both are honest partial answers).
+        let (scanned, _) = p.counted();
+        assert!(scanned <= 4096, "scanned {scanned} entries after the deadline");
+    }
+
+    /// A budget with time to spare must not change the answer: the same hits,
+    /// the same order, the same count as a scan with no budget at all (#35,
+    /// "result sets remain equivalent to a full scan for the top-k").
+    #[test]
+    fn an_ample_budget_is_equivalent_to_no_budget() {
+        let l = many(4096);
+        let plain = Query::parse("limit:50 alpha", "/h").unwrap();
+        let want = Searcher { live: &l }.search(&plain);
+        assert_eq!(want.len(), 50);
+
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::budget(60_000));
+        q.deadline = Some(std::time::Instant::now() + std::time::Duration::from_secs(60));
+        q.progress = Some(p.clone());
+        let got = Searcher { live: &l }.search(&q);
+        assert!(!p.expired(), "an ample budget must not expire");
+        let key = |h: &Hit| (h.score, h.idx);
+        assert_eq!(got.iter().map(key).collect::<Vec<_>>(), want.iter().map(key).collect::<Vec<_>>());
+        let (scanned, considered) = p.counted();
+        assert!(scanned > 0 && considered > 0, "counts must be reported: {scanned}/{considered}");
+    }
+
+    /// The candidate cap (#35) stops a whole-disk query from scoring
+    /// millions of candidates; a cap nothing reaches changes nothing.
+    #[test]
+    fn a_candidate_cap_stops_scoring() {
+        let l = many(4096);
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::budget(0).cap_candidates(Some(1)));
+        q.progress = Some(p.clone());
+        let hits = Searcher { live: &l }.search(&q);
+        assert!(p.expired(), "the cap must be reported spent");
+        let (_, considered) = p.counted();
+        assert!(considered < 4096, "considered {considered} candidates past a cap of 1");
+        assert!(hits.len() <= q.limit);
+    }
+
+    /// A budget request with no deadline (the cap alone) still reports the
+    /// work it did.
+    #[test]
+    fn counts_are_reported_without_a_deadline() {
+        let l = many(4096);
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::budget(0));
+        q.progress = Some(p.clone());
+        let hits = Searcher { live: &l }.search(&q);
+        assert_eq!(hits.len(), 50);
+        let (scanned, considered) = p.counted();
+        assert_eq!(scanned, 4096, "every entry must be counted");
+        assert_eq!(considered, 4096);
     }
 }

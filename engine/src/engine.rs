@@ -661,7 +661,9 @@ impl Shared {
         let hold = walk::Hold::new();
         let ls = folder_listings(dir);
         drop(hold);
-        let live = Live::new(Index::build(ls, 0, 0, self.home.as_bytes(), &env::scan_root()));
+        // `folder_listings` builds the chain from `/` down to `dir`, so the
+        // early index's own root is `/` whatever the crawl root is.
+        let live = Live::new(Index::build(ls, 0, 0, self.home.as_bytes(), b"/"));
         log(format!("listed {} first: {} entries in {:.2?}", String::from_utf8_lossy(dir), live.base.n, t.elapsed()));
         let e = Arc::new(Early { dir: dir.to_vec(), live, indexing: AtomicBool::new(false) });
         early.push(e.clone());
@@ -690,8 +692,18 @@ impl Shared {
 
     /// (Re)start the FSEvents stream from `since`, replacing any old one.
     fn watch(&self, since: u64) {
-        self.replaying.store(true, Ordering::Relaxed);
-        self.mark_stale();
+        // A stream started at (or past) the newest event id has no history to
+        // replay, and FSEvents does not send HISTORY_DONE for it — the flag
+        // that closes the window below never arrives. Treating that stream as
+        // replaying reported `staleness_ms` forever and marked every answer
+        // stale. There is history only when the id is in the past.
+        let replay = since < fsevents::current_id();
+        self.replaying.store(replay, Ordering::Relaxed);
+        if replay {
+            self.mark_stale();
+        } else {
+            self.mark_caught_up();
+        }
         self.since.store(since, Ordering::Relaxed);
         let n = self.streams.fetch_add(1, Ordering::Relaxed) + 1;
         // 10 ms: a change shows in ~12 ms (fseventsd's own delay); at 0.1 s,
@@ -1066,6 +1078,16 @@ fn release_memory() {
 /// before running anyway (#34). Long enough for a burst of agent calls to
 /// finish, short enough that an index never stays un-consolidated for long.
 const COMPACT_DRAIN: Duration = Duration::from_secs(2);
+
+/// May a due compaction run now?
+///
+/// It may when nothing is searching, when the overlay has grown so large that
+/// every search pays for it, or when it has already waited out `COMPACT_DRAIN`
+/// — best effort, never a promise to hold off indefinitely (#34). Extracted
+/// so the policy is testable without a live daemon.
+fn compact_now(inflight: usize, pending: usize, waited: Duration) -> bool {
+    inflight == 0 || pending >= COMPACT_URGENT || waited >= COMPACT_DRAIN
+}
 /// How often `apply_loop` re-checks whether they drained.
 const COMPACT_POLL: Duration = Duration::from_millis(50);
 /// A compaction that repeatedly finds the index above this merges per
@@ -1264,6 +1286,12 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
                 // An isolated crawl root: only its own changes may be applied
                 // (see `Shared::keep`).
                 if !crate::deny::within(&e.path, &shared.keep) {
+                    // `ULTRASEARCH_DEBUG_KEEP=1`: say what an isolated
+                    // crawl root is filtering out (a change reported on a
+                    // folder above the root is not applied).
+                    if std::env::var_os("ULTRASEARCH_DEBUG_KEEP").is_some() {
+                        log(format!("keeping out (outside ULTRASEARCH_SCAN_ROOT): {}", String::from_utf8_lossy(&e.path)));
+                    }
                     continue;
                 }
                 if e.path == b"/" && e.flags & MUST_SCAN_SUBDIRS != 0 {
@@ -1276,6 +1304,9 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
                         if e.stream == current {
                             let from = if shared.replaying.load(Ordering::Relaxed) { shared.since.load(Ordering::Relaxed) } else { last_good };
                             gap = Some((gap.map_or(from, |(g, _)| g.min(from)), Instant::now()));
+                            // Answers are no longer guaranteed fresh until
+                            // the replay lands (#19).
+                            shared.mark_stale();
                         }
                         continue;
                     }
@@ -1383,7 +1414,11 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
             let live = g.as_ref().unwrap();
             (live.over.len() + live.dead_count, live.event_id != live.base.event_id)
         };
-        let asked = shared.save_requested.swap(false, Ordering::Relaxed);
+        // Read, do not clear: a request that is postponed must still be here
+        // next time round, or the pause would lose it (the overlay may be
+        // under COMPACT_PENDING and the index not stale, so nothing else would
+        // bring the compaction back).
+        let asked = shared.save_requested.load(Ordering::Relaxed);
         let due = asked || pending > COMPACT_PENDING || (stale && last_save.elapsed() > COMPACT_EVERY);
         if !due {
             due_since = None;
@@ -1396,7 +1431,7 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
         // Best effort: past COMPACT_DRAIN, or when the overlay has grown past
         // what a search can afford to scan, it runs regardless.
         let busy = shared.inflight.load(Ordering::Acquire);
-        if busy > 0 && pending < COMPACT_URGENT && since.elapsed() < COMPACT_DRAIN {
+        if !compact_now(busy, pending, since.elapsed()) {
             if !pausing {
                 pausing = true;
                 shared.compact.lock().unwrap().postponed += 1;
@@ -1406,6 +1441,7 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
         if pausing {
             log(format!("compaction ran after {:.0?} with {busy} queries still in flight", since.elapsed()));
         }
+        shared.save_requested.store(false, Ordering::Relaxed);
         due_since = None;
         pausing = false;
         compact(shared);
@@ -1421,6 +1457,17 @@ pub fn default_dir(home: &str) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The compaction pause (#34): wait for in-flight queries, but not
+    /// forever, and not when the overlay is already hurting every search.
+    #[test]
+    fn compaction_waits_for_queries_but_not_indefinitely() {
+        assert!(compact_now(0, 10, Duration::from_secs(0)), "idle: compaction runs");
+        assert!(!compact_now(1, 10, Duration::from_secs(0)), "one query in flight: wait");
+        assert!(!compact_now(64, COMPACT_PENDING + 1, Duration::from_millis(1500)), "still waiting");
+        assert!(compact_now(64, 10, COMPACT_DRAIN), "the wait is bounded");
+        assert!(compact_now(64, COMPACT_URGENT, Duration::from_secs(0)), "an oversized overlay wins over the pause");
+    }
 
     /// An engine that follows (the lock is held for good, so it never
     /// crawls the disk). walk::SKIP is set once per process, so every test

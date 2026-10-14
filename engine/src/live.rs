@@ -424,8 +424,15 @@ impl Live {
             by_parent.entry(parent).or_default().push((&k[cut + 1..], *v));
         }
         let mut out = Vec::new();
+        // Paths below are built by joining names onto the parent's, so the
+        // root's own path must be its real one — the crawl root, which is "/"
+        // for a whole-disk index but a directory for an isolated one
+        // (`ULTRASEARCH_SCAN_ROOT`). Starting at "/" there made every folded
+        // overlay entry's parent path unmatchable, so a `save`/compaction
+        // silently dropped every file added since the last build.
+        let root = self.base.name(0);
         // (base dir id if alive in base, path, listing id)
-        let mut stack: Vec<(Option<u32>, Vec<u8>, u32)> = vec![(Some(0), b"/".to_vec(), 0)];
+        let mut stack: Vec<(Option<u32>, Vec<u8>, u32)> = vec![(Some(0), root.to_vec(), 0)];
         let mut next = 1u32;
         while let Some((bd, path, id)) = stack.pop() {
             let mut l = Listing { id, names: Vec::new(), ents: Vec::new() };
