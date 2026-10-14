@@ -1,10 +1,10 @@
 process.env.PI_ULTRASEARCH_TEST = "1";
 import { execFileSync } from "node:child_process";
 import { performance } from "node:perf_hooks";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 
 async function runBenchmark() {
-  const client = new FSearchClient();
+  const client = new UltraSearchClient();
   const iterations = 10;
   const targetQuery = "Omnibox.swift";
   const grepPattern = "ultraThinMaterial";
@@ -32,20 +32,20 @@ async function runBenchmark() {
     nativeRgTimes.push(performance.now() - t0);
   }
 
-  // 3. FSearch Client Search
-  const fsearchFindTimes: number[] = [];
+  // 3. UltraSearch Client Search
+  const ultrasearchFindTimes: number[] = [];
   for (let i = 0; i < iterations; i++) {
     const t0 = performance.now();
     await client.search(targetQuery, { in: cwd, limit: 10 });
-    fsearchFindTimes.push(performance.now() - t0);
+    ultrasearchFindTimes.push(performance.now() - t0);
   }
 
-  // 4. FSearch Client Grep
-  const fsearchGrepTimes: number[] = [];
+  // 4. UltraSearch Client Grep
+  const ultrasearchGrepTimes: number[] = [];
   for (let i = 0; i < iterations; i++) {
     const t0 = performance.now();
     await client.grep(grepPattern, { in: cwd, limit: 10 });
-    fsearchGrepTimes.push(performance.now() - t0);
+    ultrasearchGrepTimes.push(performance.now() - t0);
   }
 
   client.close();
@@ -55,12 +55,12 @@ async function runBenchmark() {
   const p95 = (arr: number[]) => [...arr].sort((a, b) => a - b)[Math.floor(arr.length * 0.95)];
 
   console.log(`Native find (subprocess):        mean: ${avg(nativeFindTimes).toFixed(2)}ms | p50: ${p50(nativeFindTimes).toFixed(2)}ms | p95: ${p95(nativeFindTimes).toFixed(2)}ms`);
-  console.log(`pi-ultrasearch search (socket):  mean: ${avg(fsearchFindTimes).toFixed(2)}ms | p50: ${p50(fsearchFindTimes).toFixed(2)}ms | p95: ${p95(fsearchFindTimes).toFixed(2)}ms`);
-  console.log(`Speedup (Find):                 ${(avg(nativeFindTimes) / avg(fsearchFindTimes)).toFixed(1)}x faster\n`);
+  console.log(`pi-ultrasearch search (socket):  mean: ${avg(ultrasearchFindTimes).toFixed(2)}ms | p50: ${p50(ultrasearchFindTimes).toFixed(2)}ms | p95: ${p95(ultrasearchFindTimes).toFixed(2)}ms`);
+  console.log(`Speedup (Find):                 ${(avg(nativeFindTimes) / avg(ultrasearchFindTimes)).toFixed(1)}x faster\n`);
 
   console.log(`Native ripgrep (subprocess):     mean: ${avg(nativeRgTimes).toFixed(2)}ms | p50: ${p50(nativeRgTimes).toFixed(2)}ms | p95: ${p95(nativeRgTimes).toFixed(2)}ms`);
-  console.log(`pi-ultrasearch grep (trigram):   mean: ${avg(fsearchGrepTimes).toFixed(2)}ms | p50: ${p50(fsearchGrepTimes).toFixed(2)}ms | p95: ${p95(fsearchGrepTimes).toFixed(2)}ms`);
-  console.log(`Speedup (Grep):                 ${(avg(nativeRgTimes) / avg(fsearchGrepTimes)).toFixed(1)}x faster\n`);
+  console.log(`pi-ultrasearch grep (trigram):   mean: ${avg(ultrasearchGrepTimes).toFixed(2)}ms | p50: ${p50(ultrasearchGrepTimes).toFixed(2)}ms | p95: ${p95(ultrasearchGrepTimes).toFixed(2)}ms`);
+  console.log(`Speedup (Grep):                 ${(avg(nativeRgTimes) / avg(ultrasearchGrepTimes)).toFixed(1)}x faster\n`);
 }
 
 runBenchmark().catch(console.error);

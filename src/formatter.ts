@@ -1,5 +1,5 @@
 import { scrubSecrets, isSensitiveFile } from "./sanitize.ts";
-import type { FSearchGrepFile } from "./types.ts";
+import type { UltraSearchGrepFile } from "./types.ts";
 
 export interface FormatOptions {
   worktreeRoot: string;
@@ -30,7 +30,7 @@ export function detectSymbolTag(lineText: string): string | null {
  * - Supports surrounding code context (`showContext: true`) and symbol tagging (`tagSymbols: true`).
  */
 export function formatGrepFiles(
-  files: FSearchGrepFile[],
+  files: UltraSearchGrepFile[],
   options: FormatOptions
 ): { text: string; tokenCount: number; truncatedCount: number } {
   const {

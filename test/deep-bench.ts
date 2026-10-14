@@ -1,7 +1,7 @@
 process.env.PI_ULTRASEARCH_TEST = "1";
 import { execFileSync } from "node:child_process";
 import { performance } from "node:perf_hooks";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { formatGrepFiles } from "../src/formatter.ts";
 
 export interface BenchmarkResult {
@@ -24,7 +24,7 @@ export interface BenchmarkResult {
 
 export async function runFullBenchmark(options: { iterations?: number } = {}): Promise<BenchmarkResult[]> {
   const iterations = options.iterations ?? 25;
-  const client = new FSearchClient();
+  const client = new UltraSearchClient();
   await client.ping();
 
   const results: BenchmarkResult[] = [];

@@ -1,4 +1,4 @@
-import { FSearchClient } from "./client.ts";
+import { UltraSearchClient } from "./client.ts";
 import { recordAudit } from "./telemetry.ts";
 
 export interface CompactionStats {
@@ -14,14 +14,14 @@ export interface CompactionStats {
 const compactionHistory: CompactionStats[] = [];
 
 export class LsmCompactor {
-  private client: FSearchClient;
+  private client: UltraSearchClient;
   private intervalTimer: NodeJS.Timeout | null = null;
   private isCompacting = false;
   private overlayThreshold: number;
   private checkIntervalMs: number;
 
-  constructor(client?: FSearchClient, options: { overlayThreshold?: number; checkIntervalMs?: number } = {}) {
-    this.client = client || new FSearchClient();
+  constructor(client?: UltraSearchClient, options: { overlayThreshold?: number; checkIntervalMs?: number } = {}) {
+    this.client = client || new UltraSearchClient();
     this.overlayThreshold = options.overlayThreshold ?? 5000;
     this.checkIntervalMs = options.checkIntervalMs ?? 30000;
   }
@@ -63,7 +63,7 @@ export class LsmCompactor {
 
       recordAudit({
         ts: Date.now(),
-        tool: "fsearch_compact" as any,
+        tool: "ultrasearch_compact" as any,
         query: `compact (automated=${automated})`,
         ms: durationMs,
         ok: true,
@@ -97,7 +97,7 @@ export class LsmCompactor {
       try {
         const st = await this.client.status();
         // If overlay modifications or deletions exceed thresholds, run auto compaction
-        if (st.overlay > this.overlayThreshold || st.removed > 10000) {
+        if ((st.overlay ?? 0) > this.overlayThreshold || (st.removed ?? 0) > 10000) {
           await this.compact(true);
         }
       } catch {

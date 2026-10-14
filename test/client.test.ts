@@ -1,9 +1,9 @@
 process.env.PI_ULTRASEARCH_TEST = "1";
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { scrubSecrets, isPathSafe, matchesIgnorePattern, isSensitiveFile } from "../src/sanitize.ts";
-import { renderUltraSearchDeclarations, renderFSearchDeclarations, getFSearchCodemodeTools } from "../src/codemode.ts";
+import { renderUltraSearchDeclarations, getUltraSearchCodemodeTools } from "../src/codemode.ts";
 import { recordAudit, loadAudit, summarizeAudit, formatAuditSummary, resetAudit } from "../src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "../src/observer.ts";
 import { formatGrepFiles } from "../src/formatter.ts";
@@ -11,9 +11,9 @@ import { LsmCompactor } from "../src/compactor.ts";
 import { recordMistake, learnCorrection, getLearnedCorrection, formatRecursiveLearningReport } from "../src/recursive-learning.ts";
 import { UltraSearchTui } from "../src/tui.ts";
 import { expandIntentKeywords, searchSemanticIntent } from "../src/semantic.ts";
-import { FSearchMcpServer } from "../src/mcp.ts";
+import { UltraSearchMcpServer } from "../src/mcp.ts";
 
-const sharedClient = new FSearchClient();
+const sharedClient = new UltraSearchClient();
 
 after(() => {
   sharedClient.close();
@@ -21,14 +21,14 @@ after(() => {
 
 // Integration tests require the resident daemon; skip them cleanly on a bare CI runner.
 const daemonUp = await sharedClient.ping();
-const liveOnly = daemonUp ? false : "FSearch daemon not running (integration test skipped)";
+const liveOnly = daemonUp ? false : "UltraSearch daemon not running (integration test skipped)";
 
-test("FSearchClient ping", { skip: liveOnly }, async () => {
+test("UltraSearchClient ping", { skip: liveOnly }, async () => {
   const ok = await sharedClient.ping();
   assert.equal(ok, true);
 });
 
-test("FSearchClient search: exact match succeeds", { skip: liveOnly }, async () => {
+test("UltraSearchClient search: exact match succeeds", { skip: liveOnly }, async () => {
   const res = await sharedClient.search("package.json", {
     in: process.cwd(),
     limit: 5,
@@ -39,7 +39,7 @@ test("FSearchClient search: exact match succeeds", { skip: liveOnly }, async () 
   assert.ok(res.hits.some((h) => h.path.endsWith("package.json")));
 });
 
-test("FSearchClient strict zero typo tolerance (no forgiveness)", { skip: liveOnly }, async () => {
+test("UltraSearchClient strict zero typo tolerance (no forgiveness)", { skip: liveOnly }, async () => {
   // A misspelled query must NEVER match or forgive typos
   const res = await sharedClient.search("pckage.json", {
     in: process.cwd(),
@@ -50,8 +50,8 @@ test("FSearchClient strict zero typo tolerance (no forgiveness)", { skip: liveOn
   assert.equal(res.hits?.length ?? 0, 0);
 });
 
-test("FSearchClient grep with trigram index", { skip: liveOnly }, async () => {
-  const res = await sharedClient.grep("FSearchClient", {
+test("UltraSearchClient grep with trigram index", { skip: liveOnly }, async () => {
+  const res = await sharedClient.grep("UltraSearchClient", {
     in: process.cwd(),
     limit: 30,
   });
@@ -61,8 +61,8 @@ test("FSearchClient grep with trigram index", { skip: liveOnly }, async () => {
   assert.ok(res.files.some((f) => f.path.includes("client.ts") || f.path.includes("client.test.ts")));
 });
 
-test("FSearchClient multiGrep", { skip: liveOnly }, async () => {
-  const res = await sharedClient.multiGrep(["FSearchClient", "scrubSecrets"], {
+test("UltraSearchClient multiGrep", { skip: liveOnly }, async () => {
+  const res = await sharedClient.multiGrep(["UltraSearchClient", "scrubSecrets"], {
     in: process.cwd(),
     limit: 10,
   });
@@ -70,7 +70,7 @@ test("FSearchClient multiGrep", { skip: liveOnly }, async () => {
   assert.ok(Array.isArray(res.files));
 });
 
-test("FSearchClient proximity re-ranking", () => {
+test("UltraSearchClient proximity re-ranking", () => {
   const hits = [
     { kind: "file" as const, mtime: 0, path: "/Users/batra/repo/other/deep/file.ts", score: 100, size: 0 },
     { kind: "file" as const, mtime: 0, path: "/Users/batra/repo/src/components/button.ts", score: 100, size: 0 },
@@ -130,28 +130,29 @@ test("sanitize: ignore pattern matching", () => {
 test("codemode: renders TypeScript declarations", () => {
   const decls = renderUltraSearchDeclarations();
   assert.ok(decls.includes("declare namespace tools"));
-  assert.ok(decls.includes("fsearch_query"));
-  assert.ok(decls.includes("fsearch_grep"));
-  assert.ok(decls.includes("fsearch_multi_grep"));
-  assert.equal(renderFSearchDeclarations(), decls);
+  assert.ok(decls.includes("ultrasearch_query"));
+  assert.ok(decls.includes("ultrasearch_grep"));
+  assert.ok(decls.includes("ultrasearch_multi_grep"));
+  assert.ok(!decls.includes("fsearch_"));
 });
 
 test("codemode: sandbox tool definitions", async () => {
-  const tools = getFSearchCodemodeTools(sharedClient);
-  assert.ok(typeof tools.fsearch_query === "function");
-  assert.ok(typeof tools.fsearch_grep === "function");
-  assert.ok(typeof tools.fsearch_multi_grep === "function");
+  const tools = getUltraSearchCodemodeTools(sharedClient);
+  assert.ok(typeof tools.ultrasearch_query === "function");
+  assert.ok(typeof tools.ultrasearch_grep === "function");
+  assert.ok(typeof tools.ultrasearch_multi_grep === "function");
 });
 
-test("mcp: supports both ultrasearch_* and fsearch_* JSON-RPC tools", async () => {
-  const server = new FSearchMcpServer(sharedClient);
+test("mcp: exposes exactly one ultrasearch_* tool surface (no fsearch aliases)", async () => {
+  const server = new UltraSearchMcpServer(sharedClient);
+  await server.handleMessage({ jsonrpc: "2.0", id: 0, method: "initialize", params: { protocolVersion: "2024-11-05", capabilities: {} } });
   const listResp = await server.handleMessage({ jsonrpc: "2.0", id: 1, method: "tools/list" });
   assert.ok(listResp && listResp.result && listResp.result.tools);
   const toolNames = listResp.result.tools.map((t: any) => t.name);
   assert.ok(toolNames.includes("ultrasearch_query"));
   assert.ok(toolNames.includes("ultrasearch_grep"));
-  assert.ok(toolNames.includes("fsearch_query"));
-  assert.ok(toolNames.includes("fsearch_grep"));
+  assert.equal(toolNames.filter((n: string) => n.startsWith("fsearch_")).length, 0);
+  assert.equal(new Set(toolNames).size, toolNames.length);
 
   const callResp = daemonUp
     ? await server.handleMessage({
@@ -170,7 +171,7 @@ test("observability: telemetry logging and audit summary", () => {
   resetAudit();
   recordAudit({
     ts: Date.now(),
-    tool: "fsearch_query",
+    tool: "ultrasearch_query",
     query: "index.ts",
     ms: 0.42,
     ok: true,
@@ -179,7 +180,7 @@ test("observability: telemetry logging and audit summary", () => {
   });
   recordAudit({
     ts: Date.now(),
-    tool: "fsearch_query",
+    tool: "ultrasearch_query",
     query: "nonexistent.xyz",
     ms: 0.15,
     ok: true,
@@ -192,7 +193,7 @@ test("observability: telemetry logging and audit summary", () => {
   assert.equal(summary.totalCalls, 2);
   const formatted = formatAuditSummary(summary);
   assert.ok(formatted.includes("Pi-UltraSearch Observability"));
-  assert.ok(formatted.includes("fsearch_query"));
+  assert.ok(formatted.includes("ultrasearch_query"));
 });
 
 test("observability: shadow detector detects CLI find and rg bypasses", () => {

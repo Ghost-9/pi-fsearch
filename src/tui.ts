@@ -3,9 +3,9 @@ import * as readline from "node:readline";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { FSearchClient } from "./client.ts";
+import { UltraSearchClient } from "./client.ts";
 import { loadAudit, summarizeAudit } from "./telemetry.ts";
-import type { FSearchAuditRow } from "./telemetry.ts";
+import type { UltraSearchAuditRow } from "./telemetry.ts";
 import { LsmCompactor } from "./compactor.ts";
 import { loadLearningMemory, formatRecursiveLearningReport } from "./recursive-learning.ts";
 
@@ -30,7 +30,7 @@ function getPackageVersion(): string {
 }
 
 export class UltraSearchTui {
-  private client: FSearchClient;
+  private client: UltraSearchClient;
   private compactor: LsmCompactor;
   private selectedIndex = 0;
   private isExpanded = false;
@@ -40,7 +40,7 @@ export class UltraSearchTui {
   private version: string;
 
   constructor() {
-    this.client = new FSearchClient();
+    this.client = new UltraSearchClient();
     this.compactor = new LsmCompactor(this.client);
     this.version = getPackageVersion();
   }

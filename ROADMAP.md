@@ -29,7 +29,7 @@ Legend: ✅ shipped & reachable · 🟡 partial / limited · ❌ not delivered a
 
 ### Milestone 1 — IPC daemon & core Pi extension (v0.1.0) — ✅ released
 - [x] #1 Line-buffered UNIX socket client with correlation ids (`src/client.ts`)
-- [x] #2 Core tools: `fsearch_query`, `fsearch_grep`, `fsearch_locate`, `fsearch_recent`
+- [x] #2 Core tools: `ultrasearch_query`, `ultrasearch_grep`, `ultrasearch_locate`, `ultrasearch_recent`
 - [x] #3 Secret scrubbing and sensitive-file masking (`src/sanitize.ts`)
 - [x] #4 Upstream fsearch v0.2.1 engine (MIT; tracked in `~/.cache/fsearch`)
 
@@ -43,7 +43,7 @@ Legend: ✅ shipped & reachable · 🟡 partial / limited · ❌ not delivered a
 - [x] #8 `git:` query filters (`git:modified`, `git:staged`, `git:untracked`) — verified against upstream git engine
 - [x] #9 `tool_execution_end` frecency hook — implemented; end-to-end regression test still missing
 - [x] #10 Proximity re-ranking (`near:`)
-- [x] #11 `fsearch_multi_grep`
+- [x] #11 `ultrasearch_multi_grep`
 
 ### Milestone 4 — Security & ignore rules (v0.4.0) — 🟡 **in progress** (was mislabelled complete)
 - [x] #12 🔧 `.gitignore` / `.ignore` evaluation **wired into search & grep results** (0.3.1) with a per-scope cache;
@@ -53,7 +53,7 @@ Legend: ✅ shipped & reachable · 🟡 partial / limited · ❌ not delivered a
       PEM regex fix (tracked in `OPTIMIZATIONS.md` §F)
 
 ### Milestone 5 — MCP & interop (v0.5.0) — 🟡 **in progress** (was mislabelled complete)
-- [x] #14 stdio MCP server (`src/mcp.ts`, dual `fsearch_*` / `ultrasearch_*` names, semantic mode, context, tags)
+- [x] #14 stdio MCP server (`src/mcp.ts`, dual `ultrasearch_*` / `ultrasearch_*` names, semantic mode, context, tags)
 - [x] #14 🔧 registered in **Antigravity**, **VS Code**, and **Claude Desktop** (0.3.1)
 - [ ] #14 remaining: T3 Code has no generic user-level MCP registry — documented; Pi deliberately uses the native
       extension instead of a duplicate MCP tool surface
@@ -70,10 +70,10 @@ Legend: ✅ shipped & reachable · 🟡 partial / limited · ❌ not delivered a
 
 - CI: hermetic tests + mock-socket gate; the job can pass on a clean machine and the gate now actually executes.
 - Telemetry: benchmark/gate runs isolated from production audit log; single-layer audit recording (no duplicates);
-  `fsearch_compact` rows no longer report the whole index as hits.
+  `ultrasearch_compact` rows no longer report the whole index as hits.
 - Learner: `recordMistake()` now called from real empty-result, path-mismatch, DLP and CLI-bypass paths.
 - Ignore rules: `loadIgnoreRules()` is production code, applied to `query`, `grep`, and `multi_grep`.
-- Semantic mode wired into `fsearch_grep` (Pi + MCP); context/tag options exposed to Pi tools; MCP gains `near`.
+- Semantic mode wired into `ultrasearch_grep` (Pi + MCP); context/tag options exposed to Pi tools; MCP gains `near`.
 - Fallback upgraded from `grep -rn` to `rg` (with `grep` fallback) and `find` max-depth cap removed.
 - Auto-compaction supervisor wired into the interactive TUI lifecycle.
 - MCP registered in Antigravity / VS Code / Claude Desktop (Pi excluded by design).

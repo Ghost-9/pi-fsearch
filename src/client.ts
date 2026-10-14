@@ -3,15 +3,15 @@ import * as child_process from "node:child_process";
 export function resolveDefaultSocketPath(): string {
   const home = os.homedir();
   if (process.platform === "win32") {
-    return "\\\\.\\pipe\\fsearch";
+    return "\\\\.\\pipe\\ultrasearch";
   }
   if (process.platform === "linux") {
     if (process.env.XDG_RUNTIME_DIR) {
-      return path.join(process.env.XDG_RUNTIME_DIR, "fsearch.sock");
+      return path.join(process.env.XDG_RUNTIME_DIR, "ultrasearch.sock");
     }
-    return path.join(home, ".local/share/fsearch/fsearch.sock");
+    return path.join(home, ".local/share/ultrasearch/ultrasearch.sock");
   }
-  return path.join(home, "Library/Application Support/FSearch/fsearch.sock");
+  return path.join(home, "Library/Application Support/UltraSearch/ultrasearch.sock");
 }
 import * as net from "node:net";
 import * as os from "node:os";
@@ -20,19 +20,19 @@ import * as fs from "node:fs";
 import * as readline from "node:readline";
 import { execFileSync } from "node:child_process";
 import type {
-  FSearchSearchResponse,
-  FSearchGrepResponse,
-  FSearchMultiGrepResponse,
-  FSearchStatusResponse,
-  FSearchHit,
-  FSearchGrepFile,
+  UltraSearchSearchResponse,
+  UltraSearchGrepResponse,
+  UltraSearchMultiGrepResponse,
+  UltraSearchStatusResponse,
+  UltraSearchHit,
+  UltraSearchGrepFile,
   SearchOptions,
   GrepOptions,
 } from "./types.ts";
 import { recordAudit } from "./telemetry.ts";
 import { loadIgnoreRules, matchesIgnorePattern } from "./sanitize.ts";
 
-export interface FSearchClientOptions {
+export interface UltraSearchClientOptions {
   socketPath?: string;
   timeoutMs?: number;
   maxReconnectRetries?: number;
@@ -99,7 +99,7 @@ export function enforceExactQuery(query: string): string {
 }
 
 
-export class FSearchClient {
+export class UltraSearchClient {
   private socketPath: string;
   private timeoutMs: number;
   private maxReconnectRetries: number;
@@ -114,7 +114,7 @@ export class FSearchClient {
     timer: NodeJS.Timeout;
   }>();
 
-  constructor(options: FSearchClientOptions = {}) {
+  constructor(options: UltraSearchClientOptions = {}) {
     this.socketPath = options.socketPath ?? resolveDefaultSocketPath();
     this.timeoutMs = options.timeoutMs ?? 5000;
     this.maxReconnectRetries = options.maxReconnectRetries ?? 3;
@@ -128,7 +128,7 @@ export class FSearchClient {
   private getIgnoreRules(dir: string): string[] {
     const cached = this.ignoreCache.get(dir);
     const now = Date.now();
-    if (cached && now - cached.ts < FSearchClient.IGNORE_TTL_MS) return cached.rules;
+    if (cached && now - cached.ts < UltraSearchClient.IGNORE_TTL_MS) return cached.rules;
     const rules = loadIgnoreRules(dir, { includeDefaults: false });
     this.ignoreCache.set(dir, { rules, ts: now });
     return rules;
@@ -140,11 +140,11 @@ export class FSearchClient {
     return matchesIgnorePattern(rel, this.getIgnoreRules(scope));
   }
 
-  private filterIgnoredHits(hits: FSearchHit[], scope: string): FSearchHit[] {
+  private filterIgnoredHits(hits: UltraSearchHit[], scope: string): UltraSearchHit[] {
     return hits.filter((h) => !this.isIgnoredPath(h.path, scope));
   }
 
-  private filterIgnoredFiles(files: FSearchGrepFile[], scope: string): FSearchGrepFile[] {
+  private filterIgnoredFiles(files: UltraSearchGrepFile[], scope: string): UltraSearchGrepFile[] {
     return files.filter((f) => !this.isIgnoredPath(f.path, scope));
   }
 
@@ -152,11 +152,10 @@ export class FSearchClient {
     try {
       const candidates = [
         path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch"),
+        "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch",
         path.join(os.homedir(), ".local/bin/ultrasearch-daemon"),
-        path.join(os.homedir(), ".local/bin/fsearch"),
         "/usr/local/bin/ultrasearch-daemon",
-        "/usr/local/bin/fsearch",
-        "/opt/homebrew/bin/fsearch",
+        "/opt/homebrew/bin/ultrasearch-daemon",
       ];
       for (const bin of candidates) {
         if (fs.existsSync(bin)) {
@@ -244,7 +243,7 @@ export class FSearchClient {
     }
     for (const req of this.pending.values()) {
       clearTimeout(req.timer);
-      req.reject(new Error("FSearch daemon connection closed"));
+      req.reject(new Error("UltraSearch daemon connection closed"));
     }
     this.pending.clear();
   }
@@ -262,7 +261,7 @@ export class FSearchClient {
       return await new Promise<T>((resolve, reject) => {
         const timer = setTimeout(() => {
           this.pending.delete(id);
-          reject(new Error(`FSearch request timed out after ${this.timeoutMs}ms`));
+          reject(new Error(`UltraSearch request timed out after ${this.timeoutMs}ms`));
         }, this.timeoutMs);
 
         this.pending.set(id, { resolve, reject, timer });
@@ -283,14 +282,14 @@ export class FSearchClient {
     }
   }
 
-  public async status(): Promise<FSearchStatusResponse> {
+  public async status(): Promise<UltraSearchStatusResponse> {
     return await this.request({ op: "status" });
   }
 
   /**
    * Fast file search with STRICT ZERO TYPO TOLERANCE, globs, proximity ranking, and fail-open native fallback.
    */
-  public async search(query: string, options: SearchOptions = {}): Promise<FSearchSearchResponse> {
+  public async search(query: string, options: SearchOptions = {}): Promise<UltraSearchSearchResponse> {
     const start = performance.now();
     try {
       const finalQuery = options.fuzzy ? query : enforceExactQuery(query);
@@ -311,7 +310,7 @@ export class FSearchClient {
         payload.near = options.near;
       }
 
-      const res: FSearchSearchResponse = await this.request(payload);
+      const res: UltraSearchSearchResponse = await this.request(payload);
 
       // Strict Zero Typo Tolerance post-filter: remove low-scoring partial matches that do not contain exact query words
       if (res.ok && res.hits && !options.fuzzy && exactWords.length > 0) {
@@ -342,7 +341,7 @@ export class FSearchClient {
           if (!options.skipAudit) {
             recordAudit({
               ts: Date.now(),
-              tool: options.auditTool ?? "fsearch_query",
+              tool: options.auditTool ?? "ultrasearch_query",
               query,
               scope: options.in,
               ms: elapsed,
@@ -364,7 +363,7 @@ export class FSearchClient {
       if (!options.skipAudit) {
         recordAudit({
           ts: Date.now(),
-          tool: options.auditTool ?? "fsearch_query",
+          tool: options.auditTool ?? "ultrasearch_query",
           query,
           scope: options.in,
           ms: elapsed,
@@ -382,7 +381,7 @@ export class FSearchClient {
         if (!options.skipAudit) {
           recordAudit({
             ts: Date.now(),
-            tool: options.auditTool ?? "fsearch_query",
+            tool: options.auditTool ?? "ultrasearch_query",
             query,
             scope: options.in,
             ms: elapsed,
@@ -400,7 +399,7 @@ export class FSearchClient {
   /**
    * Fast indexed trigram content search with fail-open fallback.
    */
-  public async grep(pattern: string, options: GrepOptions = {}): Promise<FSearchGrepResponse> {
+  public async grep(pattern: string, options: GrepOptions = {}): Promise<UltraSearchGrepResponse> {
     const start = performance.now();
     try {
       const payload: Record<string, any> = {
@@ -413,7 +412,7 @@ export class FSearchClient {
         context: options.context ?? 1,
       };
 
-      const res: FSearchGrepResponse = await this.request(payload);
+      const res: UltraSearchGrepResponse = await this.request(payload);
 
       if (
         res.ok &&
@@ -432,7 +431,7 @@ export class FSearchClient {
           if (!options.skipAudit) {
             recordAudit({
               ts: Date.now(),
-              tool: options.auditTool ?? "fsearch_grep",
+              tool: options.auditTool ?? "ultrasearch_grep",
               pattern,
               scope: options.in,
               ms: elapsed,
@@ -456,7 +455,7 @@ export class FSearchClient {
         const totalMatches = res.files?.reduce((acc, f) => acc + f.matches.length, 0) ?? 0;
         recordAudit({
           ts: Date.now(),
-          tool: options.auditTool ?? "fsearch_grep",
+          tool: options.auditTool ?? "ultrasearch_grep",
           pattern,
           scope: options.in,
           ms: elapsed,
@@ -474,7 +473,7 @@ export class FSearchClient {
         if (!options.skipAudit) {
           recordAudit({
             ts: Date.now(),
-            tool: options.auditTool ?? "fsearch_grep",
+            tool: options.auditTool ?? "ultrasearch_grep",
             pattern,
             scope: options.in,
             ms: elapsed,
@@ -490,12 +489,12 @@ export class FSearchClient {
   }
 
   /**
-   * Multi-pattern OR content search (fsearch_multi_grep)
+   * Multi-pattern OR content search (ultrasearch_multi_grep)
    */
-  public async multiGrep(patterns: string[], options: GrepOptions = {}): Promise<FSearchMultiGrepResponse> {
+  public async multiGrep(patterns: string[], options: GrepOptions = {}): Promise<UltraSearchMultiGrepResponse> {
     const start = performance.now();
     try {
-      const res: FSearchMultiGrepResponse = await this.request({
+      const res: UltraSearchMultiGrepResponse = await this.request({
         op: "multi_grep",
         patterns,
         in: options.in,
@@ -513,7 +512,7 @@ export class FSearchClient {
           const totalMatches = res.files?.reduce((acc, f) => acc + f.matches.length, 0) ?? 0;
           recordAudit({
             ts: Date.now(),
-            tool: options.auditTool ?? "fsearch_multi_grep",
+            tool: options.auditTool ?? "ultrasearch_multi_grep",
             pattern: patterns.join(" | "),
             scope: options.in,
             ms: elapsed,
@@ -561,7 +560,7 @@ export class FSearchClient {
       if (!options.skipAudit) {
         recordAudit({
           ts: Date.now(),
-          tool: options.auditTool ?? "fsearch_multi_grep",
+          tool: options.auditTool ?? "ultrasearch_multi_grep",
           pattern: patterns.join(" | "),
           scope: options.in,
           ms: elapsed,
@@ -596,14 +595,14 @@ export class FSearchClient {
     }
   }
 
-  public async recent(scopeDir: string, limit = 15): Promise<FSearchSearchResponse> {
+  public async recent(scopeDir: string, limit = 15): Promise<UltraSearchSearchResponse> {
     const start = performance.now();
     try {
-      const res: FSearchSearchResponse = await this.request({ op: "recent", in: scopeDir, limit });
+      const res: UltraSearchSearchResponse = await this.request({ op: "recent", in: scopeDir, limit });
       const elapsed = Math.round((performance.now() - start) * 100) / 100;
       recordAudit({
         ts: Date.now(),
-        tool: "fsearch_recent",
+        tool: "ultrasearch_recent",
         query: `recent:${limit}`,
         scope: scopeDir,
         ms: elapsed,
@@ -634,7 +633,7 @@ export class FSearchClient {
     );
   }
 
-  public applyProximityRanking(hits: FSearchHit[], nearPath: string): FSearchHit[] {
+  public applyProximityRanking(hits: UltraSearchHit[], nearPath: string): UltraSearchHit[] {
     const targetDir = path.dirname(path.resolve(nearPath));
     const targetParts = targetDir.split(path.sep);
 
@@ -658,7 +657,7 @@ export class FSearchClient {
       .sort((a, b) => b.score - a.score);
   }
 
-  private nativeFallbackSearch(query: string, options: SearchOptions): FSearchSearchResponse {
+  private nativeFallbackSearch(query: string, options: SearchOptions): UltraSearchSearchResponse {
     const start = Date.now();
     const scope = options.in ? path.resolve(options.in) : process.cwd();
     const limit = options.limit ?? 30;
@@ -694,7 +693,7 @@ export class FSearchClient {
       }
 
       const lines = out.split("\n").filter(Boolean).slice(0, limit);
-      const hits: FSearchHit[] = lines.map((p) => ({
+      const hits: UltraSearchHit[] = lines.map((p) => ({
         kind: "file",
         mtime: Math.floor(Date.now() / 1000),
         path: p,
@@ -718,7 +717,7 @@ export class FSearchClient {
     }
   }
 
-  private nativeFallbackGrep(pattern: string, options: GrepOptions): FSearchGrepResponse {
+  private nativeFallbackGrep(pattern: string, options: GrepOptions): UltraSearchGrepResponse {
     const start = Date.now();
     const scope = options.in ? path.resolve(options.in) : process.cwd();
     const limit = options.limit ?? 30;

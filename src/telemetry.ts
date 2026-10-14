@@ -2,10 +2,10 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-export interface FSearchAuditRow {
+export interface UltraSearchAuditRow {
   ts: number;
   sessionId?: string;
-  tool: "fsearch_query" | "fsearch_grep" | "fsearch_locate" | "fsearch_recent" | "fsearch_multi_grep" | "fsearch_compact" | "cli_bypass";
+  tool: "ultrasearch_query" | "ultrasearch_grep" | "ultrasearch_locate" | "ultrasearch_recent" | "ultrasearch_multi_grep" | "ultrasearch_compact" | "cli_bypass";
   query?: string;
   pattern?: string;
   scope?: string;
@@ -18,7 +18,7 @@ export interface FSearchAuditRow {
   diagnosticHint?: string;
 }
 
-export type AuditTool = FSearchAuditRow["tool"];
+export type AuditTool = UltraSearchAuditRow["tool"];
 
 export function getAuditFilePath(): string {
   if (process.env.PI_ULTRASEARCH_TEST === "1") {
@@ -40,18 +40,18 @@ export function estimateTokensSaved(
   tool: string,
   hitCount: number
 ): number {
-  if (tool === "cli_bypass" || tool === "fsearch_compact") return 0;
-  if (tool === "fsearch_grep" || tool === "fsearch_multi_grep") {
+  if (tool === "cli_bypass" || tool === "ultrasearch_compact") return 0;
+  if (tool === "ultrasearch_grep" || tool === "ultrasearch_multi_grep") {
     // A grep hit avoids loading entire files into agent context.
     // Average source file: 1,200 tokens. Surgical grep match: ~30 tokens.
     // Conservative estimated savings: ~75 tokens per hit, plus base 150 tokens for targeted hit list.
     return hitCount > 0 ? 150 + hitCount * 75 : 50;
   }
-  if (tool === "fsearch_query" || tool === "fsearch_locate") {
+  if (tool === "ultrasearch_query" || tool === "ultrasearch_locate") {
     // Avoids massive recursive directory listings or find dumps in agent context.
     return hitCount > 0 ? 100 + hitCount * 30 : 25;
   }
-  if (tool === "fsearch_recent") {
+  if (tool === "ultrasearch_recent") {
     return hitCount > 0 ? 120 + hitCount * 25 : 20;
   }
   return 0;
@@ -61,7 +61,7 @@ export function estimateTokensSaved(
  * Appends a telemetry row to the persistent audit log asynchronously/safely.
  * Never throws or blocks agent tool execution (<0.05ms).
  */
-export function recordAudit(row: FSearchAuditRow): void {
+export function recordAudit(row: UltraSearchAuditRow): void {
   try {
     if (row.tokensSaved === undefined) {
       row.tokensSaved = estimateTokensSaved(row.tool, row.hitCount);
@@ -107,7 +107,7 @@ export function recordAudit(row: FSearchAuditRow): void {
 /**
  * Loads recent audit rows from disk.
  */
-export function loadAudit(limit = 1000): FSearchAuditRow[] {
+export function loadAudit(limit = 1000): UltraSearchAuditRow[] {
   try {
     const auditFile = getAuditFilePath();
     const target = existsSync(auditFile)
@@ -122,12 +122,12 @@ export function loadAudit(limit = 1000): FSearchAuditRow[] {
       .slice(-limit)
       .map((line) => {
         try {
-          return JSON.parse(line) as FSearchAuditRow;
+          return JSON.parse(line) as UltraSearchAuditRow;
         } catch {
           return null;
         }
       })
-      .filter((r): r is FSearchAuditRow => r !== null);
+      .filter((r): r is UltraSearchAuditRow => r !== null);
   } catch {
     return [];
   }
@@ -153,7 +153,7 @@ function pct(values: number[], p: number): number {
   return sorted[idx];
 }
 
-export interface FSearchSummary {
+export interface UltraSearchSummary {
   totalCalls: number;
   totalTokensSaved: number;
   since: number | null;
@@ -187,17 +187,17 @@ export interface FSearchSummary {
   optimizationAdvice: string[];
 }
 
-export function summarizeAudit(limit = 1000): FSearchSummary {
+export function summarizeAudit(limit = 1000): UltraSearchSummary {
   const rows = loadAudit(limit);
   const totalCalls = rows.length;
   const since = rows.length > 0 ? rows[0].ts : null;
 
   let totalTokensSaved = 0;
-  let lastUsed: FSearchSummary["lastUsed"] = null;
+  let lastUsed: UltraSearchSummary["lastUsed"] = null;
 
-  const byTool = new Map<string, FSearchAuditRow[]>();
-  const cliBypasses: FSearchSummary["cliBypasses"] = [];
-  const zeroHitQueries: FSearchSummary["zeroHitQueries"] = [];
+  const byTool = new Map<string, UltraSearchAuditRow[]>();
+  const cliBypasses: UltraSearchSummary["cliBypasses"] = [];
+  const zeroHitQueries: UltraSearchSummary["zeroHitQueries"] = [];
 
   for (const r of rows) {
     const saved = r.tokensSaved ?? estimateTokensSaved(r.tool, r.hitCount);
@@ -207,7 +207,7 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
       cliBypasses.push({
         command: r.bypassCommand ?? "unknown",
         ms: r.ms,
-        alternative: r.diagnosticHint ?? "Use fsearch_query or fsearch_grep",
+        alternative: r.diagnosticHint ?? "Use ultrasearch_query or ultrasearch_grep",
       });
       continue;
     }
@@ -226,7 +226,7 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
     }
   }
 
-  // Find the latest active tool call (prefer actual fsearch query tools over test/cli bypasses if available)
+  // Find the latest active tool call (prefer actual ultrasearch query tools over test/cli bypasses if available)
   const nonBypassRows = rows.filter((r) => r.tool !== "cli_bypass");
   const latestRow = nonBypassRows.length > 0 ? nonBypassRows[nonBypassRows.length - 1] : rows[rows.length - 1];
   if (latestRow) {
@@ -239,7 +239,7 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
     };
   }
 
-  const toolStats: FSearchSummary["toolStats"] = [];
+  const toolStats: UltraSearchSummary["toolStats"] = [];
   for (const [tool, toolRows] of byTool.entries()) {
     const latencies = toolRows.map((r) => r.ms);
     const okCount = toolRows.filter((r) => r.ok).length;
@@ -261,11 +261,11 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
   const advice: string[] = [];
 
   if (cliBypasses.length > 0) {
-    advice.push(`Detected ${cliBypasses.length} CLI subprocess searches (find/rg). Directing agent to fsearch tools will save 10-40ms per call.`);
+    advice.push(`Detected ${cliBypasses.length} CLI subprocess searches (find/rg). Directing agent to ultrasearch tools will save 10-40ms per call.`);
   }
 
   for (const stat of toolStats) {
-    if (stat.tool === "fsearch_compact") {
+    if (stat.tool === "ultrasearch_compact") {
       // Compaction is a disk maintenance operation over millions of files; evaluate against 2.5s gate
       if (stat.p95Ms > 2500) {
         advice.push(
@@ -277,12 +277,12 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
 
     if (stat.p95Ms > 10) {
       advice.push(
-        `Tool ${stat.tool} has p95 latency of ${stat.p95Ms.toFixed(1)}ms (>10ms target). Ensure scope paths are narrowed or FSearch daemon content index is warm.`
+        `Tool ${stat.tool} has p95 latency of ${stat.p95Ms.toFixed(1)}ms (>10ms target). Ensure scope paths are narrowed or UltraSearch daemon content index is warm.`
       );
     }
     if (stat.emptyRate > 35) {
       advice.push(
-        `Tool ${stat.tool} has a ${stat.emptyRate.toFixed(1)}% zero-hit rate. Queries may be over-constrained. Suggest verifying exact file casing or using fsearch_locate.`
+        `Tool ${stat.tool} has a ${stat.emptyRate.toFixed(1)}% zero-hit rate. Queries may be over-constrained. Suggest verifying exact file casing or using ultrasearch_locate.`
       );
     }
   }
@@ -303,7 +303,7 @@ export function summarizeAudit(limit = 1000): FSearchSummary {
   };
 }
 
-export function formatAuditSummary(summary: FSearchSummary): string {
+export function formatAuditSummary(summary: UltraSearchSummary): string {
   const parts: string[] = [];
   parts.push("=== Pi-UltraSearch Observability & Toolchain Audit ===");
   parts.push(`Total Monitored Calls: ${summary.totalCalls}`);
