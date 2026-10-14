@@ -2,7 +2,7 @@
   "schema": "ultrasearch.bench.tokens/v1",
   "status": "degraded",
   "date": "2026-10-14",
-  "startedAt": "2026-10-14T20:58:40.523Z",
+  "startedAt": "2026-10-14T21:06:11.488Z",
   "method": {
     "estimator": "ceil(chars / 4) — documented ESTIMATE, same as src/formatter.ts; sensitivity estimator ceil(chars/3.5) also reported",
     "design": "counterbalanced A/B alternating arm order; 30 paired observations across 6 tasks",
@@ -13,66 +13,85 @@
     "heuristic": "legacy 150 + 75×hits (grep) / 100 + 30×hits (path) comparison; labelled an ESTIMATE everywhere"
   },
   "environment": {
-    "checkedAt": "2026-10-14T20:58:37.290Z",
+    "checkedAt": "2026-10-14T21:06:09.590Z",
     "platform": "darwin",
     "arch": "arm64",
     "hostname": "Mayanks-MacBook-Pro.local",
     "cpuCount": 10,
     "cpuModel": "Apple M1 Pro",
-    "onAC": false,
-    "powerSource": "Battery Power",
-    "load1m": 15.445,
-    "load5m": 12.667,
-    "load15m": 9.564,
-    "competingProcesses": [],
+    "onAC": true,
+    "powerSource": "AC Power",
+    "load1m": 11.747,
+    "load5m": 11.169,
+    "load15m": 9.947,
+    "competingProcesses": [
+      {
+        "name": "cargo",
+        "pids": [
+          6084
+        ]
+      },
+      {
+        "name": "rustc",
+        "pids": [
+          6178
+        ]
+      }
+    ],
     "daemonPids": [
-      19684
+      19684,
+      77206
     ],
     "daemonPid": 19684,
+    "socketOwnerPid": 77206,
+    "daemonWarnings": [
+      "multiple daemons running: 19684, 77206 (socket owner: 77206)",
+      "pgrep-first pid 19684 is not the socket owner 77206"
+    ],
     "daemon": {
-      "pid": 19684,
-      "entries": 3779930,
-      "index_bytes": 117731712,
-      "content_docs": 125949,
+      "pid": 77206,
+      "entries": 2861660,
+      "index_bytes": 77763200,
+      "content_docs": 69762,
       "content_pending": 0
     }
   },
   "environmentGate": {
     "ok": false,
     "reasons": [
-      "power source is 'Battery Power', not AC",
-      "load1m 15.45 >= 1.5"
+      "load1m 11.75 >= 1.5",
+      "competing compiler processes: cargo(6084) rustc(6178)"
     ]
   },
   "corpus": "/Users/batra/ultrasearch-waves/measure",
   "pairs": 30,
   "ultraTokens": {
     "n": 30,
-    "median": 15,
-    "mean": 225.7,
-    "p50": 15,
-    "p95": 742,
+    "median": 18,
+    "mean": 199.86666666666667,
+    "p50": 18,
+    "p95": 584,
     "p95IsMax": true,
     "min": 14,
-    "max": 742,
-    "stdev": 264.96221591402224
+    "max": 584,
+    "stdev": 213.24370602885222
   },
   "nativeTokens": {
     "n": 30,
     "median": 155,
-    "mean": 528.3333333333334,
+    "mean": 540.6666666666666,
     "p50": 155,
-    "p95": 2406,
+    "p95": 2471,
     "p95IsMax": true,
     "min": 4,
-    "max": 2406,
-    "stdev": 861.2276055176976
+    "max": 2471,
+    "stdev": 884.7896041874368
   },
   "tokenDelta": {
     "n": 30,
-    "point": 140,
+    "point": 137,
     "lo": 0,
-    "hi": 140,
+    "hi": 137,
     "method": "bca",
     "resamples": 10000,
     "alpha": 0.05,
@@ -82,14 +101,14 @@
   },
   "savingsRatio": {
     "n": 30,
-    "point": 0.9032258064516129,
-    "lo": 0.9032258064516129,
-    "hi": 0.9032258064516129,
+    "point": 0.8838709677419355,
+    "lo": 0.8838709677419355,
+    "hi": 0.8838709677419355,
     "method": "bca",
     "resamples": 10000,
     "alpha": 0.05,
     "biasCorrection": -3.7190417430097926,
-    "acceleration": 3.4803792052138465e-17,
+    "acceleration": -3.962716707268048e-17,
     "quantity": "fraction of tokens saved (1 - ultra/native)"
   },
   "perTask": {
@@ -97,13 +116,13 @@
       "n": 5,
       "ultraChars": {
         "n": 5,
-        "median": 57,
-        "mean": 57,
-        "p50": 57,
-        "p95": 57,
+        "median": 72,
+        "mean": 72,
+        "p50": 72,
+        "p95": 72,
         "p95IsMax": true,
-        "min": 57,
-        "max": 57,
+        "min": 72,
+        "max": 72,
         "stdev": 0
       },
       "nativeChars": {
@@ -119,13 +138,13 @@
       },
       "ultraTokens": {
         "n": 5,
-        "median": 15,
-        "mean": 15,
-        "p50": 15,
-        "p95": 15,
+        "median": 18,
+        "mean": 18,
+        "p50": 18,
+        "p95": 18,
         "p95IsMax": true,
-        "min": 15,
-        "max": 15,
+        "min": 18,
+        "max": 18,
         "stdev": 0
       },
       "nativeTokens": {
@@ -139,7 +158,7 @@
         "max": 155,
         "stdev": 0
       },
-      "medianSavingsFraction": 0.9080645161290323
+      "medianSavingsFraction": 0.8838709677419355
     },
     "find-definition": {
       "n": 5,
@@ -204,13 +223,13 @@
       },
       "nativeChars": {
         "n": 5,
-        "median": 139,
-        "mean": 139,
-        "p50": 139,
-        "p95": 139,
+        "median": 173,
+        "mean": 173,
+        "p50": 173,
+        "p95": 173,
         "p95IsMax": true,
-        "min": 139,
-        "max": 139,
+        "min": 173,
+        "max": 173,
         "stdev": 0
       },
       "ultraTokens": {
@@ -226,29 +245,29 @@
       },
       "nativeTokens": {
         "n": 5,
-        "median": 35,
-        "mean": 35,
-        "p50": 35,
-        "p95": 35,
+        "median": 44,
+        "mean": 44,
+        "p50": 44,
+        "p95": 44,
         "p95IsMax": true,
-        "min": 35,
-        "max": 35,
+        "min": 44,
+        "max": 44,
         "stdev": 0
       },
-      "medianSavingsFraction": 0.60431654676259
+      "medianSavingsFraction": 0.6820809248554913
     },
     "grep-literal": {
       "n": 5,
       "ultraChars": {
         "n": 5,
         "median": 1175,
-        "mean": 1175,
+        "mean": 1175.2,
         "p50": 1175,
-        "p95": 1175,
+        "p95": 1176,
         "p95IsMax": true,
         "min": 1175,
-        "max": 1175,
-        "stdev": 0
+        "max": 1176,
+        "stdev": 0.44721359549995804
       },
       "nativeChars": {
         "n": 5,
@@ -337,49 +356,49 @@
       "n": 5,
       "ultraChars": {
         "n": 5,
-        "median": 2968,
-        "mean": 2968,
-        "p50": 2968,
-        "p95": 2968,
+        "median": 2335,
+        "mean": 2335,
+        "p50": 2335,
+        "p95": 2335,
         "p95IsMax": true,
-        "min": 2968,
-        "max": 2968,
+        "min": 2335,
+        "max": 2335,
         "stdev": 0
       },
       "nativeChars": {
         "n": 5,
-        "median": 9624,
-        "mean": 9624,
-        "p50": 9624,
-        "p95": 9624,
+        "median": 9883,
+        "mean": 9883,
+        "p50": 9883,
+        "p95": 9883,
         "p95IsMax": true,
-        "min": 9624,
-        "max": 9624,
+        "min": 9883,
+        "max": 9883,
         "stdev": 0
       },
       "ultraTokens": {
         "n": 5,
-        "median": 742,
-        "mean": 742,
-        "p50": 742,
-        "p95": 742,
+        "median": 584,
+        "mean": 584,
+        "p50": 584,
+        "p95": 584,
         "p95IsMax": true,
-        "min": 742,
-        "max": 742,
+        "min": 584,
+        "max": 584,
         "stdev": 0
       },
       "nativeTokens": {
         "n": 5,
-        "median": 2406,
-        "mean": 2406,
-        "p50": 2406,
-        "p95": 2406,
+        "median": 2471,
+        "mean": 2471,
+        "p50": 2471,
+        "p95": 2471,
         "p95IsMax": true,
-        "min": 2406,
-        "max": 2406,
+        "min": 2471,
+        "max": 2471,
         "stdev": 0
       },
-      "medianSavingsFraction": 0.6916043225270159
+      "medianSavingsFraction": 0.7637357077810382
     }
   },
   "heuristicComparison": [
@@ -387,7 +406,7 @@
       "task": "find-file",
       "hitsUsedForHeuristic": 13,
       "heuristicSavedTokens": null,
-      "measuredOutputSavedTokens": 140,
+      "measuredOutputSavedTokens": 137,
       "heuristicOverstates": null
     },
     {
@@ -399,9 +418,9 @@
     },
     {
       "task": "locate-config",
-      "hitsUsedForHeuristic": 4,
+      "hitsUsedForHeuristic": 5,
       "heuristicSavedTokens": null,
-      "measuredOutputSavedTokens": 21,
+      "measuredOutputSavedTokens": 30,
       "heuristicOverstates": null
     },
     {
@@ -420,18 +439,18 @@
     },
     {
       "task": "grep-symbol",
-      "hitsUsedForHeuristic": 102,
-      "heuristicSavedTokens": 7800,
-      "measuredOutputSavedTokens": 1664,
+      "hitsUsedForHeuristic": 103,
+      "heuristicSavedTokens": 7875,
+      "measuredOutputSavedTokens": 1887,
       "heuristicOverstates": true
     }
   ],
   "observations": [
     {
       "task": "find-file",
-      "ultraChars": 57,
+      "ultraChars": 72,
       "nativeChars": 620,
-      "ultraTokens": 15,
+      "ultraTokens": 18,
       "nativeTokens": 155
     },
     {
@@ -444,13 +463,13 @@
     {
       "task": "locate-config",
       "ultraChars": 55,
-      "nativeChars": 139,
+      "nativeChars": 173,
       "ultraTokens": 14,
-      "nativeTokens": 35
+      "nativeTokens": 44
     },
     {
       "task": "grep-literal",
-      "ultraChars": 1175,
+      "ultraChars": 1176,
       "nativeChars": 1180,
       "ultraTokens": 294,
       "nativeTokens": 295
@@ -464,16 +483,16 @@
     },
     {
       "task": "grep-symbol",
-      "ultraChars": 2968,
-      "nativeChars": 9624,
-      "ultraTokens": 742,
-      "nativeTokens": 2406
+      "ultraChars": 2335,
+      "nativeChars": 9883,
+      "ultraTokens": 584,
+      "nativeTokens": 2471
     },
     {
       "task": "find-file",
-      "ultraChars": 57,
+      "ultraChars": 72,
       "nativeChars": 620,
-      "ultraTokens": 15,
+      "ultraTokens": 18,
       "nativeTokens": 155
     },
     {
@@ -486,9 +505,9 @@
     {
       "task": "locate-config",
       "ultraChars": 55,
-      "nativeChars": 139,
+      "nativeChars": 173,
       "ultraTokens": 14,
-      "nativeTokens": 35
+      "nativeTokens": 44
     },
     {
       "task": "grep-literal",
@@ -506,16 +525,16 @@
     },
     {
       "task": "grep-symbol",
-      "ultraChars": 2968,
-      "nativeChars": 9624,
-      "ultraTokens": 742,
-      "nativeTokens": 2406
+      "ultraChars": 2335,
+      "nativeChars": 9883,
+      "ultraTokens": 584,
+      "nativeTokens": 2471
     },
     {
       "task": "find-file",
-      "ultraChars": 57,
+      "ultraChars": 72,
       "nativeChars": 620,
-      "ultraTokens": 15,
+      "ultraTokens": 18,
       "nativeTokens": 155
     },
     {
@@ -528,9 +547,9 @@
     {
       "task": "locate-config",
       "ultraChars": 55,
-      "nativeChars": 139,
+      "nativeChars": 173,
       "ultraTokens": 14,
-      "nativeTokens": 35
+      "nativeTokens": 44
     },
     {
       "task": "grep-literal",
@@ -548,16 +567,16 @@
     },
     {
       "task": "grep-symbol",
-      "ultraChars": 2968,
-      "nativeChars": 9624,
-      "ultraTokens": 742,
-      "nativeTokens": 2406
+      "ultraChars": 2335,
+      "nativeChars": 9883,
+      "ultraTokens": 584,
+      "nativeTokens": 2471
     },
     {
       "task": "find-file",
-      "ultraChars": 57,
+      "ultraChars": 72,
       "nativeChars": 620,
-      "ultraTokens": 15,
+      "ultraTokens": 18,
       "nativeTokens": 155
     },
     {
@@ -570,9 +589,9 @@
     {
       "task": "locate-config",
       "ultraChars": 55,
-      "nativeChars": 139,
+      "nativeChars": 173,
       "ultraTokens": 14,
-      "nativeTokens": 35
+      "nativeTokens": 44
     },
     {
       "task": "grep-literal",
@@ -590,16 +609,16 @@
     },
     {
       "task": "grep-symbol",
-      "ultraChars": 2968,
-      "nativeChars": 9624,
-      "ultraTokens": 742,
-      "nativeTokens": 2406
+      "ultraChars": 2335,
+      "nativeChars": 9883,
+      "ultraTokens": 584,
+      "nativeTokens": 2471
     },
     {
       "task": "find-file",
-      "ultraChars": 57,
+      "ultraChars": 72,
       "nativeChars": 620,
-      "ultraTokens": 15,
+      "ultraTokens": 18,
       "nativeTokens": 155
     },
     {
@@ -612,9 +631,9 @@
     {
       "task": "locate-config",
       "ultraChars": 55,
-      "nativeChars": 139,
+      "nativeChars": 173,
       "ultraTokens": 14,
-      "nativeTokens": 35
+      "nativeTokens": 44
     },
     {
       "task": "grep-literal",
@@ -632,11 +651,11 @@
     },
     {
       "task": "grep-symbol",
-      "ultraChars": 2968,
-      "nativeChars": 9624,
-      "ultraTokens": 742,
-      "nativeTokens": 2406
+      "ultraChars": 2335,
+      "nativeChars": 9883,
+      "ultraTokens": 584,
+      "nativeTokens": 2471
     }
   ],
-  "finishedAt": "2026-10-14T20:58:40.524Z"
+  "finishedAt": "2026-10-14T21:06:11.488Z"
 }

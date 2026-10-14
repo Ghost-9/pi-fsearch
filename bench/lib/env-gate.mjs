@@ -8,6 +8,16 @@
  */
 import { execFileSync } from "node:child_process";
 import * as os from "node:os";
+import { resolveDefaultSocketPath } from "../../src/client.ts";
+
+function socketOwnerPid(socketPath) {
+  try {
+    const out = execFileSync("lsof", ["-t", socketPath], { encoding: "utf-8" }).trim();
+    return out ? Number(out.split("\n")[0]) : null;
+  } catch {
+    return null;
+  }
+}
 
 export function pidsMatching(pattern, options = {}) {
   try {
@@ -68,9 +78,19 @@ export function checkEnvironment(options = {}) {
     reasons.push(`competing compiler processes: ${competing.map((c) => `${c.name}(${c.pids.join(",")})`).join(" ")}`);
   }
 
-  // Daemon identity
+  // Daemon identity. pgrep alone is not enough: during this session a second
+  // daemon was auto-spawned from ~/Applications and took over the socket while
+  // the original kept running, so the socket owner is the pid that matters.
   info.daemonPids = pidsMatching("UltraSearch.*serve");
   info.daemonPid = info.daemonPids[0] ?? null;
+  info.socketOwnerPid = socketOwnerPid(resolveDefaultSocketPath());
+  info.daemonWarnings = [];
+  if (info.daemonPids.length > 1) {
+    info.daemonWarnings.push(`multiple daemons running: ${info.daemonPids.join(", ")} (socket owner: ${info.socketOwnerPid ?? "unknown"})`);
+  }
+  if (info.socketOwnerPid && info.daemonPid && info.socketOwnerPid !== info.daemonPid) {
+    info.daemonWarnings.push(`pgrep-first pid ${info.daemonPid} is not the socket owner ${info.socketOwnerPid}`);
+  }
 
   return { ok: reasons.length === 0, reasons, info };
 }
@@ -81,7 +101,7 @@ export async function environmentWithDaemon(client, options = {}) {
   try {
     const status = await client.status();
     gate.info.daemon = {
-      pid: gate.info.daemonPid,
+      pid: gate.info.socketOwnerPid ?? gate.info.daemonPid,
       entries: status.entries ?? null,
       index_bytes: status.index_bytes ?? null,
       content_docs: status.content_docs ?? null,
@@ -102,6 +122,7 @@ export function formatEnvironmentGate(gate) {
     `  power=${gate.info.powerSource ?? "unknown"} load1m=${gate.info.load1m} host=${gate.info.hostname} cpu=${gate.info.cpuModel}`
   );
   if (gate.info.daemon) lines.push(`  daemon pid=${gate.info.daemon.pid ?? "?"} index_bytes=${gate.info.daemon.index_bytes ?? "?"} entries=${gate.info.daemon.entries ?? "?"}`);
+  for (const w of gate.info.daemonWarnings ?? []) lines.push(`  warning: ${w}`);
   for (const r of gate.reasons) lines.push(`  reason: ${r}`);
   return lines.join("\n");
 }

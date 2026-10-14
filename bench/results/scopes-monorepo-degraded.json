@@ -2,7 +2,7 @@
   "schema": "ultrasearch.bench.scopes/v1",
   "status": "degraded",
   "date": "2026-10-14",
-  "startedAt": "2026-10-14T21:00:50.836Z",
+  "startedAt": "2026-10-14T21:06:00.208Z",
   "method": {
     "design": "paired counterbalanced A/B (AB/BA alternating), warmup pairs excluded",
     "statistic": "median",
@@ -15,7 +15,7 @@
     "audit": "PI_ULTRASEARCH_TEST=1 + skipAudit: production audit log untouched"
   },
   "environment": {
-    "checkedAt": "2026-10-14T21:00:50.712Z",
+    "checkedAt": "2026-10-14T21:05:59.841Z",
     "platform": "darwin",
     "arch": "arm64",
     "hostname": "Mayanks-MacBook-Pro.local",
@@ -23,27 +23,32 @@
     "cpuModel": "Apple M1 Pro",
     "onAC": true,
     "powerSource": "AC Power",
-    "load1m": 8.897,
-    "load5m": 11.313,
-    "load15m": 9.498,
+    "load1m": 11.91,
+    "load5m": 11.19,
+    "load15m": 9.941,
     "competingProcesses": [],
     "daemonPids": [
       19684,
       77206
     ],
     "daemonPid": 19684,
+    "socketOwnerPid": 77206,
+    "daemonWarnings": [
+      "multiple daemons running: 19684, 77206 (socket owner: 77206)",
+      "pgrep-first pid 19684 is not the socket owner 77206"
+    ],
     "daemon": {
-      "pid": 19684,
-      "entries": 2858573,
-      "index_bytes": 77630784,
-      "content_docs": 69748,
+      "pid": 77206,
+      "entries": 2861660,
+      "index_bytes": 77763200,
+      "content_docs": 69762,
       "content_pending": 0
     }
   },
   "environmentGate": {
     "ok": false,
     "reasons": [
-      "load1m 8.90 >= 1.5"
+      "load1m 11.91 >= 1.5"
     ]
   },
   "scopes": {
@@ -52,12 +57,12 @@
       "fixture": {
         "root": "/Users/batra/ultrasearch-waves/measure/bench/.fixtures/monorepo",
         "fileCount": 2081,
-        "cached": false,
+        "cached": true,
         "generatorVersion": 2
       },
       "readiness": {
         "mono-path-exact": {
-          "indexReadyMs": 1,
+          "indexReadyMs": 2,
           "ready": true
         },
         "mono-path-glob": {
@@ -65,7 +70,7 @@
           "ready": true
         },
         "mono-grep": {
-          "indexReadyMs": 27,
+          "indexReadyMs": 54,
           "ready": true
         }
       },
@@ -109,17 +114,17 @@
             "AB",
             "BA"
           ],
-          "indexReadyMs": 1,
+          "indexReadyMs": 2,
           "ultra": {
             "n": 30,
-            "median": 0.5789999999997235,
-            "mean": 0.6862068999999944,
-            "p50": 0.5789999999997235,
-            "p95": 1.896541999999954,
+            "median": 0.5935420000000704,
+            "mean": 0.66577920000002,
+            "p50": 0.5935420000000704,
+            "p95": 1.2337500000001,
             "p95IsMax": false,
-            "min": 0.3236249999999927,
-            "max": 3.1825410000001284,
-            "stdev": 0.5816293251480074,
+            "min": 0.4055829999999787,
+            "max": 2.207458000000088,
+            "stdev": 0.33523810274547217,
             "sources": {
               "index": 30
             },
@@ -128,14 +133,14 @@
           },
           "native": {
             "n": 30,
-            "median": 6.156833000000006,
-            "mean": 6.418633200000015,
-            "p50": 6.156833000000006,
-            "p95": 8.511249999999563,
+            "median": 6.357917000000043,
+            "mean": 6.563130633333336,
+            "p50": 6.357917000000043,
+            "p95": 8.550792000000001,
             "p95IsMax": false,
-            "min": 5.360374999999976,
-            "max": 8.749332999999751,
-            "stdev": 0.8571011414147067,
+            "min": 5.246000000000095,
+            "max": 8.920916999999918,
+            "stdev": 0.8208409295446601,
             "bin": "find",
             "args": [
               "/Users/batra/ultrasearch-waves/measure/bench/.fixtures/monorepo",
@@ -165,29 +170,29 @@
           },
           "pairedDeltaMs": {
             "n": 30,
-            "point": -5.5778330000002825,
-            "lo": -5.897167000000081,
-            "hi": -5.327290999999832,
+            "point": -5.764374999999973,
+            "lo": -6.064584000000195,
+            "hi": -5.602082999999993,
             "method": "bca",
             "resamples": 10000,
             "alpha": 0.05,
-            "biasCorrection": 0.12364040421107866,
+            "biasCorrection": -0.02807792556829578,
             "acceleration": 0,
             "quantity": "delta(a - b)"
           },
           "pairedRatio": {
             "n": 30,
-            "point": 10.633563039728749,
-            "lo": 9.855414066804906,
-            "hi": 13.417335487748419,
+            "point": 10.711823257662118,
+            "lo": 9.128795189560275,
+            "hi": 13.025665323221642,
             "method": "bca",
             "resamples": 10000,
             "alpha": 0.05,
-            "biasCorrection": -0.12566134687610298,
-            "acceleration": -0.000016912659679650647,
+            "biasCorrection": 0.013536206057372728,
+            "acceleration": -0.0000031206624050783903,
             "quantity": "ratio(medianB / medianA)"
           },
-          "decisionFloorMs": 0.3078416500000003,
+          "decisionFloorMs": 0.3178958500000022,
           "significant": true,
           "equivalence": {
             "pass": true,
@@ -248,14 +253,14 @@
           "indexReadyMs": 1,
           "ultra": {
             "n": 30,
-            "median": 0.8362499999998363,
-            "mean": 0.8559248666666766,
-            "p50": 0.8362499999998363,
-            "p95": 1.3289579999996022,
+            "median": 0.9672080000000278,
+            "mean": 1.1358819000000266,
+            "p50": 0.9672080000000278,
+            "p95": 2.724999999999909,
             "p95IsMax": false,
-            "min": 0.6253749999996217,
-            "max": 1.6038330000001224,
-            "stdev": 0.20670113591762262,
+            "min": 0.6922500000000582,
+            "max": 2.9046659999999065,
+            "stdev": 0.5263890271104329,
             "sources": {
               "index": 30
             },
@@ -264,14 +269,14 @@
           },
           "native": {
             "n": 30,
-            "median": 5.904833000000053,
-            "mean": 6.055755566666676,
-            "p50": 5.904833000000053,
-            "p95": 7.042625000000044,
+            "median": 6.399082999999791,
+            "mean": 6.8168957666666,
+            "p50": 6.399082999999791,
+            "p95": 8.501374999999825,
             "p95IsMax": false,
-            "min": 5.418999999999869,
-            "max": 7.53354199999967,
-            "stdev": 0.5078625818286658,
+            "min": 5.688249999999925,
+            "max": 14.608000000000175,
+            "stdev": 1.6136448048865184,
             "bin": "find",
             "args": [
               "/Users/batra/ultrasearch-waves/measure/bench/.fixtures/monorepo",
@@ -301,29 +306,29 @@
           },
           "pairedDeltaMs": {
             "n": 30,
-            "point": -5.068583000000217,
-            "lo": -5.211999999999989,
-            "hi": -4.915625000000091,
+            "point": -5.4318749999997635,
+            "lo": -5.739708999999493,
+            "hi": -5.215291999999636,
             "method": "bca",
             "resamples": 10000,
             "alpha": 0.05,
-            "biasCorrection": 0.19218154667316614,
-            "acceleration": 0,
+            "biasCorrection": -0.05617800875865719,
+            "acceleration": 1.1770965521008446e-19,
             "quantity": "delta(a - b)"
           },
           "pairedRatio": {
             "n": 30,
-            "point": 7.061085799702492,
-            "lo": 6.742352811940529,
-            "hi": 7.409184366115173,
+            "point": 6.616036054291949,
+            "lo": 6.067339904905494,
+            "hi": 7.207778364364811,
             "method": "bca",
             "resamples": 10000,
             "alpha": 0.05,
-            "biasCorrection": -0.2613793237583414,
-            "acceleration": -0.00018446404750136722,
+            "biasCorrection": 0.0386116674275883,
+            "acceleration": -0.00005285433699354904,
             "quantity": "ratio(medianB / medianA)"
           },
-          "decisionFloorMs": 0.2952416500000027,
+          "decisionFloorMs": 0.3199541499999896,
           "significant": true,
           "equivalence": {
             "pass": true,
@@ -381,17 +386,17 @@
             "AB",
             "BA"
           ],
-          "indexReadyMs": 27,
+          "indexReadyMs": 54,
           "ultra": {
             "n": 30,
-            "median": 23.10779199999979,
-            "mean": 23.12031246666664,
-            "p50": 23.10779199999979,
-            "p95": 25.94229099999984,
+            "median": 23.027624999999716,
+            "mean": 23.233583333333353,
+            "p50": 23.027624999999716,
+            "p95": 24.545416999999816,
             "p95IsMax": false,
-            "min": 20.393666999999823,
-            "max": 26.8484169999997,
-            "stdev": 1.4699356911720547,
+            "min": 21.231291000000056,
+            "max": 24.912209000000075,
+            "stdev": 0.8592352789833573,
             "sources": {
               "scan": 30
             },
@@ -400,14 +405,14 @@
           },
           "native": {
             "n": 30,
-            "median": 29.054833000000144,
-            "mean": 29.525762566666664,
-            "p50": 29.054833000000144,
-            "p95": 32.86833400000023,
+            "median": 28.515542000000096,
+            "mean": 28.658650000000033,
+            "p50": 28.515542000000096,
+            "p95": 30.37737500000003,
             "p95IsMax": false,
-            "min": 27.07741699999997,
-            "max": 33.799457999999504,
-            "stdev": 1.5465226726885681,
+            "min": 26.458458000000064,
+            "max": 31.35375000000022,
+            "stdev": 1.118393046014565,
             "bin": "rg",
             "args": [
               "-n",
@@ -425,29 +430,29 @@
           },
           "pairedDeltaMs": {
             "n": 30,
-            "point": -5.947041000000354,
-            "lo": -7.187457999999879,
-            "hi": -5.420126000000437,
+            "point": -5.48791700000038,
+            "lo": -6.29262400000016,
+            "hi": -4.760541999999987,
             "method": "bca",
             "resamples": 10000,
             "alpha": 0.05,
-            "biasCorrection": 0.06396260843836912,
-            "acceleration": 3.3527587425652636e-20,
+            "biasCorrection": 0.08306481844027991,
+            "acceleration": -1.0145254355291992e-19,
             "quantity": "delta(a - b)"
           },
           "pairedRatio": {
             "n": 30,
-            "point": 1.2573608504006097,
-            "lo": 1.2281607680412632,
-            "hi": 1.3088436615861918,
+            "point": 1.238318845299958,
+            "lo": 1.1985983817896044,
+            "hi": 1.271809144694385,
             "method": "bca",
             "resamples": 10000,
             "alpha": 0.05,
-            "biasCorrection": -0.18070389663068945,
-            "acceleration": -0.00002225746656835318,
+            "biasCorrection": -0.20112606675570446,
+            "acceleration": -0.000005702238590052454,
             "quantity": "ratio(medianB / medianA)"
           },
-          "decisionFloorMs": 1.4527416500000072,
+          "decisionFloorMs": 1.4257771000000048,
           "significant": true,
           "equivalence": {
             "pass": true,
@@ -1653,5 +1658,5 @@
       }
     ]
   },
-  "finishedAt": "2026-10-14T21:01:06.122Z"
+  "finishedAt": "2026-10-14T21:06:09.304Z"
 }

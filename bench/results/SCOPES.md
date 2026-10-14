@@ -3,7 +3,7 @@
 Source: `bench/results/scopes-2026-10-14-degraded.json` · status: **degraded** · date: 2026-10-14
 
 > **Degraded run.** The environment gate refused a final result for these reasons:
-> `load1m 8.90 >= 1.5`
+> `load1m 11.91 >= 1.5`
 > Numbers below are directional and must not be quoted as final.
 
 ## Method
@@ -17,21 +17,21 @@ Source: `bench/results/scopes-2026-10-14-degraded.json` · status: **degraded** 
 - **equivalence**: path sets normalized by realpath; index must not invent paths (extraRate<=indexOnly tolerance); missing paths allowed only within the per-query nativeOnly tolerance (content-index coverage is partial)
 - **relevance**: wave1 judgment corpus (recall@k, MRR@10, nDCG@10, zero-result, false-positive, reformulation)
 - **audit**: PI_ULTRASEARCH_TEST=1 + skipAudit: production audit log untouched
-- **environment**: power=AC Power · load1m=8.897 · daemon pid=19684 · index_bytes=77630784
+- **environment**: power=AC Power · load1m=11.91 · daemon pid=77206 · index_bytes=77763200
 
 ## Latency and equivalence
 
 | scope | query | n | ultra p50 | ultra p95 | native p50 | native p95 | speedup (ratio CI) | Δms (CI) | equivalent |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| small | small-path-exact | 30 | 0.72ms | 6.00ms | 4.97ms | 14.23ms | 6.88 [5.23, 8.73] | -4.24 [-6.78, -3.73] | yes (index-only 0, native-only 0) |
-| small | small-path-glob | 30 | 0.83ms | 3.28ms | 3.73ms | 6.77ms | 4.49 [3.62, 5.17] | -2.90 [-3.32, -2.53] | yes (index-only 0, native-only 0) |
-| small | small-grep | 30 | 1.10ms | 3.22ms | 7.91ms | 10.28ms | 7.21 [5.87, 7.71] | -6.81 [-7.14, -6.18] | yes (index-only 0, native-only 0) |
-| monorepo | mono-path-exact | 30 | 0.58ms | 1.90ms | 6.16ms | 8.51ms | 10.63 [9.86, 13.42] | -5.58 [-5.90, -5.33] | yes (index-only 0, native-only 0) |
-| monorepo | mono-path-glob | 30 | 0.84ms | 1.33ms | 5.90ms | 7.04ms | 7.06 [6.74, 7.41] | -5.07 [-5.21, -4.92] | yes (index-only 0, native-only 0) |
-| monorepo | mono-grep | 30 | 23.11ms | 25.94ms | 29.05ms | 32.87ms | 1.26 [1.23, 1.31] | -5.95 [-7.19, -5.42] | yes (index-only 0, native-only 0) |
-| home | home-path-exact | 30 | 1.06ms | 4.98ms | 32.81ms | 49.31ms | 30.82 [19.33, 40.27] | -31.75 [-35.27, -27.42] | yes (index-only 0, native-only 0) |
-| home | home-path-glob | 30 | 2.55ms | 6.52ms | 32.07ms | 77.31ms | 12.57 [9.04, 17.25] | -29.52 [-37.83, -25.54] | yes (index-only 0, native-only 0) |
-| home | home-grep | 30 | 82.47ms | 133.49ms | 73.36ms | 110.56ms | 0.89 [0.82, 0.95] | 9.11 [3.09, 15.40] | yes (index-only 0, native-only 0) |
+| small | small-path-exact | 30 | 0.94ms | 2.78ms | 6.47ms | 12.21ms | 6.89 [4.64, 9.66] | -5.53 [-7.74, -4.83] | yes (index-only 0, native-only 0) |
+| small | small-path-glob | 30 | 0.91ms | 1.27ms | 2.98ms | 5.78ms | 3.26 [3.04, 3.67] | -2.06 [-2.28, -1.97] | yes (index-only 0, native-only 0) |
+| small | small-grep | 30 | 1.30ms | 4.43ms | 7.21ms | 13.05ms | 5.55 [4.77, 6.21] | -5.91 [-6.67, -5.44] | yes (index-only 0, native-only 0) |
+| monorepo | mono-path-exact | 30 | 0.59ms | 1.23ms | 6.36ms | 8.55ms | 10.71 [9.13, 13.03] | -5.76 [-6.06, -5.60] | yes (index-only 0, native-only 0) |
+| monorepo | mono-path-glob | 30 | 0.97ms | 2.72ms | 6.40ms | 8.50ms | 6.62 [6.07, 7.21] | -5.43 [-5.74, -5.22] | yes (index-only 0, native-only 0) |
+| monorepo | mono-grep | 30 | 23.03ms | 24.55ms | 28.52ms | 30.38ms | 1.24 [1.20, 1.27] | -5.49 [-6.29, -4.76] | yes (index-only 0, native-only 0) |
+| home | home-path-exact | 30 | 0.66ms | 1.24ms | 13.96ms | 22.53ms | 21.04 [19.68, 27.55] | -13.29 [-13.75, -12.91] | yes (index-only 0, native-only 0) |
+| home | home-path-glob | 30 | 1.23ms | 2.53ms | 18.05ms | 22.27ms | 14.65 [13.17, 15.85] | -16.82 [-17.81, -15.56] | yes (index-only 0, native-only 0) |
+| home | home-grep | 30 | 52.11ms | 86.14ms | 51.62ms | 76.94ms | 0.99 [0.95, 1.02] | 0.49 [-1.19, 2.29] | yes (index-only 0, native-only 0) |
 
 Intentional divergence (declared `.gitignore` rules):
 - small: `ignored/secret-small.txt` — ultra returned 0, raw find returned 1 → correctlyExcluded=true

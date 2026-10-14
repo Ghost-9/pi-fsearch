@@ -2,7 +2,7 @@
   "schema": "ultrasearch.bench.boost/v1",
   "status": "degraded",
   "date": "2026-10-14",
-  "startedAt": "2026-10-14T20:59:49.258Z",
+  "startedAt": "2026-10-14T21:06:24.206Z",
   "method": {
     "treatment": "search boost:true (frecency + git history + mtime)",
     "control": "search boost:false",
@@ -13,49 +13,61 @@
     "decisionRule": "keep boost only if CI excludes 0 and point delta >= +0.05 nDCG@10"
   },
   "environment": {
-    "checkedAt": "2026-10-14T20:59:48.957Z",
+    "checkedAt": "2026-10-14T21:06:23.645Z",
     "platform": "darwin",
     "arch": "arm64",
     "hostname": "Mayanks-MacBook-Pro.local",
     "cpuCount": 10,
     "cpuModel": "Apple M1 Pro",
-    "onAC": false,
-    "powerSource": "Battery Power",
-    "load1m": 11.135,
-    "load5m": 12.165,
-    "load15m": 9.632,
-    "competingProcesses": [],
+    "onAC": true,
+    "powerSource": "AC Power",
+    "load1m": 12.268,
+    "load5m": 11.321,
+    "load15m": 10.023,
+    "competingProcesses": [
+      {
+        "name": "cargo",
+        "pids": [
+          10216
+        ]
+      }
+    ],
     "daemonPids": [
       19684,
       77206
     ],
     "daemonPid": 19684,
+    "socketOwnerPid": 77206,
+    "daemonWarnings": [
+      "multiple daemons running: 19684, 77206 (socket owner: 77206)",
+      "pgrep-first pid 19684 is not the socket owner 77206"
+    ],
     "daemon": {
-      "pid": 19684,
-      "entries": 2858573,
-      "index_bytes": 77630784,
-      "content_docs": 69747,
+      "pid": 77206,
+      "entries": 2861660,
+      "index_bytes": 77763200,
+      "content_docs": 69762,
       "content_pending": 0
     }
   },
   "environmentGate": {
     "ok": false,
     "reasons": [
-      "power source is 'Battery Power', not AC",
-      "load1m 11.13 >= 1.5"
+      "load1m 12.27 >= 1.5",
+      "competing compiler processes: cargo(10216)"
     ]
   },
   "pairs": 36,
   "ndcgOn": {
     "n": 36,
-    "median": 0.8609101556836468,
-    "mean": 0.8778721896549891,
-    "p50": 0.8609101556836468,
+    "median": 0.9052598568324595,
+    "mean": 0.8989902061855667,
+    "p50": 0.9052598568324595,
     "p95": 1,
     "p95IsMax": true,
-    "min": 0.7129278093711621,
+    "min": 0.775458797655243,
     "max": 1,
-    "stdev": 0.08855072130997915
+    "stdev": 0.08187663098712772
   },
   "ndcgOff": {
     "n": 36,
@@ -70,32 +82,32 @@
   },
   "deltaNdCG10": {
     "n": 36,
-    "point": 0,
+    "point": 0.04434970114881265,
     "lo": 0,
-    "hi": 0,
+    "hi": 0.05640925702931032,
     "method": "bca",
     "resamples": 10000,
     "alpha": 0.05,
-    "biasCorrection": -3.7190417430097926,
-    "acceleration": 0,
+    "biasCorrection": 0.0012533144668463944,
+    "acceleration": 0.027777777777777776,
     "quantity": "delta(a - b)"
   },
   "deltaRecall10": {
     "n": 36,
     "point": 0,
-    "lo": 0,
-    "hi": 0,
+    "lo": -0.25,
+    "hi": -0.25,
     "method": "bca",
     "resamples": 10000,
     "alpha": 0.05,
-    "biasCorrection": -3.7190417430097926,
+    "biasCorrection": -3.5400837952982585,
     "acceleration": 0,
     "quantity": "delta(a - b)"
   },
   "decision": {
     "quantify": "paired delta of nDCG@10 (boost on - boost off)",
     "ciExcludesZero": false,
-    "point": 0,
+    "point": 0.04434970114881265,
     "meetsJudgmentBar": false,
     "keepBoost": false
   },
@@ -210,13 +222,13 @@
       "observations": 4,
       "ndcgOn": {
         "n": 4,
-        "median": 0.7129278093711621,
-        "mean": 0.7129278093711621,
-        "p50": 0.7129278093711621,
-        "p95": 0.7129278093711621,
+        "median": 0.9838988741111756,
+        "mean": 0.9838988741111756,
+        "p50": 0.9838988741111756,
+        "p95": 0.9838988741111756,
         "p95IsMax": true,
-        "min": 0.7129278093711621,
-        "max": 0.7129278093711621,
+        "min": 0.9838988741111756,
+        "max": 0.9838988741111756,
         "stdev": 0
       },
       "ndcgOff": {
@@ -230,13 +242,13 @@
         "max": 0.7129278093711621,
         "stdev": 0
       },
-      "meanRankChanges": 0,
-      "top1On": "bench",
+      "meanRankChanges": 3,
+      "top1On": "test/bench.ts",
       "top1Off": "bench",
       "top5On": [
-        "bench",
         "test/bench.ts",
         "test/benchmark-gate.test.ts",
+        "bench",
         "test/deep-bench.ts"
       ],
       "top5Off": [
@@ -286,13 +298,13 @@
       "observations": 4,
       "ndcgOn": {
         "n": 4,
-        "median": 0.8563677136200579,
-        "mean": 0.8563677136200579,
-        "p50": 0.8563677136200579,
-        "p95": 0.8563677136200579,
+        "median": 0.775458797655243,
+        "mean": 0.775458797655243,
+        "p50": 0.775458797655243,
+        "p95": 0.775458797655243,
         "p95IsMax": true,
-        "min": 0.8563677136200579,
-        "max": 0.8563677136200579,
+        "min": 0.775458797655243,
+        "max": 0.775458797655243,
         "stdev": 0
       },
       "ndcgOff": {
@@ -306,15 +318,15 @@
         "max": 0.8563677136200579,
         "stdev": 0
       },
-      "meanRankChanges": 0,
+      "meanRankChanges": 4,
       "top1On": "src/client.ts",
       "top1Off": "src/client.ts",
       "top5On": [
         "src/client.ts",
-        "src/codemode.ts",
-        "src/compactor.ts",
-        "src/formatter.ts",
-        "src/mcp.ts"
+        "src/mcp.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts"
       ],
       "top5Off": [
         "src/client.ts",
@@ -493,18 +505,18 @@
     {
       "id": "P5",
       "round": 0,
-      "ndcgOn": 0.7129278093711621,
+      "ndcgOn": 0.9838988741111756,
       "ndcgOff": 0.7129278093711621,
-      "mrrOn": 0.5,
+      "mrrOn": 1,
       "mrrOff": 0.5,
       "recallOn": 1,
       "recallOff": 1,
-      "top1On": "bench",
+      "top1On": "test/bench.ts",
       "top1Off": "bench",
       "top5On": [
-        "bench",
         "test/bench.ts",
         "test/benchmark-gate.test.ts",
+        "bench",
         "test/deep-bench.ts"
       ],
       "top5Off": [
@@ -513,7 +525,7 @@
         "test/benchmark-gate.test.ts",
         "test/deep-bench.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 3
     },
     {
       "id": "P6",
@@ -537,20 +549,20 @@
     {
       "id": "P7",
       "round": 0,
-      "ndcgOn": 0.8563677136200579,
+      "ndcgOn": 0.775458797655243,
       "ndcgOff": 0.8563677136200579,
       "mrrOn": 1,
       "mrrOff": 1,
-      "recallOn": 1,
+      "recallOn": 0.75,
       "recallOff": 1,
       "top1On": "src/client.ts",
       "top1Off": "src/client.ts",
       "top5On": [
         "src/client.ts",
-        "src/codemode.ts",
-        "src/compactor.ts",
-        "src/formatter.ts",
-        "src/mcp.ts"
+        "src/mcp.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts"
       ],
       "top5Off": [
         "src/client.ts",
@@ -559,7 +571,7 @@
         "src/formatter.ts",
         "src/mcp.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 4
     },
     {
       "id": "K1",
@@ -680,18 +692,18 @@
     {
       "id": "P5",
       "round": 1,
-      "ndcgOn": 0.7129278093711621,
+      "ndcgOn": 0.9838988741111756,
       "ndcgOff": 0.7129278093711621,
-      "mrrOn": 0.5,
+      "mrrOn": 1,
       "mrrOff": 0.5,
       "recallOn": 1,
       "recallOff": 1,
-      "top1On": "bench",
+      "top1On": "test/bench.ts",
       "top1Off": "bench",
       "top5On": [
-        "bench",
         "test/bench.ts",
         "test/benchmark-gate.test.ts",
+        "bench",
         "test/deep-bench.ts"
       ],
       "top5Off": [
@@ -700,7 +712,7 @@
         "test/benchmark-gate.test.ts",
         "test/deep-bench.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 3
     },
     {
       "id": "P6",
@@ -724,20 +736,20 @@
     {
       "id": "P7",
       "round": 1,
-      "ndcgOn": 0.8563677136200579,
+      "ndcgOn": 0.775458797655243,
       "ndcgOff": 0.8563677136200579,
       "mrrOn": 1,
       "mrrOff": 1,
-      "recallOn": 1,
+      "recallOn": 0.75,
       "recallOff": 1,
       "top1On": "src/client.ts",
       "top1Off": "src/client.ts",
       "top5On": [
         "src/client.ts",
-        "src/codemode.ts",
-        "src/compactor.ts",
-        "src/formatter.ts",
-        "src/mcp.ts"
+        "src/mcp.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts"
       ],
       "top5Off": [
         "src/client.ts",
@@ -746,7 +758,7 @@
         "src/formatter.ts",
         "src/mcp.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 4
     },
     {
       "id": "K1",
@@ -867,18 +879,18 @@
     {
       "id": "P5",
       "round": 2,
-      "ndcgOn": 0.7129278093711621,
+      "ndcgOn": 0.9838988741111756,
       "ndcgOff": 0.7129278093711621,
-      "mrrOn": 0.5,
+      "mrrOn": 1,
       "mrrOff": 0.5,
       "recallOn": 1,
       "recallOff": 1,
-      "top1On": "bench",
+      "top1On": "test/bench.ts",
       "top1Off": "bench",
       "top5On": [
-        "bench",
         "test/bench.ts",
         "test/benchmark-gate.test.ts",
+        "bench",
         "test/deep-bench.ts"
       ],
       "top5Off": [
@@ -887,7 +899,7 @@
         "test/benchmark-gate.test.ts",
         "test/deep-bench.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 3
     },
     {
       "id": "P6",
@@ -911,20 +923,20 @@
     {
       "id": "P7",
       "round": 2,
-      "ndcgOn": 0.8563677136200579,
+      "ndcgOn": 0.775458797655243,
       "ndcgOff": 0.8563677136200579,
       "mrrOn": 1,
       "mrrOff": 1,
-      "recallOn": 1,
+      "recallOn": 0.75,
       "recallOff": 1,
       "top1On": "src/client.ts",
       "top1Off": "src/client.ts",
       "top5On": [
         "src/client.ts",
-        "src/codemode.ts",
-        "src/compactor.ts",
-        "src/formatter.ts",
-        "src/mcp.ts"
+        "src/mcp.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts"
       ],
       "top5Off": [
         "src/client.ts",
@@ -933,7 +945,7 @@
         "src/formatter.ts",
         "src/mcp.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 4
     },
     {
       "id": "K1",
@@ -1054,18 +1066,18 @@
     {
       "id": "P5",
       "round": 3,
-      "ndcgOn": 0.7129278093711621,
+      "ndcgOn": 0.9838988741111756,
       "ndcgOff": 0.7129278093711621,
-      "mrrOn": 0.5,
+      "mrrOn": 1,
       "mrrOff": 0.5,
       "recallOn": 1,
       "recallOff": 1,
-      "top1On": "bench",
+      "top1On": "test/bench.ts",
       "top1Off": "bench",
       "top5On": [
-        "bench",
         "test/bench.ts",
         "test/benchmark-gate.test.ts",
+        "bench",
         "test/deep-bench.ts"
       ],
       "top5Off": [
@@ -1074,7 +1086,7 @@
         "test/benchmark-gate.test.ts",
         "test/deep-bench.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 3
     },
     {
       "id": "P6",
@@ -1098,20 +1110,20 @@
     {
       "id": "P7",
       "round": 3,
-      "ndcgOn": 0.8563677136200579,
+      "ndcgOn": 0.775458797655243,
       "ndcgOff": 0.8563677136200579,
       "mrrOn": 1,
       "mrrOff": 1,
-      "recallOn": 1,
+      "recallOn": 0.75,
       "recallOff": 1,
       "top1On": "src/client.ts",
       "top1Off": "src/client.ts",
       "top5On": [
         "src/client.ts",
-        "src/codemode.ts",
-        "src/compactor.ts",
-        "src/formatter.ts",
-        "src/mcp.ts"
+        "src/mcp.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts"
       ],
       "top5Off": [
         "src/client.ts",
@@ -1120,7 +1132,7 @@
         "src/formatter.ts",
         "src/mcp.ts"
       ],
-      "rankChanges": 0
+      "rankChanges": 4
     },
     {
       "id": "K1",
@@ -1182,5 +1194,5 @@
       "rankChanges": 0
     }
   ],
-  "finishedAt": "2026-10-14T20:59:49.259Z"
+  "finishedAt": "2026-10-14T21:06:24.206Z"
 }
