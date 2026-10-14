@@ -1,0 +1,39 @@
+NOTICE
+======
+
+pi-ultrasearch bundles no third-party source in this repository. It drives a separately built
+resident search daemon ("the UltraSearch engine") that is a **renamed fork** of an MIT-licensed
+upstream project.
+
+Upstream work
+-------------
+
+  Project : fsearch
+  Author  : Noah Dunnagan
+  URL     : https://github.com/noahdunnagan/fsearch
+  Version : 0.2.1 (git tag v0.2.1, commit 88e63fd)
+  Licence : MIT — Copyright (c) 2026 Noah Dunnagan
+  Source  : pinned upstream checkout, default location ~/.cache/fsearch
+
+The upstream licence text is reproduced verbatim in the engine working copy's LICENSE file and is
+never modified by the rebrand. What the fork changes:
+
+  * Cargo package/library/binary name: `fsearch` -> `ultrasearch`
+  * default data directory: `Library/Application Support/FSearch` -> `.../UltraSearch`
+  * default socket name: `fsearch.sock` -> `ultrasearch.sock`
+  * install name and login-agent label, and user-facing help/version/error text
+
+What the fork does **not** claim: authorship, copyright, or ownership of the upstream engine. The
+rename is a local integration detail so that every user-facing name in this project is UltraSearch.
+
+The rebrand is reproducible and idempotent:
+
+    engine/rebrand.sh <upstream-checkout> <destination>
+
+See `docs/engine-rebrand.md` for the build, install, migration and rollback procedure.
+
+Third-party runtime dependency
+------------------------------
+
+`typebox` (MIT) is imported for tool parameter schemas and is provided by the Pi Agent host. It is
+declared as an optional peer dependency and is not vendored here.
