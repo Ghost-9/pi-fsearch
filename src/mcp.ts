@@ -57,6 +57,7 @@ export const MCP_TOOLS: McpToolDefinition[] = [
         limit: { type: "number", description: "Max results (default: 30)" },
         global: { type: "boolean", description: "Search whole disk instead of workspace" },
         near: { type: "string", description: "Optional file path to re-rank results by folder proximity" },
+        budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
       },
       required: ["query"],
       additionalProperties: false,
@@ -76,6 +77,7 @@ export const MCP_TOOLS: McpToolDefinition[] = [
         max_tokens: { type: "number", description: "Optional token budget ceiling" },
         context: { type: "number", description: "Lines of surrounding code context (0-5, default: 0)" },
         tag_symbols: { type: "boolean", description: "Tag matches with AST definition types like [def:fn], [def:class]" },
+        budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
       },
       required: ["pattern"],
       additionalProperties: false,
@@ -91,6 +93,7 @@ export const MCP_TOOLS: McpToolDefinition[] = [
         path_filter: { type: "string", description: "Subdirectory filter" },
         compact: { type: "boolean", description: "Compact one-line format (default: true)" },
         max_tokens: { type: "number", description: "Optional token budget ceiling" },
+        budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
       },
       required: ["patterns"],
       additionalProperties: false,
@@ -120,8 +123,15 @@ export const MCP_TOOLS: McpToolDefinition[] = [
   },
   {
     name: "ultrasearch_metrics",
-    description: "Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice.",
-    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    description: "Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice. Defaults to organic (non-gate) rows.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        view: { type: "string", enum: ["real", "synthetic", "all"], description: "Audit provenance view (default: real = organic sessions only)" },
+        limit: { type: "number", description: "Number of audit rows to analyze (default 1000)" },
+      },
+      additionalProperties: false,
+    },
   },
 ];
 
@@ -273,22 +283,35 @@ export class UltraSearchMcpServer {
     return isNotification ? null : fail(JSON_RPC_ERRORS.METHOD_NOT_FOUND, `Method not found: ${method}`);
   }
 
-  private async callTool(name: string, args: any): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }> {
+  private async callTool(
+    name: string,
+    args: any
+  ): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean; _meta?: Record<string, unknown> }> {
     const activeRoot = typeof args.path === "string" ? path.resolve(this.cwd, args.path) : this.cwd;
-    const text = (t: string, isError = false) => ({ content: [{ type: "text" as const, text: t }], ...(isError ? { isError: true } : {}) });
+    const text = (t: string, isError = false, meta?: Record<string, unknown>) => ({
+      content: [{ type: "text" as const, text: t }],
+      ...(isError ? { isError: true } : {}),
+      ...(meta ? { _meta: meta } : {}),
+    });
 
     if (name === "ultrasearch_query") {
       if (typeof args.query !== "string" || args.query.length === 0) {
         return text("Invalid params: 'query' must be a non-empty string", true);
       }
       const searchScope = args.global ? undefined : activeRoot;
-      const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30, near: args.near });
+      const res = await this.client.search(args.query, {
+        in: searchScope,
+        limit: args.limit ?? 30,
+        near: args.near,
+        budget_ms: args.budget_ms,
+      });
       const hits = res.hits ?? [];
+      const meta = { ...(res.meta ?? { complete: false }), tool: "ultrasearch_query", hitCount: hits.length };
       if (hits.length === 0) {
         const hint = await diagnoseEmptyQuery(args.query, activeRoot, this.client);
-        return text(`No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}`);
+        return text(`No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}`, false, meta);
       }
-      return text(hits.map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n"));
+      return text(hits.map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n"), false, meta);
     }
 
     if (name === "ultrasearch_grep") {
@@ -298,6 +321,7 @@ export class UltraSearchMcpServer {
       const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
       const ctxCount = typeof args.context === "number" ? args.context : 0;
       let files: any[] = [];
+      let resultMeta: any = undefined;
       if (args.mode === "semantic") {
         const semantic = await searchSemanticIntent(this.client, args.pattern, { in: searchScope, limit: args.limit ?? 30, auditTool: "ultrasearch_grep" });
         files = semantic.files ?? [];
@@ -307,12 +331,26 @@ export class UltraSearchMcpServer {
           mode: args.mode ?? "literal",
           limit: args.limit ?? 30,
           context: ctxCount,
+          budget_ms: args.budget_ms,
         });
+        if (!res.ok && res.error) {
+          return text(`grep error: ${res.error}`, true, {
+            ...(res.meta ?? { complete: false }),
+            tool: "ultrasearch_grep",
+            error: res.error,
+            regexWarning: res.meta?.warning,
+          });
+        }
         files = res.files ?? [];
+        resultMeta = res.meta;
       }
       if (files.length === 0) {
         const hint = await diagnoseEmptyQuery(args.pattern, activeRoot, this.client);
-        return text(`No occurrences of "${args.pattern}" found.\n💡 Hint: ${hint ?? "Strict exact zero-typo matching enforced."}`);
+        return text(`No occurrences of "${args.pattern}" found.\n💡 Hint: ${hint ?? "Strict exact zero-typo matching enforced."}`, false, {
+          ...(resultMeta ?? { complete: false }),
+          tool: "ultrasearch_grep",
+          fileCount: 0,
+        });
       }
       const formatted = formatGrepFiles(files, {
         worktreeRoot: activeRoot,
@@ -322,7 +360,14 @@ export class UltraSearchMcpServer {
         showContext: ctxCount > 0,
         tagSymbols: args.tag_symbols ?? (args.mode === "symbol"),
       });
-      return text(formatted.text);
+      const warningText = resultMeta?.warning ? `\n[regex warning: ${resultMeta.warning}]` : "";
+      return text(`${formatted.text}${warningText}`, false, {
+        ...(resultMeta ?? { complete: false }),
+        tool: "ultrasearch_grep",
+        fileCount: files.length,
+        tokenCount: formatted.tokenCount,
+        truncatedCount: Math.max(formatted.truncatedCount, resultMeta?.truncatedCount ?? 0),
+      });
     }
 
     if (name === "ultrasearch_multi_grep") {
@@ -330,13 +375,18 @@ export class UltraSearchMcpServer {
         return text("Invalid params: 'patterns' must be an array of strings", true);
       }
       const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
-      const res = await this.client.multiGrep(args.patterns, { in: searchScope, limit: args.limit ?? 30 });
+      const res = await this.client.multiGrep(args.patterns, { in: searchScope, limit: args.limit ?? 30, budget_ms: args.budget_ms });
       const files = res.files ?? [];
+      const meta = { ...(res.meta ?? { complete: false }), tool: "ultrasearch_multi_grep", fileCount: files.length };
       if (files.length === 0) {
-        return text(`No occurrences of [${args.patterns.join(", ")}] found.\n💡 Hint: Exact zero-typo matching enforced across all patterns.`);
+        return text(`No occurrences of [${args.patterns.join(", ")}] found.\n💡 Hint: Exact zero-typo matching enforced across all patterns.`, false, meta);
       }
       const formatted = formatGrepFiles(files, { worktreeRoot: activeRoot, compact: args.compact ?? true, maxTokens: args.max_tokens });
-      return text(formatted.text);
+      return text(formatted.text, false, {
+        ...meta,
+        tokenCount: formatted.tokenCount,
+        truncatedCount: Math.max(formatted.truncatedCount, res.meta?.truncatedCount ?? 0),
+      });
     }
 
     if (name === "ultrasearch_locate") {
@@ -350,17 +400,32 @@ export class UltraSearchMcpServer {
         const hint = await diagnoseEmptyQuery(args.filename, activeRoot, this.client);
         return text(`File "${args.filename}" not found in current scope.\n💡 Hint: ${hint ?? "Use ultrasearch_query for glob search across subdirectories."}`);
       }
-      return text(hits.map((h) => h.path).join("\n"));
+      return text(hits.map((h) => h.path).join("\n"), false, {
+        ...(res.meta ?? { complete: false }),
+        tool: "ultrasearch_locate",
+        hitCount: hits.length,
+      });
     }
 
     if (name === "ultrasearch_recent") {
       const res = await this.client.recent(activeRoot, args.limit ?? 15);
       const hits = res.hits ?? [];
-      return text(hits.map((h) => `${h.path} (score: ${h.score})`).join("\n") || "No recent files recorded in scope.");
+      return text(
+        hits.map((h) => `${h.path} (score: ${h.score})`).join("\n") || "No recent files recorded in scope.",
+        false,
+        { ...(res.meta ?? { complete: false }), tool: "ultrasearch_recent", hitCount: hits.length }
+      );
     }
 
     if (name === "ultrasearch_metrics") {
-      return text(formatAuditSummary(summarizeAudit(1000)));
+      const view = args.view === "all" || args.view === "synthetic" || args.view === "real" ? args.view : "real";
+      const summary = summarizeAudit(typeof args.limit === "number" ? args.limit : 1000, { view });
+      return text(formatAuditSummary(summary), false, {
+        tool: "ultrasearch_metrics",
+        view: summary.view,
+        originCounts: summary.originCounts,
+        totalCalls: summary.totalCalls,
+      });
     }
 
     return text(`Unknown tool: ${name}`, true);

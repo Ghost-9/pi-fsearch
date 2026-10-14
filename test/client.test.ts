@@ -189,7 +189,7 @@ test("observability: telemetry logging and audit summary", () => {
     diagnosticHint: "Zero typo tolerance enforced",
   });
 
-  const summary = summarizeAudit();
+  const summary = summarizeAudit(1000, { view: "all" });
   assert.equal(summary.totalCalls, 2);
   const formatted = formatAuditSummary(summary);
   assert.ok(formatted.includes("Pi-UltraSearch Observability"));
@@ -201,7 +201,7 @@ test("observability: shadow detector detects CLI find and rg bypasses", () => {
   analyzeCommandForBypass("find . -name '*.ts'", 35);
   analyzeCommandForBypass("rg -rn 'function' src/", 85);
 
-  const summary = summarizeAudit();
+  const summary = summarizeAudit(1000, { view: "all" });
   assert.equal(summary.cliBypasses.length, 2);
   assert.ok(summary.optimizationAdvice.some((a) => a.includes("CLI subprocess searches")));
 });

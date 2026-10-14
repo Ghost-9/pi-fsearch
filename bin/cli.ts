@@ -121,7 +121,7 @@ async function main() {
 
       case "metrics": {
         const audit = loadAudit();
-        const summary = summarizeAudit(audit.length);
+        const summary = summarizeAudit(audit.length, { view: "real" });
         console.log(formatAuditSummary(summary));
         break;
       }

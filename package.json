@@ -44,10 +44,17 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepack": "npm run build",
-    "test": "node --test test/client.test.ts test/mcp.test.ts",
+    "test": "node --test test/client.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/e2e-regressions.test.ts",
     "test:gate": "node --test test/benchmark-gate.test.ts",
     "test:empirical": "node --test test/empirical-10-tests.ts",
     "bench": "node test/bench.ts",
+    "bench:scopes": "node bench/run.mjs",
+    "bench:scopes:json": "node bench/run.mjs --json",
+    "bench:tokens": "node bench/tokens.mjs",
+    "bench:lanes": "node bench/lanes.mjs",
+    "bench:fallback": "node bench/fallback.mjs",
+    "bench:boost": "node bench/boost.mjs",
+    "metrics:nightly": "node bench/nightly-summary.mjs",
     "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [

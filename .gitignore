@@ -5,3 +5,7 @@ dist/
 .coverage
 *.tmp
 .agency/
+
+# Bench fixtures are regenerated deterministically; only results are committed.
+bench/.fixtures/
+bench/results/*-degraded.json
