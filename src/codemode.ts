@@ -1,4 +1,4 @@
-import type { FSearchClient } from "./client.ts";
+import type { UltraSearchClient } from "./client.ts";
 
 /**
  * TypeScript declarations exported for QuickJS WASM Code Mode.
@@ -11,7 +11,7 @@ declare namespace tools {
    * Fast whole-disk or workspace indexed file discovery (<0.5ms).
    * Supports globs, extension filters, git status filters, and strict zero typo tolerance.
    */
-  function fsearch_query(args: {
+  function ultrasearch_query(args: {
     /** Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified', 'src/**/*.{ts,tsx}') */
     query: string;
     /** Maximum results (default: 30) */
@@ -35,7 +35,7 @@ declare namespace tools {
    * Ultra-fast indexed trigram text content search (<1ms).
    * Searches inside text files for identifiers, function definitions, or literals.
    */
-  function fsearch_grep(args: {
+  function ultrasearch_grep(args: {
     /** Literal string or regex identifier to locate */
     pattern: string;
     /** Subdirectory or file path filter */
@@ -61,7 +61,7 @@ declare namespace tools {
   /**
    * Multi-pattern OR content retrieval across trigram index in one roundtrip.
    */
-  function fsearch_multi_grep(args: {
+  function ultrasearch_multi_grep(args: {
     patterns: string[];
     path_filter?: string;
     limit?: number;
@@ -74,7 +74,7 @@ declare namespace tools {
   /**
    * Instant O(1) lookup for exact filenames in current workspace.
    */
-  function fsearch_locate(args: {
+  function ultrasearch_locate(args: {
     filename: string;
     global?: boolean;
   }): Promise<{ content: Array<{ type: "text"; text: string }> }>;
@@ -82,14 +82,14 @@ declare namespace tools {
   /**
    * Returns recently edited or touched files in the workspace (frecency-ranked).
    */
-  function fsearch_recent(args: {
+  function ultrasearch_recent(args: {
     limit?: number;
   }): Promise<{ content: Array<{ type: "text"; text: string }> }>;
 
   /**
    * Returns telemetry profiler metrics (p50/p90/p95 latency) and toolchain advice.
    */
-  function fsearch_metrics(args?: {
+  function ultrasearch_metrics(args?: {
     limit?: number;
   }): Promise<{ content: Array<{ type: "text"; text: string }> }>;
 }
@@ -97,17 +97,12 @@ declare namespace tools {
 }
 
 /**
- * Backwards compatibility alias for renderUltraSearchDeclarations.
- */
-export const renderFSearchDeclarations = renderUltraSearchDeclarations;
-
-/**
- * Sandbox helper returning callable JavaScript function wrappers around FSearchClient
+ * Sandbox helper returning callable JavaScript function wrappers around UltraSearchClient
  * for execution inside a QuickJS WASM runtime.
  */
-export function getFSearchCodemodeTools(client: FSearchClient) {
+export function getUltraSearchCodemodeTools(client: UltraSearchClient) {
   return {
-    fsearch_query: async (args: { query: string; limit?: number; global?: boolean; near?: string }) => {
+    ultrasearch_query: async (args: { query: string; limit?: number; global?: boolean; near?: string }) => {
       const res = await client.search(args.query, {
         limit: args.limit ?? 30,
         in: args.global ? undefined : process.cwd(),
@@ -124,7 +119,7 @@ export function getFSearchCodemodeTools(client: FSearchClient) {
         took_us: res.took_us ?? 0,
       };
     },
-    fsearch_grep: async (args: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number }) => {
+    ultrasearch_grep: async (args: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol"; limit?: number }) => {
       const res = await client.grep(args.pattern, {
         in: args.path_filter ?? process.cwd(),
         mode: args.mode ?? "literal",
@@ -135,16 +130,16 @@ export function getFSearchCodemodeTools(client: FSearchClient) {
         took_us: res.took_us ?? 0,
       };
     },
-    fsearch_multi_grep: async (args: { patterns: string[]; path_filter?: string; limit?: number }) => {
+    ultrasearch_multi_grep: async (args: { patterns: string[]; path_filter?: string; limit?: number }) => {
       return await client.multiGrep(args.patterns, {
         in: args.path_filter ?? process.cwd(),
         limit: args.limit ?? 30,
       });
     },
-    fsearch_locate: async (args: { filename: string }) => {
+    ultrasearch_locate: async (args: { filename: string }) => {
       return await client.search(`'${args.filename}`, { in: process.cwd(), limit: 10 });
     },
-    fsearch_recent: async (args?: { limit?: number }) => {
+    ultrasearch_recent: async (args?: { limit?: number }) => {
       return await client.recent(process.cwd(), args?.limit ?? 15);
     },
   };

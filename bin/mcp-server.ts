@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { FSearchMcpServer } from "../src/mcp.ts";
+import { UltraSearchMcpServer } from "../src/mcp.ts";
 
-const server = new FSearchMcpServer();
+const server = new UltraSearchMcpServer();
 server.start();

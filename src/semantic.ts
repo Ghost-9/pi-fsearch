@@ -1,5 +1,5 @@
-import { FSearchClient } from "./client.ts";
-import type { FSearchGrepFile } from "./types.ts";
+import { UltraSearchClient } from "./client.ts";
+import type { UltraSearchGrepFile } from "./types.ts";
 import type { AuditTool } from "./telemetry.ts";
 
 /**
@@ -20,7 +20,7 @@ const INTENT_CONCEPT_MAP: Record<string, string[]> = {
 export interface SemanticSearchResult {
   term: string;
   matchedTokens: string[];
-  files: FSearchGrepFile[];
+  files: UltraSearchGrepFile[];
   confidence: number;
 }
 
@@ -50,7 +50,7 @@ export function expandIntentKeywords(naturalQuery: string): string[] {
  * and evaluating them across the in-memory trigram index.
  */
 export async function searchSemanticIntent(
-  client: FSearchClient,
+  client: UltraSearchClient,
   naturalQuery: string,
   options: { in?: string; limit?: number; auditTool?: AuditTool } = {}
 ): Promise<SemanticSearchResult> {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { formatGrepFiles } from "../src/formatter.ts";
 import { formatAuditSummary, summarizeAudit, loadAudit } from "../src/telemetry.ts";
 import { LsmCompactor } from "../src/compactor.ts";
@@ -13,7 +13,7 @@ async function main() {
   const args = process.argv.slice(2);
   const command = args[0] || "help";
 
-  const client = new FSearchClient();
+  const client = new UltraSearchClient();
 
   try {
     switch (command) {
@@ -99,7 +99,7 @@ async function main() {
         const inIdx = args.indexOf("--in");
         if (inIdx !== -1 && args[inIdx + 1]) scope = path.resolve(args[inIdx + 1]);
 
-        const hits = await client.recent(scope, 20);
+        const hits = (await client.recent(scope, 20)).hits ?? [];
         for (const hit of hits) {
           console.log(hit.path);
         }
@@ -121,7 +121,7 @@ async function main() {
 
       case "metrics": {
         const audit = loadAudit();
-        const summary = summarizeAudit(audit);
+        const summary = summarizeAudit(audit.length);
         console.log(formatAuditSummary(summary));
         break;
       }
@@ -189,12 +189,12 @@ async function main() {
                 break;
               } catch {}
             }
-            execSync("pkill -9 -f 'UltraSearch serve' ; pkill -9 -f 'ultrasearch-daemon serve' ; pkill -9 -f 'fsearch serve' || true");
+            execSync("pkill -9 -f 'UltraSearch serve' ; pkill -9 -f 'ultrasearch-daemon serve' ; pkill -9 -f 'ultrasearch serve' || true");
             const sysAppBin = "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch";
             const userAppBin = path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch");
             const localDaemonBin = path.join(os.homedir(), ".local/bin/ultrasearch-daemon");
             const daemonBin = fs.existsSync(sysAppBin) ? sysAppBin : (fs.existsSync(userAppBin) ? userAppBin : localDaemonBin);
-            const logFile = path.join(os.homedir(), "Library/Application Support/FSearch/daemon.log");
+            const logFile = path.join(os.homedir(), "Library/Application Support/UltraSearch/daemon.log");
             execSync(`nohup "${daemonBin}" serve > "${logFile}" 2>&1 &`);
             console.log(`✅ Ultrasearch daemon restarted cleanly from ${daemonBin}`);
           } catch (e: any) {
@@ -211,31 +211,29 @@ async function main() {
         if (!fs.existsSync(localBin)) fs.mkdirSync(localBin, { recursive: true });
 
         const thisFile = path.resolve(process.argv[1]);
-        const tuiFile = path.resolve(path.join(path.dirname(thisFile), "tui.ts"));
+        const here = path.dirname(thisFile);
+        // Prefer the built distribution (dist/bin/*.js) when it exists; otherwise run
+        // the TypeScript sources, which Node >= 22.18 type-strips natively.
+        const builtCli = [path.join(here, "cli.js"), path.resolve(here, "..", "dist", "bin", "cli.js")].find((p) => fs.existsSync(p));
+        const builtTui = [path.join(here, "tui.js"), path.resolve(here, "..", "dist", "bin", "tui.js")].find((p) => fs.existsSync(p));
+        const cliEntry = builtCli ?? thisFile;
+        const tuiEntry = builtTui ?? path.resolve(path.join(here, "tui.ts"));
 
         const cliTarget = path.join(localBin, "ultrasearch");
         const tuiTarget = path.join(localBin, "ultrasearch-tui");
 
-        // Write executable shims using Node's native strip-types
-        fs.writeFileSync(
-          cliTarget,
-          `#!/usr/bin/env bash\nexec node --experimental-strip-types "${thisFile}" "$@"\n`,
-          { mode: 0o755 }
-        );
-        fs.writeFileSync(
-          tuiTarget,
-          `#!/usr/bin/env bash\nexec node --experimental-strip-types "${tuiFile}" "$@"\n`,
-          { mode: 0o755 }
-        );
+        // Write executable shims pointing at the selected entrypoint
+        fs.writeFileSync(cliTarget, `#!/usr/bin/env bash\nexec node "${cliEntry}" "$@"\n`, { mode: 0o755 });
+        fs.writeFileSync(tuiTarget, `#!/usr/bin/env bash\nexec node "${tuiEntry}" "$@"\n`, { mode: 0o755 });
 
         console.log(`✅ Installed 'ultrasearch' -> ${cliTarget}`);
         console.log(`✅ Installed 'ultrasearch-tui' -> ${tuiTarget}`);
 
         const daemonTarget = path.join(localBin, "ultrasearch-daemon");
-        const fsearchBin = path.join(localBin, "fsearch");
-        if (fs.existsSync(fsearchBin)) {
+        const ultrasearchBin = path.join(localBin, "ultrasearch");
+        if (fs.existsSync(ultrasearchBin)) {
           try {
-            if (!fs.existsSync(daemonTarget)) fs.symlinkSync(fsearchBin, daemonTarget);
+            if (!fs.existsSync(daemonTarget)) fs.symlinkSync(ultrasearchBin, daemonTarget);
             console.log(`✅ Linked 'ultrasearch-daemon' -> ${daemonTarget}`);
           } catch {}
         }
@@ -245,7 +243,7 @@ async function main() {
         const sysAppBin = "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch";
         const userAppBin = path.join(os.homedir(), "Applications/UltraSearch.app/Contents/MacOS/UltraSearch");
         const targetBin = fs.existsSync(sysAppBin) ? sysAppBin : (fs.existsSync(userAppBin) ? userAppBin : path.join(localBin, "ultrasearch-daemon"));
-        const logFile = path.join(os.homedir(), "Library/Application Support/FSearch/daemon.log");
+        const logFile = path.join(os.homedir(), "Library/Application Support/UltraSearch/daemon.log");
 
         if (!fs.existsSync(launchAgentsDir)) fs.mkdirSync(launchAgentsDir, { recursive: true });
         const plistContent = `<?xml version="1.0" encoding="UTF-8"?>

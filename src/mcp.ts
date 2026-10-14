@@ -1,24 +1,154 @@
 import * as readline from "node:readline";
 import * as path from "node:path";
-import { FSearchClient } from "./client.ts";
+import { UltraSearchClient } from "./client.ts";
 import { formatGrepFiles } from "./formatter.ts";
 import { searchSemanticIntent } from "./semantic.ts";
 import { summarizeAudit, formatAuditSummary } from "./telemetry.ts";
 import { diagnoseEmptyQuery } from "./observer.ts";
 
 /**
- * Enterprise Model Context Protocol (MCP) server speaking JSON-RPC 2.0 over stdio.
- * Supports Claude Desktop, Cursor, Windsurf, Zed, VS Code, Antigravity, and T3 Code.
+ * Version reported in `initialize.serverInfo`. Keep in sync with package.json.
  */
-export class FSearchMcpServer {
-  private client: FSearchClient;
-  private cwd: string;
+export const SERVER_VERSION = "0.3.1";
 
-  constructor(client?: FSearchClient, cwd = process.cwd()) {
-    this.client = client ?? new FSearchClient();
+/**
+ * MCP protocol revisions this server understands, newest first. The server
+ * echoes the client's requested revision when it is in this list, and answers
+ * with the newest supported revision otherwise (MCP lifecycle negotiation).
+ */
+export const SUPPORTED_PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26", "2024-11-05", "2024-10-07"];
+export const LATEST_PROTOCOL_VERSION = SUPPORTED_PROTOCOL_VERSIONS[0];
+
+/** JSON-RPC 2.0 error codes used by this server. */
+export const JSON_RPC_ERRORS = {
+  PARSE: -32700,
+  INVALID_REQUEST: -32600,
+  METHOD_NOT_FOUND: -32601,
+  INVALID_PARAMS: -32602,
+  INTERNAL: -32603,
+  /** MCP: request received before the initialize handshake. */
+  NOT_INITIALIZED: -32002,
+} as const;
+
+export interface McpToolDefinition {
+  name: string;
+  description: string;
+  inputSchema: Record<string, unknown>;
+}
+
+function err(id: unknown, code: number, message: string, data?: unknown) {
+  return { jsonrpc: "2.0", id, error: data === undefined ? { code, message } : { code, message, data } };
+}
+
+/**
+ * The UltraSearch MCP tool surface. Exactly one prefix (`ultrasearch_`); the
+ * historical `fsearch_*` aliases are deliberately gone, so `tools/list` is the
+ * single source of truth for every client.
+ */
+export const MCP_TOOLS: McpToolDefinition[] = [
+  {
+    name: "ultrasearch_query",
+    description:
+      "Instant indexed whole-disk or workspace file search (<0.1ms). Strict zero typo tolerance. Supports globs, extension filters, and git filters.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified')" },
+        limit: { type: "number", description: "Max results (default: 30)" },
+        global: { type: "boolean", description: "Search whole disk instead of workspace" },
+        near: { type: "string", description: "Optional file path to re-rank results by folder proximity" },
+      },
+      required: ["query"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "ultrasearch_grep",
+    description: "Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        pattern: { type: "string", description: "Literal or identifier to search" },
+        path_filter: { type: "string", description: "Subdirectory or file filter" },
+        mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "Search mode (semantic = intent keyword expansion)" },
+        limit: { type: "number", description: "Max files to return" },
+        compact: { type: "boolean", description: "Compact one-line format (default: true)" },
+        max_tokens: { type: "number", description: "Optional token budget ceiling" },
+        context: { type: "number", description: "Lines of surrounding code context (0-5, default: 0)" },
+        tag_symbols: { type: "boolean", description: "Tag matches with AST definition types like [def:fn], [def:class]" },
+      },
+      required: ["pattern"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "ultrasearch_multi_grep",
+    description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        patterns: { type: "array", items: { type: "string" }, description: "Array of search patterns" },
+        path_filter: { type: "string", description: "Subdirectory filter" },
+        compact: { type: "boolean", description: "Compact one-line format (default: true)" },
+        max_tokens: { type: "number", description: "Optional token budget ceiling" },
+      },
+      required: ["patterns"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "ultrasearch_locate",
+    description: "Instant O(1) filename lookup (e.g. 'package.json', 'Cargo.toml') within current workspace.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        filename: { type: "string", description: "Exact filename to locate" },
+        global: { type: "boolean", description: "Search entire disk" },
+      },
+      required: ["filename"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "ultrasearch_recent",
+    description: "Recently worked or edited files in current workspace (frecency ranked).",
+    inputSchema: {
+      type: "object",
+      properties: { limit: { type: "number", description: "Max recent files (default: 15)" } },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "ultrasearch_metrics",
+    description: "Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+];
+
+/**
+ * Model Context Protocol server speaking JSON-RPC 2.0 over stdio.
+ * Supports Claude Desktop, Cursor, Windsurf, Zed, VS Code, Antigravity, and T3 Code.
+ *
+ * Conformance: newline-delimited JSON (one message per line), notifications are
+ * never answered, requests before `initialize` are rejected with -32002, and
+ * transport/protocol failures use the JSON-RPC error codes.
+ */
+export class UltraSearchMcpServer {
+  private client: UltraSearchClient;
+  private cwd: string;
+  private initialized = false;
+  private queue: Promise<void> = Promise.resolve();
+
+  constructor(client?: UltraSearchClient, cwd = process.cwd()) {
+    this.client = client ?? new UltraSearchClient();
     this.cwd = cwd;
   }
 
+  public get isInitialized(): boolean {
+    return this.initialized;
+  }
+
+  /** Attach to process stdio. One JSON message per line; blank lines ignored. */
   public start(): void {
     const rl = readline.createInterface({
       input: process.stdin,
@@ -26,25 +156,11 @@ export class FSearchMcpServer {
       terminal: false,
     });
 
-    rl.on("line", async (line) => {
-      const trimmed = line.trim();
-      if (!trimmed) return;
-
-      try {
-        const msg = JSON.parse(trimmed);
-        const resp = await this.handleMessage(msg);
-        if (resp) {
-          process.stdout.write(JSON.stringify(resp) + "\n");
-        }
-      } catch (err: any) {
-        process.stdout.write(
-          JSON.stringify({
-            jsonrpc: "2.0",
-            id: null,
-            error: { code: -32700, message: "Parse error", data: err?.message },
-          }) + "\n"
-        );
-      }
+    rl.on("line", (line) => {
+      // Serialize handling: a later frame must never overtake an earlier one,
+      // so responses leave in request order (a sync parse-error reply would
+      // otherwise jump ahead of an awaited request).
+      this.queue = this.queue.then(() => this.dispatch(line));
     });
 
     process.on("SIGINT", () => {
@@ -57,305 +173,196 @@ export class FSearchMcpServer {
     });
   }
 
-  public async handleMessage(msg: any): Promise<any> {
-    const { id, method, params } = msg;
+  /**
+   * Parse and answer one framed stdio message. Never throws, never writes for a
+   * notification, and answers malformed JSON with a -32700 parse error.
+   */
+  public async dispatch(line: string): Promise<void> {
+    const trimmed = line.trim();
+    if (!trimmed) return;
 
-    if (method === "initialize") {
-      return {
-        jsonrpc: "2.0",
-        id,
-        result: {
-          protocolVersion: "2024-11-05",
-          serverInfo: {
-            name: "pi-ultrasearch",
-            version: "0.3.1",
-          },
-          capabilities: {
-            tools: {},
-          },
-        },
-      };
+    let msg: any;
+    try {
+      msg = JSON.parse(trimmed);
+    } catch (parseErr: any) {
+      this.write(err(null, JSON_RPC_ERRORS.PARSE, "Parse error", parseErr?.message ?? String(parseErr)));
+      return;
     }
 
-    if (method === "notifications/initialized") {
+    const response = await this.handleMessage(msg);
+    if (response) this.write(response);
+  }
+
+  protected write(response: unknown): void {
+    process.stdout.write(JSON.stringify(response) + "\n");
+  }
+
+  /** Pure message handler: returns the response, or null for notifications. */
+  public async handleMessage(msg: any): Promise<any> {
+    // JSON-RPC: a message without an `id` member is a notification. It must
+    // never be answered, whatever its method or shape.
+    const isNotification = msg !== null && typeof msg === "object" && !Array.isArray(msg) && !("id" in msg);
+
+    if (msg === null || typeof msg !== "object" || Array.isArray(msg)) {
+      return isNotification ? null : err(null, JSON_RPC_ERRORS.INVALID_REQUEST, "Invalid Request");
+    }
+
+    const { id, method, params } = msg;
+
+    if (typeof method !== "string" || method.length === 0) {
+      return isNotification ? null : err(id ?? null, JSON_RPC_ERRORS.INVALID_REQUEST, "Invalid Request: method must be a string");
+    }
+
+    const reply = (result: unknown) => ({ jsonrpc: "2.0", id: id ?? null, result });
+    const fail = (code: number, message: string, data?: unknown) => err(id ?? null, code, message, data);
+
+    // --- lifecycle -----------------------------------------------------------
+    if (method === "initialize") {
+      this.initialized = true;
+      const requested = params?.protocolVersion;
+      const protocolVersion =
+        typeof requested === "string" && SUPPORTED_PROTOCOL_VERSIONS.includes(requested)
+          ? requested
+          : LATEST_PROTOCOL_VERSION;
+      return reply({
+        protocolVersion,
+        serverInfo: { name: "pi-ultrasearch", version: SERVER_VERSION },
+        capabilities: { tools: { listChanged: false } },
+      });
+    }
+
+    if (method === "notifications/initialized" || method === "notifications/cancelled") {
       return null;
     }
 
     if (method === "ping") {
-      return { jsonrpc: "2.0", id, result: {} };
+      return reply({});
+    }
+
+    // Everything below the handshake is rejected until `initialize` arrives.
+    if (!this.initialized) {
+      return isNotification ? null : fail(JSON_RPC_ERRORS.NOT_INITIALIZED, "Server not initialized");
     }
 
     if (method === "tools/list") {
-      const fsearchTools = [
-            {
-              name: "fsearch_query",
-              description: "Instant indexed whole-disk or workspace file search (<0.1ms). Strict zero typo tolerance. Supports globs, extension filters, and git filters.",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  query: { type: "string", description: "Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified')" },
-                  limit: { type: "number", description: "Max results (default: 30)" },
-                  global: { type: "boolean", description: "Search whole disk instead of workspace" },
-                  near: { type: "string", description: "Optional file path to re-rank results by folder proximity" },
-                },
-                required: ["query"],
-              },
-            },
-            {
-              name: "fsearch_grep",
-              description: "Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  pattern: { type: "string", description: "Literal or identifier to search" },
-                  path_filter: { type: "string", description: "Subdirectory or file filter" },
-                  mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "Search mode (semantic = intent keyword expansion)" },
-                  limit: { type: "number", description: "Max files to return" },
-                  compact: { type: "boolean", description: "Compact one-line format (default: true)" },
-                  max_tokens: { type: "number", description: "Optional token budget ceiling" },
-                  context: { type: "number", description: "Lines of surrounding code context (0-5, default: 0)" },
-                  tag_symbols: { type: "boolean", description: "Tag matches with AST definition types like [def:fn], [def:class]" },
-                },
-                required: ["pattern"],
-              },
-            },
-            {
-              name: "fsearch_multi_grep",
-              description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  patterns: { type: "array", items: { type: "string" }, description: "Array of search patterns" },
-                  path_filter: { type: "string", description: "Subdirectory filter" },
-                  compact: { type: "boolean", description: "Compact one-line format (default: true)" },
-                  max_tokens: { type: "number", description: "Optional token budget ceiling" },
-                },
-                required: ["patterns"],
-              },
-            },
-            {
-              name: "fsearch_locate",
-              description: "Instant O(1) filename lookup (e.g. 'package.json', 'Cargo.toml') within current workspace.",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  filename: { type: "string", description: "Exact filename to locate" },
-                  global: { type: "boolean", description: "Search entire disk" },
-                },
-                required: ["filename"],
-              },
-            },
-            {
-              name: "fsearch_recent",
-              description: "Recently worked or edited files in current workspace (frecency ranked).",
-              inputSchema: {
-                type: "object",
-                properties: {
-                  limit: { type: "number", description: "Max recent files (default: 15)" },
-                },
-              },
-            },
-            {
-              name: "fsearch_metrics",
-              description: "Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice.",
-              inputSchema: {
-                type: "object",
-                properties: {},
-              },
-            },
-          ];
-
-      const ultrasearchTools = fsearchTools.map((t) => ({
-        ...t,
-        name: t.name.replace(/^fsearch_/, "ultrasearch_"),
-        description: t.description,
-      }));
-
-      return {
-        jsonrpc: "2.0",
-        id,
-        result: {
-          tools: [...ultrasearchTools, ...fsearchTools],
-        },
-      };
+      return reply({ tools: MCP_TOOLS });
     }
 
     if (method === "tools/call") {
-      const rawName = params?.name ?? "";
-      const toolName = rawName.startsWith("ultrasearch_") ? rawName.replace(/^ultrasearch_/, "fsearch_") : rawName;
-      const args = params?.arguments ?? {};
-      const activeRoot = args.path ? path.resolve(this.cwd, args.path) : this.cwd;
-
-      if (toolName === "fsearch_query") {
-        const searchScope = args.global ? undefined : activeRoot;
-        const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30, near: args.near });
-        const hits = res.hits ?? [];
-        if (hits.length === 0) {
-          const hint = await diagnoseEmptyQuery(args.query, activeRoot, this.client);
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: {
-              content: [
-                {
-                  type: "text",
-                  text: `No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}`,
-                },
-              ],
-            },
-          };
-        }
-        const formatted = hits.map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n");
-        return {
-          jsonrpc: "2.0",
-          id,
-          result: {
-            content: [{ type: "text", text: formatted }],
-          },
-        };
+      const rawName = params?.name;
+      if (typeof rawName !== "string" || rawName.length === 0) {
+        return fail(JSON_RPC_ERRORS.INVALID_PARAMS, "Invalid params: 'name' must be a string");
       }
-
-      if (toolName === "fsearch_grep") {
-        const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
-        const ctxCount = typeof args.context === "number" ? args.context : 0;
-        let files: any[] = [];
-        if (args.mode === "semantic") {
-          const semantic = await searchSemanticIntent(this.client, args.pattern, { in: searchScope, limit: args.limit ?? 30, auditTool: "fsearch_grep" });
-          files = semantic.files ?? [];
-        } else {
-          const res = await this.client.grep(args.pattern, {
-            in: searchScope,
-            mode: args.mode ?? "literal",
-            limit: args.limit ?? 30,
-            context: ctxCount,
-          });
-          files = res.files ?? [];
-        }
-        if (files.length === 0) {
-          const hint = await diagnoseEmptyQuery(args.pattern, activeRoot, this.client);
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: {
-              content: [
-                {
-                  type: "text",
-                  text: `No occurrences of "${args.pattern}" found.\n💡 Hint: ${hint ?? "Strict exact zero-typo matching enforced."}`,
-                },
-              ],
-            },
-          };
-        }
-        const formatted = formatGrepFiles(files, {
-          worktreeRoot: activeRoot,
-          compact: args.compact ?? true,
-          maxTokens: args.max_tokens,
-          prioritizeSymbols: args.mode === "symbol",
-          showContext: ctxCount > 0,
-          tagSymbols: args.tag_symbols ?? (args.mode === "symbol"),
+      if (params?.arguments !== undefined && (params.arguments === null || typeof params.arguments !== "object" || Array.isArray(params.arguments))) {
+        return fail(JSON_RPC_ERRORS.INVALID_PARAMS, "Invalid params: 'arguments' must be an object");
+      }
+      if (!MCP_TOOLS.some((t) => t.name === rawName)) {
+        return fail(JSON_RPC_ERRORS.INVALID_PARAMS, `Unknown tool: ${rawName}`);
+      }
+      try {
+        return reply(await this.callTool(rawName, params?.arguments ?? {}));
+      } catch (toolErr: any) {
+        // A tool that ran and failed is a result, not a protocol error.
+        return reply({
+          content: [{ type: "text", text: `UltraSearch error: ${toolErr?.message ?? toolErr}` }],
+          isError: true,
         });
-        return {
-          jsonrpc: "2.0",
-          id,
-          result: {
-            content: [{ type: "text", text: formatted.text }],
-          },
-        };
       }
-
-      if (toolName === "fsearch_multi_grep") {
-        const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
-        const res = await this.client.multiGrep(args.patterns ?? [], {
-          in: searchScope,
-          limit: args.limit ?? 30,
-        });
-        const files = res.files ?? [];
-        if (files.length === 0) {
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: { content: [{ type: "text", text: `No occurrences of [${(args.patterns ?? []).join(", ")}] found.\n💡 Hint: Exact zero-typo matching enforced across all patterns.` }] },
-          };
-        }
-        const formatted = formatGrepFiles(files, {
-          worktreeRoot: activeRoot,
-          compact: args.compact ?? true,
-          maxTokens: args.max_tokens,
-        });
-        return {
-          jsonrpc: "2.0",
-          id,
-          result: {
-            content: [{ type: "text", text: formatted.text }],
-          },
-        };
-      }
-
-      if (toolName === "fsearch_locate") {
-        const searchScope = args.global ? undefined : activeRoot;
-        const res = await this.client.search(`'${args.filename}`, { in: searchScope, limit: 10 });
-        const hits = res.hits ?? [];
-        if (hits.length === 0) {
-          const hint = await diagnoseEmptyQuery(args.filename, activeRoot, this.client);
-          return {
-            jsonrpc: "2.0",
-            id,
-            result: {
-              content: [
-                {
-                  type: "text",
-                  text: `File "${args.filename}" not found in current scope.\n💡 Hint: ${hint ?? "Use fsearch_query for glob search across subdirectories."}`,
-                },
-              ],
-            },
-          };
-        }
-        const formatted = hits.map((h) => h.path).join("\n");
-        return {
-          jsonrpc: "2.0",
-          id,
-          result: {
-            content: [{ type: "text", text: formatted }],
-          },
-        };
-      }
-
-      if (toolName === "fsearch_recent") {
-        const res = await this.client.recent(activeRoot, args.limit ?? 15);
-        const hits = res.hits ?? [];
-        const formatted = hits.map((h) => `${h.path} (score: ${h.score})`).join("\n");
-        return {
-          jsonrpc: "2.0",
-          id,
-          result: {
-            content: [{ type: "text", text: formatted || "No recent files recorded in scope." }],
-          },
-        };
-      }
-
-      if (toolName === "fsearch_metrics") {
-        const summary = summarizeAudit(1000);
-        const report = formatAuditSummary(summary);
-        return {
-          jsonrpc: "2.0",
-          id,
-          result: {
-            content: [{ type: "text", text: report }],
-          },
-        };
-      }
-
-      return {
-        jsonrpc: "2.0",
-        id,
-        error: { code: -32601, message: `Tool not found: ${toolName}` },
-      };
     }
 
-    return {
-      jsonrpc: "2.0",
-      id,
-      error: { code: -32601, message: `Method not found: ${method}` },
-    };
+    return isNotification ? null : fail(JSON_RPC_ERRORS.METHOD_NOT_FOUND, `Method not found: ${method}`);
+  }
+
+  private async callTool(name: string, args: any): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }> {
+    const activeRoot = typeof args.path === "string" ? path.resolve(this.cwd, args.path) : this.cwd;
+    const text = (t: string, isError = false) => ({ content: [{ type: "text" as const, text: t }], ...(isError ? { isError: true } : {}) });
+
+    if (name === "ultrasearch_query") {
+      if (typeof args.query !== "string" || args.query.length === 0) {
+        return text("Invalid params: 'query' must be a non-empty string", true);
+      }
+      const searchScope = args.global ? undefined : activeRoot;
+      const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30, near: args.near });
+      const hits = res.hits ?? [];
+      if (hits.length === 0) {
+        const hint = await diagnoseEmptyQuery(args.query, activeRoot, this.client);
+        return text(`No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}`);
+      }
+      return text(hits.map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n"));
+    }
+
+    if (name === "ultrasearch_grep") {
+      if (typeof args.pattern !== "string" || args.pattern.length === 0) {
+        return text("Invalid params: 'pattern' must be a non-empty string", true);
+      }
+      const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
+      const ctxCount = typeof args.context === "number" ? args.context : 0;
+      let files: any[] = [];
+      if (args.mode === "semantic") {
+        const semantic = await searchSemanticIntent(this.client, args.pattern, { in: searchScope, limit: args.limit ?? 30, auditTool: "ultrasearch_grep" });
+        files = semantic.files ?? [];
+      } else {
+        const res = await this.client.grep(args.pattern, {
+          in: searchScope,
+          mode: args.mode ?? "literal",
+          limit: args.limit ?? 30,
+          context: ctxCount,
+        });
+        files = res.files ?? [];
+      }
+      if (files.length === 0) {
+        const hint = await diagnoseEmptyQuery(args.pattern, activeRoot, this.client);
+        return text(`No occurrences of "${args.pattern}" found.\n💡 Hint: ${hint ?? "Strict exact zero-typo matching enforced."}`);
+      }
+      const formatted = formatGrepFiles(files, {
+        worktreeRoot: activeRoot,
+        compact: args.compact ?? true,
+        maxTokens: args.max_tokens,
+        prioritizeSymbols: args.mode === "symbol",
+        showContext: ctxCount > 0,
+        tagSymbols: args.tag_symbols ?? (args.mode === "symbol"),
+      });
+      return text(formatted.text);
+    }
+
+    if (name === "ultrasearch_multi_grep") {
+      if (!Array.isArray(args.patterns) || args.patterns.length === 0 || !args.patterns.every((p: unknown) => typeof p === "string")) {
+        return text("Invalid params: 'patterns' must be an array of strings", true);
+      }
+      const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
+      const res = await this.client.multiGrep(args.patterns, { in: searchScope, limit: args.limit ?? 30 });
+      const files = res.files ?? [];
+      if (files.length === 0) {
+        return text(`No occurrences of [${args.patterns.join(", ")}] found.\n💡 Hint: Exact zero-typo matching enforced across all patterns.`);
+      }
+      const formatted = formatGrepFiles(files, { worktreeRoot: activeRoot, compact: args.compact ?? true, maxTokens: args.max_tokens });
+      return text(formatted.text);
+    }
+
+    if (name === "ultrasearch_locate") {
+      if (typeof args.filename !== "string" || args.filename.length === 0) {
+        return text("Invalid params: 'filename' must be a non-empty string", true);
+      }
+      const searchScope = args.global ? undefined : activeRoot;
+      const res = await this.client.search(`'${args.filename}`, { in: searchScope, limit: 10, auditTool: "ultrasearch_locate" });
+      const hits = res.hits ?? [];
+      if (hits.length === 0) {
+        const hint = await diagnoseEmptyQuery(args.filename, activeRoot, this.client);
+        return text(`File "${args.filename}" not found in current scope.\n💡 Hint: ${hint ?? "Use ultrasearch_query for glob search across subdirectories."}`);
+      }
+      return text(hits.map((h) => h.path).join("\n"));
+    }
+
+    if (name === "ultrasearch_recent") {
+      const res = await this.client.recent(activeRoot, args.limit ?? 15);
+      const hits = res.hits ?? [];
+      return text(hits.map((h) => `${h.path} (score: ${h.score})`).join("\n") || "No recent files recorded in scope.");
+    }
+
+    if (name === "ultrasearch_metrics") {
+      return text(formatAuditSummary(summarizeAudit(1000)));
+    }
+
+    return text(`Unknown tool: ${name}`, true);
   }
 }

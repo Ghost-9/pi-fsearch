@@ -10,7 +10,7 @@ We welcome contributions to `pi-ultrasearch`!
    npm run typecheck
    ```
 
-2. Run the test suite. Integration tests require the resident `fsearch` daemon and are **skipped cleanly** when it is
+2. Run the test suite. Integration tests require the resident `ultrasearch` daemon and are **skipped cleanly** when it is
    not running, so the suite is safe on a bare machine:
    ```bash
    npm test

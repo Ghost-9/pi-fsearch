@@ -3,7 +3,7 @@ import { Type } from "typebox";
 import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { FSearchClient } from "./src/client.ts";
+import { UltraSearchClient } from "./src/client.ts";
 import { isPathSafe } from "./src/sanitize.ts";
 import { formatGrepFiles } from "./src/formatter.ts";
 import { summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.ts";
@@ -59,7 +59,7 @@ function resolveWorktreeRoot(startDir = process.cwd()): string {
 }
 
 export default function piUltraSearchExtension(pi: ExtensionAPI): void {
-  const client = new FSearchClient();
+  const client = new UltraSearchClient();
 
   // Helper to register tools cleanly across all Pi versions
   const register = (toolDef: any) => {
@@ -68,9 +68,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     }
   };
 
-  // 1. fsearch_query: Fast path/file discovery with strict zero typo tolerance, globs, git filters, and proximity ranking
+  // 1. ultrasearch_query: Fast path/file discovery with strict zero typo tolerance, globs, git filters, and proximity ranking
   register({
-    name: "fsearch_query",
+    name: "ultrasearch_query",
     label: "UltraSearch Query",
     description:
       "Instant indexed whole-disk or workspace file search (<0.1ms). Strict deterministic matching (zero typo tolerance) for exact symbol, glob, and path resolution. Supports globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.",
@@ -154,9 +154,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 2. fsearch_grep: Instant indexed trigram text content search (<1ms)
+  // 2. ultrasearch_grep: Instant indexed trigram text content search (<1ms)
   register({
-    name: "fsearch_grep",
+    name: "ultrasearch_grep",
     label: "UltraSearch Grep",
     description:
       "Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk walks. Modes: literal, regex, symbol (definitions first), semantic (intent expansion). Optional context lines (-C) and AST symbol tags. Results scrubbed for credentials.",
@@ -194,7 +194,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
           const semantic = await searchSemanticIntent(client, params.pattern, {
             in: searchScope,
             limit: params.limit ?? 30,
-            auditTool: "fsearch_grep",
+            auditTool: "ultrasearch_grep",
           });
           files = semantic.files ?? [];
           tookUs = Math.round((performance.now() - t0) * 1000);
@@ -249,9 +249,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 3. fsearch_multi_grep: Simultaneous multi-pattern OR content retrieval
+  // 3. ultrasearch_multi_grep: Simultaneous multi-pattern OR content retrieval
   register({
-    name: "fsearch_multi_grep",
+    name: "ultrasearch_multi_grep",
     label: "UltraSearch Multi Grep",
     description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
     parameters: Type.Object({
@@ -300,9 +300,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 4. fsearch_locate: O(1) exact file resolution
+  // 4. ultrasearch_locate: O(1) exact file resolution
   register({
-    name: "fsearch_locate",
+    name: "ultrasearch_locate",
     label: "UltraSearch Locate",
     description: "Instant O(1) lookup for exact filenames (e.g., 'package.json', 'Cargo.toml', 'ROADMAP.md') within current workspace.",
     parameters: Type.Object({
@@ -316,7 +316,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         const res = await client.search(`'${params.filename}`, {
           in: searchScope,
           limit: 10,
-          auditTool: "fsearch_locate",
+          auditTool: "ultrasearch_locate",
         });
 
         const hits = res.hits ?? [];
@@ -333,9 +333,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 5. fsearch_recent: Recently worked files in the workspace / git branch
+  // 5. ultrasearch_recent: Recently worked files in the workspace / git branch
   register({
-    name: "fsearch_recent",
+    name: "ultrasearch_recent",
     label: "UltraSearch Recent",
     description: "Returns files recently edited or touched in the current workspace or git branch (frecency-ranked).",
     parameters: Type.Object({
@@ -358,9 +358,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // 6. fsearch_metrics: Observability toolchain audit profiler & self-learning advice
+  // 6. ultrasearch_metrics: Observability toolchain audit profiler & self-learning advice
   register({
-    name: "fsearch_metrics",
+    name: "ultrasearch_metrics",
     label: "UltraSearch Metrics",
     description: "Observability profiler: returns per-tool latencies (p50/p90/p95), error rates, 0-hit diagnostics, CLI bypasses (find/rg), and recursive self-learning recommendations.",
     parameters: Type.Object({
@@ -374,7 +374,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     },
   });
 
-  // Slash commands: /ultrasearch and /fsearch (alias) [metrics|audit|reset|status]
+  // Slash command: /ultrasearch [metrics|audit|reset|status]
   if (typeof (pi as any).registerCommand === "function") {
     const handleCommand = async (args: string, ctx: any) => {
       const action = args.trim().toLowerCase();
@@ -397,10 +397,6 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       description: "UltraSearch telemetry, toolchain audit, and status.",
       handler: handleCommand,
     });
-    (pi as any).registerCommand("fsearch", {
-      description: "UltraSearch telemetry, toolchain audit, and status (alias).",
-      handler: handleCommand,
-    });
   }
 
   // 7. Toolchain Shadow Detector & File Touch lifecycle tracking via tool_execution_end
@@ -408,7 +404,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     (pi as any).on("tool_execution_end", async (event: any) => {
       const toolName = event?.toolName;
 
-      // Shadow Detector: check if agent bypassed fsearch with bash/powershell find or rg
+      // Shadow Detector: check if agent bypassed ultrasearch with bash/powershell find or rg
       if (toolName === "bash" || toolName === "powershell") {
         const cmd = event?.params?.command || event?.params?.cmd;
         const duration = event?.durationMs ?? 20;

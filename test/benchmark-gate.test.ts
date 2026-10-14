@@ -5,11 +5,11 @@ import * as net from "node:net";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 
 /**
  * Hermetic mock daemon: line-delimited JSON over a temp UNIX socket.
- * This lets the CI gate run on a clean machine with no fsearch install,
+ * This lets the CI gate run on a clean machine with no ultrasearch install,
  * while still measuring the real client IPC round-trip path.
  */
 const sockPath = path.join(os.tmpdir(), `ults-gate-${process.pid}-${Date.now()}.sock`);
@@ -45,7 +45,7 @@ const mockServer = net.createServer((sock) => {
             id: req.id,
             took_us: 90,
             source: "index",
-            files: [{ path: path.join(cwd, "src", "client.ts"), matches: [{ line: 1, text: "export class FSearchClient {" }] }],
+            files: [{ path: path.join(cwd, "src", "client.ts"), matches: [{ line: 1, text: "export class UltraSearchClient {" }] }],
           };
           break;
         case "multi_grep":
@@ -55,7 +55,7 @@ const mockServer = net.createServer((sock) => {
             took_us: 120,
             source: "index",
             patterns: req.patterns ?? [],
-            files: [{ path: path.join(cwd, "src", "client.ts"), matches: [{ line: 1, text: "export class FSearchClient {" }] }],
+            files: [{ path: path.join(cwd, "src", "client.ts"), matches: [{ line: 1, text: "export class UltraSearchClient {" }] }],
           };
           break;
         case "recent":
@@ -80,10 +80,10 @@ const mockServer = net.createServer((sock) => {
 
 await new Promise<void>((resolve) => mockServer.listen(sockPath, resolve));
 
-const hermetic = new FSearchClient({ socketPath: sockPath });
-const live = new FSearchClient();
+const hermetic = new UltraSearchClient({ socketPath: sockPath });
+const live = new UltraSearchClient();
 const daemonUp = await live.ping();
-const liveOnly = daemonUp ? false : "fsearch daemon not running (live gate skipped)";
+const liveOnly = daemonUp ? false : "ultrasearch daemon not running (live gate skipped)";
 
 after(() => {
   hermetic.close();
@@ -118,7 +118,7 @@ test("Hermetic CI Gate: client round-trip p95 grep < 5ms (mock socket, no daemon
   const latencies: number[] = [];
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
-    const res = await hermetic.grep("FSearchClient", { in: process.cwd(), limit: 10, respectIgnore: false });
+    const res = await hermetic.grep("UltraSearchClient", { in: process.cwd(), limit: 10, respectIgnore: false });
     latencies.push(performance.now() - start);
     assert.equal(res.ok, true);
     assert.ok((res.files?.length ?? 0) > 0);
@@ -148,7 +148,7 @@ test("Live CI Gate: daemon-backed p95 trigram grep < 5ms", { skip: liveOnly }, a
   const latencies: number[] = [];
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
-    const res = await live.grep("FSearchClient", { in: process.cwd(), limit: 10 });
+    const res = await live.grep("UltraSearchClient", { in: process.cwd(), limit: 10 });
     const elapsed = performance.now() - start;
     assert.equal(res.ok, true);
     latencies.push(elapsed);

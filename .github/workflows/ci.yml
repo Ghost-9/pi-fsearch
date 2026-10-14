@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
 
       - name: Install Dependencies
         run: npm install
@@ -24,8 +24,22 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Build distribution (dist/)
+        run: npm run build
+
       - name: Run Unit Tests
         run: npm test
+
+      - name: Package smoke test (npm pack + built CLI)
+        run: |
+          set -euo pipefail
+          npm pack --pack-destination "$RUNNER_TEMP"
+          TARBALL="$(ls "$RUNNER_TEMP"/pi-ultrasearch-*.tgz)"
+          tar -tzf "$TARBALL" | grep -q 'package/dist/bin/cli.js'
+          tar -tzf "$TARBALL" | grep -q 'package/dist/src/client.js'
+          mkdir -p "$RUNNER_TEMP/packed"
+          tar -xzf "$TARBALL" -C "$RUNNER_TEMP/packed"
+          node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help | grep -q "PI-ULTRASEARCH"
 
       - name: Benchmark Regression Gate
         run: node --test test/benchmark-gate.test.ts

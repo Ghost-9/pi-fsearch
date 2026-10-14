@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { performance } from "node:perf_hooks";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { FSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { formatGrepFiles } from "../src/formatter.ts";
 import { scrubSecrets, isPathSafe, isSensitiveFile } from "../src/sanitize.ts";
 
@@ -32,7 +32,7 @@ export interface EmpiricalTestResult {
 }
 
 export async function runTenEmpiricalTests(): Promise<EmpiricalTestResult[]> {
-  const client = new FSearchClient();
+  const client = new UltraSearchClient();
   await client.ping();
 
   const repo = "/Users/batra/Search";

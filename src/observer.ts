@@ -1,9 +1,9 @@
 import { recordAudit } from "./telemetry.ts";
-import type { FSearchClient } from "./client.ts";
+import type { UltraSearchClient } from "./client.ts";
 import { getLearnedCorrection, recordMistake } from "./recursive-learning.ts";
 
 /**
- * Checks if a bash/powershell command is a search bypass that could have used fsearch.
+ * Checks if a bash/powershell command is a search bypass that could have used ultrasearch.
  */
 export function analyzeCommandForBypass(command: string, durationMs: number): void {
   const trimmed = command.trim();
@@ -18,9 +18,9 @@ export function analyzeCommandForBypass(command: string, durationMs: number): vo
       hitCount: 1,
       source: "cli_subprocess",
       bypassCommand: trimmed.slice(0, 100),
-      diagnosticHint: "Use fsearch_query: 45x faster file path search using resident radix index.",
+      diagnosticHint: "Use ultrasearch_query: 45x faster file path search using resident radix index.",
     });
-    recordMistake("cli_bypass", trimmed.slice(0, 120), "Use fsearch_query with the resident radix index.");
+    recordMistake("cli_bypass", trimmed.slice(0, 120), "Use ultrasearch_query with the resident radix index.");
     return;
   }
 
@@ -33,9 +33,9 @@ export function analyzeCommandForBypass(command: string, durationMs: number): vo
       hitCount: 1,
       source: "cli_subprocess",
       bypassCommand: trimmed.slice(0, 100),
-      diagnosticHint: "Use fsearch_grep or fsearch_multi_grep: 12x faster trigram index search without spawning subprocesses.",
+      diagnosticHint: "Use ultrasearch_grep or ultrasearch_multi_grep: 12x faster trigram index search without spawning subprocesses.",
     });
-    recordMistake("cli_bypass", trimmed.slice(0, 120), "Use fsearch_grep / fsearch_multi_grep on the trigram index.");
+    recordMistake("cli_bypass", trimmed.slice(0, 120), "Use ultrasearch_grep / ultrasearch_multi_grep on the trigram index.");
     return;
   }
 }
@@ -46,7 +46,7 @@ export function analyzeCommandForBypass(command: string, durationMs: number): vo
 export async function diagnoseEmptyQuery(
   query: string,
   worktreeRoot: string,
-  client: FSearchClient
+  client: UltraSearchClient
 ): Promise<string | undefined> {
   const cleanQ = query.trim().replace(/^['"]/, "").replace(/['"]$/, "");
 
@@ -67,7 +67,7 @@ export async function diagnoseEmptyQuery(
       if (locateRes.ok && locateRes.hits && locateRes.hits.length > 0) {
         const paths = locateRes.hits.map((h) => h.path.replace(worktreeRoot, "").replace(/^\//, "")).join(", ");
         recordMistake("path_mismatch", cleanQ, `Exact match exists at different path: ${paths}`);
-        return `Exact match exists at different path: ${paths}. Use fsearch_locate("${filename}") or adjust folder scope.`;
+        return `Exact match exists at different path: ${paths}. Use ultrasearch_locate("${filename}") or adjust folder scope.`;
       }
     } catch {}
   }

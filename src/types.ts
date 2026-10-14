@@ -1,6 +1,6 @@
 import type { AuditTool } from "./telemetry.ts";
 
-export interface FSearchHit {
+export interface UltraSearchHit {
   kind: "file" | "dir" | "link" | "other";
   mtime: number;
   path: string;
@@ -10,16 +10,16 @@ export interface FSearchHit {
   distance?: number;
 }
 
-export interface FSearchSearchResponse {
+export interface UltraSearchSearchResponse {
   id?: number | string | null;
   ok: boolean;
   took_us?: number;
-  hits?: FSearchHit[];
+  hits?: UltraSearchHit[];
   source?: "index" | "scan" | "native_fallback";
   error?: string;
 }
 
-export interface FSearchGrepMatch {
+export interface UltraSearchGrepMatch {
   line: number;
   text: string;
   col?: number;
@@ -28,12 +28,12 @@ export interface FSearchGrepMatch {
   ranges?: Array<[number, number]>;
 }
 
-export interface FSearchGrepFile {
+export interface UltraSearchGrepFile {
   path: string;
-  matches: FSearchGrepMatch[];
+  matches: UltraSearchGrepMatch[];
 }
 
-export interface FSearchGrepResponse {
+export interface UltraSearchGrepResponse {
   id?: number | string | null;
   ok: boolean;
   took_us?: number;
@@ -42,21 +42,21 @@ export interface FSearchGrepResponse {
   read?: number;
   complete?: boolean;
   indexing?: number;
-  files?: FSearchGrepFile[];
+  files?: UltraSearchGrepFile[];
   error?: string;
 }
 
-export interface FSearchMultiGrepResponse {
+export interface UltraSearchMultiGrepResponse {
   id?: number | string | null;
   ok: boolean;
   took_us?: number;
   source?: "index" | "scan" | "native_fallback";
   patterns: string[];
-  files?: FSearchGrepFile[];
+  files?: UltraSearchGrepFile[];
   error?: string;
 }
 
-export interface FSearchStatusResponse {
+export interface UltraSearchStatusResponse {
   id?: number | string | null;
   ok: boolean;
   took_us?: number;
@@ -84,7 +84,7 @@ export interface SearchOptions {
   git?: boolean;
   boost?: boolean;
   skipAudit?: boolean;
-  /** Tool name recorded in the audit log (single-recording layer). Defaults to fsearch_query. */
+  /** Tool name recorded in the audit log (single-recording layer). Defaults to ultrasearch_query. */
   auditTool?: AuditTool;
   /** Respect local .gitignore/.ignore rules declared in the scope root (default: true). */
   respectIgnore?: boolean;
@@ -97,7 +97,7 @@ export interface GrepOptions {
   budget_ms?: number;
   context?: number;
   skipAudit?: boolean;
-  /** Tool name recorded in the audit log (single-recording layer). Defaults to fsearch_grep. */
+  /** Tool name recorded in the audit log (single-recording layer). Defaults to ultrasearch_grep. */
   auditTool?: AuditTool;
   /** Respect local .gitignore/.ignore rules declared in the scope root (default: true). */
   respectIgnore?: boolean;

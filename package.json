@@ -1,8 +1,11 @@
 {
   "name": "pi-ultrasearch",
   "version": "0.3.1",
-  "description": "Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for Pi Agent, Antigravity & T3 Code, backed by fsearch daemon.",
+  "description": "Ultra-fast whole-disk filesystem search, trigram grep, and git-aware code indexing extension for Pi Agent, Antigravity & T3 Code, backed by the resident ultrasearch daemon.",
   "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Ghost-9/pi-ultrasearch.git"
@@ -12,18 +15,36 @@
     "url": "https://github.com/Ghost-9/pi-ultrasearch/issues"
   },
   "bin": {
-    "ultrasearch": "./bin/cli.ts",
-    "ultrasearch-tui": "./bin/tui.ts",
-    "ultrasearch-mcp": "./bin/mcp-server.ts",
-    "fsearch-mcp": "./bin/mcp-server.ts"
+    "ultrasearch": "./dist/bin/cli.js",
+    "ultrasearch-tui": "./dist/bin/tui.js",
+    "ultrasearch-mcp": "./dist/bin/mcp-server.js"
   },
+  "files": [
+    "dist",
+    "src",
+    "bin",
+    "index.ts",
+    "type-stubs.d.ts",
+    "engine/rebrand.sh",
+    "docs",
+    "README.md",
+    "CHANGELOG.md",
+    "ROADMAP.md",
+    "OPTIMIZATIONS.md",
+    "AUDIT-2026-10-14.md",
+    "CONTRIBUTING.md",
+    "NOTICE",
+    "LICENSE"
+  ],
   "pi": {
     "extensions": [
       "index.ts"
     ]
   },
   "scripts": {
-    "test": "node --test test/client.test.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
+    "test": "node --test test/client.test.ts test/mcp.test.ts",
     "test:gate": "node --test test/benchmark-gate.test.ts",
     "test:empirical": "node --test test/empirical-10-tests.ts",
     "bench": "node test/bench.ts",
@@ -37,7 +58,6 @@
     "ultrasearch",
     "ultrasearch-tui",
     "search",
-    "fsearch",
     "grep",
     "ripgrep",
     "tantivy",
@@ -49,6 +69,14 @@
   ],
   "author": "Ghost-9",
   "license": "AGPL-3.0-or-later",
+  "peerDependencies": {
+    "typebox": ">=0.34"
+  },
+  "peerDependenciesMeta": {
+    "typebox": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "typescript": "^5.7.2"

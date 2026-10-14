@@ -8,7 +8,7 @@ Measurement baseline used throughout (this machine, live daemon):
 - warm path search p50 0.37–0.48 ms, p95 ~1.1 ms (small repo)
 - warm trigram grep p50 0.15–0.48 ms, p95 ~0.8 ms
 - warm ping p50 0.031 ms
-- real-session `fsearch_query` p50 41 ms, p95 1.95 s, max 4.0 s
+- real-session `ultrasearch_query` p50 41 ms, p95 1.95 s, max 4.0 s
 - native fallback on 29% of real calls (before the 0.3.1 fallback upgrade)
 - daemon: 3.73 M path entries, 611 k dirs, 129 k content docs (3.5% coverage), 121.5 MB index + 134 MB content
 
@@ -21,7 +21,7 @@ Measurement baseline used throughout (this machine, live daemon):
 | A1 | Cold/global queries cause multi-second tails | 1,721 ms / 1,952 ms / 4,007 ms rows for a whole-disk query | Add `budget_ms` to `op: search`; return partial results with `complete:false` when the budget expires | Bounded worst-case; agent gets *something* instead of waiting | M |
 | A2 | Content coverage is 3.5% and undocumented | `content_docs 129,295` vs `entries 3,732,605` | Configurable include rules (extensions, size caps, dirs), documented policy, warm-up indexing on daemon start | Predictable grep coverage; fewer 0-hit surprises | L |
 | A3 | FSEvents drops force replays; freshness is invisible | `daemon.log`: repeated `FSEvents dropped events before we read them` | Surface `staleness_ms` / `last_event_id` in `op: status`; warn the client when a replay is in flight | Agent can decide to re-run or trust results | M |
-| A4 | Compaction churns the index (4.53 M → 3.67 M entries) | daemon log compaction lines; `fsearch_compact` ~600 ms | Track segment/overlay pressure; pause compaction during active query bursts; expose compaction metrics | Fewer latency spikes; visible index health | M |
+| A4 | Compaction churns the index (4.53 M → 3.67 M entries) | daemon log compaction lines; `ultrasearch_compact` ~600 ms | Track segment/overlay pressure; pause compaction during active query bursts; expose compaction metrics | Fewer latency spikes; visible index health | M |
 | A5 | Single socket = head-of-line blocking | `src/client.ts` uses one `net.Socket` for all requests | Connection pool (2–4 lanes) or request multiplexing with per-request deadlines | Parallel agent calls stop queuing behind a large grep | M |
 | A6 | Whole-disk path search has no ranking budget guard | `limit` truncates results but work continues | Score-then-stop with early termination for low-score matches | Lower p95 on global queries | M |
 
@@ -48,8 +48,8 @@ Measurement baseline used throughout (this machine, live daemon):
 |---|---|---|---|---|---|
 | C1 | "Tokens saved" is a formula, not a measurement | `150 + 75 × hits` in `telemetry.ts` | Build an A/B harness that counts prompt tokens for identical tasks with/without the extension | Real, defensible savings numbers | M |
 | C2 | No per-call output budget visibility | `max_tokens` optional and unused by default | Report `tokenCount`/`truncatedCount` in every grep result (already computed) and surface it in metadata | Agents can self-tune | S |
-| C3 | Tool descriptions are long | `fsearch_query` description ≈ 90 words | Measure prompt cost (harness exists in the skill set); trim to essentials; move details to docs | Lower per-turn prompt tax | S |
-| C4 | MCP exposes 12 tool names (6×2 aliases) | `tools/list` returns `fsearch_*` + `ultrasearch_*` | Make alias exposure configurable; default to one prefix per client | Smaller MCP tool surface | S |
+| C3 | Tool descriptions are long | `ultrasearch_query` description ≈ 90 words | Measure prompt cost (harness exists in the skill set); trim to essentials; move details to docs | Lower per-turn prompt tax | S |
+| C4 | MCP exposes 12 tool names (6×2 aliases) | `tools/list` returns `ultrasearch_*` + `ultrasearch_*` | Make alias exposure configurable; default to one prefix per client | Smaller MCP tool surface | S |
 | C5 | Compact vs verbose not measured | format claim "~30–50% reduction" | Add equivalence check + token comparison to the harness (C1) | Prove the format claim | S |
 
 ## D. Features
@@ -80,8 +80,8 @@ Measurement baseline used throughout (this machine, live daemon):
 | # | Problem | Evidence | Change | Impact | Effort |
 |---|---|---|---|---|---|
 | F1 | PEM regex is malformed | `[[\s\S]*?` in `src/sanitize.ts` | Fix to `([\s\S]*?)`; add multi-line key tests | Correct private-key masking | S |
-| F2 | DLP not applied to path results | `fsearch_query` returns raw paths | Scrub query output with the same redactor | No credential-shaped paths in prompts | S |
-| F3 | Containment only on grep `path_filter` | `fsearch_query` accepts arbitrary scope | Apply `isPathSafe` to all scopes before dispatch | Boundary guarantees match the docs | S |
+| F2 | DLP not applied to path results | `ultrasearch_query` returns raw paths | Scrub query output with the same redactor | No credential-shaped paths in prompts | S |
+| F3 | Containment only on grep `path_filter` | `ultrasearch_query` accepts arbitrary scope | Apply `isPathSafe` to all scopes before dispatch | Boundary guarantees match the docs | S |
 | F4 | Fail-closed blocklists missing | issue #13 objective | Configurable deny-list of dirs/files, enforced before results return | Enterprise policy support | M |
 | F5 | DLP counter was test-only | TUI "masked" count | Real interception count from production paths (0.3.1 feeds the learner) | Honest security telemetry | S |
 
