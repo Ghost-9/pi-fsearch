@@ -26,8 +26,13 @@
     "index.ts",
     "type-stubs.d.ts",
     "engine/rebrand.sh",
+    "docs",
     "README.md",
     "CHANGELOG.md",
+    "ROADMAP.md",
+    "OPTIMIZATIONS.md",
+    "AUDIT-2026-10-14.md",
+    "CONTRIBUTING.md",
     "NOTICE",
     "LICENSE"
   ],
