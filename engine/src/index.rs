@@ -609,7 +609,8 @@ impl Index {
     pub fn path(&self, i: usize, out: &mut Vec<u8>) {
         out.clear();
         if i == 0 {
-            out.push(b'/');
+            // "/" for a whole-disk index; the crawl root for an isolated one.
+            out.extend_from_slice(&self.name(0));
             return;
         }
         // The entries from i up: the walk goes folder to parent folder (one
@@ -629,6 +630,13 @@ impl Index {
         for &e in chain[..k].iter().rev() {
             out.push(b'/');
             out.extend_from_slice(&self.name(e as usize));
+        }
+        // The chain stopped at the root: prefix its own path, so an isolated
+        // crawl root (`ULTRASEARCH_SCAN_ROOT`) yields paths that exist on the
+        // disk. For a whole-disk index that root is "/", and nothing changes.
+        let root = self.name(0);
+        if d == 0 && root.len() > 1 {
+            out.splice(0..0, root.iter().copied());
         }
     }
 
@@ -653,8 +661,10 @@ impl Index {
     }
 
     /// Lay listings out as blocks in DFS order and compute everything derived.
-    /// Listing id 0 is the root ("/").
-    pub fn build(mut ls: Vec<Listing>, event_id: u64, synced_at: u32, home: &[u8]) -> Index {
+    /// Listing id 0 is the root, whose path is `root` ("/" for a whole-disk
+    /// index; a fixture directory under `ULTRASEARCH_SCAN_ROOT` otherwise, so
+    /// an isolated test daemon yields paths that exist).
+    pub fn build(mut ls: Vec<Listing>, event_id: u64, synced_at: u32, home: &[u8], root: &[u8]) -> Index {
         ls.par_iter_mut().for_each(|l| {
             let names = &l.names;
             l.ents.sort_unstable_by(|a, b| {
@@ -677,7 +687,11 @@ impl Index {
         let mut parent = vec![0u32; n_max];
         let mut enc = vec![0u32; n_max]; // sizes as stored (`enc_size`)
         let mut mtime = vec![0u32; n_max];
-        let mut names = Vec::with_capacity(names_max);
+        let mut names = Vec::with_capacity(names_max + root.len());
+        // Entry 0 is the root itself: its name is the crawl root, so
+        // `Index::path(0)` is that directory rather than always `/`.
+        names.extend_from_slice(root);
+        name_len[0] = root.len() as u16;
         kind[0] = KIND_DIR;
         let mut pos = 1usize;
         let mut blocks: Vec<(u32, u32, u32)> = Vec::with_capacity(ls.len()); // (dir entry, start, len)
@@ -1385,7 +1399,7 @@ mod tests {
     fn deep_path() {
         let ent = |kind, child| RawEnt { name_off: 0, name_len: 1, kind, size: 0, mtime: 0, child };
         let ls = (0..=300).map(|i| Listing { id: i, names: b"d".to_vec(), ents: vec![if i < 300 { ent(KIND_DIR, i + 1) } else { ent(0, NONE) }] });
-        let idx = Index::build(ls.collect(), 0, 0, b"/h");
+        let idx = Index::build(ls.collect(), 0, 0, b"/h", b"/");
         let mut p = Vec::new();
         idx.path(idx.n - 1, &mut p);
         assert_eq!(p, b"/d".repeat(301));

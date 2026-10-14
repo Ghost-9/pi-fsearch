@@ -58,7 +58,7 @@ fn build(home: &str, dir: &Path) {
     assert!(!dir.join("index.bin").exists(), "{} already holds an index", dir.display());
     std::fs::create_dir_all(dir).unwrap();
     let t = Instant::now();
-    let idx = Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes());
+    let idx = Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes(), b"/");
     idx.save(&dir.join("index.bin")).unwrap();
     let live = Live::new(Index::load(&dir.join("index.bin")).unwrap());
     let names_s = t.elapsed().as_secs_f64();
@@ -101,7 +101,7 @@ fn build(home: &str, dir: &Path) {
 fn wants(home: &str, dir: &Path) {
     if !dir.join("index.bin").exists() {
         std::fs::create_dir_all(dir).unwrap();
-        Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes()).save(&dir.join("index.bin")).unwrap();
+        Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes(), b"/").save(&dir.join("index.bin")).unwrap();
     }
     let live = Live::new(Index::load(&dir.join("index.bin")).unwrap());
     let t = Instant::now();
@@ -118,7 +118,7 @@ fn wants(home: &str, dir: &Path) {
 }
 
 fn measure(home: &str, dir: &Path) {
-    let live = Live::new(Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes()));
+    let live = Live::new(Index::build(scan_home(home.as_bytes()), 0, fsearch::query::now_secs(), home.as_bytes(), b"/"));
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(8)
         .start_handler(|_| unsafe {

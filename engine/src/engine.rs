@@ -3,6 +3,7 @@
 //! that links this crate.
 
 use crate::content::{self, Content, Grep, GrepResult};
+use crate::env;
 use crate::fsevents::{self, HISTORY_DONE, KERNEL_DROPPED, MUST_SCAN_SUBDIRS, USER_DROPPED};
 use crate::index::Index;
 use crate::live::{Applied, Live};
@@ -50,7 +51,24 @@ pub struct Found {
     pub kind: u8,
     pub size: u64,
     pub mtime: u32,
+    /// The final ordering score: the query's match score plus the two
+    /// components below, when a `near:`/`boost` rerank ran.
     pub score: i32,
+    /// The nearness component added to `score` by the server-side rerank
+    /// (`server::nearness`). **The server owns proximity ranking**: the
+    /// scale is +12 in the `near` file's folder, -3 per folder between the
+    /// two, clamped at 0; the `near` file itself is -20. A daemon-backed
+    /// client must not re-rank on top of this.
+    pub near: i32,
+    /// The frecency component added to `score` (`"boost": true`): opens,
+    /// your commits and the file's mtime as one more open, in score points.
+    pub boost: i32,
+}
+
+impl Default for Found {
+    fn default() -> Found {
+        Found { path: PathBuf::new(), kind: 0, size: 0, mtime: 0, score: 0, near: 0, boost: 0 }
+    }
 }
 
 #[derive(serde::Serialize)]
@@ -61,6 +79,7 @@ pub struct Status {
     pub dirs: usize,
     pub overlay: usize,
     pub removed: usize,
+    /// The event id the index is applied up to.
     pub event_id: u64,
     pub index_bytes: usize,
     pub content_docs: usize,
@@ -70,6 +89,52 @@ pub struct Status {
     pub full_disk_access: bool,
     /// Writes the index files (false: following another process's).
     pub owner: bool,
+
+    // --- Freshness (#19) ---
+    /// The newest event id on the system right now (`FSEventsGetCurrentEventId`).
+    pub last_event_id: u64,
+    /// `last_event_id - event_id`: how far behind the stream the applied
+    /// index is, in event ids. Ids advance for changes anywhere on the
+    /// volume, so this is a *staleness hint*, not a count of missed changes.
+    pub event_lag: u64,
+    /// How long the index has been behind a replay (`FSEvents` dropped events,
+    /// or history was unavailable). **0 means the index is caught up** and a
+    /// fresh result is guaranteed as of the last applied event; a non-zero
+    /// value is the age of the replay window. See `replay_in_progress`.
+    pub staleness_ms: u64,
+    /// A replay/relist is still running: results may miss changes made
+    /// during the window.
+    pub replay_in_progress: bool,
+
+    // --- Compaction (#34) ---
+    /// Compactions (index rebuild + save) since this daemon started.
+    pub compactions: u64,
+    /// How long the last compaction took.
+    pub last_compact_ms: u64,
+    /// Bytes of `index.bin` the last compaction wrote.
+    pub last_compact_bytes: usize,
+    /// Entries in the index the last compaction wrote.
+    pub last_compact_entries: usize,
+    /// Seconds since the last compaction (0: none yet).
+    pub last_compact_secs_ago: u64,
+    /// Times a due compaction was held back because queries were in flight.
+    pub compactions_postponed: u64,
+    /// Queries in flight right now. A compaction waits for this to be 0
+    /// (best effort: at most `COMPACT_DRAIN`).
+    pub queries_in_flight: usize,
+}
+
+/// What the last compaction cost, for `Status` (#34).
+#[derive(Default, Clone, Copy)]
+pub struct CompactStats {
+    pub count: u64,
+    pub last_ms: u64,
+    pub last_bytes: usize,
+    pub last_entries: usize,
+    pub last_secs_ago: u64,
+    pub postponed: u64,
+    /// Compactions in a row forced by the overlay size (churn detector).
+    churn_run: u64,
 }
 
 /// A folder listed on its own on the first run (see `Shared::with_names`).
@@ -127,6 +192,30 @@ struct Shared {
     /// Told the folders of each batch of disk changes (`Engine::on_change`).
     #[allow(clippy::type_complexity)]
     on_change: RwLock<Vec<Box<dyn Fn(&[(&[u8], bool)]) + Send + Sync>>>,
+    /// Searches and greps running right now (#34): a compaction waits for
+    /// this to reach 0 so it does not burn the cores a query needs.
+    inflight: AtomicUsize,
+    /// What the last compaction cost (#34).
+    compact: Mutex<CompactStats>,
+    /// `now_ns` the index last fell behind a replay (0: caught up). The
+    /// non-zero window is `Status::staleness_ms` (#19).
+    stale_since: AtomicU64,
+}
+
+/// Counts one query as in flight for as long as it lives (#34).
+struct Inflight<'a>(&'a AtomicUsize);
+
+impl<'a> Inflight<'a> {
+    fn new(c: &'a AtomicUsize) -> Inflight<'a> {
+        c.fetch_add(1, Ordering::AcqRel);
+        Inflight(c)
+    }
+}
+
+impl Drop for Inflight<'_> {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::AcqRel);
+    }
 }
 
 fn try_lock(f: &std::fs::File) -> bool {
@@ -240,7 +329,7 @@ impl Engine {
         let skip: Vec<Vec<u8>> = match opts.skip {
             // ("/a/" is /a; an empty entry would block everything.)
             Some(v) => v.iter().map(|p| crate::live::normalize(p.as_os_str().as_bytes())).filter(|p| !p.is_empty()).collect(),
-            None if has_full_disk_access() && std::env::var_os("FSEARCH_RESTRICT").is_none() => Vec::new(),
+            None if has_full_disk_access() && !crate::env::restrict() => Vec::new(),
             None => {
                 log("no Full Disk Access: skipping consent-gated folders (grant it to fsearch to index everything)");
                 gated(&opts.home)
@@ -278,6 +367,9 @@ impl Engine {
             content_ready,
             content_early: Mutex::new(Vec::new()),
             on_change: RwLock::new(Vec::new()),
+            inflight: AtomicUsize::new(0),
+            compact: Mutex::new(CompactStats::default()),
+            stale_since: AtomicU64::new(0),
         });
         if owner {
             start_content(&shared);
@@ -357,6 +449,7 @@ impl Engine {
 
     /// Name search.
     pub fn search(&self, q: &Query) -> Result<Vec<Found>, String> {
+        let _inflight = Inflight::new(&self.s.inflight);
         WARM_UNTIL.store(0, Ordering::Relaxed);
         let (found, early) = self.s.with_names(q.scope.as_deref(), |live| {
             let mut p = Vec::new();
@@ -376,7 +469,7 @@ impl Engine {
                             (live.base.kind(i), live.base.size_of(i), live.base.mtime(i))
                         }
                     };
-                    Found { path: PathBuf::from(std::ffi::OsStr::from_bytes(&p)), kind, size, mtime, score: h.score }
+                    Found { path: PathBuf::from(std::ffi::OsStr::from_bytes(&p)), kind, size, mtime, score: h.score, ..Found::default() }
                 })
                 .collect()
         })?;
@@ -388,6 +481,7 @@ impl Engine {
     /// The bool says whether the content index answered (false: files were
     /// picked from the name index and read, for folders it doesn't cover).
     pub fn grep(&self, q: &Query, g: &Grep) -> Result<(GrepResult, bool), String> {
+        let _inflight = Inflight::new(&self.s.inflight);
         WARM_UNTIL.store(0, Ordering::Relaxed);
         let home = self.s.home.as_bytes();
         let indexed = q.scope.as_ref().is_none_or(|s| content::in_scope(s, home));
@@ -428,6 +522,9 @@ impl Engine {
     pub fn status(&self) -> Status {
         let l = self.s.live.read().unwrap();
         let c = self.s.content.read().unwrap();
+        let last_event_id = fsevents::current_id();
+        let event_id = l.as_ref().map_or(0, |l| l.event_id);
+        let cs = *self.s.compact.lock().unwrap();
         Status {
             ready: l.is_some(),
             entries: l.as_ref().map_or(0, |l| l.base.n),
@@ -442,6 +539,17 @@ impl Engine {
             content_pending: self.s.content_pending.load(Ordering::Relaxed),
             full_disk_access: walk::SKIP.get().is_none(),
             owner: self.s.owner(),
+            last_event_id,
+            event_lag: last_event_id.saturating_sub(event_id),
+            staleness_ms: self.s.staleness_ms(),
+            replay_in_progress: self.s.replaying.load(Ordering::Relaxed),
+            compactions: cs.count,
+            last_compact_ms: cs.last_ms,
+            last_compact_bytes: cs.last_bytes,
+            last_compact_entries: cs.last_entries,
+            last_compact_secs_ago: cs.last_secs_ago,
+            compactions_postponed: cs.postponed,
+            queries_in_flight: self.s.inflight.load(Ordering::Relaxed),
         }
     }
 
@@ -484,6 +592,30 @@ impl Shared {
         self.owner.load(Ordering::Relaxed)
     }
 
+    /// How long the index has been behind a replay, or 0 when it is caught
+    /// up (#19). A non-zero value means a search may not see changes made
+    /// during the window; see `Status::staleness_ms`.
+    fn staleness_ms(&self) -> u64 {
+        if !self.replaying.load(Ordering::Relaxed) {
+            return 0;
+        }
+        let since = self.stale_since.load(Ordering::Relaxed);
+        if since == 0 {
+            return 0;
+        }
+        now_ns().saturating_sub(since) / 1_000_000
+    }
+
+    /// The index started falling behind (a replay/relist window opened).
+    fn mark_stale(&self) {
+        self.stale_since.compare_exchange(0, now_ns().max(1), Ordering::AcqRel, Ordering::Relaxed).ok();
+    }
+
+    /// The index is caught up: a replay finished or a full relist applied.
+    fn mark_caught_up(&self) {
+        self.stale_since.store(0, Ordering::Release);
+    }
+
     /// Run `f` on the name index. On the first run, before the whole disk
     /// is listed (~25 s), a search in a folder runs on an index of just
     /// that folder, listed for it: as fast as a tool that only ever scans
@@ -515,7 +647,7 @@ impl Shared {
         let hold = walk::Hold::new();
         let ls = folder_listings(dir);
         drop(hold);
-        let live = Live::new(Index::build(ls, 0, 0, self.home.as_bytes()));
+        let live = Live::new(Index::build(ls, 0, 0, self.home.as_bytes(), &env::scan_root()));
         log(format!("listed {} first: {} entries in {:.2?}", String::from_utf8_lossy(dir), live.base.n, t.elapsed()));
         let e = Arc::new(Early { dir: dir.to_vec(), live, indexing: AtomicBool::new(false) });
         early.push(e.clone());
@@ -545,6 +677,7 @@ impl Shared {
     /// (Re)start the FSEvents stream from `since`, replacing any old one.
     fn watch(&self, since: u64) {
         self.replaying.store(true, Ordering::Relaxed);
+        self.mark_stale();
         self.since.store(since, Ordering::Relaxed);
         let n = self.streams.fetch_add(1, Ordering::Relaxed) + 1;
         // 10 ms: a change shows in ~12 ms (fseventsd's own delay); at 0.1 s,
@@ -891,7 +1024,7 @@ fn full_build(shared: &Shared, event_id: u64) -> Index {
     let t = Instant::now();
     let started = crate::query::now_secs();
     let ls = walk::scan_disk(SCAN_THREADS);
-    let idx = Index::build(ls, event_id, started, shared.home.as_bytes());
+    let idx = Index::build(ls, event_id, started, shared.home.as_bytes(), &env::scan_root());
     let path = shared.dir.join("index.bin");
     let saved = idx.save(&path);
     if let Err(e) = &saved {
@@ -915,14 +1048,36 @@ fn release_memory() {
     unsafe { malloc_zone_pressure_relief(std::ptr::null_mut(), 0) };
 }
 
+/// How long a compaction that is due waits for in-flight queries to drain
+/// before running anyway (#34). Long enough for a burst of agent calls to
+/// finish, short enough that an index never stays un-consolidated for long.
+const COMPACT_DRAIN: Duration = Duration::from_secs(2);
+/// How often `apply_loop` re-checks whether they drained.
+const COMPACT_POLL: Duration = Duration::from_millis(50);
+/// A compaction that repeatedly finds the index above this merges per
+/// `COMPACT_PENDING` is churning: warn, or the daemon silently rebuilds the
+/// index every few minutes on a busy machine (#34).
+const CHURN_WARN: u64 = 4;
+/// How large the pending set may grow before it is an emergency that ignores
+/// the pause: an unbounded overlay costs every search.
+const COMPACT_URGENT: usize = 400_000;
+
 fn compact(shared: &Shared) {
     let t = Instant::now();
+    {
+        let mut cs = shared.compact.lock().unwrap();
+        let pending = shared.live.read().unwrap().as_ref().map_or(0, |l| l.over.len() + l.dead_count);
+        cs.count += 1;
+        // How many compactions in a row were triggered by size (not by the
+        // twice-daily staleness rule, not by an explicit save).
+        if pending > COMPACT_PENDING { cs.churn_run += 1 } else { cs.churn_run = 0 }
+    };
     let (ls, eid, synced) = {
         let g = shared.live.read().unwrap();
         let live = g.as_ref().unwrap();
         (live.to_listings(), live.event_id, live.synced_at)
     };
-    let idx = Index::build(ls, eid, synced, shared.home.as_bytes());
+    let idx = Index::build(ls, eid, synced, shared.home.as_bytes(), &env::scan_root());
     let path = shared.dir.join("index.bin");
     let saved = idx.save(&path);
     if let Err(e) = &saved {
@@ -932,9 +1087,23 @@ fn compact(shared: &Shared) {
     // (After a failed save the file is older: keep the one just built.)
     let idx = if saved.is_ok() { Index::load(&path).unwrap_or(idx) } else { idx };
     let n = idx.n;
+    let bytes = idx.bytes();
+    let took = t.elapsed();
     *shared.live.write().unwrap() = Some(Live::new(idx));
     release_memory();
-    log(format!("compacted to {n} entries in {:.2?}", t.elapsed()));
+    {
+        let mut cs = shared.compact.lock().unwrap();
+        cs.last_ms = took.as_millis() as u64;
+        cs.last_bytes = bytes;
+        cs.last_entries = n;
+    }
+    let churn = shared.compact.lock().unwrap().churn_run;
+    log(format!("compacted to {n} entries, {} MB in {took:.2?}", bytes / 1_000_000));
+    if churn >= CHURN_WARN {
+        log(format!(
+            "warning: index churn — {churn} compactions in a row were forced by the overlay passing {COMPACT_PENDING} entries;              consider a larger COMPACT_PENDING or a quieter indexed area"
+        ));
+    }
 }
 
 /// FSEvents lost track of / (dropped events, or no history back to our
@@ -942,6 +1111,7 @@ fn compact(shared: &Shared) {
 /// folders of indexed text files edited since (an edit in place doesn't
 /// touch its folder). Seconds, instead of recrawling the whole disk.
 fn relist_changed(shared: &Shared, why: &str, flags: u32) {
+    shared.mark_stale();
     let t = Instant::now();
     let started = crate::query::now_secs();
     // synced_at 0 (unknown) relists everything: a full crawl, done in place.
@@ -970,6 +1140,7 @@ fn relist_changed(shared: &Shared, why: &str, flags: u32) {
     let n = dirs.len();
     let _ = shared.content_tx.send((dirs, trees));
     shared.on_change.read().unwrap().iter().for_each(|f| f(&[(&b"/"[..], true)]));
+    shared.mark_caught_up();
     log(format!(
         "FSEvents lost track of / ({why}, flags {flags:#x}): relisted {n} folders changed since {from} in {:.2?} ({stat_time:.2?} checking)",
         t.elapsed()
@@ -1049,12 +1220,18 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
     let ours = real.as_os_str().as_bytes();
     // Events fseventsd dropped before we read them: (replay from, last drop).
     let mut gap: Option<(u64, Instant)> = None;
+    // When a compaction first became due; None: none pending (#34).
+    let mut due_since: Option<Instant> = None;
+    let mut pausing = false;
     // Replays in a row that dropped again; the third falls back to a relist.
     let mut replays = 0;
     let mut pace = Pace::default();
     loop {
         let wait = if gap.is_some() { Duration::from_millis(250) } else { Duration::from_secs(60) };
         let wait = pace.wait(Instant::now()).map_or(wait, |w| w.min(wait));
+        // A compaction held off for in-flight queries: poll, so it runs as
+        // soon as they drain rather than at the next 60 s tick.
+        let wait = if due_since.is_some() { wait.min(COMPACT_POLL) } else { wait };
         let mut events = match rx.recv_timeout(wait) {
             Ok(b) => b,
             Err(RecvTimeoutError::Timeout) => Vec::new(),
@@ -1092,6 +1269,9 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
                 if e.flags & HISTORY_DONE != 0 {
                     log("replay done");
                     shared.replaying.store(false, Ordering::Relaxed);
+                    if gap.is_none() {
+                        shared.mark_caught_up();
+                    }
                     if gap.is_none() {
                         replays = 0;
                     }
@@ -1185,10 +1365,32 @@ fn apply_loop(shared: &Arc<Shared>, rx: Receiver<Vec<fsevents::Event>>) {
             (live.over.len() + live.dead_count, live.event_id != live.base.event_id)
         };
         let asked = shared.save_requested.swap(false, Ordering::Relaxed);
-        if asked || pending > COMPACT_PENDING || (stale && last_save.elapsed() > COMPACT_EVERY) {
-            compact(shared);
-            last_save = Instant::now();
+        let due = asked || pending > COMPACT_PENDING || (stale && last_save.elapsed() > COMPACT_EVERY);
+        if !due {
+            due_since = None;
+            pausing = false;
+            continue;
         }
+        let since = *due_since.get_or_insert_with(Instant::now);
+        // Postpone while queries are in flight (#34): a compaction rebuilds
+        // the whole index and would take the cores a search is waiting on.
+        // Best effort: past COMPACT_DRAIN, or when the overlay has grown past
+        // what a search can afford to scan, it runs regardless.
+        let busy = shared.inflight.load(Ordering::Acquire);
+        if busy > 0 && pending < COMPACT_URGENT && since.elapsed() < COMPACT_DRAIN {
+            if !pausing {
+                pausing = true;
+                shared.compact.lock().unwrap().postponed += 1;
+            }
+            continue;
+        }
+        if pausing {
+            log(format!("compaction ran after {:.0?} with {busy} queries still in flight", since.elapsed()));
+        }
+        due_since = None;
+        pausing = false;
+        compact(shared);
+        last_save = Instant::now();
     }
 }
 

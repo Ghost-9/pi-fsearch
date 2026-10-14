@@ -116,8 +116,11 @@ pub fn scan(root: &[u8], threads: usize) -> Vec<Listing> {
 }
 
 /// The first run's crawl of the whole disk (see `LISTED`, `HOLD`).
+/// `ULTRASEARCH_SCAN_ROOT` replaces `/`, which is what lets a test crawl a
+/// fixture tree instead.
 pub fn scan_disk(threads: usize) -> Vec<Listing> {
-    scan_with(b"/", threads, true)
+    let root = crate::env::scan_root();
+    scan_with(&root, threads, true)
 }
 
 fn scan_with(root: &[u8], threads: usize, disk: bool) -> Vec<Listing> {

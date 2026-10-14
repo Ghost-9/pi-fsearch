@@ -27,11 +27,14 @@ const USAGE: &str = "usage:
 const LABEL: &str = "mt.nd.fsearch";
 
 fn home() -> String {
-    std::env::var("HOME").unwrap_or_else(|_| "/".into())
+    fsearch::env::home()
 }
 
+/// The index directory (`ULTRASEARCH_DIR` / `FSEARCH_DIR`, else the default).
+/// The daemon, the CLI, the MCP server and the tests all resolve it here, so
+/// an isolated instance is one environment variable away.
 fn data_dir() -> PathBuf {
-    let d = PathBuf::from(home()).join("Library/Application Support/FSearch");
+    let d = fsearch::env::data_dir();
     std::fs::create_dir_all(&d).ok();
     d
 }

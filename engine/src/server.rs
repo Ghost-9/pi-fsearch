@@ -141,8 +141,10 @@ fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
                 .iter()
                 .map(|f| Hit {
                     git: annotate.then(|| cx.git.status(f.path.as_os_str().as_bytes()).and_then(git::word)).flatten(),
+                    boost: f.boost,
                     kind: kind_name(f.kind),
                     mtime: f.mtime,
+                    near: f.near,
                     path: f.path.to_string_lossy(),
                     score: f.score,
                     size: f.size,
@@ -190,8 +192,23 @@ struct Hit<'a> {
     kind: &'static str,
     mtime: u32,
     path: std::borrow::Cow<'a, str>,
+    /// The final ordering score. **The server owns ranking**: a client must
+    /// not re-rank daemon results on top of it (the components are below).
     score: i32,
+    /// The nearness component of `score` (`near:`), 0 when none applied.
+    /// Scale: +12 in the `near` file's folder, -3 per folder of distance,
+    /// clamped at 0; the `near` file itself is -20. See `nearness`.
+    #[serde(skip_serializing_if = "is_zero")]
+    near: i32,
+    /// The frecency component of `score` (`"boost": true`), 0 when none
+    /// applied: opens, commits and mtime as one more open (`frecency::boost`).
+    #[serde(skip_serializing_if = "is_zero")]
+    boost: i32,
     size: u64,
+}
+
+fn is_zero(v: &i32) -> bool {
+    *v == 0
 }
 
 fn run(v: &Value, cx: &Ctx) -> Result<Reply, String> {
@@ -521,7 +538,7 @@ fn found(q: &Query, path: &[u8]) -> Option<Found> {
     };
     let (size, mtime) = (m.size(), m.mtime().clamp(0, u32::MAX as i64) as u32);
     let score = q.match_path(path, kind, size, mtime)?;
-    Some(Found { path: PathBuf::from(std::ffi::OsStr::from_bytes(path)), kind, size, mtime, score })
+    Some(Found { path: PathBuf::from(std::ffi::OsStr::from_bytes(path)), kind, size, mtime, score, ..Found::default() })
 }
 
 /// The top folder of the repo holding `dir`, if any.
@@ -538,7 +555,7 @@ fn git_root(dir: &[u8]) -> Option<Vec<u8>> {
 /// A path as the index has it: `~` expanded, symlinks resolved.
 fn real(p: &str) -> Vec<u8> {
     let p = match p.strip_prefix('~') {
-        Some(rest) => format!("{}{rest}", std::env::var("HOME").unwrap_or_default()),
+        Some(rest) => format!("{}{rest}", fsearch::env::home()),
         None => p.to_string(),
     };
     std::fs::canonicalize(&p).map_or_else(|_| p.into_bytes(), |c| c.as_os_str().as_bytes().to_vec())
@@ -600,10 +617,12 @@ fn rerank(cx: &Ctx, hits: &mut [Found], boost: bool, near: Option<&[u8]>) {
     for f in &mut hits[..n] {
         let p = f.path.as_os_str().as_bytes();
         if boost {
-            f.score += frecency::boost(cx.frecency.score(p, now) + cx.git.history(p, now) + frecency::decay(now.saturating_sub(f.mtime)));
+            f.boost = frecency::boost(cx.frecency.score(p, now) + cx.git.history(p, now) + frecency::decay(now.saturating_sub(f.mtime)));
+            f.score += f.boost;
         }
         if let Some(near) = near {
-            f.score += nearness(near, p);
+            f.near = nearness(near, p);
+            f.score += f.near;
         }
     }
     // Stable: equals keep their order.
@@ -612,9 +631,17 @@ fn rerank(cx: &Ctx, hits: &mut [Found], boost: bool, near: Option<&[u8]>) {
 
 /// How near `path` is to `near` (the file you're in): +12 in its folder,
 /// 3 less per folder between them; the file itself -20 (it isn't what you
-/// are looking for). Replaying Linux history (`near`: another file of the
-/// commit), the file searched for ranks first for its name 84% -> 89%
+/// are looking for). Clamped at 0: a file many folders away gets no penalty
+/// beyond losing the lift. Replaying Linux history (`near`: another file of
+/// the commit), the file searched for ranks first for its name 84% -> 89%
 /// on top of frecency, and an unrelated `near` costs nothing measurable.
+///
+/// **This is the one proximity ranker.** The value is returned in each hit's
+/// `near` field; `score` is the match score plus it. A client must not apply
+/// a second proximity formula on daemon results (it used to: +100 in
+/// `applyProximityRanking`, a different scale on the same signal). The client
+/// keeps its own ranking only for the native `find`/`rg` fallback, where no
+/// daemon score exists.
 fn nearness(near: &[u8], path: &[u8]) -> i32 {
     if path == near {
         return -20;

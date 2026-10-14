@@ -31,7 +31,7 @@ fn snap(dir: &Path, home: &str) {
     let _ = fsearch::walk::SKIP.set(fsearch::gated(&real).into_iter().chain(fsearch::gated(home)).collect());
     let t = Instant::now();
     let ls = fsearch::walk::scan(b"/", 8);
-    let idx = Index::build(ls, 0, fsearch::query::now_secs(), home.as_bytes());
+    let idx = Index::build(ls, 0, fsearch::query::now_secs(), home.as_bytes(), b"/");
     std::fs::create_dir_all(dir.join("content")).unwrap();
     idx.save(&dir.join("index.bin")).unwrap();
     eprintln!("{} entries, {} names, {:.1} s", idx.n, idx.u, t.elapsed().as_secs_f64());

@@ -552,7 +552,7 @@ mod tests {
             }
             ls.push(l);
         }
-        Index::build(ls, 0, 0, b"")
+        Index::build(ls, 0, 0, b"", b"/")
     }
 
     /// A folder deleted (or made a file) while only its parent's event
@@ -589,7 +589,7 @@ mod tests {
     /// mounted volume: it is an entry flagged as a scan flags it.
     #[test]
     fn mount_point_not_crawled() {
-        let live = Live::new(Index::build(vec![Listing::default()], 0, 0, b""));
+        let live = Live::new(Index::build(vec![Listing::default()], 0, 0, b"", b"/"));
         let f = live.fetch(b"/dev", true);
         assert!(f.scans.is_empty() && f.attrs.is_some_and(|a| a.kind & FLAG_MOUNT != 0));
         assert!(!walk::is_mount(b"/usr/bin") && !walk::is_mount(b"/Users") && walk::is_mount(b"/System/Volumes/Data"));

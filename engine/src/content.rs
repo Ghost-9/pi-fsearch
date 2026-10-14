@@ -4802,7 +4802,7 @@ mod tests {
             Listing { id: 2, ..Default::default() },
             Listing { id: 3, ..Default::default() },
         ];
-        let live = Live::new(crate::index::Index::build(ls, 0, 0, b"/Users/me"));
+        let live = Live::new(crate::index::Index::build(ls, 0, 0, b"/Users/me", b"/"));
         let synced = |tree: &[u8]| wants(&live, b"/Users/me", &[], &[tree.to_vec()]).into_iter().map(|w| (w.0, w.1)).collect::<Vec<_>>();
         assert_eq!(synced(b"/Users/m"), []);
         for above in [&b"/"[..], b"/Users"] {

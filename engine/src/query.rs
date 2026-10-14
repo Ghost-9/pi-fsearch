@@ -4063,7 +4063,7 @@ mod tests {
     /// An index of "/" holding files `abc` and `abd`.
     fn live() -> Live {
         let ent = |off| RawEnt { name_off: off, name_len: 3, kind: KIND_FILE, size: 1, mtime: 1, child: NONE };
-        Live::new(Index::build(vec![Listing { id: 0, names: b"abcabd".to_vec(), ents: vec![ent(0), ent(3)] }], 0, 0, b"/h"))
+        Live::new(Index::build(vec![Listing { id: 0, names: b"abcabd".to_vec(), ents: vec![ent(0), ent(3)] }], 0, 0, b"/h", b"/"))
     }
 
     /// limit: takes any number; the largest overflowed `TopK`.

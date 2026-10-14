@@ -79,7 +79,7 @@ fn result(id: &Value, r: Value) -> Value {
 
 impl Session {
     fn new(dir: PathBuf) -> Session {
-        let home = std::env::var("HOME").unwrap_or_else(|_| "/".into());
+        let home = fsearch::env::home();
         let cwd = std::env::current_dir().map(|p| p.to_string_lossy().into_owned()).unwrap_or_else(|_| home.clone());
         // Real paths, as the index holds them (/tmp is /private/tmp).
         let real = |p: String| std::fs::canonicalize(&p).map_or(p, |c| c.to_string_lossy().into_owned());
