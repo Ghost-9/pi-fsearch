@@ -68,7 +68,7 @@ function parseArgs(argv) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const client = new FSearchClient();
+  const client = new FSearchClient({ autoSpawnDaemon: false });
   if (!(await client.ping())) {
     console.error("REFUSED: daemon not running; token A/B needs the live tool path.");
     client.close();

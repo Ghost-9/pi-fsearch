@@ -56,8 +56,8 @@ function bytesOf(res) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const pooled = new FSearchClient({ lanes: 3 });
-  const single = new FSearchClient({ lanes: 1 });
+  const pooled = new FSearchClient({ lanes: 3, autoSpawnDaemon: false });
+  const single = new FSearchClient({ lanes: 1, autoSpawnDaemon: false });
   if (!(await pooled.ping())) {
     console.error("REFUSED: daemon not running; the lane benchmark needs the live daemon.");
     process.exit(2);

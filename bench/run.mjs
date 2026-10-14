@@ -116,7 +116,7 @@ async function main() {
     process.exit(1);
   }
 
-  const client = new FSearchClient();
+  const client = new FSearchClient({ autoSpawnDaemon: false });
   const daemonUp = await client.ping();
   if (!daemonUp) {
     console.error("REFUSED: UltraSearch daemon is not running; multi-scope benchmarks require the resident index.");
