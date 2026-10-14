@@ -1,0 +1,2153 @@
+{
+  "meta": {
+    "suite": "judgments",
+    "wave": "wave1/baseline",
+    "generated_at": "2026-10-14T20:36:05.166Z",
+    "date_short": "2026-10-14",
+    "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2",
+    "branch": "wave1/baseline",
+    "machine": {
+      "chip": "Apple M1 Pro",
+      "model": "MacBookPro18,1",
+      "macos": "27.0.1",
+      "kernel": "27.0.0",
+      "node": "v26.11.1",
+      "v8": "14.6.202.34-node.37",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "arch": "arm64",
+      "platform": "darwin",
+      "cpuCount": 10,
+      "totalMemBytes": 17179869184,
+      "loadavg_at_start": [
+        5.4091796875,
+        5.1142578125,
+        4.8125
+      ]
+    },
+    "daemon": {
+      "content_bytes": 142217344,
+      "content_docs": 129654,
+      "content_pending": 0,
+      "content_segments": 39,
+      "dirs": 629510,
+      "entries": 3919708,
+      "event_id": 5678040034,
+      "full_disk_access": true,
+      "id": 1,
+      "index_bytes": 124888128,
+      "ok": true,
+      "overlay": 435,
+      "owner": true,
+      "removed": 241
+    },
+    "judgments": {
+      "path": "/Users/batra/.pi/agent/extensions/pi-ultrasearch/bench/judgments/wave1-judgments.json",
+      "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+      "schema": "ultrasearch.judgments/v1",
+      "version": 1,
+      "author": "wave1/advisor",
+      "query_count": 30,
+      "negatives": 4,
+      "must_hit": 26
+    },
+    "corpus": {
+      "id": "ultrasearch-repo@0a16e50",
+      "root": "/Users/batra/ultrasearch-waves/advisor",
+      "files_found": 36,
+      "files_declared": 33,
+      "commit": "a3525a5b96a2ea77b1eeb0487ca2d52b27289f11",
+      "dirty": false
+    },
+    "metric_definitions": {
+      "recall_at_k": "rel = expected grade>=1; |rel in top-k| / |rel|",
+      "success_recall_at_10": "rel = expected grade>=2",
+      "mrr_at_10_rel2": "1/rank of first grade>=2 result, else 0 (rel1 variant also recorded)",
+      "ndcg_at_10": "gain=2^grade-1, discount=1/log2(rank+1), IDCG over all expected grades (linear variant recorded)",
+      "reformulation_signal": "top-1 grade < 2",
+      "zero_result_rate": "must_hit queries with 0 retrieved / must_hit queries",
+      "false_positive_rate": "negative queries with retrieved>0 (or, for R3, no actionable error) / negative queries"
+    },
+    "audit_note": "PI_ULTRASEARCH_TEST=1; R3 audit-row detection uses the isolated test audit log window.",
+    "frecency_precondition": {
+      "open_result": true,
+      "wait_ms": 30000
+    },
+    "status": "provisional",
+    "environment": {
+      "status": "provisional",
+      "gate_pass": false,
+      "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "gate_load1_max": 1.5,
+      "checks": {
+        "ac_power": false,
+        "load1_lt_gate": false,
+        "no_cargo_rustc": false
+      },
+      "power": {
+        "on_ac": false,
+        "percent": 23,
+        "discharging": true,
+        "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t23%; discharging; 0:52 remaining present: true"
+      },
+      "loadavg": [
+        5.4091796875,
+        5.1142578125,
+        4.8125
+      ],
+      "competing_processes": [
+        "14358 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+        "15169 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+        "15263 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        "17796 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc"
+      ],
+      "daemon_processes": [
+        "13298 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+      ],
+      "daemon_pid": "13298",
+      "daemon_status": {
+        "ok": true,
+        "entries": 3919708,
+        "content_docs": 129654,
+        "content_pending": 0,
+        "index_bytes": 124888128,
+        "content_bytes": 142217344,
+        "full_disk_access": true
+      },
+      "checked_at": "2026-10-14T20:36:05.165Z",
+      "pre_run": {
+        "status": "provisional",
+        "gate_pass": false,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": false,
+          "load1_lt_gate": false,
+          "no_cargo_rustc": false
+        },
+        "power": {
+          "on_ac": false,
+          "percent": 23,
+          "discharging": true,
+          "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t23%; discharging; 0:52 remaining present: true"
+        },
+        "loadavg": [
+          5.4091796875,
+          5.1142578125,
+          4.8125
+        ],
+        "competing_processes": [
+          "14358 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+          "15169 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+          "15263 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+          "17796 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc"
+        ],
+        "daemon_processes": [
+          "13298 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "13298",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3919708,
+          "content_docs": 129654,
+          "content_pending": 0,
+          "index_bytes": 124888128,
+          "content_bytes": 142217344,
+          "full_disk_access": true
+        },
+        "checked_at": "2026-10-14T20:36:05.165Z"
+      },
+      "end_of_run": {
+        "status": "provisional",
+        "gate_pass": false,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": false,
+          "load1_lt_gate": false,
+          "no_cargo_rustc": false
+        },
+        "power": {
+          "on_ac": false,
+          "percent": 22,
+          "discharging": true,
+          "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t22%; discharging; 0:43 remaining present: true"
+        },
+        "loadavg": [
+          4.279296875,
+          4.86328125,
+          4.73193359375
+        ],
+        "competing_processes": [
+          "18895 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo"
+        ],
+        "daemon_processes": [
+          "19684 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "19684",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3919708,
+          "content_docs": 129654,
+          "content_pending": 0,
+          "index_bytes": 124888128,
+          "content_bytes": 142217344,
+          "full_disk_access": true
+        },
+        "checked_at": "2026-10-14T20:36:38.651Z"
+      },
+      "degraded_during_run": true
+    }
+  },
+  "aggregates": {
+    "must_hit_queries": 26,
+    "negatives": 4,
+    "recall_at_1": 0.30416666666666664,
+    "recall_at_3": 0.5346153846153846,
+    "recall_at_5": 0.5987179487179487,
+    "recall_at_10": 0.6448717948717948,
+    "success_recall_at_10": 0.7115384615384616,
+    "mrr_at_10_rel1": 0.6955128205128206,
+    "mrr_at_10_rel2": 0.624145299145299,
+    "ndcg_at_10": 0.6138319306658792,
+    "ndcg_at_10_linear": 0.5967888950083703,
+    "zero_result_rate": 0.038461538461538464,
+    "false_positive_rate": 0.75,
+    "reformulation_signal": 0.46153846153846156,
+    "reformulation_by_lane": {
+      "path": 0,
+      "grep-literal": 1,
+      "grep-regex": 0.5,
+      "symbol": 0.25,
+      "semantic": 1,
+      "ranking-frecency": 0,
+      "ranking-proximity": 0,
+      "ranking-boost-ab": 0,
+      "ranking-symbol-intrafile": 0
+    },
+    "ndcg_by_lane": {
+      "path": 0.9012370717401729,
+      "grep-literal": 0.5396535536215119,
+      "grep-regex": 0.5934665950620902,
+      "symbol": 0.636622777806004,
+      "semantic": 0.08740525443740071,
+      "ranking-frecency": 0.9173194127129571,
+      "ranking-proximity": 0.8609101556836468,
+      "ranking-boost-ab": 0.9052598568324595,
+      "ranking-symbol-intrafile": 1
+    },
+    "semantic_ndcg_at_10": 0.08740525443740071,
+    "acceptance_gates": {
+      "recall@10 == 1.00 on all must_hit queries": {
+        "observed": 0.6448717948717948,
+        "pass": false
+      },
+      "zero_result_rate == 0.00 on must_hit queries": {
+        "observed": 0.038461538461538464,
+        "pass": false
+      },
+      "false_positive_rate == 0.00 on the 4 negative queries (spec text says 5)": {
+        "observed": 0.75,
+        "pass": false
+      },
+      "nDCG@10 >= 0.75 overall": {
+        "observed": 0.6138319306658792,
+        "pass": false
+      },
+      "nDCG@10 >= 0.60 semantic lane": {
+        "observed": 0.08740525443740071,
+        "pass": false
+      },
+      "reformulation_signal <= 0.20 overall": {
+        "observed": 0.46153846153846156,
+        "pass": false
+      },
+      "reformulation_signal <= 0.35 per lane": {
+        "observed": {
+          "path": 0,
+          "grep-literal": 1,
+          "grep-regex": 0.5,
+          "symbol": 0.25,
+          "semantic": 1,
+          "ranking-frecency": 0,
+          "ranking-proximity": 0,
+          "ranking-boost-ab": 0,
+          "ranking-symbol-intrafile": 0
+        },
+        "pass": false
+      }
+    },
+    "acceptance_all_pass": false,
+    "acceptance_source": [
+      "recall@10 == 1.00 on all must_hit queries",
+      "zero_result_rate == 0.00 on must_hit queries",
+      "false_positive_rate == 0.00 on the 5 negative queries",
+      "nDCG@10 >= 0.75 overall and >= 0.60 for the semantic lane (the lane with the weakest ranking evidence)",
+      "reformulation_signal <= 0.20 overall",
+      "ranking-claim deltas reported as paired per-query nDCG/MRR with CI; a claim ships only if the CI excludes 0 and the point delta is >= +0.05 nDCG@10"
+    ]
+  },
+  "queries": [
+    {
+      "id": "P1",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "package.json",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"package.json\", in=<root>, limit=10)",
+      "ms": 26.46979199999987,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "package.json"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "package.json",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P2",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "ci.yml",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"ci.yml\", in=<root>, limit=10)",
+      "ms": 1.2645830000001297,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        ".github/workflows/ci.yml"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": ".github/workflows/ci.yml",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P3",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "client.ts",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"client.ts\", in=<root>, limit=10)",
+      "ms": 0.9571670000004815,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.7871546029909718,
+        "ndcg_at_10_linear": 0.7039180890341347,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P5",
+      "lane": "path",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "bench",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"bench\", in=<root>, limit=10)",
+      "ms": 0.9880000000011933,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "bench",
+        "test/deep-bench.ts"
+      ],
+      "retrieved_count": 4,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "test/bench.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 3
+          },
+          {
+            "rank": 3,
+            "path": "bench",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "test/deep-bench.ts",
+            "grade": 2
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.6666666666666666,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9838988741111756,
+        "ndcg_at_10_linear": 0.9764717729212657,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "codemode",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"codemode\", in=<root>, limit=10)",
+      "ms": 0.935209000002942,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/codemode.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/codemode.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "ndcg_at_10_linear": 0.7262287617954056,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P7",
+      "lane": "path",
+      "difficulty": "tail",
+      "must_hit": true,
+      "negative": false,
+      "query": "src/**/*.ts",
+      "params": {
+        "limit": 30
+      },
+      "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
+      "ms": 1.205167000000074,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "src/mcp.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts",
+        "src/formatter.ts",
+        "src/sanitize.ts",
+        "src/observer.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/semantic.ts",
+        "src/recursive-learning.ts"
+      ],
+      "retrieved_count": 12,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          },
+          {
+            "rank": 4,
+            "path": "src/tui.ts",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "src/types.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "src/formatter.ts",
+            "grade": 3
+          },
+          {
+            "rank": 7,
+            "path": "src/sanitize.ts",
+            "grade": 2
+          },
+          {
+            "rank": 8,
+            "path": "src/observer.ts",
+            "grade": 2
+          },
+          {
+            "rank": 9,
+            "path": "src/codemode.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "src/compactor.ts",
+            "grade": 2
+          }
+        ],
+        "recall_at_1": 0.125,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.25,
+        "recall_at_10": 0.75,
+        "success_recall_at_10": 0.75,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.775458797655243,
+        "ndcg_at_10_linear": 0.7416270534449673,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P8",
+      "lane": "path",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "kubectl_helm_chart_values",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
+      "ms": 1.05120800000077,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [],
+      "retrieved_count": 0,
+      "control": null,
+      "extra": null,
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "G1",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "estimateTokensSaved",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
+      "ms": 3.7783330000020214,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "bench/judgments/wave1-judgments.json",
+        "AUDIT-2026-10-14.md",
+        "src/telemetry.ts"
+      ],
+      "retrieved_count": 3,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 3,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 0.5,
+        "mrr_at_10_rel2": 0.3333333333333333,
+        "ndcg_at_10": 0.5413402936435214,
+        "ndcg_at_10_linear": 0.58688267143572,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G2",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "enforceExactQuery",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.8463750000009895,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "bench/judgments/wave1-judgments.json",
+        "src/client.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 0.5,
+        "mrr_at_10_rel2": 0.5,
+        "ndcg_at_10": 0.6309297535714575,
+        "ndcg_at_10_linear": 0.6309297535714574,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G3",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "SYMBOL_REGEX",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.9791250000016589,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "src/formatter.ts"
+      ],
+      "retrieved_count": 3,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "ADVISOR-WAVE1.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/formatter.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 0.3333333333333333,
+        "mrr_at_10_rel2": 0.3333333333333333,
+        "ndcg_at_10": 0.5,
+        "ndcg_at_10_linear": 0.5,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G4",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "fsearch.sock",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.9932500000031723,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "CHANGELOG.md",
+        "src/client.ts"
+      ],
+      "retrieved_count": 4,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "ADVISOR-WAVE1.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 0.25,
+        "mrr_at_10_rel2": 0.25,
+        "ndcg_at_10": 0.3950679673211227,
+        "ndcg_at_10_linear": 0.35583989829307827,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G5",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "150 + hitCount",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.8786670000008598,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "bench/judgments/wave1-judgments.json",
+        "src/telemetry.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 0.5,
+        "mrr_at_10_rel2": 0.5,
+        "ndcg_at_10": 0.6309297535714575,
+        "ndcg_at_10_linear": 0.6309297535714574,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G6",
+      "lane": "grep-literal",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.7915420000026643,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "bench/judgments/wave1-judgments.json"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "zero_result": false,
+      "false_positive": true
+    },
+    {
+      "id": "R1",
+      "lane": "grep-regex",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "class\\s+\\w+Client",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
+      "ms": 1.5670830000017304,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "R2",
+      "lane": "grep-regex",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
+      "ms": 1.3332919999993464,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "bench/judgments/wave1-judgments.json",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "index.ts",
+        "src/client.ts",
+        "src/compactor.ts",
+        "src/observer.ts"
+      ],
+      "retrieved_count": 10,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 3,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 5,
+            "path": "README.md",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "src/client.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "src/compactor.ts",
+            "grade": 3
+          },
+          {
+            "rank": 10,
+            "path": "src/observer.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0.16666666666666666,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 0.25,
+        "mrr_at_10_rel1": 0.5,
+        "mrr_at_10_rel2": 0.1111111111111111,
+        "ndcg_at_10": 0.18693319012418044,
+        "ndcg_at_10_linear": 0.2456729500445382,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "R3",
+      "lane": "grep-regex",
+      "difficulty": "adversarial",
+      "must_hit": false,
+      "negative": true,
+      "query": "(a+)+$",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
+      "ms": 0.9848339999989548,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "AUDIT-2026-10-14.md",
+        "LICENSE"
+      ],
+      "retrieved_count": 3,
+      "control": null,
+      "extra": null,
+      "zero_result": false,
+      "error_class": "no_error",
+      "false_positive": true,
+      "audit_row_present": true,
+      "reached_socket_or_recorder": true
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+      "ms": 1.3219580000004498,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.2,
+        "recall_at_3": 0.2,
+        "recall_at_5": 0.2,
+        "recall_at_10": 0.2,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.6855809555403688,
+        "ndcg_at_10_linear": 0.5376932973453407,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "S2",
+      "lane": "symbol",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "detectSymbolTag",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
+      "ms": 2.3489169999993464,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/formatter.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/formatter.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "applyProximityRanking",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
+      "ms": 0.9300409999996191,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [],
+      "retrieved_count": 0,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [],
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 0,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0,
+        "ndcg_at_10_linear": 0,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": true,
+      "false_positive": null
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "resolveWorktreeRoot",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
+      "ms": 0.8662079999994603,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "index.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "index.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "ndcg_at_10_linear": 0.7262287617954056,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M1",
+      "lane": "semantic",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "where are credentials scrubbed before results reach the model",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
+      "ms": 5.287500000002183,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md",
+        "src/observer.ts",
+        "test/client.test.ts",
+        "CONTRIBUTING.md",
+        "README.md",
+        "index.ts",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/tui.ts",
+        "test/empirical-10-tests.ts",
+        "src/formatter.ts",
+        "src/compactor.ts",
+        "src/types.ts",
+        "src/client.ts",
+        "bin/cli.ts",
+        "src/semantic.ts"
+      ],
+      "retrieved_count": 22,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "where",
+          "are",
+          "credentials",
+          "scrubbed",
+          "before",
+          "results",
+          "reach",
+          "the"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "ADVISOR-WAVE1.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 4,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "src/observer.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "test/client.test.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.25,
+        "recall_at_10": 0.25,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 0.3333333333333333,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.0508985330863299,
+        "ndcg_at_10_linear": 0.09629206108926106,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M2",
+      "lane": "semantic",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "how is the token savings number computed",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
+      "ms": 1255.0346249999966,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "index.ts",
+        "src/formatter.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "CONTRIBUTING.md",
+        "README.md",
+        "ROADMAP.md",
+        "bin/cli.ts",
+        "src/client.ts",
+        "package.json",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "test/client.test.ts",
+        "test/empirical-10-tests.ts",
+        "src/telemetry.ts"
+      ],
+      "retrieved_count": 21,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "how",
+          "the",
+          "token",
+          "auth",
+          "login",
+          "jwt",
+          "password",
+          "session"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "ADVISOR-WAVE1.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 7,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "src/formatter.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "src/tui.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 0.16666666666666666,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.037923472700262695,
+        "ndcg_at_10_linear": 0.07480422019459036,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M3",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "what happens when the daemon socket dies mid-session",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
+      "ms": 4.704375000001164,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "README.md",
+        "ROADMAP.md",
+        "CONTRIBUTING.md",
+        "OPTIMIZATIONS.md",
+        "index.ts",
+        "src/formatter.ts",
+        "src/telemetry.ts",
+        "CHANGELOG.md",
+        "package.json",
+        "src/client.ts",
+        "src/recursive-learning.ts"
+      ],
+      "retrieved_count": 15,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "what",
+          "happens",
+          "when",
+          "the",
+          "daemon",
+          "socket",
+          "dies",
+          "mid"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "ADVISOR-WAVE1.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 4,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "README.md",
+            "grade": 1
+          },
+          {
+            "rank": 6,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "src/formatter.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 0.3333333333333333,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.10907151262068121,
+        "ndcg_at_10_linear": 0.21468600536424026,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M4",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "what does CI run on every push",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
+      "ms": 3.3093749999970896,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "README.md",
+        "ROADMAP.md",
+        "src/compactor.ts",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "OPTIMIZATIONS.md",
+        "index.ts",
+        "src/client.ts",
+        "src/formatter.ts",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 19,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "what",
+          "does",
+          "run",
+          "every",
+          "push"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "ADVISOR-WAVE1.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 4,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "README.md",
+            "grade": 2
+          },
+          {
+            "rank": 6,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "src/compactor.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 0.3333333333333333,
+        "mrr_at_10_rel2": 0.2,
+        "ndcg_at_10": 0.17679076742932592,
+        "ndcg_at_10_linear": 0.26748072104153664,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M5",
+      "lane": "semantic",
+      "difficulty": "tail",
+      "must_hit": true,
+      "negative": false,
+      "query": "keep search results inside the repository boundary",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
+      "ms": 4.135999999998603,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "bin/cli.ts",
+        "CONTRIBUTING.md",
+        "ROADMAP.md",
+        "index.ts",
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/mcp.ts",
+        "package.json",
+        "src/sanitize.ts",
+        "test/client.test.ts",
+        "test/empirical-10-tests.ts"
+      ],
+      "retrieved_count": 18,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "keep",
+          "search",
+          "results",
+          "inside",
+          "the",
+          "repository",
+          "boundary"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "ADVISOR-WAVE1.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "bench/judgments/wave1-judgments.json",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 4,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 7,
+            "path": "README.md",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "bin/cli.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "ROADMAP.md",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0.2,
+        "recall_at_5": 0.2,
+        "recall_at_10": 0.4,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 0.3333333333333333,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.06234198635040381,
+        "ndcg_at_10_linear": 0.1275956083199522,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M6",
+      "lane": "semantic",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "kubernetes helm chart values for a redis cluster",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
+      "ms": 4.328165999999328,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "ADVISOR-WAVE1.md",
+        "bench/judgments/wave1-judgments.json",
+        "README.md",
+        "src/client.ts",
+        "src/recursive-learning.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md",
+        "index.ts",
+        "src/sanitize.ts",
+        "src/semantic.ts"
+      ],
+      "retrieved_count": 16,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "kubernetes",
+          "helm",
+          "chart",
+          "values",
+          "for",
+          "redis",
+          "cache",
+          "memoize"
+        ],
+        "confidence": 1
+      },
+      "zero_result": false,
+      "false_positive": true
+    },
+    {
+      "id": "K1",
+      "lane": "ranking-frecency",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "readme",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"readme\", in=<root>, limit=10)",
+      "ms": 2.6852919999946607,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "README.md"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "README.md",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9173194127129571,
+        "ndcg_at_10_linear": 0.8262346571285599,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "sanitize",
+      "params": {
+        "near": "src/formatter.ts",
+        "limit": 10
+      },
+      "call": "search(\"sanitize\", in=<root>, limit=10, near=/Users/batra/ultrasearch-waves/advisor/src/formatter.ts)",
+      "ms": 1.1384170000019367,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/sanitize.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/sanitize.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "ndcg_at_10_linear": 0.7262287617954056,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "boost": true
+      },
+      "call": "search(\"client\", in=<root>, limit=10, boost=true)",
+      "ms": 0.9845839999979944,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": {
+        "params": {
+          "boost": false
+        },
+        "call": "boost=false",
+        "ms": 0.4525000000066939,
+        "retrieved": [
+          "src/client.ts",
+          "test/client.test.ts"
+        ],
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/client.test.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_1": 0.25,
+          "recall_at_3": 0.5,
+          "recall_at_5": 0.5,
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10_rel1": 1,
+          "mrr_at_10_rel2": 1,
+          "ndcg_at_10": 0.9052598568324595,
+          "ndcg_at_10_linear": 0.8207664720313073,
+          "top1_grade": 3,
+          "reformulation_signal": false
+        }
+      },
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/client.test.ts",
+            "grade": 2
+          }
+        ],
+        "recall_at_1": 0.25,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9052598568324595,
+        "ndcg_at_10_linear": 0.8207664720313073,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null,
+      "boost_delta_ndcg10": 0
+    },
+    {
+      "id": "K4",
+      "lane": "ranking-symbol-intrafile",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "path_filter": "src/client.ts",
+        "limit": 10
+      },
+      "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+      "ms": 1.512457999997423,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    }
+  ]
+}
