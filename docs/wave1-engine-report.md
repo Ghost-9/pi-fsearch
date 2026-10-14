@@ -211,8 +211,60 @@ asserted forwarding now asserts the removal and that the real ranking inputs (`n
 
 The vendored engine was then rebranded with `engine/rebrand.sh` and installed as the in-repo canonical source:
 crate/binary `ultrasearch`, data dir `UltraSearch`, socket `ultrasearch.sock`, `ULTRASEARCH_*` only.
-`LICENSE` stayed byte-identical (md5 `0dc34369214adc92ff6442e372cd3989`); the token scan is clean outside
-`NOTICE`, the upstream URL, `rebrand.sh` and `LICENSE`; and the source-level guard now covers `engine/`.
+
+| Rebrand evidence | Value |
+|---|---|
+| `engine/LICENSE` md5 (must stay byte-identical) | `0dc34369214adc92ff6442e372cd3989` — equal to upstream and to the pre-rebrand copy |
+| Token scan (`fsearch`, any case, all file types) | **0** outside `NOTICE`, the upstream URL in `README.md`, `rebrand.sh` (the mapping tool) and `LICENSE` |
+| Idempotency | second run over its own output == third run (diff clean); **the first pass is not its own fixpoint** — see below |
+| Attribution | `engine/NOTICE` keeps upstream project, version `0.2.1`, author, URL and licence terms, and now also lists the local change set |
+| Guard | `test/mcp.test.ts` "the vendored daemon carries no upstream name" walks `engine/` and asserts the four exceptions explicitly, so a stray token (a path, socket, package name or data dir the rename missed) fails the suite |
+
+`engine/rebrand.sh` has two ordering defects that leave the *first* pass slightly wrong (both in `README.md`
+only): it prepends its fork header before the token swap, so the header names the fork after itself
+("rebranded ultrasearch fork"), and the `.local/bin/<binary>` rewrite lands a pass after the header is
+written. Both are documented in `engine/BUILD.md` with the repair, and the tree in this branch is the
+converged, corrected output. Worth fixing upstream of the script.
+
+### Daemon install (performed on this machine)
+
+Backups were taken **and a restore drill run** (the backed-up binary executed and printed its usage)
+before anything was replaced: `/Applications/UltraSearch.app.bak-engine-20261015-040820`,
+`~/.local/bin/ultrasearch-daemon.bak-engine-20261015-040820`,
+`~/Library/LaunchAgents/com.pi.ultrasearch.plist.bak-engine-20261015-040820`, with a rollback script that
+restores all three, re-signs and re-bootstraps.
+
+Install used the identifier-only designated requirement from `docs/engine-rebrand.md` §2 (the app bundle's
+Full Disk Access grant is stored against `identifier "com.pi.ultrasearch"`), then `bootout` + `bootstrap`.
+
+| Post-install evidence | Value |
+|---|---|
+| launchd | `state = running`, `pid 8887` stable over repeated checks, **`last exit code = (never exited)`** — no crash or KeepAlive loop |
+| Full Disk Access | **`full_disk_access: true`** — the grant survived the re-sign |
+| Index | reused, not rebuilt: `entries 3,879,791`, `content_docs 145,620`, `index_bytes 120 MB` |
+| New fields answering live | `staleness_ms 0`, `replay_in_progress false`, `last_event_id`/`event_lag`, `compactions 1` with `last_compact_ms 1560` (**a real production compaction, now visible**), `compactions_postponed`, `queries_in_flight 0`, `content_policy`, `deny_configured`/`deny_rules` |
+| Binary identity | installed app binary vs build artefact: after removing signatures both are 4,572,992 bytes and differ in exactly **2 header bytes** (Mach-O UUID); identical from byte 4096 to EOF |
+| Back-compat | the pre-rename socket symlink (`.../FSearch/fsearch.sock`) still answers `{"ok":true}` |
+| Live query smoke | `op: search` p50 ~6 ms on the 3.88 M-entry index; `op: grep` returns the new `scanned`/`considered` vocabulary |
+
+### Validation on the rebased branch
+
+| Command | Result |
+|---|---|
+| `npm run typecheck` | pass |
+| `npm run build` | pass (`dist/` emitted) |
+| `npm test` (merged list: client, sanitize, mcp, client-features, ipc-lanes, fallback, telemetry-views, e2e-regressions) | **95 pass, 0 fail** |
+| `npm run test:engine` | **26 pass, 0 fail** |
+| `cargo test --release` (the renamed engine) | **39 pass, 0 fail** |
+| `npm run test:gate` | **4/4 pass** |
+
+The `test:gate` live-grep threshold (< 5 ms p95) is a load- and state-sensitive tripwire, not an SLA. It
+failed earlier in this session (p95 8.10 ms) and passes now on the freshly restarted daemon. The
+**raw-daemon-only** measurement taken with no client involved, at the same load, reads p50 8.61 ms /
+p95 10.74 ms for a broader grep (`FSearchClient`, 17 files read) than the gate's own query
+(`UltraSearchClient`, `limit 10`). Both earlier and now, the floor belongs to the daemon and the machine's
+load, not to the client: the gate's outcome tracks overlay size, daemon uptime and load average rather than
+a code change.
 
 ## Notes for the other waves
 
