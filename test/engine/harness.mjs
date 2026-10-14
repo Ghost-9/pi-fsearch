@@ -72,7 +72,10 @@ export class EngineHarness {
    *   env    extra environment for the daemon process
    */
   constructor(opts = {}) {
-    if (!HAS_ENGINE) throw new Error(`engine binary not built: ${ENGINE_BIN} (run: cargo build --release --manifest-path engine/Cargo.toml)`);
+    // HAS_ENGINE is computed at import time, but a fresh checkout may not have
+    // the release binary yet — build on demand, then re-check.
+    ensureEngineBuilt();
+    if (!fs.existsSync(ENGINE_BIN)) throw new Error(`engine binary not built: ${ENGINE_BIN} (run: cargo build --release --manifest-path engine/Cargo.toml)`);
     this.root = opts.root ?? makeTree(path.join(tmpdir("us-root-"), "tree"), opts.files ?? 40, opts.kind ?? "flat");
     this.dir = opts.dir ?? path.join(tmpdir("us-idx-"), "data");
     fs.mkdirSync(this.dir, { recursive: true });
