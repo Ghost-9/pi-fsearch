@@ -167,7 +167,12 @@ export function runCapture(cmd, args, opts = {}) {
 
 export function auditFilePath() {
   ensureTestEnv();
-  return path.join(os.homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "test_audit.jsonl");
+  // Per-process by default (wave-1 finding F7): two concurrent scripts cannot
+  // truncate or interleave each other's evidence window. `PI_ULTRASEARCH_TEST_LOG`
+  // names one file explicitly when several processes must share it.
+  const explicit = process.env.PI_ULTRASEARCH_TEST_LOG?.trim();
+  if (explicit) return explicit;
+  return path.join(os.homedir(), ".pi", "agent", "cache", "pi-ultrasearch", `test_audit.${process.pid}.jsonl`);
 }
 
 /** Snapshot of the test audit log before an experiment (append-only file). */

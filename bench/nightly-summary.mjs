@@ -13,7 +13,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadAllAudit, summarizeAuditViews, formatAuditSummary } from "../src/telemetry.ts";
+import { loadAllAudit, summarizeAuditViews, formatAuditSummary, getTestAuditFilePath } from "../src/telemetry.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
@@ -57,7 +57,8 @@ function main() {
     generatedAt: new Date().toISOString(),
     source: {
       productionFile: path.join(process.env.HOME ?? "", ".pi/agent/cache/pi-ultrasearch/audit.jsonl"),
-      testFile: path.join(process.env.HOME ?? "", ".pi/agent/cache/pi-ultrasearch/test_audit.jsonl"),
+      testFile: getTestAuditFilePath(),
+      testLogNote: "per-process since F7; set PI_ULTRASEARCH_TEST_LOG to read a specific run",
       rowsLoaded: rows.length,
     },
     note: "tokensSaved is the 150+75×hits ESTIMATE, not a measurement",

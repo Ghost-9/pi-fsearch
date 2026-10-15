@@ -28,14 +28,35 @@ export interface UltraSearchAuditRow {
 
 export type AuditTool = UltraSearchAuditRow["tool"];
 
-export function getAuditFilePath(): string {
-  if (process.env.PI_ULTRASEARCH_TEST === "1") {
-    return TEST_AUDIT_FILE;
-  }
-  return join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "audit.jsonl");
+/** The audit log directory (production and test logs). */
+function auditDir(): string {
+  return join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch");
 }
 
-const TEST_AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "test_audit.jsonl");
+/**
+ * The test/benchmark log (wave-1 finding F7). `PI_ULTRASEARCH_TEST_LOG` names
+ * it explicitly; otherwise each process appends to its own
+ * `test_audit.<pid>.jsonl`, so two concurrent scripts, waves or agents cannot
+ * truncate or interleave each other's evidence window. The old single shared
+ * `test_audit.jsonl` is never written again; readers that need rows from a
+ * specific run are given its path through the environment variable.
+ */
+export function getTestAuditFilePath(): string {
+  const explicit = process.env.PI_ULTRASEARCH_TEST_LOG?.trim();
+  if (explicit) return explicit;
+  return join(auditDir(), `test_audit.${process.pid}.jsonl`);
+}
+
+export function getAuditFilePath(): string {
+  if (process.env.PI_ULTRASEARCH_TEST === "1") {
+    return getTestAuditFilePath();
+  }
+  return join(auditDir(), "audit.jsonl");
+}
+
+/** The single shared path wave 1 used; kept only to name it in messages. */
+const LEGACY_SHARED_TEST_AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-ultrasearch", "test_audit.jsonl");
+export { LEGACY_SHARED_TEST_AUDIT_FILE };
 const LEGACY_AUDIT_FILE = join(homedir(), ".pi", "agent", "cache", "pi-fsearch", "audit.jsonl");
 const MAX_LINES = 5000;
 
@@ -268,7 +289,7 @@ export function loadAllAudit(
   const rows: UltraSearchAuditRow[] = [];
   if (includeProduction) rows.push(...readAuditFile(productionFile, limit));
   if (includeTest) {
-    rows.push(...readAuditFile(TEST_AUDIT_FILE, limit).map((r) => ({ ...r, origin: "synthetic" as AuditOrigin })));
+    rows.push(...readAuditFile(getTestAuditFilePath(), limit).map((r) => ({ ...r, origin: "synthetic" as AuditOrigin })));
   }
   return rows.sort((a, b) => a.ts - b.ts).slice(-limit);
 }
