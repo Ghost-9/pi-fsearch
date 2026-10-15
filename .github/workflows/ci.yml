@@ -40,11 +40,13 @@ jobs:
           set -euo pipefail
           npm pack --pack-destination "$RUNNER_TEMP"
           TARBALL="$(ls "$RUNNER_TEMP"/pi-ultrasearch-*.tgz)"
-          tar -tzf "$TARBALL" | grep -q 'package/dist/bin/cli.js'
-          tar -tzf "$TARBALL" | grep -q 'package/dist/src/client.js'
+          tar -tzf "$TARBALL" > "$RUNNER_TEMP/tarlist.txt"
+          grep -q 'package/dist/bin/cli.js' "$RUNNER_TEMP/tarlist.txt"
+          grep -q 'package/dist/src/client.js' "$RUNNER_TEMP/tarlist.txt"
           mkdir -p "$RUNNER_TEMP/packed"
           tar -xzf "$TARBALL" -C "$RUNNER_TEMP/packed"
-          node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help | grep -q "PI-ULTRASEARCH"
+          node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help > "$RUNNER_TEMP/help.txt"
+          grep -q "PI-ULTRASEARCH" "$RUNNER_TEMP/help.txt"
 
       - name: Engine unit tests (cargo test --release)
         run: cargo test --release --manifest-path engine/Cargo.toml
@@ -90,10 +92,12 @@ jobs:
           set -euo pipefail
           npm pack --pack-destination "$RUNNER_TEMP"
           TARBALL="$(ls "$RUNNER_TEMP"/pi-ultrasearch-*.tgz)"
-          tar -tzf "$TARBALL" | grep -q 'package/dist/bin/cli.js'
+          tar -tzf "$TARBALL" > "$RUNNER_TEMP/tarlist.txt"
+          grep -q 'package/dist/bin/cli.js' "$RUNNER_TEMP/tarlist.txt"
           mkdir -p "$RUNNER_TEMP/packed"
           tar -xzf "$TARBALL" -C "$RUNNER_TEMP/packed"
-          node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help | grep -q "PI-ULTRASEARCH"
+          node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help > "$RUNNER_TEMP/help.txt"
+          grep -q "PI-ULTRASEARCH" "$RUNNER_TEMP/help.txt"
 
       - name: Benchmark gate (hermetic mock; live part skipped without a daemon)
         run: npm run test:gate
