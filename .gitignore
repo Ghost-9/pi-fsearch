@@ -12,3 +12,6 @@ bench/results/*-degraded.json
 
 # Vendored Rust engine build output (the source itself is committed)
 engine/target/
+
+# Release check output (bench/run-checks.mjs --out)
+checks.json

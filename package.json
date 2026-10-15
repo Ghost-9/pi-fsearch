@@ -61,7 +61,8 @@
     "bench:boost": "node bench/boost.mjs",
     "metrics:nightly": "node bench/nightly-summary.mjs",
     "typecheck": "tsc -p tsconfig.json",
-    "test:all": "npm run typecheck && npm test && npm run test:gate && npm run test:engine"
+    "test:all": "npm run typecheck && npm test && npm run test:gate && npm run test:engine",
+    "release:artifact": "node bench/release-artifact.mjs"
   },
   "keywords": [
     "pi-agent",
