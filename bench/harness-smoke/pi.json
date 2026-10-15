@@ -1,0 +1,218 @@
+{
+  "schema": "ultrasearch/harness-smoke@1",
+  "id": "pi",
+  "label": "Pi Agent",
+  "generatedAt": "2026-10-15T18:36:50.973Z",
+  "commit": "7d8237d0ed2034c5c0b8430bad89a6767893fb04",
+  "serverVersion": "0.3.1",
+  "supportedProtocolVersions": [
+    "2025-06-18",
+    "2025-03-26",
+    "2024-11-05",
+    "2024-10-07"
+  ],
+  "harness": {
+    "surface": "pi-extension",
+    "configPath": "/Users/batra/.pi/agent/mcp.json",
+    "configPresent": true,
+    "installed": true,
+    "installEvidence": [
+      "/Users/batra/.pi/agent/bin/pi",
+      "/Users/batra/.pi/agent"
+    ],
+    "entryShapeSource": "machine-measured",
+    "declaredProtocolVersion": "2025-06-18",
+    "declaredProtocolVersionSource": "assumed",
+    "declaredProtocolSupported": true,
+    "note": "Pi intentionally uses the native extension (`index.ts`), which exposes the same six tools without a second MCP surface; init skips it by default (docs/decisions/0006-pi-native-not-mcp.md). Pass --force to register the MCP server anyway.",
+    "directive": "~/.pi/agent/AGENTS.md"
+  },
+  "arms": {
+    "protocol": {
+      "status": "pass",
+      "launch": {
+        "command": "/Users/batra/.local/bin/ultrasearch-mcp",
+        "args": [],
+        "source": "installed",
+        "configPath": "/Users/batra/.pi/agent/mcp.json"
+      },
+      "client": {
+        "name": "ultrasearch-smoke",
+        "version": "1.0.0"
+      },
+      "requestedProtocolVersion": "2025-06-18",
+      "negotiatedProtocolVersion": "2025-06-18",
+      "serverInfo": {
+        "name": "pi-ultrasearch",
+        "version": "0.3.1"
+      },
+      "toolCount": 6,
+      "toolNames": [
+        "ultrasearch_query",
+        "ultrasearch_grep",
+        "ultrasearch_multi_grep",
+        "ultrasearch_locate",
+        "ultrasearch_recent",
+        "ultrasearch_metrics"
+      ],
+      "toolCall": {
+        "name": "ultrasearch_locate",
+        "arguments": {
+          "filename": "package.json"
+        },
+        "isError": false,
+        "textSample": "/Users/batra/ultrasearch-waves5/init-smoke/package.json",
+        "meta": {
+          "complete": false,
+          "truncated": false,
+          "truncatedCount": 0,
+          "engineCapped": false,
+          "filteredCount": 0,
+          "tokenCount": 14,
+          "charCount": 56,
+          "source": "index",
+          "deadlineExceeded": false,
+          "rawCount": 1,
+          "tool": "ultrasearch_locate",
+          "hitCount": 1
+        }
+      },
+      "checks": {
+        "initialize": true,
+        "protocolSupported": true,
+        "toolCount6": true,
+        "canonicalNames": true,
+        "toolCallResult": true,
+        "toolCallHit": true
+      },
+      "failures": [],
+      "daemon": "mock",
+      "transcript": [
+        {
+          "dir": "in",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+              "protocolVersion": "2025-06-18",
+              "capabilities": {},
+              "clientInfo": {
+                "name": "ultrasearch-smoke",
+                "version": "1.0.0"
+              }
+            }
+          }
+        },
+        {
+          "dir": "out",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+              "protocolVersion": "2025-06-18",
+              "serverInfo": {
+                "name": "pi-ultrasearch",
+                "version": "0.3.1"
+              },
+              "capabilities": {
+                "tools": {
+                  "listChanged": false
+                }
+              }
+            }
+          }
+        },
+        {
+          "dir": "in",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/list",
+            "params": {}
+          }
+        },
+        {
+          "dir": "out",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+              "tools": [
+                "ultrasearch_query",
+                "ultrasearch_grep",
+                "ultrasearch_multi_grep",
+                "ultrasearch_locate",
+                "ultrasearch_recent",
+                "ultrasearch_metrics"
+              ]
+            }
+          }
+        },
+        {
+          "dir": "in",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+              "name": "ultrasearch_locate",
+              "arguments": {
+                "filename": "package.json"
+              }
+            }
+          }
+        },
+        {
+          "dir": "out",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "/Users/batra/ultrasearch-waves5/init-smoke/package.json"
+                }
+              ],
+              "_meta": {
+                "complete": false,
+                "truncated": false,
+                "truncatedCount": 0,
+                "engineCapped": false,
+                "filteredCount": 0,
+                "tokenCount": 14,
+                "charCount": 56,
+                "source": "index",
+                "deadlineExceeded": false,
+                "rawCount": 1,
+                "tool": "ultrasearch_locate",
+                "hitCount": 1
+              }
+            }
+          }
+        }
+      ],
+      "negotiatedDown": false
+    },
+    "native": {
+      "status": "pass",
+      "mode": "test-suite",
+      "command": "node --test test/interop-surface.test.ts",
+      "checks": {
+        "testExitZero": true
+      },
+      "failures": [],
+      "durationMs": 548,
+      "transcript": [
+        {
+          "dir": "cli",
+          "code": 0,
+          "stdout": "✔ declarations: generated text matches the committed golden (drift fails the build) (1.199459ms)\n✔ declarations: every registry tool appears exactly once, with no hand-written extra (0.723667ms)\n✔ mcp: MCP_TOOLS is generated from the registry, not hand-maintained (0.227833ms)\n✔ mcp: the Pi tool parameters match the registry parameter sets (surface drift guard) (9.26225ms)\n✔ recipes: search -> grep…",
+          "stderr": ""
+        }
+      ]
+    }
+  },
+  "status": "pass"
+}

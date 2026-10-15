@@ -1,0 +1,47 @@
+{
+  "schema": "ultrasearch/harness-smoke@1",
+  "id": "t3code",
+  "label": "T3 Code",
+  "generatedAt": "2026-10-15T18:36:51.672Z",
+  "commit": "7d8237d0ed2034c5c0b8430bad89a6767893fb04",
+  "serverVersion": "0.3.1",
+  "supportedProtocolVersions": [
+    "2025-06-18",
+    "2025-03-26",
+    "2024-11-05",
+    "2024-10-07"
+  ],
+  "harness": {
+    "surface": "pi-derived",
+    "configPath": "/Users/batra/.pi/agent/mcp.json",
+    "configPresent": true,
+    "installed": true,
+    "installEvidence": [
+      "/Applications/T3 Code (Nightly).app/Contents/MacOS/T3 Code (Nightly)"
+    ],
+    "entryShapeSource": "machine-measured",
+    "declaredProtocolVersion": "2025-06-18",
+    "declaredProtocolVersionSource": "assumed",
+    "declaredProtocolSupported": true,
+    "note": "No independent user-level MCP registry: T3 Code reaches the tools through its Pi provider (native extension) or the `ultrasearch` CLI. Its row inherits Pi's smoke.",
+    "directive": "AGENTS.md (project) via the Pi provider"
+  },
+  "arms": {
+    "protocol": {
+      "status": "skipped",
+      "reason": "skipped:inherits-pi-provider (see pi.json)",
+      "launch": null,
+      "toolNames": [],
+      "checks": {},
+      "failures": []
+    },
+    "native": {
+      "status": "skipped",
+      "mode": "inherited",
+      "reason": "skipped:inherits-pi-provider (see pi.json)",
+      "checks": {},
+      "failures": []
+    }
+  },
+  "status": "skipped"
+}

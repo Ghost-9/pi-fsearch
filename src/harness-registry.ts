@@ -143,15 +143,17 @@ export const HARNESSES: readonly HarnessSpec[] = [
     entryKind: "claude-code-stdio",
     managedKeys: ["type", "command", "args"],
     entryShapeSource: "machine-measured",
-    protocolVersion: "2025-06-18",
-    protocolVersionSource: "assumed",
+    protocolVersion: "2025-11-25",
+    protocolVersionSource: "measured",
     clientInfo: { name: "claude-code", version: "unknown" },
     binaries: ["claude"],
     appPaths: [],
     detectPaths: ["~/.claude.json"],
     directive: "CLAUDE.md / ~/.claude/CLAUDE.md",
     initDefault: "write",
-    note: "top-level `mcpServers` in `~/.claude.json` (user scope), exactly as `claude mcp add --scope user` writes it",
+    note:
+      "top-level `mcpServers` in `~/.claude.json` (user scope), exactly as `claude mcp add --scope user` writes it; " +
+      "protocol revision measured from Claude Code 2.1.299 (2025-11-25), which the server negotiates down to its newest supported revision",
     nativeProbe: "claude-mcp-list",
   },
   {
@@ -360,6 +362,7 @@ export function findHarnessBinary(spec: HarnessSpec, home: string, env: NodeJS.P
       // Prefer a runnable binary inside the bundle when one exists.
       const candidates = [
         path.join(resolved, "Contents", "MacOS", path.basename(resolved, ".app")),
+        path.join(resolved, "Contents", "MacOS", "codex"),
         path.join(resolved, "Contents", "Resources", "codex-cli", "CodexCLI.app", "Contents", "MacOS", "codex"),
       ];
       for (const candidate of candidates) if (isExecutable(candidate)) return candidate;
