@@ -13,7 +13,8 @@
  *
  *   --check          validate every row and exit 1 on any problem
  *   --require-fresh  also fail when an artifact was generated on a dirty tree,
- *                    from a non-ancestor commit, or before an MCP-surface change
+ *                    from a non-ancestor commit, or before a change to the
+ *                    registration or behaviour surface the smoke exercises
  */
 
 import { spawnSync } from "node:child_process";
@@ -27,17 +28,25 @@ import { canonicalToolNames } from "../src/tool-schema.ts";
 export const SMOKE_SCHEMA = "ultrasearch/harness-smoke@1";
 
 /**
- * Files that can change what a harness smoke observes. Freshness under
- * `--require-fresh` is judged by whether any of these differ between the
- * artifact's commit and HEAD — not by strict equality with HEAD, which no
- * committed artifact could ever satisfy once HEAD moves past it.
+ * Files that can change what a harness smoke observes — registration/transport
+ * (registry, protocol server, tool schemas) *and* behaviour (the client paths a
+ * `tools/call` actually exercises). Freshness under `--require-fresh` is judged
+ * by whether any of these differ between the artifact's commit and HEAD — not by
+ * strict equality with HEAD, which no committed artifact could ever satisfy
+ * once HEAD moves past it. (Verifier F25: behaviour files are included so
+ * "fresh" means the observed call result still corresponds to this tree.)
  */
-export const MCP_SURFACE_PATHS = [
+export const SMOKE_SURFACE_PATHS = [
   "src/tool-schema.ts",
   "src/mcp.ts",
   "bin/mcp-server.ts",
   "src/harness-registry.ts",
   "package.json",
+  "src/client.ts",
+  "src/formatter.ts",
+  "src/sanitize.ts",
+  "src/roots.ts",
+  "src/history.ts",
 ];
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -312,9 +321,9 @@ function makeStaleCheck(head) {
     if (ancestor.status !== 0) {
       return { stale: true, reason: `artifact commit ${shortCommit(artifact.commit)} is not an ancestor of ${shortCommit(head)}` };
     }
-    const diff = spawnSync("git", ["diff", "--quiet", artifact.commit, head, "--", ...MCP_SURFACE_PATHS], { cwd: repoRoot });
+    const diff = spawnSync("git", ["diff", "--quiet", artifact.commit, head, "--", ...SMOKE_SURFACE_PATHS], { cwd: repoRoot });
     if (diff.status === 1) {
-      return { stale: true, reason: `MCP surface changed between ${shortCommit(artifact.commit)} and ${shortCommit(head)}` };
+      return { stale: true, reason: `smoke surface changed between ${shortCommit(artifact.commit)} and ${shortCommit(head)}` };
     }
     if (diff.status !== 0) {
       return { stale: true, reason: `could not compare ${shortCommit(artifact.commit)} with ${shortCommit(head)}` };
