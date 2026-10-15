@@ -1,0 +1,1 @@
+/Users/batra/.local/bin/ultrasearch-daemon: replacing existing signature

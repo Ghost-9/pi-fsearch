@@ -1,0 +1,2 @@
+drill dir: /tmp/us-drill-9aXIRa
+backup sha256: 14bbcc13fd04f37da3170199e010402eb47ee7c69f10388bcdeee8bee082ae02

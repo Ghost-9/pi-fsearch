@@ -1,0 +1,5 @@
+bootstrap ok
+	state = running
+	program = /Applications/UltraSearch.app/Contents/MacOS/UltraSearch
+	pid = 36122
+		state = active
