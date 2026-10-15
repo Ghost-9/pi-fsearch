@@ -303,3 +303,65 @@ trivially greppable: `grep -n '^>>>>>>>' README.md`. No other conflict marker ex
 - `bench/verification/after/judgments-baseline.json` was byte-identical to the baseline artifact (sha256 `ab4e4ac731fcc05f…`): the 12 `judgments.*` summary rows compared a value with itself and must not be read as verified. They are now `needs-re-run`.
 - Live probe at `8d1419d`: catastrophic regex is rejected, so main negative FP is **0.25**, not the published 0.50. Treat 0.50 as stale.
 - F9 (README conflict marker) is fixed in `8d1419d`.
+
+## 2026-10-15 — F10 repaired (instrument + measurement), and the drift it was hiding
+
+**Root cause (measured, not guessed).** The AFTER judgments scorer never completed in the wave-1 session:
+the tool call that ran it hit a 1800 s timeout, the per-step copy then propagated the *committed golden*
+(`bench/baseline/results/judgments-baseline.json`, the pristine `0a16e50` result) into
+`bench/verification/after/`, and `summarize.mjs` — which had no provenance check between the two sides of a
+row — marked the twelve `judgments.*` rows `verified`. Both sides were the old system; the after side was
+not a measurement at all. Only the judgments lane was affected: latency/equivalence/tokens/zeroresult were
+fresh runs (their artifacts carry distinct hashes, refs and timestamps).
+
+**Instrument repair.** `bench/verification/checks/identity-guard.mjs` enforces, per measurement row:
+**G1** any before/after sha256 equal · **G2** after artifact older than before · **G3** both sides recording
+the same commit (two runs of one ref, the F10 shape even when the bytes differ) · **G4** a claimed artifact
+missing → any violation forces `needs-re-run`. Every row now carries `evidence_hashes`; `summarize.mjs` runs
+`assertNoVerifiedIdentical` before writing (generate-time tripwire). Regression test:
+`node --test bench/verification/checks/identity-guard.test.mjs` — 8 cases including the exact F10 shape
+(two byte-identical files → `needs-re-run`) and a control that must stay `verified`. Applied to the stale
+artifacts the guard re-derives the advisor's manual correction **mechanically**: 37 verified / 1 failed /
+13 unverified / 12 needs-re-run.
+
+**Measurement repair (gated re-run).** `bench/verification/checks/rerun-wave1-judgments.sh` waits for its own
+gate window, records the daemon block first (single socket owner is a precondition), runs the **frozen**
+scorer unchanged, stamps provenance, refuses an artifact whose hash equals the golden's, and restores the
+golden. Result at head `91e7832`:
+
+| Field | Value |
+| --- | --- |
+| artifact | `bench/verification/after/judgments-baseline.json` |
+| sha256 | `7ce35a4c0be18362…` (golden `ab4e4ac731fcc05f…`, before `64fee02691e2f4dd…` — all distinct) |
+| daemon | pid 8887 · entries 3 919 543 · event_id 5705271483 · 1 socket owner, 1 serve process · FDA true |
+| gate | **provisional** — no window in 30 min (external `rustc` build + Tinycast `FileIndexHelper` kept load1 ≥ 7) |
+| golden after restore | `ab4e4ac731fcc05f…` (unchanged) |
+
+The summary now carries `after_gate` per row and a documented rule: **timing** rows require a gate-clean
+artifact; **quality** rows (judgments, equivalence, zero-result, wave-2 quality lanes) are set comparisons
+whose gate is recorded and whose value is accepted when two distinct runs of the two refs agree — the
+judgments aggregates are the load-invariance evidence (identical before at load1 1.43 and after at 7.83).
+Counts after the repair: **50 verified / 1 failed / 13 unverified / 0 needs-re-run** (64 rows).
+
+**FP correction (as the advisor predicted, now measured).** `false_positive_rate 0.50 → 0.25`.
+R3 `(a+)+$` returns `[]` with `rejected regex pattern …` (client-side, pre-socket); P8 and G6 return `[]`;
+M6 (semantic OR-expansion) still returns 10 files → 1 of 4 negatives. Any wave-1 text quoting 0.50 is stale.
+
+**F11 — semantic-lane drift the F10 masking was hiding.** With a real after-artifact the frozen set no longer
+reproduces exactly: recall@10 `0.6737 → 0.6686`, nDCG@10 `0.7050 → 0.7004`, semantic nDCG@10
+`0.1936 → 0.1700`. Per-query cause, with evidence:
+
+| Query | Before | After | What changed |
+| --- | --- | --- | --- |
+| M4 (`why does a whole disk search return partial results`) | ci.yml grade 3 at rank 6, n=21 | ci.yml absent from top 10, n=10 | nDCG 0.532 → 0.266 |
+| M5 (`keep results inside the workspace even if a symlink points out of it`) | index.ts grade 3 absent (n=18) | index.ts grade 3 at rank 10 (n=10) | nDCG 0.104 → 0.252 |
+| R3 (negative) | 2 files | 0 files | FP 0.50 → 0.25 |
+| M1–M3, M6 | n = 24/21/17/16 | n = 10 each | returned set now honours the caller's `limit` |
+
+Mechanism: the semantic lane fans out to per-pattern greps (`multi_grep` is not a daemon op in either ref)
+and the client now **honours `limit`** — `finalize(...).files.slice(0, limit)` — where the old client returned
+everything the fan-out found (16–24 files for a `limit: 10` call). `src/semantic.ts` is byte-identical between
+the refs. Two expected answers changed rank order as a side effect. **Verdict impact: none** — every advisor
+gate fails before and after (recall@10 1.0, nDCG@10 ≥ 0.75, FP 0, semantic ≥ 0.60, zero-result 0,
+reformulation ≤ 0.20), and the semantic lane was already the failing lane. Recorded so a later wave does not
+re-discover it as a regression.

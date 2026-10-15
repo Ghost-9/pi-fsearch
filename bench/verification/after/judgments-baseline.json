@@ -2,10 +2,10 @@
   "meta": {
     "suite": "judgments",
     "wave": "wave1/baseline",
-    "generated_at": "2026-10-14T20:38:50.603Z",
-    "date_short": "2026-10-14",
-    "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2",
-    "branch": "wave1/baseline",
+    "generated_at": "2026-10-15T06:20:26.050Z",
+    "date_short": "2026-10-15",
+    "commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+    "branch": "wave1/verify-final",
     "machine": {
       "chip": "Apple M1 Pro",
       "model": "MacBookPro18,1",
@@ -19,29 +19,50 @@
       "cpuCount": 10,
       "totalMemBytes": 17179869184,
       "loadavg_at_start": [
-        7.83251953125,
-        5.5908203125,
-        5.005859375
+        4.85302734375,
+        10.626953125,
+        11.7509765625
       ]
     },
     "daemon": {
-      "content_bytes": 142315072,
-      "content_docs": 129704,
+      "compactions": 37,
+      "compactions_postponed": 1,
+      "content_bytes": 170449408,
+      "content_docs": 145812,
       "content_pending": 0,
-      "content_segments": 38,
-      "dirs": 630228,
-      "entries": 3924305,
-      "event_id": 5678118891,
+      "content_policy": {
+        "configured": false,
+        "extensions": null,
+        "max_file_bytes": null,
+        "roots": null,
+        "source": null,
+        "warm": 0
+      },
+      "content_segments": 42,
+      "deny_configured": false,
+      "deny_rules": 0,
+      "dirs": 633382,
+      "entries": 3919543,
+      "event_id": 5705266954,
+      "event_lag": 1,
       "full_disk_access": true,
       "id": 1,
-      "index_bytes": 125001088,
+      "index_bytes": 121138048,
+      "last_compact_bytes": 121138048,
+      "last_compact_entries": 3919543,
+      "last_compact_ms": 1623,
+      "last_compact_secs_ago": 0,
+      "last_event_id": 5705266955,
       "ok": true,
-      "overlay": 301,
+      "overlay": 457,
       "owner": true,
-      "removed": 122
+      "queries_in_flight": 0,
+      "removed": 268,
+      "replay_in_progress": false,
+      "staleness_ms": 0
     },
     "judgments": {
-      "path": "/Users/batra/.pi/agent/extensions/pi-ultrasearch/bench/judgments/wave1-judgments.json",
+      "path": "/Users/batra/ultrasearch-verify/bench/judgments/wave1-judgments.json",
       "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
       "schema": "ultrasearch.judgments/v1",
       "version": 1,
@@ -87,84 +108,72 @@
       "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
       "gate_load1_max": 1.5,
       "checks": {
-        "ac_power": false,
+        "ac_power": true,
         "load1_lt_gate": false,
-        "no_cargo_rustc": false
+        "no_cargo_rustc": true
       },
       "power": {
-        "on_ac": false,
-        "percent": 19,
-        "discharging": true,
-        "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t19%; discharging; 0:36 remaining present: true"
+        "on_ac": true,
+        "percent": 100,
+        "discharging": false,
+        "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
       },
       "loadavg": [
-        7.83251953125,
-        5.5908203125,
-        5.005859375
+        4.85302734375,
+        10.626953125,
+        11.7509765625
       ],
-      "competing_processes": [
-        "22412 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-        "22414 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
-        "23431 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
-        "23433 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
-        "23435 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc"
-      ],
+      "competing_processes": [],
       "daemon_processes": [
-        "19684 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
       ],
-      "daemon_pid": "19684",
+      "daemon_pid": "8887",
       "daemon_status": {
         "ok": true,
-        "entries": 3924305,
-        "content_docs": 129704,
+        "entries": 3919543,
+        "content_docs": 145812,
         "content_pending": 0,
-        "index_bytes": 125001088,
-        "content_bytes": 142315072,
+        "index_bytes": 121138048,
+        "content_bytes": 170449408,
         "full_disk_access": true
       },
-      "checked_at": "2026-10-14T20:38:50.601Z",
+      "checked_at": "2026-10-15T06:20:26.049Z",
       "pre_run": {
         "status": "provisional",
         "gate_pass": false,
         "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
         "gate_load1_max": 1.5,
         "checks": {
-          "ac_power": false,
+          "ac_power": true,
           "load1_lt_gate": false,
-          "no_cargo_rustc": false
+          "no_cargo_rustc": true
         },
         "power": {
-          "on_ac": false,
-          "percent": 19,
-          "discharging": true,
-          "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t19%; discharging; 0:36 remaining present: true"
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
         },
         "loadavg": [
-          7.83251953125,
-          5.5908203125,
-          5.005859375
+          4.85302734375,
+          10.626953125,
+          11.7509765625
         ],
-        "competing_processes": [
-          "22412 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-          "22414 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
-          "23431 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
-          "23433 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
-          "23435 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc"
-        ],
+        "competing_processes": [],
         "daemon_processes": [
-          "19684 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
         ],
-        "daemon_pid": "19684",
+        "daemon_pid": "8887",
         "daemon_status": {
           "ok": true,
-          "entries": 3924305,
-          "content_docs": 129704,
+          "entries": 3919543,
+          "content_docs": 145812,
           "content_pending": 0,
-          "index_bytes": 125001088,
-          "content_bytes": 142315072,
+          "index_bytes": 121138048,
+          "content_bytes": 170449408,
           "full_disk_access": true
         },
-        "checked_at": "2026-10-14T20:38:50.601Z"
+        "checked_at": "2026-10-15T06:20:26.049Z"
       },
       "end_of_run": {
         "status": "provisional",
@@ -172,39 +181,82 @@
         "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
         "gate_load1_max": 1.5,
         "checks": {
-          "ac_power": false,
+          "ac_power": true,
           "load1_lt_gate": false,
           "no_cargo_rustc": true
         },
         "power": {
-          "on_ac": false,
-          "percent": 19,
-          "discharging": true,
-          "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t19%; discharging; 0:36 remaining present: true"
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
         },
         "loadavg": [
-          5.69140625,
-          5.27880859375,
-          4.91162109375
+          7.62890625,
+          10.60498046875,
+          11.69287109375
         ],
         "competing_processes": [],
         "daemon_processes": [
-          "19684 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
         ],
-        "daemon_pid": "19684",
+        "daemon_pid": "8887",
         "daemon_status": {
           "ok": true,
-          "entries": 3924305,
-          "content_docs": 129704,
+          "entries": 3919543,
+          "content_docs": 145812,
           "content_pending": 0,
-          "index_bytes": 125001088,
-          "content_bytes": 142315072,
+          "index_bytes": 121138048,
+          "content_bytes": 170449408,
           "full_disk_access": true
         },
-        "checked_at": "2026-10-14T20:39:22.877Z"
+        "checked_at": "2026-10-15T06:20:58.471Z"
       },
-      "degraded_during_run": true
-    }
+      "degraded_during_run": false
+    },
+    "daemon_pre_run": {
+      "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+      "socket_owner_pid": 8887,
+      "socket_owner_count": 1,
+      "serve_process_count": 1,
+      "single_socket_owner": true,
+      "entries": 3919543,
+      "event_id": 5705271483,
+      "last_event_id": 5705271484,
+      "event_lag": 1,
+      "content_docs": 145812,
+      "content_pending": 0,
+      "index_bytes": 121138048,
+      "full_disk_access": true,
+      "staleness_ms": 0,
+      "replay_in_progress": false,
+      "compactions": 37,
+      "status_error": null,
+      "client_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+      "captured_at": "2026-10-15T06:20:58.765Z"
+    },
+    "daemon_provenance": {
+      "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+      "socket_owner_pid": 8887,
+      "socket_owner_count": 1,
+      "serve_process_count": 1,
+      "single_socket_owner": true,
+      "entries": 3919543,
+      "event_id": 5705271483,
+      "last_event_id": 5705271484,
+      "event_lag": 1,
+      "content_docs": 145812,
+      "content_pending": 0,
+      "index_bytes": 121138048,
+      "full_disk_access": true,
+      "staleness_ms": 0,
+      "replay_in_progress": false,
+      "compactions": 37,
+      "status_error": null,
+      "client_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+      "captured_at": "2026-10-15T06:20:58.765Z"
+    },
+    "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600"
   },
   "aggregates": {
     "must_hit_queries": 26,
@@ -212,14 +264,14 @@
     "recall_at_1": 0.4881410256410257,
     "recall_at_3": 0.5987179487179487,
     "recall_at_5": 0.6240384615384615,
-    "recall_at_10": 0.6737179487179487,
-    "success_recall_at_10": 0.75,
+    "recall_at_10": 0.6685897435897435,
+    "success_recall_at_10": 0.7435897435897437,
     "mrr_at_10_rel1": 0.9134615384615384,
-    "mrr_at_10_rel2": 0.7099358974358976,
-    "ndcg_at_10": 0.7049628673114833,
-    "ndcg_at_10_linear": 0.6991242618971595,
+    "mrr_at_10_rel2": 0.7137820512820513,
+    "ndcg_at_10": 0.7004192905065056,
+    "ndcg_at_10_linear": 0.695463504986956,
     "zero_result_rate": 0.038461538461538464,
-    "false_positive_rate": 0.5,
+    "false_positive_rate": 0.25,
     "reformulation_signal": 0.34615384615384615,
     "reformulation_by_lane": {
       "path": 0,
@@ -237,16 +289,16 @@
       "grep-literal": 0.8577147704812331,
       "grep-regex": 0.6690609917958155,
       "symbol": 0.636622777806004,
-      "semantic": 0.19358514107060285,
+      "semantic": 0.16995854168471936,
       "ranking-frecency": 0.9173194127129571,
       "ranking-proximity": 0.8609101556836468,
       "ranking-boost-ab": 0.9052598568324595,
       "ranking-symbol-intrafile": 1
     },
-    "semantic_ndcg_at_10": 0.19358514107060285,
+    "semantic_ndcg_at_10": 0.16995854168471936,
     "acceptance_gates": {
       "recall@10 == 1.00 on all must_hit queries": {
-        "observed": 0.6737179487179487,
+        "observed": 0.6685897435897435,
         "pass": false
       },
       "zero_result_rate == 0.00 on must_hit queries": {
@@ -254,15 +306,15 @@
         "pass": false
       },
       "false_positive_rate == 0.00 on the 4 negative queries (spec text says 5)": {
-        "observed": 0.5,
+        "observed": 0.25,
         "pass": false
       },
       "nDCG@10 >= 0.75 overall": {
-        "observed": 0.7049628673114833,
+        "observed": 0.7004192905065056,
         "pass": false
       },
       "nDCG@10 >= 0.60 semantic lane": {
-        "observed": 0.19358514107060285,
+        "observed": 0.16995854168471936,
         "pass": false
       },
       "reformulation_signal <= 0.20 overall": {
@@ -306,7 +358,7 @@
         "limit": 10
       },
       "call": "search(\"package.json\", in=<root>, limit=10)",
-      "ms": 9.172999999998865,
+      "ms": 12.712625000000116,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -349,7 +401,7 @@
         "limit": 10
       },
       "call": "search(\"ci.yml\", in=<root>, limit=10)",
-      "ms": 3.643707999999606,
+      "ms": 1.7475840000006428,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -392,7 +444,7 @@
         "limit": 10
       },
       "call": "search(\"client.ts\", in=<root>, limit=10)",
-      "ms": 2.458542000000307,
+      "ms": 3.193749999998545,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -435,7 +487,7 @@
         "limit": 10
       },
       "call": "search(\"bench\", in=<root>, limit=10)",
-      "ms": 2.511624999999185,
+      "ms": 4.54870899999878,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -490,7 +542,7 @@
         "limit": 10
       },
       "call": "search(\"codemode\", in=<root>, limit=10)",
-      "ms": 2.6365829999995185,
+      "ms": 1.001749999999447,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -533,7 +585,7 @@
         "limit": 30
       },
       "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
-      "ms": 1.7759580000019923,
+      "ms": 2.3872920000030717,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -632,7 +684,7 @@
         "limit": 10
       },
       "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
-      "ms": 2.1205840000002354,
+      "ms": 2.4753749999981665,
       "us_source": null,
       "us_error": null,
       "retrieved": [],
@@ -653,7 +705,7 @@
         "limit": 10
       },
       "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
-      "ms": 3.3892500000001746,
+      "ms": 9.484707999999955,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -702,7 +754,7 @@
         "limit": 10
       },
       "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.8493749999979627,
+      "ms": 1.0944170000002487,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -745,7 +797,7 @@
         "limit": 10
       },
       "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.2559590000018943,
+      "ms": 1.1000829999975394,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -788,7 +840,7 @@
         "limit": 10
       },
       "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.0032500000015716,
+      "ms": 1.2785830000029819,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -837,7 +889,7 @@
         "limit": 10
       },
       "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.5253750000010768,
+      "ms": 1.2073749999981374,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -880,7 +932,7 @@
         "limit": 10
       },
       "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.3082909999975527,
+      "ms": 0.917250000002241,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [],
@@ -902,7 +954,7 @@
         "limit": 10
       },
       "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
-      "ms": 2.735625000001164,
+      "ms": 4.054457999998704,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -952,7 +1004,7 @@
         "limit": 10
       },
       "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
-      "ms": 1.2422919999989972,
+      "ms": 1.594042000000627,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -1050,21 +1102,18 @@
         "limit": 10
       },
       "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
-      "ms": 1.489041000000725,
-      "us_source": "scan",
-      "us_error": null,
-      "retrieved": [
-        "AUDIT-2026-10-14.md",
-        "LICENSE"
-      ],
-      "retrieved_count": 2,
+      "ms": 0.05625000000145519,
+      "us_source": null,
+      "us_error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+      "retrieved": [],
+      "retrieved_count": 0,
       "control": null,
       "extra": null,
-      "zero_result": false,
-      "error_class": "no_error",
-      "false_positive": true,
-      "audit_row_present": true,
-      "reached_socket_or_recorder": true
+      "zero_result": true,
+      "error_class": "error_returned",
+      "false_positive": false,
+      "audit_row_present": false,
+      "reached_socket_or_recorder": false
     },
     {
       "id": "S1",
@@ -1078,7 +1127,7 @@
         "limit": 10
       },
       "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
-      "ms": 1.5709999999999127,
+      "ms": 1.9613749999989523,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -1128,7 +1177,7 @@
         "limit": 10
       },
       "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
-      "ms": 2.085291999999754,
+      "ms": 1.5842910000028496,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -1172,7 +1221,7 @@
         "limit": 10
       },
       "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
-      "ms": 1.3304580000003625,
+      "ms": 1.8612500000017462,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [],
@@ -1208,7 +1257,7 @@
         "limit": 10
       },
       "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
-      "ms": 1.247457999998005,
+      "ms": 1.250292000000627,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [
@@ -1252,7 +1301,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
-      "ms": 7.242041999998037,
+      "ms": 6.858791000002384,
       "us_source": "semantic_intent",
       "us_error": null,
       "retrieved": [
@@ -1265,23 +1314,9 @@
         "test/client.test.ts",
         "CONTRIBUTING.md",
         "README.md",
-        "bin/cli.ts",
-        "index.ts",
-        "package.json",
-        "src/recursive-learning.ts",
-        "src/sanitize.ts",
-        "src/tui.ts",
-        "test/empirical-10-tests.ts",
-        "src/formatter.ts",
-        "src/compactor.ts",
-        "src/types.ts",
-        "src/client.ts",
-        "src/codemode.ts",
-        "src/mcp.ts",
-        "src/semantic.ts",
-        ".corpus-meta.json"
+        "index.ts"
       ],
-      "retrieved_count": 24,
+      "retrieved_count": 10,
       "control": null,
       "extra": {
         "expanded_terms": [
@@ -1345,7 +1380,7 @@
           },
           {
             "rank": 10,
-            "path": "bin/cli.ts",
+            "path": "index.ts",
             "grade": 0
           }
         ],
@@ -1376,7 +1411,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
-      "ms": 5.2994999999973516,
+      "ms": 6.6261669999985315,
       "us_source": "semantic_intent",
       "us_error": null,
       "retrieved": [
@@ -1389,20 +1424,9 @@
         "src/mcp.ts",
         "src/tui.ts",
         "test/client.test.ts",
-        ".corpus-meta.json",
-        "CONTRIBUTING.md",
-        "README.md",
-        "ROADMAP.md",
-        "bin/cli.ts",
-        "src/client.ts",
-        "src/codemode.ts",
-        "package.json",
-        "src/sanitize.ts",
-        "src/semantic.ts",
-        "test/empirical-10-tests.ts",
-        "src/telemetry.ts"
+        ".corpus-meta.json"
       ],
-      "retrieved_count": 21,
+      "retrieved_count": 10,
       "control": null,
       "extra": {
         "expanded_terms": [
@@ -1497,7 +1521,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
-      "ms": 4.799917000000278,
+      "ms": 5.470417000000452,
       "us_source": "semantic_intent",
       "us_error": null,
       "retrieved": [
@@ -1510,16 +1534,9 @@
         "index.ts",
         "src/formatter.ts",
         "src/telemetry.ts",
-        ".corpus-meta.json",
-        "CHANGELOG.md",
-        "bin/cli.ts",
-        "package.json",
-        "src/client.ts",
-        "src/recursive-learning.ts",
-        "src/tui.ts",
-        "test/bench.ts"
+        ".corpus-meta.json"
       ],
-      "retrieved_count": 17,
+      "retrieved_count": 10,
       "control": null,
       "extra": {
         "expanded_terms": [
@@ -1614,7 +1631,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
-      "ms": 3.8841670000001614,
+      "ms": 5.614458000000013,
       "us_source": "semantic_intent",
       "us_error": null,
       "retrieved": [
@@ -1623,24 +1640,13 @@
         "README.md",
         "ROADMAP.md",
         "src/compactor.ts",
-        ".github/workflows/ci.yml",
         "CHANGELOG.md",
         "CONTRIBUTING.md",
         "OPTIMIZATIONS.md",
-        "bin/cli.ts",
-        "bin/tui.ts",
         "index.ts",
-        "src/client.ts",
-        "test/empirical-10-tests.ts",
-        "src/formatter.ts",
-        "src/recursive-learning.ts",
-        "src/sanitize.ts",
-        "src/telemetry.ts",
-        "src/tui.ts",
-        "test/bench.ts",
-        "test/benchmark-gate.test.ts"
+        "type-stubs.d.ts"
       ],
-      "retrieved_count": 21,
+      "retrieved_count": 10,
       "control": null,
       "extra": {
         "expanded_terms": [
@@ -1681,39 +1687,39 @@
           },
           {
             "rank": 6,
-            "path": ".github/workflows/ci.yml",
-            "grade": 3
-          },
-          {
-            "rank": 7,
             "path": "CHANGELOG.md",
             "grade": 0
           },
           {
-            "rank": 8,
+            "rank": 7,
             "path": "CONTRIBUTING.md",
             "grade": 0
           },
           {
-            "rank": 9,
+            "rank": 8,
             "path": "OPTIMIZATIONS.md",
             "grade": 0
           },
           {
+            "rank": 9,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
             "rank": 10,
-            "path": "bin/cli.ts",
+            "path": "type-stubs.d.ts",
             "grade": 0
           }
         ],
         "recall_at_1": 0.3333333333333333,
         "recall_at_3": 0.6666666666666666,
         "recall_at_5": 0.6666666666666666,
-        "recall_at_10": 1,
-        "success_recall_at_10": 1,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_10": 0.5,
         "mrr_at_10_rel1": 1,
         "mrr_at_10_rel2": 0.3333333333333333,
-        "ndcg_at_10": 0.531625928268338,
-        "ndcg_at_10_linear": 0.6444166520916993,
+        "ndcg_at_10": 0.2661616193664992,
+        "ndcg_at_10_linear": 0.42000399150792816,
         "top1_grade": 1,
         "reformulation_signal": true
       },
@@ -1732,7 +1738,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
-      "ms": 4.686375000001135,
+      "ms": 4.617874999999913,
       "us_source": "semantic_intent",
       "us_error": null,
       "retrieved": [
@@ -1745,17 +1751,9 @@
         ".corpus-meta.json",
         "CONTRIBUTING.md",
         "ROADMAP.md",
-        "bin/mcp-server.ts",
-        "index.ts",
-        "src/client.ts",
-        "src/codemode.ts",
-        "src/mcp.ts",
-        "package.json",
-        "src/sanitize.ts",
-        "test/client.test.ts",
-        "test/empirical-10-tests.ts"
+        "index.ts"
       ],
-      "retrieved_count": 18,
+      "retrieved_count": 10,
       "control": null,
       "extra": {
         "expanded_terms": [
@@ -1818,19 +1816,19 @@
           },
           {
             "rank": 10,
-            "path": "bin/mcp-server.ts",
-            "grade": 0
+            "path": "index.ts",
+            "grade": 3
           }
         ],
         "recall_at_1": 0.2,
         "recall_at_3": 0.2,
         "recall_at_5": 0.4,
-        "recall_at_10": 0.4,
-        "success_recall_at_10": 0,
+        "recall_at_10": 0.6,
+        "success_recall_at_10": 0.3333333333333333,
         "mrr_at_10_rel1": 1,
-        "mrr_at_10_rel2": 0,
-        "ndcg_at_10": 0.10417013521751892,
-        "ndcg_at_10_linear": 0.21320545831092064,
+        "mrr_at_10_rel2": 0.1,
+        "ndcg_at_10": 0.2515014471899402,
+        "ndcg_at_10_linear": 0.3424384392294009,
         "top1_grade": 1,
         "reformulation_signal": true
       },
@@ -1849,7 +1847,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
-      "ms": 4.004875000002357,
+      "ms": 15.974541999999929,
       "us_source": "semantic_intent",
       "us_error": null,
       "retrieved": [
@@ -1862,16 +1860,9 @@
         "CHANGELOG.md",
         "CONTRIBUTING.md",
         "LICENSE",
-        "OPTIMIZATIONS.md",
-        "ROADMAP.md",
-        "bin/cli.ts",
-        "index.ts",
-        "package.json",
-        "src/sanitize.ts",
-        "src/semantic.ts",
-        ".corpus-meta.json"
+        "OPTIMIZATIONS.md"
       ],
-      "retrieved_count": 17,
+      "retrieved_count": 10,
       "control": null,
       "extra": {
         "expanded_terms": [
@@ -1900,7 +1891,7 @@
         "limit": 10
       },
       "call": "search(\"readme\", in=<root>, limit=10)",
-      "ms": 2.297374999998283,
+      "ms": 1.1059580000001006,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -1944,7 +1935,7 @@
         "limit": 10
       },
       "call": "search(\"sanitize\", in=<root>, limit=10, near=/Users/batra/.cache/pi-ultrasearch-bench/corpus-0a16e50/src/formatter.ts)",
-      "ms": 3.2630000000026484,
+      "ms": 1.1503750000010768,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -1988,7 +1979,7 @@
         "boost": true
       },
       "call": "search(\"client\", in=<root>, limit=10, boost=true)",
-      "ms": 2.2283339999994496,
+      "ms": 0.9968750000007276,
       "us_source": null,
       "us_error": null,
       "retrieved": [
@@ -2001,7 +1992,7 @@
           "boost": false
         },
         "call": "boost=false",
-        "ms": 2.023332999997365,
+        "ms": 0.4589169999999285,
         "retrieved": [
           "src/client.ts",
           "test/client.test.ts"
@@ -2075,7 +2066,7 @@
         "limit": 10
       },
       "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
-      "ms": 1.8802910000013071,
+      "ms": 1.2826249999998254,
       "us_source": "scan",
       "us_error": null,
       "retrieved": [

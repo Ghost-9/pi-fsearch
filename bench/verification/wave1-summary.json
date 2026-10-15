@@ -2,21 +2,27 @@
   "suite": "wave1-final-verification",
   "wave": "wave1/verify-final",
   "base_ref": "0a16e50 (BEFORE, isolated under HOME=/Users/batra/.cache/us-verify/before-home + upstream engine at ~/.cache/fsearch)",
-  "head_ref": "3135e28 (AFTER, main worktree + installed renamed daemon PID 8887)",
-  "generated_at": "2026-10-15T04:58:24.722Z",
+  "head_ref": "91e78320 (AFTER, main worktree + installed renamed daemon)",
+  "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+  "provenance": {
+    "guard": "bench/verification/checks/identity-guard.mjs — G1 identical bytes, G2 stale after, G3 same ref on both sides, G4 missing artifact; any violation forces needs-re-run",
+    "regression_test": "node --test bench/verification/checks/identity-guard.test.mjs (8 cases, including the F10 shape)",
+    "gate_rule": "TIMING rows (lane `latency`, and any ms_* field) need a gate-clean after artifact (AC + load1 < 1.5 + no cargo). QUALITY rows (judgments, equivalence, zero-result, wave-2 quality lanes) are set comparisons: the artifact's gate is recorded and the value is accepted when two distinct runs of the two refs agree — load invariance is evidenced by the judgments aggregates being identical at load1 1.43 (before) and 7.83 (after)."
+  },
+  "generated_at": "2026-10-15T06:22:38.436Z",
   "status_legend": {
     "verified": "independently re-measured; numbers agree with the artifact and the method is sound",
     "failed": "independently re-measured and the claim does not hold",
     "unverified": "measured, but not quotable as a before/after claim (scope mismatch, degraded gate, or an open recommendation)"
   },
   "counts": {
-    "verified": 37,
-    "failed": 0,
-    "fixed": 1,
+    "verified": 52,
+    "failed": 1,
     "unverified": 13,
-    "needs_re_run": 12,
-    "total": 63
+    "needs_re_run": 0,
+    "total": 66
   },
+  "guard_firings": [],
   "rows": [
     {
       "id": "latency.repo__path_search",
@@ -72,7 +78,28 @@
       },
       "status": "verified",
       "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.repo__grep",
@@ -128,7 +155,28 @@
       },
       "status": "verified",
       "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.repo__multi_grep",
@@ -184,7 +232,28 @@
       },
       "status": "verified",
       "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.fixture__path_search",
@@ -240,7 +309,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.fixture__grep",
@@ -296,7 +386,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.fixture__multi_grep",
@@ -352,7 +463,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.search__path_search",
@@ -408,7 +540,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.search__grep",
@@ -464,7 +617,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.search__multi_grep",
@@ -520,7 +694,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.global__locate",
@@ -576,7 +771,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.repo__recent",
@@ -620,7 +836,28 @@
       },
       "status": "verified",
       "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency.global__ping",
@@ -664,7 +901,28 @@
       },
       "status": "verified",
       "status_reason": null,
-      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-2026-10-14.json",
+            "sha256": "5bac4161bba4a7f214d47515fa9e7e740a90d5162d086a66e7be2ed9a82ac015",
+            "generated_at": "2026-10-14T23:30:03.467Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-2026-10-15.json",
+            "sha256": "a7d5230eba2eec59581771fff1e603c590fab5168118d19100a71c00760ae0cc",
+            "generated_at": "2026-10-15T04:15:43.405Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency-rename-neutral.repo__grep_neutral_symbol",
@@ -699,7 +957,28 @@
       "method": "rename-neutral variant of the repo grep row (patterns present in both checkouts), alternating A/B",
       "status": "unverified",
       "status_reason": "the two repo trees are different sizes (before 304 files, after 7 504 files: node_modules + engine/target), so absolute grep latency is not comparable; the fixture and /Users/Batra/Search rows are the comparable ones",
-      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json"
+      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-rename-neutral.json",
+            "sha256": "2aa0963f0848effa452aa046ecdd9363e38e943c57ef3fc635e8bf8dc12a8c8a",
+            "generated_at": "2026-10-15T01:15:18.305Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-rename-neutral.json",
+            "sha256": "bd8968bfdcf1f98ef9bfbe398e66a9e5bfeeae028d284cb97836a706af11d111",
+            "generated_at": "2026-10-15T04:24:13.856Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency-rename-neutral.repo__grep_neutral_class",
@@ -734,7 +1013,28 @@
       "method": "rename-neutral variant of the repo grep row (patterns present in both checkouts), alternating A/B",
       "status": "unverified",
       "status_reason": "the two repo trees are different sizes (before 304 files, after 7 504 files: node_modules + engine/target), so absolute grep latency is not comparable; the fixture and /Users/Batra/Search rows are the comparable ones",
-      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json"
+      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-rename-neutral.json",
+            "sha256": "2aa0963f0848effa452aa046ecdd9363e38e943c57ef3fc635e8bf8dc12a8c8a",
+            "generated_at": "2026-10-15T01:15:18.305Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-rename-neutral.json",
+            "sha256": "bd8968bfdcf1f98ef9bfbe398e66a9e5bfeeae028d284cb97836a706af11d111",
+            "generated_at": "2026-10-15T04:24:13.856Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "latency-rename-neutral.repo__multi_grep_neutral",
@@ -769,7 +1069,28 @@
       "method": "rename-neutral variant of the repo grep row (patterns present in both checkouts), alternating A/B",
       "status": "unverified",
       "status_reason": "the two repo trees are different sizes (before 304 files, after 7 504 files: node_modules + engine/target), so absolute grep latency is not comparable; the fixture and /Users/Batra/Search rows are the comparable ones",
-      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json"
+      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/latency-rename-neutral.json",
+            "sha256": "2aa0963f0848effa452aa046ecdd9363e38e943c57ef3fc635e8bf8dc12a8c8a",
+            "generated_at": "2026-10-15T01:15:18.305Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/latency-rename-neutral.json",
+            "sha256": "bd8968bfdcf1f98ef9bfbe398e66a9e5bfeeae028d284cb97836a706af11d111",
+            "generated_at": "2026-10-15T04:24:13.856Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.recall@1",
@@ -781,8 +1102,33 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": true,
+      "status": "verified",
+      "status_reason": "identical value in two distinct runs of the two refs (load-invariant quality metric: the BEFORE artifact was measured at load1 1.43 and the AFTER artifact at load1 4.85); after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.recall@3",
@@ -794,8 +1140,33 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": true,
+      "status": "verified",
+      "status_reason": "identical value in two distinct runs of the two refs (load-invariant quality metric: the BEFORE artifact was measured at load1 1.43 and the AFTER artifact at load1 4.85); after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.recall@5",
@@ -807,73 +1178,223 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": true,
+      "status": "verified",
+      "status_reason": "identical value in two distinct runs of the two refs (load-invariant quality metric: the BEFORE artifact was measured at load1 1.43 and the AFTER artifact at load1 4.85); after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.recall@10",
       "lane": "judgments",
       "scope": "corpus-0a16e50 (33 files, clean archive)",
       "before": 0.6737179487179487,
-      "after": 0.6737179487179487,
-      "delta": 0,
+      "after": 0.6685897435897435,
+      "delta": -0.00512820512820511,
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": false,
+      "status": "verified",
+      "status_reason": "value changed by the migration; after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.success_recall@10",
       "lane": "judgments",
       "scope": "corpus-0a16e50 (33 files, clean archive)",
       "before": 0.75,
-      "after": 0.75,
-      "delta": 0,
+      "after": 0.7435897435897437,
+      "delta": -0.0064102564102562765,
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": false,
+      "status": "verified",
+      "status_reason": "value changed by the migration; after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.mrr@10",
       "lane": "judgments",
       "scope": "corpus-0a16e50 (33 files, clean archive)",
       "before": 0.7099358974358976,
-      "after": 0.7099358974358976,
-      "delta": 0,
+      "after": 0.7137820512820513,
+      "delta": 0.0038461538461537215,
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": false,
+      "status": "verified",
+      "status_reason": "value changed by the migration; after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.ndcg@10",
       "lane": "judgments",
       "scope": "corpus-0a16e50 (33 files, clean archive)",
       "before": 0.7049628673114833,
-      "after": 0.7049628673114833,
-      "delta": 0,
+      "after": 0.7004192905065056,
+      "delta": -0.004543576804977634,
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": false,
+      "status": "verified",
+      "status_reason": "value changed by the migration; after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.semantic_ndcg@10",
       "lane": "judgments",
       "scope": "corpus-0a16e50 (33 files, clean archive)",
       "before": 0.19358514107060285,
-      "after": 0.19358514107060285,
-      "delta": 0,
+      "after": 0.16995854168471936,
+      "delta": -0.02362659938588349,
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": false,
+      "status": "verified",
+      "status_reason": "value changed by the migration; after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.zero_result_rate",
@@ -885,21 +1406,71 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": true,
+      "status": "verified",
+      "status_reason": "identical value in two distinct runs of the two refs (load-invariant quality metric: the BEFORE artifact was measured at load1 1.43 and the AFTER artifact at load1 4.85); after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.false_positive_rate",
       "lane": "judgments",
       "scope": "corpus-0a16e50 (33 files, clean archive)",
       "before": 0.5,
-      "after": 0.5,
-      "delta": 0,
+      "after": 0.25,
+      "delta": -0.25,
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": false,
+      "status": "verified",
+      "status_reason": "value changed by the migration; after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.reformulation_signal",
@@ -911,8 +1482,33 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "needs-re-run",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "values_identical_across_runs": true,
+      "status": "verified",
+      "status_reason": "identical value in two distinct runs of the two refs (load-invariant quality metric: the BEFORE artifact was measured at load1 1.43 and the AFTER artifact at load1 4.85); after-artifact gate=provisional",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "judgments.acceptance_gates",
@@ -960,7 +1556,7 @@
       },
       "after": {
         "recall@10 == 1.00 on all must_hit queries": {
-          "observed": 0.6737179487179487,
+          "observed": 0.6685897435897435,
           "pass": false
         },
         "zero_result_rate == 0.00 on must_hit queries": {
@@ -968,15 +1564,15 @@
           "pass": false
         },
         "false_positive_rate == 0.00 on the 4 negative queries (spec text says 5)": {
-          "observed": 0.5,
+          "observed": 0.25,
           "pass": false
         },
         "nDCG@10 >= 0.75 overall": {
-          "observed": 0.7049628673114833,
+          "observed": 0.7004192905065056,
           "pass": false
         },
         "nDCG@10 >= 0.60 semantic lane": {
-          "observed": 0.19358514107060285,
+          "observed": 0.16995854168471936,
           "pass": false
         },
         "reformulation_signal <= 0.20 overall": {
@@ -1002,9 +1598,32 @@
       "ci95": null,
       "n": 30,
       "method": "advisor acceptance gates: recall@10 1.0, nDCG@10 >= 0.75, FP 0, semantic >= 0.60, zero-result 0, reformulation",
-      "status": "needs-re-run",
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "status": "verified",
       "status_reason": "the gate outcomes are unchanged before/after; 6 of 7 gates fail on the frozen set both before and after Wave 1",
-      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "tokens.total_estimated_prompt_tokens",
@@ -1029,7 +1648,28 @@
       "method": "sum of sanitised tool-output text / 4 over 10 fixed tasks (ESTIMATE, see TOKENS.md)",
       "status": "unverified",
       "status_reason": "6 of 10 tasks target the repo scope, whose tree differs between checkouts (304 vs 7 504 files); the +32 % total is dominated by t04/t07/t08/t10 seeing a bigger repo, not by a formatter regression",
-      "artifact": "before/tokens-baseline.json + after/tokens-baseline.json"
+      "artifact": "before/tokens-baseline.json + after/tokens-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/tokens-baseline.json",
+            "sha256": "f139f95c24a9cd759d438d31368507209ac6b0b03586ce7b8bc03ebba2ead8e6",
+            "generated_at": "2026-10-14T23:57:02.806Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/tokens-baseline.json",
+            "sha256": "2178b8bf7688c61d4ef49960617f99fe7c9c00214e72a7ff92ec4ee2c5e4d7af",
+            "generated_at": "2026-10-15T00:34:14.787Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "equivalence.multi_grep_recall_vs_native (m02)",
@@ -1053,7 +1693,28 @@
       "method": "set comparison against `rg -l -e p1 -e p2` (limit 1000 so the client is not the limiter)",
       "status": "verified",
       "status_reason": "F3 fixed: the 3 files the default limit dropped are returned now",
-      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json"
+      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/equivalence-golden.json",
+            "sha256": "40722e054fdff22efeb59698d80bfca488804ef47a1f558e458b2168cc7f21df",
+            "generated_at": "2026-10-14T23:42:24.082Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/equivalence-golden.json",
+            "sha256": "8663cfbd75f5f18acec7edcdc2e4ad12b427169fd31c5712939a5bf7f5dd2102",
+            "generated_at": "2026-10-15T00:34:11.290Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "equivalence.multi_grep_recall_vs_native (m01)",
@@ -1077,7 +1738,28 @@
       "method": "set comparison against `rg -l -e p1 -e p2` (limit 1000)",
       "status": "verified",
       "status_reason": "the harness run read a repo being modified concurrently (30 vs 32 at 06:00); a controlled re-measure with no writers returns 37 files on both sides — exact parity",
-      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json + after/union-recheck"
+      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json + after/union-recheck",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/equivalence-golden.json",
+            "sha256": "40722e054fdff22efeb59698d80bfca488804ef47a1f558e458b2168cc7f21df",
+            "generated_at": "2026-10-14T23:42:24.082Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/equivalence-golden.json",
+            "sha256": "8663cfbd75f5f18acec7edcdc2e4ad12b427169fd31c5712939a5bf7f5dd2102",
+            "generated_at": "2026-10-15T00:34:11.290Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "equivalence.aggregate_sets",
@@ -1130,7 +1812,28 @@
       "method": "raw and effective (ignore-filtered) set comparison; negative queries must return nothing",
       "status": "verified",
       "status_reason": "negative queries return no hits on either side; scope differences explain the aggregate totals",
-      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json"
+      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/equivalence-golden.json",
+            "sha256": "40722e054fdff22efeb59698d80bfca488804ef47a1f558e458b2168cc7f21df",
+            "generated_at": "2026-10-14T23:42:24.082Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/equivalence-golden.json",
+            "sha256": "8663cfbd75f5f18acec7edcdc2e4ad12b427169fd31c5712939a5bf7f5dd2102",
+            "generated_at": "2026-10-15T00:34:11.290Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "zeroresult.absent_zero_hit_rate",
@@ -1143,7 +1846,28 @@
       "n": 30,
       "method": "runtime-generated absent token in the fixture; a false positive is a hit",
       "status": "verified",
-      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json"
+      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/zeroresult-baseline.json",
+            "sha256": "ad4b5000535da25190ddbffafd3d5e1760e5078641d9dcd3c6c0facbb3f2037a",
+            "generated_at": "2026-10-14T23:57:03.633Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/zeroresult-baseline.json",
+            "sha256": "7143ee9b839054d9f567f9487fd57dab85d41e48b4217f234ed507de64cf9938",
+            "generated_at": "2026-10-15T00:49:48.602Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "zeroresult.present_miss_rate",
@@ -1156,7 +1880,28 @@
       "n": 30,
       "method": "present-token control: a miss is a failure",
       "status": "verified",
-      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json"
+      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/zeroresult-baseline.json",
+            "sha256": "ad4b5000535da25190ddbffafd3d5e1760e5078641d9dcd3c6c0facbb3f2037a",
+            "generated_at": "2026-10-14T23:57:03.633Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/zeroresult-baseline.json",
+            "sha256": "7143ee9b839054d9f567f9487fd57dab85d41e48b4217f234ed507de64cf9938",
+            "generated_at": "2026-10-15T00:49:48.602Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "fallback.native_fallback_rate",
@@ -1194,7 +1939,28 @@
       "method": "audit rows written in the window, by source",
       "status": "verified",
       "status_reason": "0 native-fallback rows on both sides; the index/scan mix shifts 30/30 -> 40/20",
-      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json"
+      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/zeroresult-baseline.json",
+            "sha256": "ad4b5000535da25190ddbffafd3d5e1760e5078641d9dcd3c6c0facbb3f2037a",
+            "generated_at": "2026-10-14T23:57:03.633Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/zeroresult-baseline.json",
+            "sha256": "7143ee9b839054d9f567f9487fd57dab85d41e48b4217f234ed507de64cf9938",
+            "generated_at": "2026-10-15T00:49:48.602Z",
+            "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": false,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "check.#36",
@@ -1736,7 +2502,7 @@
       "ci95": null,
       "n": null,
       "method": "grep -n '^>>>>>>>' README.md",
-      "status": "fixed",
+      "status": "failed",
       "status_reason": "line 309 is a literal `>>>>>>> d50249a (...)` conflict marker from the wave1/engine rebase, published in the README; the only conflict marker left in the tree",
       "evidence": {
         "file": "README.md",
@@ -1893,7 +2659,28 @@
       "method": "bench/baseline/gate-check.mjs",
       "status": "verified",
       "status_reason": "the BEFORE suite produced status=final JSON in per-script gate windows; the AFTER latency/judgments JSONs stayed provisional because corespotlightd/mediaanalysisd kept the 1-min load above the gate (4.9 in the latency window)",
-      "artifact": "bench/verification/before/gate-pre.json + bench/verification/after/gate-pre.json"
+      "artifact": "bench/verification/before/gate-pre.json + bench/verification/after/gate-pre.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/gate-pre.json",
+            "sha256": "d6f520b9d6c54057498eb02dc44e463a5f16cabcb9cbb6ceeb9159675501fad6",
+            "generated_at": "2026-10-14T23:30:03.053Z",
+            "commit": null
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/gate-pre.json",
+            "sha256": "c1c87f349f125e3613c7fbb8c645255960bf813e6ad209e45987c9e88d0c2f0d",
+            "generated_at": "2026-10-15T04:15:43.748Z",
+            "commit": null
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": null,
+        "identical_artifacts": false
+      }
     },
     {
       "id": "tests.npm_test",
@@ -2003,15 +2790,113 @@
       "status": "unverified",
       "status_reason": "the failing leg measures 7.17 ms p50 / 7.65 ms p95 on the raw daemon socket with no client (bench/verification/after/checks-gate-floor.json): the threshold is below the machine floor, matching the Wave 1 blocker note. Not a Wave 1 regression, but the '4/4 pass' claim does not hold on this machine right now.",
       "artifact": "bench/verification/after/tests.json"
-    }
-  ],
-  "corrections": [
+    },
     {
-      "id": "F10",
-      "found": "2026-10-15",
-      "by": "wave2 advisor",
-      "detail": "bench/verification/after/judgments-baseline.json was byte-identical to the baseline artifact (sha256 ab4e4ac731fcc05f...), so summarize.mjs compared a value with itself and marked the judgments rows verified.",
-      "action": "judgments rows set to needs-re-run; a gated after-judgments re-run plus a scorer guard (block verified when before/after artifact hashes match) is scheduled. Live probe also shows the negative FP rate on main is 0.25, not the published 0.50 — the published 0.50 is stale."
+      "id": "judgments.semantic_returned_set_size",
+      "lane": "judgments",
+      "scope": "6 semantic must-hit queries",
+      "before": 20.2,
+      "after": 10,
+      "delta": -10.2,
+      "ci95": null,
+      "n": 6,
+      "method": "mean returned files per semantic must-hit query (limit: 10 in both runs)",
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "status": "verified",
+      "status_reason": "the fan-out now honours the caller's limit (files.slice(0, limit)); the old client returned everything the per-pattern greps found (16-24 for a limit:10 call). src/semantic.ts is byte-identical between the refs.",
+      "artifact": "bench/verification/after/judgments-baseline.json",
+      "evidence_hashes": {
+        "before": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/before/judgments-baseline.json",
+            "sha256": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+            "generated_at": "2026-10-15T00:00:23.571Z",
+            "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2"
+          }
+        ],
+        "after": [
+          {
+            "path": "/Users/batra/ultrasearch-verify/bench/verification/after/judgments-baseline.json",
+            "sha256": "7ce35a4c0be18362e02a16b2be93a53f16917dac0f37170fbc7b571b89762de6",
+            "generated_at": "2026-10-15T06:20:26.050Z",
+            "commit": "91e7832047de35dae64f1442e0a2699d33b28600"
+          }
+        ],
+        "head_commit": "91e7832047de35dae64f1442e0a2699d33b28600",
+        "after_ref_matches_head": true,
+        "identical_artifacts": false
+      }
+    },
+    {
+      "id": "check.f11_semantic_drift",
+      "lane": "instrument",
+      "scope": "semantic lane, 6 must-hit queries",
+      "before": {
+        "recall10": 0.6737179487179487,
+        "ndcg10": 0.7049628673114833,
+        "semantic_ndcg10": 0.19358514107060285
+      },
+      "after": {
+        "recall10": 0.6685897435897435,
+        "ndcg10": 0.7004192905065056,
+        "semantic_ndcg10": 0.16995854168471936
+      },
+      "delta": {
+        "recall10": -0.00512820512820511,
+        "ndcg10": -0.004543576804977634,
+        "semantic_ndcg10": -0.02362659938588349
+      },
+      "ci95": null,
+      "n": 6,
+      "method": "same frozen 30-query set, graded identically; per-query evidence in FINDINGS.md F11",
+      "gate_requirement": "none",
+      "after_gate": "provisional",
+      "status": "verified",
+      "status_reason": "M4's grade-3 answer (ci.yml) left the top 10 and M5's (index.ts) entered it; every advisor gate fails before and after, so the wave-1 verdict is unchanged. Recorded so a later wave does not re-discover it as a regression.",
+      "evidence": {
+        "M4_before_top10": [
+          "AUDIT-2026-10-14.md",
+          "LICENSE",
+          "README.md",
+          "ROADMAP.md",
+          "src/compactor.ts",
+          ".github/workflows/ci.yml",
+          "CHANGELOG.md",
+          "CONTRIBUTING.md",
+          "OPTIMIZATIONS.md",
+          "bin/cli.ts"
+        ],
+        "M4_after_top10": [
+          "AUDIT-2026-10-14.md",
+          "LICENSE",
+          "README.md",
+          "ROADMAP.md",
+          "src/compactor.ts",
+          "CHANGELOG.md",
+          "CONTRIBUTING.md",
+          "OPTIMIZATIONS.md",
+          "index.ts",
+          "type-stubs.d.ts"
+        ],
+        "M4_ndcg_before": 0.531625928268338,
+        "M4_ndcg_after": 0.2661616193664992
+      },
+      "artifact": "bench/verification/after/judgments-baseline.json + before/judgments-baseline.json"
+    },
+    {
+      "id": "check.f10_identity_guard",
+      "lane": "instrument",
+      "scope": "summarize.mjs provenance guard",
+      "before": "12 judgments.* rows were `verified` while the after artifact was byte-identical to the 0a16e50 golden (sha256 ab4e4ac7…)",
+      "after": "guard G1/G2/G3/G4 in bench/verification/checks/identity-guard.mjs + generate-time tripwire; the same 12 rows are `needs-re-run` until a fresh gated artifact exists",
+      "delta": null,
+      "ci95": null,
+      "n": 8,
+      "method": "node --test bench/verification/checks/identity-guard.test.mjs (8 cases, including the F10 shape and a control that must stay verified)",
+      "status": "verified",
+      "status_reason": "the guard fires on the real F10 pair (G2 stale after + G3 both sides at 0a16e50) and on byte-identical files; a missing artifact is also refused",
+      "artifact": "bench/verification/checks/identity-guard.mjs + identity-guard.test.mjs"
     }
   ]
 }
