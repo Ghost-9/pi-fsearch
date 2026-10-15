@@ -1,0 +1,759 @@
+{
+  "meta": {
+    "suite": "wave3-compare",
+    "generated_at": "2026-10-15T12:11:03.801Z",
+    "boot": 10000,
+    "method": "paired per-row deltas, BCa bootstrap CI (mulberry32, seed 20261015), rows paired by judgment id",
+    "before": {
+      "path": "bench/wave3/results/final-base.json",
+      "sha256": "c55673dde9b632c14c9639f2b54bf92d7694312b5024028341446be229bc9111",
+      "label": "final-base",
+      "engine": {
+        "bin": "/tmp/rf-bins/base/ultrasearch",
+        "sha256": "7029579839b3ca44b4c79269b9e2da8930aceb0d322695d6986ad9f646d487cf"
+      },
+      "status": "provisional",
+      "gate": "provisional"
+    },
+    "after": {
+      "path": "bench/wave3/results/final-rank.json",
+      "sha256": "bba7825b1e0dac5e448e8c6fbf15880341c363084806fee6512af1c0e4ea2abe",
+      "label": "final-rank",
+      "engine": {
+        "bin": "/tmp/rf-bins/rank/ultrasearch",
+        "sha256": "7b413d874fa2a824d2a4c6c9c679b10c1f83693311761d4453be582988b24a3e"
+      },
+      "status": "provisional",
+      "gate": "provisional"
+    },
+    "corpus_identical": true,
+    "judgments_identical": true,
+    "client_tree_dirty": {
+      "before": true,
+      "after": true
+    }
+  },
+  "overall": {
+    "must_hit_rows": 26,
+    "recall_at_10": {
+      "label": "recall@10",
+      "n": 26,
+      "before": 0.7833333333333332,
+      "after": 0.7961538461538461,
+      "delta": 0.012820512820512822,
+      "ci95_bca": [
+        0,
+        0.038461538461538464
+      ],
+      "ci_note": null,
+      "excludes_zero": false,
+      "improved": 1,
+      "regressed": 0,
+      "detail": [
+        {
+          "id": "R2",
+          "before": 0.6666666666666666,
+          "after": 1,
+          "delta": 0.33333333333333337
+        }
+      ]
+    },
+    "recall_at_3": {
+      "label": "recall@3",
+      "n": 26,
+      "before": 0.6096153846153848,
+      "after": 0.6160256410256412,
+      "delta": 0.006410256410256411,
+      "ci95_bca": [
+        0,
+        0.019230769230769232
+      ],
+      "ci_note": null,
+      "excludes_zero": false,
+      "improved": 1,
+      "regressed": 0,
+      "detail": [
+        {
+          "id": "R2",
+          "before": 0.3333333333333333,
+          "after": 0.5,
+          "delta": 0.16666666666666669
+        }
+      ]
+    },
+    "success_recall_at_10": {
+      "label": "success_recall@10 (grade>=2)",
+      "n": 26,
+      "before": 0.9423076923076923,
+      "after": 0.9615384615384616,
+      "delta": 0.019230769230769232,
+      "ci95_bca": [
+        0,
+        0.057692307692307696
+      ],
+      "ci_note": null,
+      "excludes_zero": false,
+      "improved": 1,
+      "regressed": 0,
+      "detail": [
+        {
+          "id": "R2",
+          "before": 0.5,
+          "after": 1,
+          "delta": 0.5
+        }
+      ]
+    },
+    "ndcg_at_10": {
+      "label": "nDCG@10",
+      "n": 26,
+      "before": 0.8628903747917224,
+      "after": 0.9120703849896526,
+      "delta": 0.049180010197930245,
+      "ci95_bca": [
+        0.011161163792428251,
+        0.13451867283595778
+      ],
+      "ci_note": null,
+      "excludes_zero": true,
+      "improved": 3,
+      "regressed": 0,
+      "detail": [
+        {
+          "id": "G1",
+          "before": 0.7098097413968655,
+          "after": 1,
+          "delta": 0.2901902586031345
+        },
+        {
+          "id": "G4",
+          "before": 0.5787641110093001,
+          "after": 0.9173194127129571,
+          "delta": 0.338555301703657
+        },
+        {
+          "id": "R2",
+          "before": 0.338121983591631,
+          "after": 0.9880566884310259,
+          "delta": 0.6499347048393949
+        }
+      ]
+    },
+    "recall_at_limit": {
+      "label": "recall@limit (whole set)",
+      "n": 26,
+      "before": 0.7833333333333332,
+      "after": 0.7961538461538461,
+      "delta": 0.012820512820512822,
+      "ci95_bca": [
+        0,
+        0.038461538461538464
+      ],
+      "ci_note": null,
+      "excludes_zero": false,
+      "improved": 1,
+      "regressed": 0,
+      "detail": [
+        {
+          "id": "R2",
+          "before": 0.6666666666666666,
+          "after": 1,
+          "delta": 0.33333333333333337
+        }
+      ]
+    },
+    "reformulation_signal": {
+      "label": "reformulation (top-1 grade < 2)",
+      "n": 26,
+      "before": 0.15384615384615385,
+      "after": 0.038461538461538464,
+      "delta": -0.11538461538461539,
+      "ci95_bca": [
+        -0.34615384615384615,
+        -0.038461538461538464
+      ],
+      "excludes_zero": true,
+      "detail": [
+        {
+          "id": "G1",
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        },
+        {
+          "id": "G4",
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        },
+        {
+          "id": "R2",
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      ]
+    }
+  },
+  "by_lane": {
+    "path": {
+      "rows": 6,
+      "recall_at_10": {
+        "n": 6,
+        "before": 0.8055555555555557,
+        "after": 0.8055555555555557,
+        "delta": 0,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 6,
+        "before": 0.9174054120491127,
+        "after": 0.9174054120491127,
+        "delta": 0,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "reformulation_signal": {
+        "n": 6,
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "bound": 0.35,
+        "before_pass": true,
+        "after_pass": true,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "detail": []
+      },
+      "latency": {
+        "n": 6,
+        "before_p50": 0.6463539999999739,
+        "after_p50": 0.7210415000000694,
+        "before_p95": 2.0985729999999876,
+        "after_p95": 1.7743019999999774,
+        "delta_p50": 0.0746875000000955,
+        "delta_p95": -0.3242710000000102,
+        "median_delta": 0.10372899999993024,
+        "ci95_bca_median_delta": [
+          -0.29736833333337626,
+          0.11152783333333598
+        ]
+      }
+    },
+    "grep-literal": {
+      "rows": 5,
+      "recall_at_10": {
+        "n": 5,
+        "before": 0.9,
+        "after": 0.9,
+        "delta": 0,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 5,
+        "before": 0.8577147704812331,
+        "after": 0.9834638825425914,
+        "delta": 0.1257491120613583,
+        "ci95_bca": [
+          0,
+          0.2514982241227166
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 2,
+        "regressed": 0,
+        "detail": [
+          {
+            "id": "G1",
+            "before": 0.7098097413968655,
+            "after": 1,
+            "delta": 0.2901902586031345
+          },
+          {
+            "id": "G4",
+            "before": 0.5787641110093001,
+            "after": 0.9173194127129571,
+            "delta": 0.338555301703657
+          }
+        ]
+      },
+      "reformulation_signal": {
+        "n": 5,
+        "before": 0.4,
+        "after": 0,
+        "delta": -0.4,
+        "bound": 0.35,
+        "before_pass": false,
+        "after_pass": true,
+        "ci95_bca": [
+          -1,
+          -0.2
+        ],
+        "ci_note": null,
+        "detail": [
+          {
+            "id": "G1",
+            "before": 1,
+            "after": 0,
+            "delta": -1
+          },
+          {
+            "id": "G4",
+            "before": 1,
+            "after": 0,
+            "delta": -1
+          }
+        ]
+      },
+      "latency": {
+        "n": 5,
+        "before_p50": 0.505333999999948,
+        "after_p50": 0.3814589999999498,
+        "before_p95": 1.0394166000000495,
+        "after_p95": 0.7644999999999982,
+        "delta_p50": -0.12387499999999818,
+        "delta_p95": -0.27491660000005136,
+        "median_delta": -0.12387499999999818,
+        "ci95_bca_median_delta": [
+          -0.24426660000003722,
+          -0.08534200000008241
+        ]
+      }
+    },
+    "grep-regex": {
+      "rows": 2,
+      "recall_at_10": {
+        "n": 2,
+        "before": 0.8333333333333333,
+        "after": 1,
+        "delta": 0.16666666666666669,
+        "ci95_bca": null,
+        "ci_note": "n=2: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 1,
+        "regressed": 0,
+        "detail": [
+          {
+            "id": "R2",
+            "before": 0.6666666666666666,
+            "after": 1,
+            "delta": 0.33333333333333337
+          }
+        ]
+      },
+      "ndcg_at_10": {
+        "n": 2,
+        "before": 0.6690609917958155,
+        "after": 0.9940283442155129,
+        "delta": 0.32496735241969743,
+        "ci95_bca": null,
+        "ci_note": "n=2: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 1,
+        "regressed": 0,
+        "detail": [
+          {
+            "id": "R2",
+            "before": 0.338121983591631,
+            "after": 0.9880566884310259,
+            "delta": 0.6499347048393949
+          }
+        ]
+      },
+      "reformulation_signal": {
+        "n": 2,
+        "before": 0.5,
+        "after": 0,
+        "delta": -0.5,
+        "bound": 0.35,
+        "before_pass": false,
+        "after_pass": true,
+        "ci95_bca": null,
+        "ci_note": "n=2: no CI (a 2-row lane is scored as a point condition)",
+        "detail": [
+          {
+            "id": "R2",
+            "before": 1,
+            "after": 0,
+            "delta": -1
+          }
+        ]
+      },
+      "latency": {
+        "n": 2,
+        "before_p50": 1.4041040000000748,
+        "after_p50": 1.095458500000177,
+        "before_p95": 1.5624851000000604,
+        "after_p95": 1.2022583500003976,
+        "delta_p50": -0.30864549999989777,
+        "delta_p95": -0.36022674999966275,
+        "median_delta": -0.30864549999989777,
+        "ci95_bca_median_delta": null
+      }
+    },
+    "symbol": {
+      "rows": 4,
+      "recall_at_10": {
+        "n": 4,
+        "before": 0.5083333333333333,
+        "after": 0.5083333333333333,
+        "delta": 0,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 4,
+        "before": 0.8659526309842432,
+        "after": 0.8659526309842432,
+        "delta": 0,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "reformulation_signal": {
+        "n": 4,
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "bound": 0.35,
+        "before_pass": true,
+        "after_pass": true,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "detail": []
+      },
+      "latency": {
+        "n": 4,
+        "before_p50": 2.4615834999999606,
+        "after_p50": 2.635332999999946,
+        "before_p95": 4.226314349999916,
+        "after_p95": 3.4802079500001355,
+        "delta_p50": 0.17374949999998535,
+        "delta_p95": -0.7461063999997801,
+        "median_delta": 0.005000000000336513,
+        "ci95_bca_median_delta": [
+          -0.9403749999996762,
+          0.17987449999998262
+        ]
+      }
+    },
+    "semantic": {
+      "rows": 5,
+      "recall_at_10": {
+        "n": 5,
+        "before": 1,
+        "after": 1,
+        "delta": 0,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 5,
+        "before": 0.8313442974252547,
+        "after": 0.8313442974252547,
+        "delta": 0,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "excludes_zero": false,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "reformulation_signal": {
+        "n": 5,
+        "before": 0.2,
+        "after": 0.2,
+        "delta": 0,
+        "bound": 0.35,
+        "before_pass": true,
+        "after_pass": true,
+        "ci95_bca": [
+          0,
+          0
+        ],
+        "ci_note": null,
+        "detail": []
+      },
+      "latency": {
+        "n": 5,
+        "before_p50": 13.091542000000118,
+        "after_p50": 14.062625000000025,
+        "before_p95": 32.955849800000124,
+        "after_p95": 33.47761639999999,
+        "delta_p50": 0.9710829999999078,
+        "delta_p95": 0.5217665999998644,
+        "median_delta": 0.4614999999998872,
+        "ci95_bca_median_delta": [
+          -0.2466825080979552,
+          0.7255997999998727
+        ]
+      }
+    },
+    "ranking-frecency": {
+      "rows": 1,
+      "recall_at_10": {
+        "n": 1,
+        "before": 0.5,
+        "after": 0.5,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 1,
+        "before": 0.9173194127129571,
+        "after": 0.9173194127129571,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "reformulation_signal": {
+        "n": 1,
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "bound": 0.35,
+        "before_pass": true,
+        "after_pass": true,
+        "ci95_bca": null,
+        "ci_note": "n=1: no CI (a 2-row lane is scored as a point condition)",
+        "detail": []
+      },
+      "latency": {
+        "n": 1,
+        "before_p50": 0.49016599999959,
+        "after_p50": 0.5561249999996107,
+        "before_p95": 0.49016599999959,
+        "after_p95": 0.5561249999996107,
+        "delta_p50": 0.06595900000002075,
+        "delta_p95": 0.06595900000002075,
+        "median_delta": 0.06595900000002075,
+        "ci95_bca_median_delta": null
+      }
+    },
+    "ranking-proximity": {
+      "rows": 1,
+      "recall_at_10": {
+        "n": 1,
+        "before": 0.3333333333333333,
+        "after": 0.3333333333333333,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 1,
+        "before": 0.8609101556836468,
+        "after": 0.8609101556836468,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "reformulation_signal": {
+        "n": 1,
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "bound": 0.35,
+        "before_pass": true,
+        "after_pass": true,
+        "ci95_bca": null,
+        "ci_note": "n=1: no CI (a 2-row lane is scored as a point condition)",
+        "detail": []
+      },
+      "latency": {
+        "n": 1,
+        "before_p50": 0.4614999999998872,
+        "after_p50": 0.48424999999997453,
+        "before_p95": 0.4614999999998872,
+        "after_p95": 0.48424999999997453,
+        "delta_p50": 0.02275000000008731,
+        "delta_p95": 0.02275000000008731,
+        "median_delta": 0.02275000000008731,
+        "ci95_bca_median_delta": null
+      }
+    },
+    "ranking-boost-ab": {
+      "rows": 1,
+      "recall_at_10": {
+        "n": 1,
+        "before": 0.5,
+        "after": 0.5,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 1,
+        "before": 0.9052598568324595,
+        "after": 0.9052598568324595,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "reformulation_signal": {
+        "n": 1,
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "bound": 0.35,
+        "before_pass": true,
+        "after_pass": true,
+        "ci95_bca": null,
+        "ci_note": "n=1: no CI (a 2-row lane is scored as a point condition)",
+        "detail": []
+      },
+      "latency": {
+        "n": 1,
+        "before_p50": 0.7489169999998921,
+        "after_p50": 0.7910000000001673,
+        "before_p95": 0.7489169999998921,
+        "after_p95": 0.7910000000001673,
+        "delta_p50": 0.042083000000275206,
+        "delta_p95": 0.042083000000275206,
+        "median_delta": 0.042083000000275206,
+        "ci95_bca_median_delta": null
+      }
+    },
+    "ranking-symbol-intrafile": {
+      "rows": 1,
+      "recall_at_10": {
+        "n": 1,
+        "before": 1,
+        "after": 1,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "ndcg_at_10": {
+        "n": 1,
+        "before": 1,
+        "after": 1,
+        "delta": 0,
+        "ci95_bca": null,
+        "ci_note": "n=1: a BCa interval needs >= 3 paired rows",
+        "excludes_zero": null,
+        "improved": 0,
+        "regressed": 0,
+        "detail": []
+      },
+      "reformulation_signal": {
+        "n": 1,
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "bound": 0.35,
+        "before_pass": true,
+        "after_pass": true,
+        "ci95_bca": null,
+        "ci_note": "n=1: no CI (a 2-row lane is scored as a point condition)",
+        "detail": []
+      },
+      "latency": {
+        "n": 1,
+        "before_p50": 3.5409169999998085,
+        "after_p50": 3.145208999999795,
+        "before_p95": 3.5409169999998085,
+        "after_p95": 3.145208999999795,
+        "delta_p50": -0.39570800000001327,
+        "delta_p95": -0.39570800000001327,
+        "median_delta": -0.39570800000001327,
+        "ci95_bca_median_delta": null
+      }
+    }
+  },
+  "latency": {
+    "n": 26,
+    "before_p50": 1.0224999999999227,
+    "after_p50": 0.9429380000000265,
+    "before_p95": 13.737948250000159,
+    "after_p95": 14.552843749999965,
+    "delta_p50": -0.07956199999989622,
+    "delta_p95": 0.8148954999998068,
+    "median_delta": 0.005000000000336513,
+    "ci95_bca_median_delta": [
+      -0.17048852021490335,
+      0.12668839964196676
+    ]
+  }
+}

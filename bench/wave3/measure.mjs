@@ -38,7 +38,12 @@ const judgments = JSON.parse(fs.readFileSync(JUDGMENTS_PATH, "utf8"));
 
 // The declared root is the advisor's original worktree (gone); the frozen clean
 // archive is the corpus the verifier actually scores against.
-const CLEAN_ARCHIVE = path.join(os.homedir(), ".cache", "pi-ultrasearch-bench", "corpus-0a16e50");
+// The stable root (bench/wave3/make-corpora.mjs); the old cache path is kept
+// as a fallback so an artifact measured before the move still reproduces.
+const CLEAN_ARCHIVE = [
+  path.join(os.homedir(), ".cache", "ultrasearch", "corpus", "wave1-0a16e50"),
+  path.join(os.homedir(), ".cache", "pi-ultrasearch-bench", "corpus-0a16e50"),
+].find((p) => fs.existsSync(p));
 const declaredRoot = opt("corpus", judgments.corpus?.root);
 const ROOT = declaredRoot && fs.existsSync(declaredRoot) ? declaredRoot : CLEAN_ARCHIVE;
 if (!fs.existsSync(ROOT)) throw new Error(`corpus root missing: ${ROOT} (declared: ${declaredRoot})`);

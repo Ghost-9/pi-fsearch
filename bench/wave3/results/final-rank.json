@@ -1,24 +1,24 @@
 {
   "meta": {
     "suite": "wave3-measure",
-    "label": "rank-r1",
-    "generated_at": "2026-10-15T11:44:30.579Z",
+    "label": "final-rank",
+    "generated_at": "2026-10-15T12:10:56.480Z",
     "status": "provisional",
     "gate": {
       "status": "provisional",
       "gate_pass": false,
       "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
       "on_ac": true,
-      "load1": 83.35,
+      "load1": 18.9,
       "competing_processes": [],
-      "checked_at": "2026-10-15T11:44:30.387Z"
+      "checked_at": "2026-10-15T12:10:56.318Z"
     },
     "daemon_provenance": {
-      "socket": "/Users/batra/.cache/us-verify/w3-rank-1792064657/ultrasearch.sock",
-      "socket_owner_pid": 64392,
+      "socket": "/Users/batra/.cache/us-verify/w3-g-rank-1792064657/ultrasearch.sock",
+      "socket_owner_pid": 3197,
       "socket_owner_count": 1,
-      "serve_process_count": 0,
-      "single_socket_owner": false,
+      "serve_process_count": 1,
+      "single_socket_owner": true,
       "entries": 40,
       "content_docs": 34,
       "content_pending": 0,
@@ -26,10 +26,10 @@
       "full_disk_access": false,
       "staleness_ms": 0
     },
-    "head_commit": "9943a066aad3bf05c3c29ee82caecc630a492631",
+    "head_commit": "189673580d4285c275a2f4d454071f7cb85d50b8",
     "engine": {
-      "bin": "/tmp/rf-bins/ultrasearch-rank",
-      "sha256": "0c6f3803b36ab4b28078896e964ad44b93233a66726242f046a6bf1fce164ed1"
+      "bin": "/tmp/rf-bins/rank/ultrasearch",
+      "sha256": "7b413d874fa2a824d2a4c6c9c679b10c1f83693311761d4453be582988b24a3e"
     },
     "client_tree_dirty": true,
     "judgments": {
@@ -38,7 +38,7 @@
       "queries": 30
     },
     "corpus": {
-      "root": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-0a16e50",
+      "root": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
       "files": 33,
       "bytes": 273239,
       "tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d"
@@ -61,9 +61,9 @@
       "mrr10": 0.9692307692307692,
       "ndcg10": 0.9120703849896526,
       "zero_result_rate": 0,
-      "ms_p50": 2.0199375000001965,
-      "ms_p95": 20.96348975000012,
-      "ms_max": 52.35116700000026
+      "ms_p50": 0.9429380000000265,
+      "ms_p95": 14.552843749999965,
+      "ms_max": 38.167958
     },
     "recall_at_10": 0.7961538461538461,
     "ndcg_at_10": 0.9120703849896526,
@@ -104,8 +104,8 @@
       "ranking-boost-ab": 0.5,
       "ranking-symbol-intrafile": 1
     },
-    "ms_p50": 2.0199375000001965,
-    "ms_p95": 20.96348975000012,
+    "ms_p50": 0.9429380000000265,
+    "ms_p95": 14.552843749999965,
     "negatives": 4,
     "neg_rows": []
   },
@@ -121,7 +121,7 @@
         "limit": 10
       },
       "call": "search(\"package.json\", in=<root>, limit=10)",
-      "ms": 3.7274170000000595,
+      "ms": 2.0627079999999296,
       "source": null,
       "error": null,
       "retrieved": [
@@ -165,7 +165,7 @@
         "limit": 10
       },
       "call": "search(\"ci.yml\", in=<root>, limit=10)",
-      "ms": 1.2224999999998545,
+      "ms": 0.788332999999966,
       "source": null,
       "error": null,
       "retrieved": [
@@ -209,7 +209,7 @@
         "limit": 10
       },
       "call": "search(\"client.ts\", in=<root>, limit=10)",
-      "ms": 0.9177919999997357,
+      "ms": 0.6065830000000005,
       "source": null,
       "error": null,
       "retrieved": [
@@ -253,7 +253,7 @@
         "limit": 10
       },
       "call": "search(\"bench\", in=<root>, limit=10)",
-      "ms": 1.2593339999998534,
+      "ms": 0.6537500000001728,
       "source": null,
       "error": null,
       "retrieved": [
@@ -309,7 +309,7 @@
         "limit": 10
       },
       "call": "search(\"codemode\", in=<root>, limit=10)",
-      "ms": 0.6510839999996278,
+      "ms": 0.5437079999999241,
       "source": null,
       "error": null,
       "retrieved": [
@@ -353,7 +353,7 @@
         "limit": 30
       },
       "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
-      "ms": 1.9205409999999574,
+      "ms": 0.9090840000001208,
       "source": null,
       "error": null,
       "retrieved": [
@@ -453,7 +453,7 @@
         "limit": 10
       },
       "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
-      "ms": 2.538666999999805,
+      "ms": 0.5575000000001182,
       "source": null,
       "error": null,
       "retrieved": [],
@@ -489,7 +489,7 @@
         "limit": 10
       },
       "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.9809580000001006,
+      "ms": 0.7913750000000164,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -548,7 +548,7 @@
         "limit": 10
       },
       "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.5640000000003056,
+      "ms": 0.35950000000002547,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -597,7 +597,7 @@
         "limit": 10
       },
       "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.094792000000325,
+      "ms": 0.3503329999998641,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -648,7 +648,7 @@
         "limit": 10
       },
       "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
-      "ms": 1.333042000000205,
+      "ms": 0.6569999999999254,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -707,7 +707,7 @@
         "limit": 10
       },
       "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
-      "ms": 0.799666000000343,
+      "ms": 0.3814589999999498,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -755,7 +755,7 @@
         "limit": 10
       },
       "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
-      "ms": 0.6613330000000133,
+      "ms": 0.22499999999990905,
       "source": "index",
       "error": null,
       "retrieved": [],
@@ -792,7 +792,7 @@
         "limit": 10
       },
       "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
-      "ms": 2.5886670000004415,
+      "ms": 1.214125000000422,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -851,7 +851,7 @@
         "limit": 10
       },
       "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
-      "ms": 2.0589170000002923,
+      "ms": 0.9767919999999322,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -998,7 +998,7 @@
         "limit": 10
       },
       "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
-      "ms": 0.05295899999964604,
+      "ms": 0.020582999999987805,
       "source": null,
       "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
       "retrieved": [],
@@ -1035,7 +1035,7 @@
         "limit": 10
       },
       "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
-      "ms": 6.105082999999922,
+      "ms": 3.508208000000195,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -1084,7 +1084,7 @@
         "limit": 10
       },
       "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
-      "ms": 3.157459000000017,
+      "ms": 0.993750000000091,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -1133,7 +1133,7 @@
         "limit": 10
       },
       "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
-      "ms": 5.668749999999818,
+      "ms": 3.3215409999997974,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -1182,7 +1182,7 @@
         "limit": 10
       },
       "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
-      "ms": 3.1822919999999613,
+      "ms": 1.9491250000000946,
       "source": "index",
       "error": null,
       "retrieved": [
@@ -1231,7 +1231,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
-      "ms": 52.35116700000026,
+      "ms": 38.167958,
       "source": "semantic_intent",
       "error": null,
       "retrieved": [
@@ -1439,7 +1439,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
-      "ms": 20.539208000000144,
+      "ms": 14.716249999999945,
       "source": "semantic_intent",
       "error": null,
       "retrieved": [
@@ -1693,7 +1693,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
-      "ms": 17.330415999999786,
+      "ms": 14.062625000000025,
       "source": "semantic_intent",
       "error": null,
       "retrieved": [
@@ -1950,7 +1950,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
-      "ms": 16.16249999999991,
+      "ms": 9.111582999999882,
       "source": "semantic_intent",
       "error": null,
       "retrieved": [
@@ -2187,7 +2187,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
-      "ms": 21.104917000000114,
+      "ms": 12.627166999999645,
       "source": "semantic_intent",
       "error": null,
       "retrieved": [
@@ -2442,7 +2442,7 @@
         "limit": 10
       },
       "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
-      "ms": 4.756790999999794,
+      "ms": 3.2848329999997077,
       "source": "semantic_intent",
       "error": null,
       "retrieved": [],
@@ -2478,7 +2478,7 @@
         "limit": 10
       },
       "call": "search(\"readme\", in=<root>, limit=10)",
-      "ms": 1.0831670000002305,
+      "ms": 0.5561249999996107,
       "source": null,
       "error": null,
       "retrieved": [
@@ -2523,7 +2523,7 @@
         "limit": 10
       },
       "call": "search(\"sanitize\", in=<root>, limit=10, near=src/formatter.ts)",
-      "ms": 0.8591249999999491,
+      "ms": 0.48424999999997453,
       "source": null,
       "error": null,
       "retrieved": [
@@ -2568,7 +2568,7 @@
         "boost": true
       },
       "call": "search(\"client\", in=<root>, limit=10, boost=true)",
-      "ms": 1.721292000000176,
+      "ms": 0.7910000000001673,
       "source": null,
       "error": null,
       "retrieved": [
@@ -2628,7 +2628,7 @@
         "limit": 10
       },
       "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
-      "ms": 3.8126659999998083,
+      "ms": 3.145208999999795,
       "source": "index",
       "error": null,
       "retrieved": [

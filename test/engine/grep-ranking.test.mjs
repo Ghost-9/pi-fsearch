@@ -34,6 +34,19 @@ function fixture() {
   return h;
 }
 
+// Case 4 - the candidate tier. The page is filled from the candidates read
+// first, so a fresh checkout (every mtime identical, order = path-alphabetical)
+// would spend the whole page on prose that sorts early and never reach the file
+// that declares the term. `doc_rank` demotes prose so the declaration is read.
+function proseCrowdFixture() {
+  const h = new EngineHarness({ root: path.join(tmpdir("us-rank-crowd-"), "root") });
+  for (let i = 1; i <= 6; i++) {
+    writeFile(path.join(h.root, "aaa", `notes-${i}.md`), "delta_marker appears here\n");
+  }
+  writeFile(path.join(h.root, "src", "def-d.ts"), "export function delta_marker() {\n  return 1;\n}\n");
+  return h;
+}
+
 const names = (res) => (res.files ?? []).map((f) => path.basename(f.path));
 const pick = (res, name) => (res.files ?? []).find((f) => path.basename(f.path) === name);
 
@@ -93,6 +106,30 @@ test("grep ranking does not touch symbol mode, whose plan already means 'defines
     assert.deepEqual(names(sym), ["def-a.ts"]);
     assert.equal(sym.files[0].matches.length, 1, "one declaration line");
     assert.match(sym.files[0].matches[0].text, /export function alpha_marker/);
+  } finally {
+    await h.stop();
+  }
+});
+
+test("a fresh checkout's path order does not spend the page on prose", async () => {
+  const h = proseCrowdFixture();
+  await h.start();
+  try {
+    const ready = await until(
+      async () => {
+        const s = await h.status().catch(() => null);
+        return s?.ok && (s.content_docs ?? 0) >= 7 && (s.content_pending ?? 0) === 0 ? s : null;
+      },
+      { timeoutMs: 30_000 }
+    );
+    assert.ok(ready, "fixture indexed");
+
+    // Six prose files sort before `src/` and all match; a page of three would be
+    // filled by them if the candidate order were plain path order.
+    const res = await h.grep("delta_marker", { limit: 3 });
+    assert.deepEqual(names(res)[0], "def-d.ts", "the declaring file survives a small page");
+    const defs = await h.grep("delta_marker", { limit: 3, defs: true });
+    assert.equal(pick(defs, "def-d.ts").matches[0].def, true, "and it is the declaration line that put it there");
   } finally {
     await h.stop();
   }

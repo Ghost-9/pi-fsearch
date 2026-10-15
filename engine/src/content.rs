@@ -2005,6 +2005,11 @@ fn path_ok<'a>(filt: &Query, ext_only: bool, paths: &mut PathCursor<'a>, s: &'a 
 }
 
 /// Candidate order tier: your files first, then dot-dirs, logs and transcripts.
+/// Prose (`.md`, `.rst`, ...) sorts with the logs: a grep page is filled from
+/// the candidates read first, so a document must not crowd out the source file
+/// that declares what the caller is looking for. On a fresh checkout, where
+/// every mtime ties, this tier is what keeps `src/` ahead of a changelog; see
+/// `page_key`, which then orders the page by what the files actually contain.
 fn doc_rank(path: &[u8]) -> i8 {
     let mut r = 0i8;
     if path.split(|&b| b == b'/').any(|c| c.first() == Some(&b'.')) {
@@ -2012,6 +2017,9 @@ fn doc_rank(path: &[u8]) -> i8 {
     }
     let name = &path[path.iter().rposition(|&b| b == b'/').map_or(0, |p| p + 1)..];
     if [&b".jsonl"[..], b".ndjson", b".log", b".lock", b".sum"].iter().any(|x| name.ends_with(x)) {
+        r -= 1;
+    }
+    if class_rank(path) == 1 {
         r -= 1;
     }
     r

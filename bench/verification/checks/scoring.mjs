@@ -65,6 +65,9 @@ export function makeScoreQuery(norm) {
       recall_at_5: recallAt(5, rel1, set1),
       recall_at_10: recallAt(10, rel1, set1),
       success_recall_at_10: recallAt(10, rel2, set2),
+      // `mrr_at_10` is the name the frozen wave-2 scorer reads; the wave-1
+      // scorer's `_rel1`/`_rel2` variants are the same quantity spelled out.
+      mrr_at_10: r1 ? 1 / r1 : 0,
       mrr_at_10_rel1: r1 ? 1 / r1 : 0,
       mrr_at_10_rel2: r2 ? 1 / r2 : 0,
       ndcg_at_10: idcg > 0 ? dcg(top) / idcg : null,

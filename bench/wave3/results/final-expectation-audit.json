@@ -1,0 +1,571 @@
+{
+  "meta": {
+    "suite": "wave3-expectation-audit",
+    "generated_at": "2026-10-15T12:11:03.992Z",
+    "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+    "judgments": "bench/judgments/wave1-judgments.json",
+    "results": "bench/wave3/results/final-rank.json",
+    "engine_sha256": "7b413d874fa2a824d2a4c6c9c679b10c1f83693311761d4453be582988b24a3e",
+    "head_commit": "189673580d4285c275a2f4d454071f7cb85d50b8",
+    "method": "every expectation with grade>=1 that is absent from the top 10 is classified against the corpus file itself (exists / path match / content match / declares)"
+  },
+  "summary": {
+    "total_missing": 16,
+    "by_class": {
+      "path-lane-content": 6,
+      "absent-string": 3,
+      "symbol-lane-reference": 7
+    },
+    "rows_affected": 9,
+    "audited_recall_at_10": 1,
+    "reported_recall_at_10": 0.7961538461538461,
+    "rows": 26
+  },
+  "rows": [
+    {
+      "id": "P1",
+      "lane": "path",
+      "query": "package.json",
+      "expected_rel": 1,
+      "returned": 1,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "P2",
+      "lane": "path",
+      "query": "ci.yml",
+      "expected_rel": 1,
+      "returned": 1,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "P3",
+      "lane": "path",
+      "query": "client.ts",
+      "expected_rel": 2,
+      "returned": 1,
+      "recall_at_10": 0.5,
+      "unreachable_expected": 1,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "P3",
+          "lane": "path",
+          "query": "client.ts",
+          "expected": "test/client.test.ts",
+          "grade": 2,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "path-lane-content",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": null,
+          "reproduce": "rg -l 'client.ts' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/test/client.test.ts   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/test/client.test.ts"
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "lane": "path",
+      "query": "bench",
+      "expected_rel": 3,
+      "returned": 3,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 3,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "query": "codemode",
+      "expected_rel": 3,
+      "returned": 1,
+      "recall_at_10": 0.3333333333333333,
+      "unreachable_expected": 2,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "P6",
+          "lane": "path",
+          "query": "codemode",
+          "expected": "OPTIMIZATIONS.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "absent-string",
+          "path_matches_query": false,
+          "content_matches_query": false,
+          "declares_query": null,
+          "reproduce": "rg -l 'codemode' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/OPTIMIZATIONS.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/OPTIMIZATIONS.md"
+        },
+        {
+          "id": "P6",
+          "lane": "path",
+          "query": "codemode",
+          "expected": "AUDIT-2026-10-14.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "path-lane-content",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": null,
+          "reproduce": "rg -l 'codemode' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md"
+        }
+      ]
+    },
+    {
+      "id": "P7",
+      "lane": "path",
+      "query": "src/**/*.ts",
+      "expected_rel": 8,
+      "returned": 12,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 8,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "G1",
+      "lane": "grep-literal",
+      "query": "estimateTokensSaved",
+      "expected_rel": 2,
+      "returned": 2,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 2,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "G2",
+      "lane": "grep-literal",
+      "query": "enforceExactQuery",
+      "expected_rel": 1,
+      "returned": 1,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "G3",
+      "lane": "grep-literal",
+      "query": "SYMBOL_REGEX",
+      "expected_rel": 1,
+      "returned": 1,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "G4",
+      "lane": "grep-literal",
+      "query": "fsearch.sock",
+      "expected_rel": 2,
+      "returned": 2,
+      "recall_at_10": 0.5,
+      "unreachable_expected": 1,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "G4",
+          "lane": "grep-literal",
+          "query": "fsearch.sock",
+          "expected": "README.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "absent-string",
+          "path_matches_query": false,
+          "content_matches_query": false,
+          "declares_query": null,
+          "reproduce": "rg -l 'fsearch.sock' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/README.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/README.md"
+        }
+      ]
+    },
+    {
+      "id": "G5",
+      "lane": "grep-literal",
+      "query": "150 + hitCount",
+      "expected_rel": 1,
+      "returned": 1,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "R1",
+      "lane": "grep-regex",
+      "query": "class\\s+\\w+Client",
+      "expected_rel": 1,
+      "returned": 2,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "R2",
+      "lane": "grep-regex",
+      "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+      "expected_rel": 6,
+      "returned": 10,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 6,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "query": "FSearchClient",
+      "expected_rel": 5,
+      "returned": 1,
+      "recall_at_10": 0.2,
+      "unreachable_expected": 4,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "S1",
+          "lane": "symbol",
+          "query": "FSearchClient",
+          "expected": "test/client.test.ts",
+          "grade": 2,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "symbol-lane-reference",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": false,
+          "reproduce": "rg -n 'FSearchClient' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/test/client.test.ts   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/test/client.test.ts"
+        },
+        {
+          "id": "S1",
+          "lane": "symbol",
+          "query": "FSearchClient",
+          "expected": "src/mcp.ts",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "symbol-lane-reference",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": false,
+          "reproduce": "rg -n 'FSearchClient' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/src/mcp.ts   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/src/mcp.ts"
+        },
+        {
+          "id": "S1",
+          "lane": "symbol",
+          "query": "FSearchClient",
+          "expected": "src/tui.ts",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "symbol-lane-reference",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": false,
+          "reproduce": "rg -n 'FSearchClient' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/src/tui.ts   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/src/tui.ts"
+        },
+        {
+          "id": "S1",
+          "lane": "symbol",
+          "query": "FSearchClient",
+          "expected": "index.ts",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "symbol-lane-reference",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": false,
+          "reproduce": "rg -n 'FSearchClient' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/index.ts   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/index.ts"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "lane": "symbol",
+      "query": "detectSymbolTag",
+      "expected_rel": 1,
+      "returned": 1,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "query": "applyProximityRanking",
+      "expected_rel": 2,
+      "returned": 1,
+      "recall_at_10": 0.5,
+      "unreachable_expected": 1,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "S3",
+          "lane": "symbol",
+          "query": "applyProximityRanking",
+          "expected": "AUDIT-2026-10-14.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "symbol-lane-reference",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": false,
+          "reproduce": "rg -n 'applyProximityRanking' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md"
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "query": "resolveWorktreeRoot",
+      "expected_rel": 3,
+      "returned": 1,
+      "recall_at_10": 0.3333333333333333,
+      "unreachable_expected": 2,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "S4",
+          "lane": "symbol",
+          "query": "resolveWorktreeRoot",
+          "expected": "CHANGELOG.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "symbol-lane-reference",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": false,
+          "reproduce": "rg -n 'resolveWorktreeRoot' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/CHANGELOG.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/CHANGELOG.md"
+        },
+        {
+          "id": "S4",
+          "lane": "symbol",
+          "query": "resolveWorktreeRoot",
+          "expected": "AUDIT-2026-10-14.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "symbol-lane-reference",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": false,
+          "reproduce": "rg -n 'resolveWorktreeRoot' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md"
+        }
+      ]
+    },
+    {
+      "id": "M1",
+      "lane": "semantic",
+      "query": "where are credentials scrubbed before results reach the model",
+      "expected_rel": 4,
+      "returned": 10,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 4,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "M2",
+      "lane": "semantic",
+      "query": "how is the token savings number computed",
+      "expected_rel": 3,
+      "returned": 10,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 3,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "M3",
+      "lane": "semantic",
+      "query": "what happens when the daemon socket dies mid-session",
+      "expected_rel": 3,
+      "returned": 10,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 3,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "M4",
+      "lane": "semantic",
+      "query": "what does CI run on every push",
+      "expected_rel": 3,
+      "returned": 10,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 3,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "M5",
+      "lane": "semantic",
+      "query": "keep search results inside the repository boundary",
+      "expected_rel": 5,
+      "returned": 10,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 5,
+      "audited_recall_at_10": 1,
+      "misses": []
+    },
+    {
+      "id": "K1",
+      "lane": "ranking-frecency",
+      "query": "readme",
+      "expected_rel": 2,
+      "returned": 1,
+      "recall_at_10": 0.5,
+      "unreachable_expected": 1,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "K1",
+          "lane": "ranking-frecency",
+          "query": "readme",
+          "expected": "CONTRIBUTING.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "absent-string",
+          "path_matches_query": false,
+          "content_matches_query": false,
+          "declares_query": null,
+          "reproduce": "rg -l 'readme' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/CONTRIBUTING.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/CONTRIBUTING.md"
+        }
+      ]
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "query": "sanitize",
+      "expected_rel": 3,
+      "returned": 1,
+      "recall_at_10": 0.3333333333333333,
+      "unreachable_expected": 2,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "K2",
+          "lane": "ranking-proximity",
+          "query": "sanitize",
+          "expected": "OPTIMIZATIONS.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "path-lane-content",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": null,
+          "reproduce": "rg -l 'sanitize' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/OPTIMIZATIONS.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/OPTIMIZATIONS.md"
+        },
+        {
+          "id": "K2",
+          "lane": "ranking-proximity",
+          "query": "sanitize",
+          "expected": "AUDIT-2026-10-14.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "path-lane-content",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": null,
+          "reproduce": "rg -l 'sanitize' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/AUDIT-2026-10-14.md"
+        }
+      ]
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "query": "client",
+      "expected_rel": 4,
+      "returned": 2,
+      "recall_at_10": 0.5,
+      "unreachable_expected": 2,
+      "reachable_expected": 2,
+      "audited_recall_at_10": 1,
+      "misses": [
+        {
+          "id": "K3",
+          "lane": "ranking-boost-ab",
+          "query": "client",
+          "expected": "src/mcp.ts",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "path-lane-content",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": null,
+          "reproduce": "rg -l 'client' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/src/mcp.ts   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/src/mcp.ts"
+        },
+        {
+          "id": "K3",
+          "lane": "ranking-boost-ab",
+          "query": "client",
+          "expected": "README.md",
+          "grade": 1,
+          "in_returned": false,
+          "rank_in_returned": null,
+          "class": "path-lane-content",
+          "path_matches_query": false,
+          "content_matches_query": true,
+          "declares_query": null,
+          "reproduce": "rg -l 'client' /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/README.md   # see also: ls /Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50/README.md"
+        }
+      ]
+    },
+    {
+      "id": "K4",
+      "lane": "ranking-symbol-intrafile",
+      "query": "FSearchClient",
+      "expected_rel": 1,
+      "returned": 1,
+      "recall_at_10": 1,
+      "unreachable_expected": 0,
+      "reachable_expected": 1,
+      "audited_recall_at_10": 1,
+      "misses": []
+    }
+  ]
+}
