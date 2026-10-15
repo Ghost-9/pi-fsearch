@@ -5,8 +5,9 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import * as fs from "node:fs";
 import * as path from "node:path";
-import { EngineHarness, writeFile, tmpdir, until, sleep } from "./harness.mjs";
+import { EngineHarness, REPO_ROOT, writeFile, tmpdir, until, sleep } from "./harness.mjs";
 
 const FRESHNESS = ["last_event_id", "event_lag", "staleness_ms", "replay_in_progress"];
 const COMPACTION = [
@@ -18,6 +19,24 @@ const COMPACTION = [
   "compactions_postponed",
   "queries_in_flight",
 ];
+
+test("status: protocol_version is reported and matches docs/protocol.md (#50)", async () => {
+  // The doc is the frozen contract: parse the normative version line from it
+  // so a code bump that forgets the doc (or a doc that forgets the code)
+  // fails here. The daemon must answer the same version it is documented as.
+  const doc = fs.readFileSync(path.join(REPO_ROOT, "docs", "protocol.md"), "utf8");
+  const documented = doc.match(/Current version: \*\*([0-9]+\.[0-9]+)\*\*/);
+  assert.ok(documented, "docs/protocol.md must state `Current version: **<major>.<minor>**`");
+  const h = new EngineHarness({ files: 20 });
+  await h.start();
+  try {
+    const s = await h.status();
+    assert.equal(typeof s.protocol_version, "string", `status is missing protocol_version: ${JSON.stringify(s)}`);
+    assert.equal(s.protocol_version, documented[1], "the daemon must report the version docs/protocol.md freezes");
+  } finally {
+    h.cleanup();
+  }
+});
 
 test("status: freshness and compaction fields are present, typed, and documented", async () => {
   const h = new EngineHarness({ files: 200 });

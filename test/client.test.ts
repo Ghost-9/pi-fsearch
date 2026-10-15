@@ -1,6 +1,7 @@
 process.env.PI_ULTRASEARCH_TEST = "1";
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
+import * as path from "node:path";
 import { UltraSearchClient } from "../src/client.ts";
 import { scrubSecrets, isPathSafe, matchesIgnorePattern, isSensitiveFile } from "../src/sanitize.ts";
 import { renderUltraSearchDeclarations, getUltraSearchCodemodeTools } from "../src/codemode.ts";
@@ -22,6 +23,20 @@ after(() => {
 // Integration tests require the resident daemon; skip them cleanly on a bare CI runner.
 const daemonUp = await sharedClient.ping();
 const liveOnly = daemonUp ? false : "UltraSearch daemon not running (integration test skipped)";
+
+/**
+ * F14: the indexed page must resolve the exact file that contains the literal
+ * — not merely some file whose name mentions `client` — so the assertion does
+ * not depend on the index's composition or the engine's paging at a small
+ * limit. Exported shape is deliberately pure so the control test can prove it
+ * rejects a page without the file.
+ */
+function resolvesTrigramTarget(files: Array<{ path: string }>): boolean {
+  return files.some((f) => f.path.endsWith(`${path.sep}src${path.sep}client.ts`));
+}
+
+/** What the indexed trigram test did; the control test reads it (F14). */
+let trigramRun: { source: string; asserted: boolean } | null = null;
 
 test("UltraSearchClient ping", { skip: liveOnly }, async () => {
   const ok = await sharedClient.ping();
@@ -51,25 +66,50 @@ test("UltraSearchClient strict zero typo tolerance (no forgiveness)", { skip: li
 });
 
 test("UltraSearchClient grep with trigram index", { skip: liveOnly }, async (t) => {
-  const res = await sharedClient.grep("UltraSearchClient", {
-    in: process.cwd(),
-    limit: 30,
-  });
+  // F14: scope to `src/` and raise the limit past any possible page. With the
+  // literal's own file inside the scope and no clipping, the assertion cannot
+  // depend on which candidates the engine happens to page first (on the main
+  // checkout client.ts ranks 1 at limit 30; a 388-doc archive scope dropped it
+  // and a 5,714-doc worktree dropped it too). A `scan` answer still cannot
+  // satisfy an indexed-path property, so that case is skipped with its reason.
+  const scope = path.join(process.cwd(), "src");
+  const res = await sharedClient.grep("UltraSearchClient", { in: scope, limit: 200 });
   assert.equal(res.ok, true);
   assert.ok(Array.isArray(res.files));
   if (res.source === "scan") {
-    // The resident daemon answers `scan` when its content index does not cover
-    // this scope (a fresh worktree or clone). This test asserts a property of
-    // the *trigram index* path, so a scan cannot satisfy it: the daemon has no
-    // such coverage to test, and asserting here measures the live index's
-    // freshness, not the engine. The index path is covered deterministically by
-    // test/engine and by the isolated-daemon measurements. Skip with the reason
-    // instead of weakening the assertion for indexed scopes.
-    t.skip(`daemon has no content index for ${process.cwd()} (source=scan, ${res.files.length} files); the indexed grep path is covered by test/engine/grep-ranking.test.mjs on a fixture corpus, and this test asserts fully whenever the scope is indexed (verified: 25/25 with cwd at an indexed checkout)`);
+    trigramRun = { source: "scan", asserted: false };
+    t.skip(`daemon has no content index for ${scope} (source=scan, ${res.files.length} files); the indexed grep path is covered deterministically by test/engine/grep-ranking.test.mjs on a fixture corpus, and this test asserts fully whenever the scope is indexed`);
     return;
   }
   assert.ok(res.files.length > 0);
-  assert.ok(res.files.some((f) => f.path.includes("client.ts") || f.path.includes("client.test.ts")));
+  assert.ok(
+    resolvesTrigramTarget(res.files),
+    `an indexed page of its own directory must resolve src/client.ts; got ${res.files.length} files`
+  );
+  trigramRun = { source: res.source ?? "index", asserted: true };
+});
+
+test("the trigram assertion is not silently skipped on an indexed scope (F14 control)", { skip: liveOnly }, async (t) => {
+  // Probe independently: the control must not trust the main test's own claim
+  // about the source, or a refactor that returns early while recording
+  // `scan` would pass. On an indexed scope the main test must have asserted.
+  const scope = path.join(process.cwd(), "src");
+  const probe = await sharedClient.grep("UltraSearchClient", { in: scope, limit: 200 });
+  if (probe.source === "scan") {
+    t.diagnostic(`no content index for ${scope}; the indexed-path assertion is not applicable here (the main test skips for the same reason)`);
+    return;
+  }
+  assert.notEqual(trigramRun, null, "the indexed trigram test must run before its control");
+  assert.equal(trigramRun!.asserted, true, "an indexed scope must run the assertion, never skip or no-op it");
+  // Non-vacuity: the same predicate must reject a page without the file, so
+  // an early return or a widened `client.ts` substring cannot pass this.
+  const files = probe.files ?? [];
+  assert.equal(resolvesTrigramTarget(files), true, "the live indexed page must resolve src/client.ts");
+  assert.equal(
+    resolvesTrigramTarget(files.filter((f) => !f.path.endsWith(`${path.sep}src${path.sep}client.ts`))),
+    false,
+    "the predicate must be discriminating, not a no-op"
+  );
 });
 
 test("UltraSearchClient multiGrep", { skip: liveOnly }, async () => {

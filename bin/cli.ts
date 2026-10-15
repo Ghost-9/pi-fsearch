@@ -10,6 +10,7 @@ import { appendHistory, clearHistory, formatSuggestions, loadHistory, resolveHis
 import { loadRootConfig, multiRootSearch, multiRootGrep } from "../src/roots.ts";
 import { planHarnessInit, applyPlan, renderInitReport, renderHarnessList } from "../src/harness-init.ts";
 import { HARNESSES } from "../src/harness-registry.ts";
+import { POLICY_HARNESSES, applyPolicy, isPolicyHarnessId, planPolicy, policyBlock, policyHarnessIds } from "../src/policy.ts";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
@@ -274,6 +275,59 @@ async function main() {
         break;
       }
 
+      case "policy": {
+        // Issue #53: generate the harness's directive block. Nothing is
+        // written unless the operator passes --write; --dry-run prints the
+        // diff it would apply. Tests pin HOME and --root at temp dirs, so a
+        // test can never touch a real harness config.
+        let harnessArg: string | null = null;
+        let root = process.cwd();
+        let write = false;
+        let dryRun = false;
+        let remove = false;
+        for (let i = 1; i < args.length; i++) {
+          if (args[i] === "--harness" && args[i + 1]) harnessArg = args[++i] ?? null;
+          else if (args[i] === "--root" && args[i + 1]) root = path.resolve(args[++i] ?? ".");
+          else if (args[i] === "--write") write = true;
+          else if (args[i] === "--dry-run") dryRun = true;
+          else if (args[i] === "--remove") remove = true;
+        }
+        if (!harnessArg) {
+          console.error(`Usage: ultrasearch policy --harness <${policyHarnessIds().join("|")}> [--write] [--dry-run] [--remove] [--root <dir>]`);
+          process.exit(1);
+        }
+        if (!isPolicyHarnessId(harnessArg)) {
+          console.error(`Unknown harness '${harnessArg}'. Known harnesses: ${policyHarnessIds().join(", ")}`);
+          process.exit(1);
+        }
+        if (write && dryRun) {
+          console.error("--write and --dry-run are mutually exclusive; --dry-run never writes.");
+          process.exit(1);
+        }
+        const harness = POLICY_HARNESSES[harnessArg];
+        try {
+          const plan = planPolicy({ harness: harnessArg, root, remove });
+          if (write) {
+            const result = applyPolicy(plan);
+            const verb = plan.action === "remove" ? "removed" : plan.action === "create" ? "created" : plan.action === "unchanged" ? "unchanged" : "updated";
+            console.log(`✅ ${harness.label}: ${verb} ${result.path}`);
+            if (result.backup) console.log(`   backup: ${result.backup}`);
+          } else if (dryRun || remove) {
+            if (!plan.diff) console.log(`No changes: ${plan.path} (${plan.action}).`);
+            else console.log(plan.diff.trimEnd());
+          } else {
+            console.log(`# Target: ${plan.path}`);
+            console.log(`# Apply with: ultrasearch policy --harness ${harnessArg} --write${remove ? " --remove" : ""}`);
+            console.log(policyBlock(harnessArg).trimEnd());
+          }
+          if (harness.globalPath) console.log(`# User-scope alternative: ${harness.globalPath}`);
+        } catch (err: any) {
+          console.error(`policy error: ${err?.message ?? err}`);
+          process.exit(1);
+        }
+        break;
+      }
+
       case "tui": {
         client.close();
         const tui = new UltraSearchTui();
@@ -518,6 +572,7 @@ Commands:
   ultrasearch recent [--in <dir>]           Recently modified & git-active files
   ultrasearch watch <query> [--in <dir>]    Stream new matches as files change (Ctrl-C to stop)
   ultrasearch history [--suggest <text>]    Opt-in local query history + suggestions
+  ultrasearch policy --harness <id>         Print/apply the harness directive block (--write, --dry-run, --remove)
   ultrasearch compact                       Trigger automated LSM index compaction
   ultrasearch metrics                       Display latency, throughput, token savings
   ultrasearch report [--by harness]         Audit report; --by harness adds per-harness attribution

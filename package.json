@@ -64,7 +64,7 @@
     "metrics:nightly": "node bench/nightly-summary.mjs",
     "prepack": "npm run build",
     "release:artifact": "node bench/release-artifact.mjs",
-    "test": "node --test test/client.test.ts test/sanitize.test.ts test/config-edit.test.ts test/harness-init.test.ts test/harness-matrix.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/telemetry-harness.test.ts test/telemetry-logs.test.ts test/single-instance-client.test.ts test/e2e-regressions.test.ts test/interop-surface.test.ts test/roots.test.ts test/history.test.ts test/watch.test.ts test/prefetch.test.ts test/cli-interop.test.ts test/ranking-guard.test.ts test/packaging.test.ts test/tool-descriptions.test.ts",
+    "test": "node --test test/client.test.ts test/sanitize.test.ts test/config-edit.test.ts test/harness-init.test.ts test/harness-matrix.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/telemetry-harness.test.ts test/telemetry-logs.test.ts test/single-instance-client.test.ts test/e2e-regressions.test.ts test/interop-surface.test.ts test/roots.test.ts test/history.test.ts test/watch.test.ts test/prefetch.test.ts test/cli-interop.test.ts test/ranking-guard.test.ts test/packaging.test.ts test/tool-descriptions.test.ts test/policy.test.ts",
     "test:all": "npm run typecheck && npm test && npm run test:gate && npm run test:engine",
     "test:empirical": "node --test test/empirical-10-tests.ts",
     "test:engine": "node --test --test-concurrency=1 test/engine/*.test.mjs",

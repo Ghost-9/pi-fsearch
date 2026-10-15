@@ -22,6 +22,11 @@ use std::time::{Duration, Instant};
 // the base once it grows: ~1 s of CPU and a ~280 MB write, about hourly on a
 // busy disk. Otherwise only twice a day; restart replays FSEvents anyway.
 const COMPACT_PENDING: usize = 50_000;
+
+/// The daemon wire protocol this build speaks. A **major** bump is a breaking
+/// change to the request/response contract; a minor bump only adds optional
+/// fields or ops. Frozen and documented in `docs/protocol.md` (#50).
+pub const PROTOCOL_VERSION: &str = "1.0";
 const COMPACT_EVERY: Duration = Duration::from_secs(12 * 3600);
 const SCAN_THREADS: usize = 8;
 const CONTENT_QUIET: Duration = Duration::from_secs(2);
@@ -75,6 +80,9 @@ impl Default for Found {
 pub struct Status {
     #[serde(skip)]
     pub ready: bool,
+    /// The daemon wire protocol this build speaks (frozen by `docs/protocol.md`,
+    /// issue #50). A client must check the major before reading the rest.
+    pub protocol_version: &'static str,
     pub entries: usize,
     pub dirs: usize,
     pub overlay: usize,
@@ -582,6 +590,7 @@ impl Engine {
         let cs = *self.s.compact.lock().unwrap();
         Status {
             ready: l.is_some(),
+            protocol_version: PROTOCOL_VERSION,
             entries: l.as_ref().map_or(0, |l| l.base.n),
             dirs: l.as_ref().map_or(0, |l| l.base.d),
             overlay: l.as_ref().map_or(0, |l| l.over.len()),
