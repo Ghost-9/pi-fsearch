@@ -1,35 +1,43 @@
 #!/usr/bin/env node
 // bench/verification/checks/compare-wave2.mjs — independent verdicts on the wave-2
-// relevance claims, from two wave-2 baseline artifacts measured with the same scorer
-// and the same client (only the daemon differs).
+// relevance claims, with the attribution the claims need (engine vs client).
 //
-//   node bench/verification/checks/compare-wave2.mjs \
-//     --before after/wave2-livewave1daemon.json \
-//     --after  after/wave2-baseline.json \
-//     --out    after/wave2-claims.json
+// Arms (all measured with this verification's scorers; only the daemon or the client
+// differs, never both at once):
 //
-// Computes, per lane: the Tier-L metric blocks on both bases (gated / all must-hit),
-// the paired per-query ΔnDCG@10 with a BCa bootstrap CI (10 000 resamples, seeded),
-// and a verdict for every claim the relevance wave published.
+//   engine_only A/B   before = current client + installed wave-1 daemon
+//                     after  = current client + isolated daemon from this tree
+//   wave A/B          before = pre-relevance client (91e7832) + wave-1 daemon
+//                     after  = current client + wave-1 daemon
+//
+//   node bench/verification/checks/compare-wave2.mjs [--boot 10000]
+//
+// Emits after/wave2-claims.json: per-lane metric blocks on both bases (all must-hit
+// rows / Tier-L gated rows), paired per-query ΔnDCG@10 with a BCa bootstrap CI, and a
+// verdict plus attribution for every published claim.
 
+import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
+const REPO = path.resolve(HERE, "..", "..", "..");
 const argv = process.argv.slice(2);
 const opt = (n, d = null) => {
   const i = argv.indexOf(`--${n}`);
   return i >= 0 ? argv[i + 1] : d;
 };
 const AFTER_DIR = path.join(HERE, "..", "after");
-const BEFORE = opt("before", path.join(AFTER_DIR, "wave2-livewave1daemon.json"));
-const AFTER = opt("after", path.join(AFTER_DIR, "wave2-baseline.json"));
 const OUT = opt("out", path.join(AFTER_DIR, "wave2-claims.json"));
 const B = Number(opt("boot", 10000));
+const sha = (p) => crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
+const load = (p) => ({ path: p, sha256: sha(p), data: JSON.parse(fs.readFileSync(p, "utf8")) });
 
-const before = JSON.parse(fs.readFileSync(BEFORE, "utf8"));
-const after = JSON.parse(fs.readFileSync(AFTER, "utf8"));
+const engineBefore = load(path.join(AFTER_DIR, "wave2-livewave1daemon.json"));
+const engineAfter = load(path.join(AFTER_DIR, "wave2-baseline.json"));
+const waveBefore = load(path.join(AFTER_DIR, "wave2-baseline-prewave2engine.json"));
+const waveAfter = engineBefore;
 
 // ---------------------------------------------------------------- statistics
 function mulberry32(seed) {
@@ -49,11 +57,10 @@ function percentile(sorted, p) {
   const hi = Math.ceil(i);
   return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
 }
-// Standard normal CDF / inverse (Acklam's approximation) for BCa.
 function ncdf(x) {
   const t = 1 / (1 + 0.2316419 * Math.abs(x));
   const d = 0.3989422804014327 * Math.exp((-x * x) / 2);
-  let p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  const p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
   return x >= 0 ? 1 - p : p;
 }
 function nquantile(p) {
@@ -71,7 +78,7 @@ function nquantile(p) {
   const r = q * q;
   return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
 }
-/** BCa bootstrap CI for the mean of `values` (paired differences). */
+/** BCa bootstrap CI for the mean of paired differences. */
 function bcaCI(values, iters = B, seed = 20261015) {
   const n = values.length;
   if (n < 3) return [NaN, NaN];
@@ -86,110 +93,127 @@ function bcaCI(values, iters = B, seed = 20261015) {
   const sorted = sortNum(boots);
   const below = boots.filter((b) => b < obs).length / iters;
   const z0 = nquantile(Math.min(1 - 1e-9, Math.max(1e-9, below)));
-  const jk = [];
-  for (let i = 0; i < n; i++) {
-    const rest = values.filter((_, k) => k !== i);
-    jk.push(mean(rest));
-  }
+  const jk = values.map((_, i) => mean(values.filter((_, k) => k !== i)));
   const jkMean = mean(jk);
-  const num = jk.reduce((a, v) => a + Math.pow(jkMean - v, 3), 0);
-  const den = 6 * Math.pow(jk.reduce((a, v) => a + Math.pow(jkMean - v, 2), 0), 1.5);
+  const num = jk.reduce((x, v) => x + Math.pow(jkMean - v, 3), 0);
+  const den = 6 * Math.pow(jk.reduce((x, v) => x + Math.pow(jkMean - v, 2), 0), 1.5);
   const a = den === 0 ? 0 : num / den;
-  const adj = (alpha) => {
-    const z = nquantile(alpha);
-    return ncdf(z0 + (z0 + z) / (1 - a * (z0 + z)));
-  };
+  const adj = (alpha) => ncdf(z0 + (z0 + nquantile(alpha)) / (1 - a * (z0 + nquantile(alpha))));
   return [percentile(sorted, 100 * adj(0.025)), percentile(sorted, 100 * adj(0.975))];
 }
 
-// ---------------------------------------------------------------- paired deltas
-const rowsOf = (art, lane, pick) => art.rows.filter((r) => r.lane === lane && pick(r));
-const metricOf = (r, key) => (key === "recall_at_10" ? r.score.recall_at_10 : r.score.ndcg_at_10);
-
-function paired(lane, pick, key) {
-  const b = new Map(rowsOf(before, lane, pick).map((r) => [r.id, r]));
-  const deltas = [];
-  const detail = [];
-  for (const r of rowsOf(after, lane, pick)) {
-    const rb = b.get(r.id);
-    if (!rb) continue;
-    const vb = metricOf(rb, key);
-    const va = metricOf(r, key);
-    if (vb === null || va === null) continue;
-    deltas.push(va - vb);
-    detail.push({ id: r.id, before: vb, after: va, delta: va - vb });
-  }
-  return { n: deltas.length, mean_delta: deltas.length ? mean(deltas) : null, ci95_bca: bcaCI(deltas), detail };
-}
-
+// ---------------------------------------------------------------- comparison
 const mustHit = (r) => r.must_hit && !r.negative;
-const mustHitAnswerable = (r) => mustHit(r) && !r.requires_feature && !r.known_fail;
-const negatives = (r) => r.negative;
+const answerable = (r) => mustHit(r) && !r.requires_feature && !r.known_fail;
 
-const lanes = ["symbol-ast", "semantic-paraphrase", "ranking-signal", "control"];
-const perLane = {};
-for (const lane of lanes) {
-  perLane[lane] = {
-    all_before: before.aggregates[lane]?.all ?? null,
-    all_after: after.aggregates[lane]?.all ?? null,
-    gated_before: before.aggregates[lane]?.gated ?? null,
-    gated_after: after.aggregates[lane]?.gated ?? null,
-    paired_ndcg10_answrable: paired(lane, mustHitAnswerable, "ndcg_at_10"),
-    paired_ndcg10_all: paired(lane, mustHit, "ndcg_at_10"),
-    paired_recall10_all: paired(lane, mustHit, "recall_at_10"),
-    fp_before: before.aggregates[lane]?.fp_rate ?? null,
-    fp_after: after.aggregates[lane]?.fp_rate ?? null,
-    tier_l_bars_after: (after.bars?.[lane] ?? []).map((b) => ({ bar: b.bar, expected: b.expected, observed: b.observed, pass: b.pass })),
+function comparison(before, after) {
+  const lanes = ["symbol-ast", "semantic-paraphrase", "ranking-signal", "control"];
+  const perLane = {};
+  for (const lane of lanes) {
+    const pair = (pick, key) => {
+      const b = new Map(before.data.rows.filter((r) => r.lane === lane && pick(r)).map((r) => [r.id, r]));
+      const detail = [];
+      for (const r of after.data.rows.filter((r) => r.lane === lane && pick(r))) {
+        const rb = b.get(r.id);
+        if (!rb) continue;
+        const vb = key === "ndcg_at_10" ? rb.score.ndcg_at_10 : rb.score.recall_at_10;
+        const va = key === "ndcg_at_10" ? r.score.ndcg_at_10 : r.score.recall_at_10;
+        if (vb === null || va === null) continue;
+        detail.push({ id: r.id, before: vb, after: va, delta: va - vb });
+      }
+      const deltas = detail.map((d) => d.delta);
+      return { n: deltas.length, mean_delta: deltas.length ? mean(deltas) : null, ci95_bca: bcaCI(deltas), detail };
+    };
+    const ab = before.data.aggregates[lane] ?? {};
+    const aa = after.data.aggregates[lane] ?? {};
+    perLane[lane] = {
+      all_before: ab.all ?? null,
+      all_after: aa.all ?? null,
+      gated_before: ab.gated ?? null,
+      gated_after: aa.gated ?? null,
+      fp_before: ab.fp_rate ?? null,
+      fp_after: aa.fp_rate ?? null,
+      paired_ndcg10_answerable: pair(answerable, "ndcg_at_10"),
+      paired_ndcg10_all: pair(mustHit, "ndcg_at_10"),
+      paired_recall10_all: pair(mustHit, "recall_at_10"),
+      bars_after: (after.data.bars?.[lane] ?? []).map((x) => ({ bar: x.bar, expected: x.expected, observed: x.observed, pass: x.pass })),
+    };
+  }
+  return {
+    arms: {
+      before: { path: path.relative(REPO, before.path), sha256: before.sha256, head: before.data.meta?.head_commit ?? null, daemon: before.data.meta?.daemon_provenance ?? null, status: before.data.meta?.status ?? null },
+      after: { path: path.relative(REPO, after.path), sha256: after.sha256, head: after.data.meta?.head_commit ?? null, daemon: after.data.meta?.daemon_provenance ?? null, status: after.data.meta?.status ?? null },
+    },
+    lanes: perLane,
   };
 }
 
+const engineOnly = comparison(engineBefore, engineAfter);
+const wave = comparison(waveBefore, waveAfter);
+
 // ---------------------------------------------------------------- claims
-const SEM = perLane["semantic-paraphrase"];
-const SYM = perLane["symbol-ast"];
-const authorSemantic = { delta: 0.606, ci: [0.242, 0.781] };
-const authorSymbol = { zero_before: 0.222, zero_after: 0.0, recall_before: 0.778, recall_after: 1.0, categorical: "9/9" };
+const author = {
+  semantic: { delta: 0.606, ci: [0.242, 0.781] },
+  symbol: { zero_before: 0.222, zero_after: 0.0, recall_before: 0.778, recall_after: 1.0, categorical: "9/9" },
+};
+const near = (a, b, tol) => a !== null && b !== null && Math.abs(a - b) <= tol;
+const semEngine = engineOnly.lanes["semantic-paraphrase"].paired_ndcg10_answerable;
+const semWave = wave.lanes["semantic-paraphrase"].paired_ndcg10_answerable;
+const symEngine = engineOnly.lanes["symbol-ast"];
+const symAllAfter = symEngine.all_after;
+const symAllBefore = symEngine.all_before;
+const symbolCategorical = (art) => {
+  const rows = art.data.rows.filter((r) => r.lane === "symbol-ast" && mustHit(r));
+  return `${rows.filter((r) => r.score.recall_at_10 === 1).length}/${rows.length}`;
+};
+const fpLanes = Object.fromEntries(
+  ["symbol-ast", "semantic-paraphrase", "ranking-signal"].map((l) => [
+    l,
+    { engine_before: engineOnly.lanes[l].fp_before, engine_after: engineOnly.lanes[l].fp_after, wave_before: wave.lanes[l].fp_before },
+  ]),
+);
+const tierL = Object.fromEntries(Object.entries(engineOnly.lanes).map(([l, v]) => [l, v.bars_after.filter((b) => b.pass === false).map((b) => b.bar)]));
 
-const symbolAfterRows = rowsOf(after, "symbol-ast", mustHit);
-const symbolBeforeRows = rowsOf(before, "symbol-ast", mustHit);
-const symbolCategoricalAfter = `${symbolAfterRows.filter((r) => r.score.recall_at_10 === 1).length}/${symbolAfterRows.length}`;
-const symbolCategoricalBefore = `${symbolBeforeRows.filter((r) => r.score.recall_at_10 === 1).length}/${symbolBeforeRows.length}`;
-
-const fpLanes = Object.fromEntries(lanes.map((l) => [l, { before: perLane[l].fp_before, after: perLane[l].fp_after }]));
-const fpAllZeroAfter = lanes.every((l) => perLane[l].fp_after === 0 || perLane[l].fp_after === null);
-
-const close = (a, b, tol) => a !== null && b !== null && Math.abs(a - b) <= tol;
 const claims = [
   {
     id: "semantic-dndcg",
-    claim: `semantic ΔnDCG@10 ${authorSemantic.delta} [${authorSemantic.ci.join(", ")}]`,
-    observed: { mean_delta: SEM.paired_ndcg10_answrable.mean_delta, ci95_bca: SEM.paired_ndcg10_answrable.ci95_bca, n: SEM.paired_ndcg10_answrable.n, basis: "answerable must-hit rows (10)" },
-    verdict: close(SEM.paired_ndcg10_answrable.mean_delta, authorSemantic.delta, 0.05) ? "reproduced" : "different",
-    note: "independent paired A/B: same scorer, same client, live wave-1 daemon vs isolated daemon built from this tree",
+    claim: `semantic ΔnDCG@10 ${author.semantic.delta} [${author.semantic.ci.join(", ")}]`,
+    attribution: "client-side relevance work (engine A/B is ~0)",
+    engine_only: { mean_delta: semEngine.mean_delta, ci95_bca: semEngine.ci95_bca, n: semEngine.n },
+    wave_as_whole: { mean_delta: semWave.mean_delta, ci95_bca: semWave.ci95_bca, n: semWave.n },
+    verdict: near(semWave.mean_delta, author.semantic.delta, 0.05) ? "reproduced" : "different",
+    note:
+      "The claim reproduces as the relevance wave's total effect (pre-relevance client vs current client, same daemon): point estimate and CI nearly identical to the published ones. It does NOT reproduce as an engine/daemon effect: with the current client on both daemons the semantic lane moves -0.002 [-0.013, 0.000]. Confound: the pre-relevance arm ran before corpus hygiene (.corpus-meta.json was still inside the corpus root, 98 files vs 97).",
   },
   {
     id: "symbol-zero-result",
-    claim: `symbol-ast zero_result_rate ${authorSymbol.zero_before} → ${authorSymbol.zero_after}`,
-    observed: { before: SYM.all_before?.zero_result_rate ?? null, after: SYM.all_after?.zero_result_rate ?? null },
-    verdict: SYM.all_after?.zero_result_rate === 0 ? "reproduced" : "refuted",
+    claim: `symbol-ast zero_result_rate ${author.symbol.zero_before} → ${author.symbol.zero_after}`,
+    attribution: "engine-side (symbol ranking)",
+    engine_only: { before: symAllBefore?.zero_result_rate ?? null, after: symAllAfter?.zero_result_rate ?? null },
+    verdict: symAllAfter?.zero_result_rate === 0 ? "reproduced" : "refuted",
   },
   {
     id: "symbol-recall10",
-    claim: `symbol-ast recall@10 ${authorSymbol.recall_before} → ${authorSymbol.recall_after} (${authorSymbol.categorical} categorical)`,
-    observed: { before: SYM.all_before?.recall10 ?? null, after: SYM.all_after?.recall10 ?? null, categorical_before: symbolCategoricalBefore, categorical_after: symbolCategoricalAfter },
-    verdict: SYM.all_after?.recall10 === 1 && symbolCategoricalAfter === "9/9" ? "reproduced" : "refuted",
+    claim: `symbol-ast recall@10 ${author.symbol.recall_before} → ${author.symbol.recall_after} (${author.symbol.categorical} categorical)`,
+    attribution: "engine-side (symbol ranking)",
+    engine_only: { before: symAllBefore?.recall10 ?? null, after: symAllAfter?.recall10 ?? null, categorical_before: symbolCategorical(engineBefore), categorical_after: symbolCategorical(engineAfter) },
+    verdict: symAllAfter?.recall10 === 1 && symbolCategorical(engineAfter) === "9/9" ? "reproduced" : "refuted",
   },
   {
     id: "fp-zero-everywhere",
     claim: "false-positive rate 0 in every lane",
+    attribution: "current system; the engine A/B is 0→0, so the residual FP the wave-1 corpus showed was already gone before the engine change",
     observed: fpLanes,
-    verdict: fpAllZeroAfter ? "reproduced" : "refuted",
-    note: "negatives: SY10-12 (symbol), SE11-12 (semantic), RS10 (ranking)",
+    verdict: Object.values(fpLanes).every((v) => v.engine_after === 0) ? "reproduced" : "refuted",
+    note: "negatives: SY10-12 (symbol), SE11-12 (semantic), RS10 (ranking). The wave-1 set's false_positive_rate chain is separate: 0.50 (stale golden) → 0.25 (91e7832) → 0.00 (current).",
   },
   {
     id: "tier-l-bars",
     claim: "every Tier-L floor in wave2-bars.json",
-    observed: Object.fromEntries(lanes.map((l) => [l, perLane[l].tier_l_bars_after.filter((b) => b.pass === false).map((b) => b.bar)])),
-    verdict: lanes.every((l) => perLane[l].tier_l_bars_after.every((b) => b.pass !== false)) ? "reproduced" : "not-all-pass",
+    attribution: "current system, isolated daemon",
+    observed: tierL,
+    verdict: Object.values(tierL).every((f) => f.length === 0) ? "reproduced" : "not-all-pass",
+    note: "ranking-signal/glob_set_completeness = 0.714: RS02 (`src/**/*.ts`, expected 14 files) returns 10. Not claimed by the relevance wave; recorded as the remaining Tier-L gap.",
   },
 ];
 
@@ -197,14 +221,28 @@ const out = {
   meta: {
     suite: "wave2-claims",
     generated_at: new Date().toISOString(),
-    before_artifact: { path: path.relative(path.join(HERE, "..", "..", ".."), BEFORE), sha256: after.meta ? undefined : undefined, meta: before.meta?.daemon_provenance ?? null, status: before.meta?.status ?? null, head: before.meta?.head_commit ?? null },
-    after_artifact: { path: path.relative(path.join(HERE, "..", "..", ".."), AFTER), status: after.meta?.status ?? null, head: after.meta?.head_commit ?? null, daemon: after.meta?.daemon_provenance ?? null },
     method:
-      "paired per-query deltas; BCa bootstrap CI, 10000 resamples, seeded; same scorer and same client on both arms, only the daemon differs (arm before = installed wave-1 daemon; arm after = isolated daemon built from the rebased tree)",
+      "two independent A/Bs with the same scorers: engine_only = current client on both daemons (installed wave-1 daemon vs isolated daemon built from this tree); wave = pre-relevance client (91e7832) vs current client on the SAME wave-1 daemon. Paired per-query deltas, BCa bootstrap CI, 10000 resamples, seeded.",
+    boot: B,
   },
-  lanes: perLane,
+  comparisons: { engine_only: engineOnly, relevance_wave: wave },
   claims,
 };
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + "\n");
-console.log(JSON.stringify({ out: OUT, claims: claims.map((c) => ({ id: c.id, verdict: c.verdict, observed: c.observed })) }, null, 1));
+console.log(
+  JSON.stringify(
+    {
+      out: OUT,
+      claims: claims.map((c) => ({
+        id: c.id,
+        verdict: c.verdict,
+        attribution: c.attribution,
+        engine_only: c.engine_only ?? null,
+        wave: c.wave_as_whole ?? null,
+      })),
+    },
+    null,
+    1,
+  ),
+);

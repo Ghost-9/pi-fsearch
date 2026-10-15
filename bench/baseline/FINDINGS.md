@@ -365,3 +365,37 @@ the refs. Two expected answers changed rank order as a side effect. **Verdict im
 gate fails before and after (recall@10 1.0, nDCG@10 ≥ 0.75, FP 0, semantic ≥ 0.60, zero-result 0,
 reformulation ≤ 0.20), and the semantic lane was already the failing lane. Recorded so a later wave does not
 re-discover it as a regression.
+
+## 2026-10-15 — Wave-2 relevance verification (rebased onto `ad2237d`; isolated daemons)
+
+**System under test.** `origin/main` `ad2237d` (relevance `db25478` + platform `413a7f7`). The installed
+daemon is still the wave-1 binary, so every measurement here runs the engine **built from this tree**
+(`engine/target/release/ultrasearch`, sha256 `b161a63740102f7b…`) over the frozen corpora on its own socket and index dir
+(`ULTRASEARCH_DIR`/`HOME`/`SCAN_ROOT` + `PI_ULTRASEARCH_SOCKET`); the live daemon was never touched or
+reinstalled. Every arm is `gate=final` with a single socket owner.
+
+**Wave-1 judgment set on the new engine** (frozen 30 queries, corpus-0a16e50, gate=final, artifact
+`99b62ae2…`): recall@10 **0.674 → 0.783**, nDCG@10 **0.705 → 0.863**, semantic nDCG **0.194 → 0.831**,
+FP **0.50 → 0.00**, zero-result **0.038 → 0.000**, MRR@10 **0.710 → 0.897**, success@10 **0.75 → 0.94**.
+Advisor gates: **5/7 pass** (the 0a16e50 baseline passed 1/7); the two failures are
+`recall@10 == 1.00` (0.783) and the per-lane reformulation bound for grep-literal (0.40) and grep-regex (0.50).
+
+**FP correction chain (measured three times).** **0.50 → 0.25 → 0.00.** The published 0.50 was the stale
+`0a16e50` golden; the `91e7832` client (R3 `(a+)+\$` rejected pre-socket) measured 0.25 (artifact
+`7ce35a4c…`); the current tree measures **0.00**, all four negatives returning nothing (M6's OR-expansion
+no longer returns junk files).
+
+**Wave-2 claims — reproduced or refuted** (`after/wave2-claims.json` `97237e02…`, BCa 10k, seeded):
+
+| Claim | Verdict | Observed |
+| --- | --- | --- |
+| semantic ΔnDCG **+0.606 [0.242, 0.781]** | **reproduced as the wave's total effect; refuted as an engine effect** | +0.6110 **[0.2488, 0.7878]** client-side; engine-only **−0.0019 [−0.0134, 0.0000]** |
+| symbol zero-result **0.222 → 0.00** | reproduced | engine-only 0.2222 → 0.0000 |
+| symbol recall@10 **0.778 → 1.00 (9/9)** | reproduced | engine-only 0.7778 → 1.0000, categorical 7/9 → 9/9 |
+| FP **0 everywhere** | reproduced | every lane 0 (engine A/B 0→0) |
+| every **Tier-L** floor | **NOT all pass** | ranking-signal `glob_set_completeness` 0.714 (RS02 expects 14 files, returns 10) |
+
+Attribution matters: the semantic gain is **client-side** (the engine A/B moves the lane by −0.002), while
+the symbol gain is **engine-side**. The published semantic number is honest as a wave total and must not be
+cited as an engine achievement. Known confound: the pre-relevance arm ran before corpus hygiene
+(`.corpus-meta.json` was still inside the wave-2 corpus root, 98 files vs 97).

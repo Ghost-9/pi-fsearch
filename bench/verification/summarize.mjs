@@ -510,30 +510,36 @@ const WAVE2_CLAIMS = path.join(A, "wave2-claims.json");
 if (exists(WAVE2_CLAIMS)) {
   const wc = read(WAVE2_CLAIMS);
   for (const c of wc.claims ?? []) {
+    const eng = c.engine_only ?? null;
+    const wv = c.wave_as_whole ?? null;
+    const delta = wv?.mean_delta ?? (typeof eng?.mean_delta === "number" ? eng.mean_delta : null);
+    const ci = wv?.ci95_bca ?? eng?.ci95_bca ?? null;
     row({
       id: `wave2claim.${c.id}`,
       lane: "wave2-baseline",
       scope: c.claim,
       before: null,
-      after: c.observed,
-      delta: c.observed?.mean_delta ?? null,
-      ci95: c.observed?.ci95_bca ?? null,
-      n: c.observed?.n ?? null,
+      after: { engine_only: eng, relevance_wave: wv, fp_lanes: c.observed ?? null, tier_l_failures: c.observed ?? null },
+      delta,
+      ci95: ci,
+      n: wv?.n ?? eng?.n ?? null,
       method:
-        "independent paired A/B: same scorer + same client, arm A = installed wave-1 daemon, arm B = isolated daemon built from this tree (BCa bootstrap, 10000 resamples, seeded)",
+        "two independent A/Bs: engine_only = current client on both daemons (installed wave-1 vs isolated daemon from this tree); relevance_wave = pre-relevance client vs current client on the SAME wave-1 daemon. Paired per-query deltas, BCa bootstrap CI, 10000 resamples, seeded.",
+      attribution: c.attribution ?? null,
       // No identity guard: this A/B deliberately shares the client commit and differs in the daemon.
       status: c.verdict === "reproduced" ? "verified" : c.verdict === "refuted" ? "failed" : "unverified",
-      status_reason: c.note ?? null,
+      status_reason: [c.attribution, c.note].filter(Boolean).join(" — ") || null,
       artifact: "bench/verification/after/wave2-claims.json",
     });
   }
-  const iso = wc.meta?.after_artifact?.daemon ?? null;
+  const iso = wc.meta?.after_artifact?.daemon ?? wc.comparisons?.engine_only?.arms?.after?.daemon ?? null;
+  const live = wc.comparisons?.engine_only?.arms?.before?.daemon ?? null;
   row({
     id: "wave2.isolated_daemon_provenance",
     lane: "wave2-baseline",
     scope: "system under test for the wave-2 arms",
-    before: { arm: "installed wave-1 daemon", daemon: wc.meta?.before_artifact?.meta ?? null, status: wc.meta?.before_artifact?.status ?? null },
-    after: { arm: "isolated daemon from this tree", pid: iso?.socket_owner_pid ?? null, entries: iso?.entries ?? null, single_owner: iso?.single_socket_owner ?? null, socket: iso?.socket ?? null },
+    before: { arm: "installed wave-1 daemon", pid: live?.socket_owner_pid ?? null, entries: live?.entries ?? null, status: wc.comparisons?.engine_only?.arms?.before?.status ?? null },
+    after: { arm: "isolated daemon from this tree", pid: iso?.socket_owner_pid ?? null, entries: iso?.entries ?? null, event_id: iso?.event_id ?? null, single_owner: iso?.single_socket_owner ?? null, socket: iso?.socket ?? null },
     delta: null,
     ci95: null,
     n: null,
