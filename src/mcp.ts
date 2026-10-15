@@ -346,7 +346,9 @@ export class UltraSearchMcpServer {
           search: (q, root) => this.client.search(q, { in: root, root, limit, near: args.near, budget_ms: args.budget_ms }),
         });
         hits = merged.hits;
-        meta = { complete: true, tool: "ultrasearch_query", hitCount: hits.length, roots: merged.roots.length, duplicates: merged.duplicates };
+        // Merged per-root answers cannot claim completeness the engine never
+        // reported (each root may have been clipped by `limit`).
+        meta = { complete: false, tool: "ultrasearch_query", hitCount: hits.length, roots: merged.roots.length, duplicates: merged.duplicates, ...(merged.errors.length ? { errors: merged.errors } : {}) };
         rootNote = merged.duplicates > 0 ? `\n# ${merged.duplicates} duplicate(s) collapsed across ${merged.roots.length} roots` : "";
       } else {
         const res = await this.client.search(args.query, {
@@ -384,7 +386,7 @@ export class UltraSearchMcpServer {
           grep: (p, root) => this.client.grep(p, { in: root, root, mode: args.mode ?? "literal", limit: args.limit ?? 30, context: ctxCount, budget_ms: args.budget_ms }),
         });
         files = merged.files;
-        resultMeta = { complete: true, roots: merged.roots.length, duplicates: merged.duplicates };
+        resultMeta = { complete: false, roots: merged.roots.length, duplicates: merged.duplicates, ...(merged.errors.length ? { errors: merged.errors } : {}) };
         grepRootNote = merged.duplicates > 0 ? `\n# ${merged.duplicates} duplicate file(s) collapsed across ${merged.roots.length} roots` : "";
       } else if (args.mode === "semantic") {
         const semantic = await searchSemanticIntent(this.client, args.pattern, { in: searchScope, limit: args.limit ?? 30, auditTool: "ultrasearch_grep" });
