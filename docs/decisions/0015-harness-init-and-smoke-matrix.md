@@ -59,22 +59,26 @@ down to the newest supported one. The matrix prints `(assumed)` on every row tha
 
 ## Known behaviour found while running the gates (not introduced here)
 
-**A linked git worktree is deliberately outside the content index.** The engine says so in
-`engine/src/content.rs::linked_worktree` ("Its text is mostly its main checkout's: left out", also
-documented in `engine/README.md` §"What grep covers"), so a scoped grep inside a linked worktree is
-served by `source=scan` by construction — not by a cold index that eventually warms. The live
-benchmark gate measures `client p50 - raw p50`; with the daemon answering the raw leg in ~2 ms while the
-client-side scan path costs ~10 ms (ignore filtering, ranking, audit under CPU contention), that
-assertion fails, and it is the only gate that does. Measured on 2026-10-15:
+**Two joined causes, both scope — not code.** (1) A linked git worktree is deliberately outside the
+content index: `engine/src/content.rs::linked_worktree` ("Its text is mostly its main checkout's: left
+out", documented in `engine/README.md` §"What grep covers"), so a scoped grep there is served by
+`source=scan` by construction — not by a cold index that warms. (2) A `scan` is not ignore-filtered the
+way the content index is, so a worktree carrying a large gitignored build cache (`engine/target`, 182 MB
+here) returns those hits and the *client* filters them after the response, ~8 ms per grep. The live gate
+asserts `client p50 - raw p50 < 3 ms`; that is the only failing gate. Measured on 2026-10-15, same
+branch and same daemon:
 
-| Checkout | grep source | live gate |
+| Checkout (same code) | grep source | live gate |
 |:--|:--|:--|
-| this linked worktree (`wave5/init-smoke`) | `scan` | fails: client overhead ~8 ms |
-| untouched a1f4f1d linked worktree | `scan` | passed once because the raw leg was equally slow (~8 ms) — same condition |
-| normal clone of this branch | `index` | passes: grep p95 2.17 ms, search p95 1.17 ms |
+| this linked worktree, `engine/target` present | `scan` | **fails**: grep overhead ~8 ms |
+| this linked worktree, `engine/target` moved out | `scan` | **passes 8/8**: grep p95 4.54 ms, overhead 1.62 ms, load1 16 |
+| normal clone of this branch | `index` | **passes 8/8**: grep p95 1.74 ms, search p95 0.68 ms |
+| untouched a1f4f1d linked worktree | `scan` | passed once because the raw leg was equally slow — same condition |
 
 `src/client.ts`, `src/mcp.ts` and `test/benchmark-gate.test.ts` are byte-identical to a1f4f1d in this
-branch, and `npm test` + `npm run test:engine` pass in the worktree, so this is an environment/coverage
-property, not a regression. Wave 5 work in a linked worktree should run `npm run test:gate` from the
-primary checkout or a normal clone of the branch (verified), and treat a worktree-only failure of the
-live grep overhead assertion as the documented policy above.
+branch; `npm test` (225 pass / 1 intentional skip) and `npm run test:engine` (42/42) pass in the
+worktree. Wave 5 work in a linked worktree should either move the gitignored build cache out for the
+gate run (measured above) or run `npm run test:gate` from the primary checkout / a normal clone, and
+treat a worktree-only failure of the live grep overhead assertion as this documented scope property.
+The real fix — filter ignored directories before the daemon returns scan hits — is an engine/client
+change that needs its own paired A/B and is not attempted here.
