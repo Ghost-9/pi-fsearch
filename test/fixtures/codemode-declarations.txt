@@ -1,20 +1,20 @@
 
 declare namespace tools {
   /**
-   * Instant indexed whole-disk or workspace file search (<0.1ms). Strict deterministic matching (zero typo tolerance) for exact symbol, glob, and path resolution. Supports globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.
+   * Exact indexed path search (<0.1ms, no typo tolerance). Accepts a name, glob (src/**/*.{ts,tsx}), extension filter (*.rs), or git status filter (git:modified, git:staged, git:untracked). `near` re-ranks by folder proximity. Scoped to the worktree unless global=true.
    */
   function ultrasearch_query(args: {
-    /** Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified') */
+    /** Name, glob, or filter (e.g. 'git:modified', 'src/**/*.{ts,tsx} !test/') */
     query: string;
-    /** Max results (default: 30) */
+    /** Max results (default 30) */
     limit?: number;
-    /** Search whole disk instead of workspace */
+    /** Whole disk instead of the worktree */
     global?: boolean;
-    /** Optional file path to re-rank results by folder proximity */
+    /** Re-rank by folder proximity to this path */
     near?: string;
-    /** Optional server-side deadline (ms); partial results carry complete:false */
+    /** Deadline (ms); partial results set complete:false */
     budget_ms?: number;
-    /** Append engine reason tags ([exact] [glob] [git:modified] [proximity] [frecency] [symbol]) to each result. Default true. */
+    /** Append match-reason tags (default true) */
     explain?: boolean;
   }): Promise<{
     matches: Array<{
@@ -28,28 +28,28 @@ declare namespace tools {
   }>;
 
   /**
-   * Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.
+   * Indexed content search (<1ms) with compact 'file:line: match' output; credentials are DLP-scrubbed.
    */
   function ultrasearch_grep(args: {
-    /** Literal or identifier to search */
+    /** Text or identifier to search */
     pattern: string;
-    /** Subdirectory or file filter */
+    /** Subfolder or file filter (e.g. 'src/') */
     path_filter?: string;
-    /** Search whole disk instead of restricting to the current scope */
+    /** Whole disk instead of the current scope */
     global?: boolean;
-    /** Search mode (semantic = intent keyword expansion) */
+    /** literal (default) | regex | symbol (defs first) | semantic (intent) */
     mode?: "literal" | "regex" | "symbol" | "semantic";
-    /** Max files to return */
+    /** Max files (default 30) */
     limit?: number;
-    /** Compact one-line format (default: true) */
+    /** One-line 'file:line: match' (default true) */
     compact?: boolean;
-    /** Optional token budget ceiling */
+    /** Output token budget */
     max_tokens?: number;
-    /** Lines of surrounding code context (0-5, default: 0) */
+    /** Context lines per match (0-5, default 0) */
     context?: number;
-    /** Tag matches with AST definition types like [def:fn], [def:class] */
+    /** Tag AST definitions ([def:fn], [def:class]) */
     tag_symbols?: boolean;
-    /** Optional server-side deadline (ms); partial results carry complete:false */
+    /** Deadline (ms); partial results set complete:false */
     budget_ms?: number;
   }): Promise<{
     files: Array<{
@@ -60,20 +60,20 @@ declare namespace tools {
   }>;
 
   /**
-   * Simultaneous multi-pattern OR content retrieval across trigram index in one call.
+   * OR-search several patterns in one indexed call.
    */
   function ultrasearch_multi_grep(args: {
-    /** Array of search patterns */
+    /** Patterns to OR */
     patterns: string[];
-    /** Subdirectory filter */
+    /** Subfolder filter */
     path_filter?: string;
-    /** Max files to return */
+    /** Max files (default 30) */
     limit?: number;
-    /** Compact one-line format (default: true) */
+    /** One-line 'file:line: match' (default true) */
     compact?: boolean;
-    /** Optional token budget ceiling */
+    /** Output token budget */
     max_tokens?: number;
-    /** Optional server-side deadline (ms); partial results carry complete:false */
+    /** Deadline (ms); partial results set complete:false */
     budget_ms?: number;
   }): Promise<{
     files: Array<{
@@ -84,30 +84,30 @@ declare namespace tools {
   }>;
 
   /**
-   * Instant O(1) filename lookup (e.g. 'package.json', 'Cargo.toml') within current workspace.
+   * Exact filename lookup in the workspace (O(1) indexed).
    */
   function ultrasearch_locate(args: {
-    /** Exact filename to locate */
+    /** Exact filename (e.g. 'package.json') */
     filename: string;
-    /** Search entire disk */
+    /** Whole disk */
     global?: boolean;
   }): Promise<{ content: Array<{ type: "text"; text: string }> }>;
 
   /**
-   * Recently worked or edited files in current workspace (frecency ranked).
+   * Recently edited workspace files, frecency-ranked.
    */
   function ultrasearch_recent(args?: {
-    /** Max recent files (default: 15) */
+    /** Max files (default 15) */
     limit?: number;
   }): Promise<{ content: Array<{ type: "text"; text: string }> }>;
 
   /**
-   * Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice. Defaults to organic (non-gate) rows.
+   * Toolchain metrics: latency percentiles, error and zero-hit rates, tuning advice. Defaults to organic rows (gate/bench runs excluded).
    */
   function ultrasearch_metrics(args?: {
-    /** Audit provenance view (default: real = organic sessions only) */
+    /** Provenance view (default real = organic only) */
     view?: "real" | "synthetic" | "all";
-    /** Number of audit rows to analyze (default 1000) */
+    /** Rows to analyze (default 1000) */
     limit?: number;
   }): Promise<{ content: Array<{ type: "text"; text: string }> }>;
 }

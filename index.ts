@@ -97,16 +97,16 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     name: "ultrasearch_query",
     label: "UltraSearch Query",
     description:
-      "Instant indexed whole-disk or workspace file search (<0.1ms). Strict deterministic matching (zero typo tolerance) for exact symbol, glob, and path resolution. Supports globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.",
+      "Exact indexed path search (<0.1ms, no typo tolerance). Accepts a name, glob (src/**/*.{ts,tsx}), extension filter (*.rs), or git status filter (git:modified, git:staged, git:untracked). `near` re-ranks by folder proximity. Scoped to the worktree unless global=true.",
     parameters: Type.Object({
       query: Type.String({
-        description: "Search keywords, globs, or filters (e.g. 'Omnibox *.swift', 'git:modified', 'near:index.ts', 'src/**/*.{ts,tsx} !test/'). Zero typo tolerance enforced.",
+        description: "Name, glob, or filter (e.g. 'git:modified', 'src/**/*.{ts,tsx} !test/')",
       }),
-      limit: Type.Optional(Type.Number({ description: "Maximum results to return (default: 30)." })),
-      global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository worktree." })),
-      near: Type.Optional(Type.String({ description: "Optional active file path to re-rank results by folder proximity." })),
-      explain: Type.Optional(Type.Boolean({ description: "Append engine reason tags ([exact] [glob] [git:modified] [proximity] [frecency] [symbol]) to each result. Default true." })),
-      budget_ms: Type.Optional(Type.Number({ description: "Optional server-side deadline in milliseconds. On expiry the result is partial and carries complete:false." })),
+      limit: Type.Optional(Type.Number({ description: "Max results (default 30)" })),
+      global: Type.Optional(Type.Boolean({ description: "Whole disk instead of the worktree" })),
+      near: Type.Optional(Type.String({ description: "Re-rank by folder proximity to this path" })),
+      explain: Type.Optional(Type.Boolean({ description: "Append match-reason tags (default true)" })),
+      budget_ms: Type.Optional(Type.Number({ description: "Deadline (ms); partial results set complete:false" })),
     }),
     execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string; budget_ms?: number; explain?: boolean }) => {
       try {
@@ -235,20 +235,20 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
     name: "ultrasearch_grep",
     label: "UltraSearch Grep",
     description:
-      "Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk walks. Modes: literal, regex, symbol (definitions first), semantic (intent expansion). Optional context lines (-C) and AST symbol tags. Results scrubbed for credentials.",
+      "Indexed content search (<1ms) with compact 'file:line: match' output; credentials are DLP-scrubbed.",
     parameters: Type.Object({
-      pattern: Type.String({ description: "Literal text or identifier to search for." }),
-      path_filter: Type.Optional(Type.String({ description: "Optional subfolder or file pattern (e.g. 'src/', 'Sources/Search')." })),
+      pattern: Type.String({ description: "Text or identifier to search" }),
+      path_filter: Type.Optional(Type.String({ description: "Subfolder or file filter (e.g. 'src/')" })),
       mode: Type.Optional(Type.Union([Type.Literal("literal"), Type.Literal("regex"), Type.Literal("symbol"), Type.Literal("semantic")], {
-        description: "Search mode: 'literal' (default), 'regex', 'symbol' (definitions first), or 'semantic' (intent keyword expansion).",
+        description: "literal (default) | regex | symbol (defs first) | semantic (intent)",
       })),
-      limit: Type.Optional(Type.Number({ description: "Maximum files to match (default: 30)." })),
-      global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository." })),
-      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format (default: true). Set false for verbose blocks." })),
-      max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
-      context: Type.Optional(Type.Number({ description: "Lines of surrounding context to include per match (0-5, default: 0)." })),
-      tag_symbols: Type.Optional(Type.Boolean({ description: "Tag matches with AST definition tags like [def:fn], [def:class]." })),
-      budget_ms: Type.Optional(Type.Number({ description: "Optional server-side deadline in milliseconds (default 2500). On expiry the result is partial and carries complete:false." })),
+      limit: Type.Optional(Type.Number({ description: "Max files (default 30)" })),
+      global: Type.Optional(Type.Boolean({ description: "Whole disk instead of the current scope" })),
+      compact: Type.Optional(Type.Boolean({ description: "One-line 'file:line: match' (default true)" })),
+      max_tokens: Type.Optional(Type.Number({ description: "Output token budget" })),
+      context: Type.Optional(Type.Number({ description: "Context lines per match (0-5, default 0)" })),
+      tag_symbols: Type.Optional(Type.Boolean({ description: "Tag AST definitions ([def:fn], [def:class])" })),
+      budget_ms: Type.Optional(Type.Number({ description: "Deadline (ms); partial results set complete:false" })),
     }),
     execute: async (_toolCallId: string, params: { pattern: string; path_filter?: string; mode?: "literal" | "regex" | "symbol" | "semantic"; limit?: number; global?: boolean; compact?: boolean; max_tokens?: number; context?: number; tag_symbols?: boolean; budget_ms?: number }) => {
       try {
@@ -360,14 +360,14 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   register({
     name: "ultrasearch_multi_grep",
     label: "UltraSearch Multi Grep",
-    description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
+    description: "OR-search several patterns in one indexed call.",
     parameters: Type.Object({
-      patterns: Type.Array(Type.String({ description: "Identifiers or literals to search concurrently." })),
-      path_filter: Type.Optional(Type.String({ description: "Optional folder filter." })),
-      limit: Type.Optional(Type.Number({ description: "Maximum files to match." })),
-      compact: Type.Optional(Type.Boolean({ description: "Return compact 'file:line: match' format (default: true). Set false for verbose blocks." })),
-      max_tokens: Type.Optional(Type.Number({ description: "Optional token budget ceiling. Omit for complete, uncapped results." })),
-      budget_ms: Type.Optional(Type.Number({ description: "Optional server-side deadline in milliseconds (default 3000). On expiry the result is partial and carries complete:false." })),
+      patterns: Type.Array(Type.String({ description: "Patterns to OR" })),
+      path_filter: Type.Optional(Type.String({ description: "Subfolder filter" })),
+      limit: Type.Optional(Type.Number({ description: "Max files (default 30)" })),
+      compact: Type.Optional(Type.Boolean({ description: "One-line 'file:line: match' (default true)" })),
+      max_tokens: Type.Optional(Type.Number({ description: "Output token budget" })),
+      budget_ms: Type.Optional(Type.Number({ description: "Deadline (ms); partial results set complete:false" })),
     }),
     execute: async (_toolCallId: string, params: { patterns: string[]; path_filter?: string; limit?: number; compact?: boolean; max_tokens?: number; budget_ms?: number }) => {
       try {
@@ -432,10 +432,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   register({
     name: "ultrasearch_locate",
     label: "UltraSearch Locate",
-    description: "Instant O(1) lookup for exact filenames (e.g., 'package.json', 'Cargo.toml', 'ROADMAP.md') within current workspace.",
+    description: "Exact filename lookup in the workspace (O(1) indexed).",
     parameters: Type.Object({
-      filename: Type.String({ description: "Exact filename to locate." }),
-      global: Type.Optional(Type.Boolean({ description: "Search entire disk (default: false, scopes to project)." })),
+      filename: Type.String({ description: "Exact filename (e.g. 'package.json')" }),
+      global: Type.Optional(Type.Boolean({ description: "Whole disk" })),
     }),
     execute: async (_toolCallId: string, params: { filename: string; global?: boolean }) => {
       try {
@@ -467,9 +467,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   register({
     name: "ultrasearch_recent",
     label: "UltraSearch Recent",
-    description: "Returns files recently edited or touched in the current workspace or git branch (frecency-ranked).",
+    description: "Recently edited workspace files, frecency-ranked.",
     parameters: Type.Object({
-      limit: Type.Optional(Type.Number({ description: "Maximum recent files (default: 15)." })),
+      limit: Type.Optional(Type.Number({ description: "Max files (default 15)" })),
     }),
     execute: async (_toolCallId: string, params: { limit?: number }) => {
       try {
@@ -492,10 +492,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   register({
     name: "ultrasearch_metrics",
     label: "UltraSearch Metrics",
-    description: "Observability profiler: returns per-tool latencies (p50/p90/p95), error rates, 0-hit diagnostics, CLI bypasses (find/rg), and recursive self-learning recommendations.",
+    description: "Toolchain metrics: latency percentiles, error and zero-hit rates, tuning advice. Defaults to organic rows (gate/bench runs excluded).",
     parameters: Type.Object({
-      limit: Type.Optional(Type.Number({ description: "Number of audit rows to analyze (default: 1000)." })),
-      view: Type.Optional(Type.Union([Type.Literal("real"), Type.Literal("all"), Type.Literal("synthetic")], { description: "Audit provenance view: 'real' (default, organic agent sessions only), 'synthetic' (gate/bench rows), or 'all'." })),
+      limit: Type.Optional(Type.Number({ description: "Rows to analyze (default 1000)" })),
+      view: Type.Optional(Type.Union([Type.Literal("real"), Type.Literal("all"), Type.Literal("synthetic")], { description: "Provenance view (default real = organic only)" })),
     }),
     execute: async (_toolCallId: string, params: { limit?: number; view?: "real" | "all" | "synthetic" } = {}) => {
       const summary = summarizeAudit(params.limit ?? 1000, { view: params.view ?? "real" });
