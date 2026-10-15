@@ -3,7 +3,7 @@
   "wave": "wave1/verify-final",
   "base_ref": "0a16e50 (BEFORE, isolated under HOME=/Users/batra/.cache/us-verify/before-home + upstream engine at ~/.cache/fsearch)",
   "head_ref": "3135e28 (AFTER, main worktree + installed renamed daemon PID 8887)",
-  "generated_at": "2026-10-15T04:57:26.673Z",
+  "generated_at": "2026-10-15T04:58:24.722Z",
   "status_legend": {
     "verified": "independently re-measured; numbers agree with the artifact and the method is sound",
     "failed": "independently re-measured and the claim does not hold",
@@ -11,9 +11,9 @@
   },
   "counts": {
     "verified": 49,
-    "failed": 0,
+    "failed": 1,
     "unverified": 13,
-    "total": 62
+    "total": 63
   },
   "rows": [
     {
@@ -1723,6 +1723,25 @@
         ]
       },
       "artifact": "bench/verification/after/checks-rename.json"
+    },
+    {
+      "id": "check.readme_conflict_marker",
+      "lane": "surface",
+      "scope": "README.md",
+      "before": null,
+      "after": "failed",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "grep -n '^>>>>>>>' README.md",
+      "status": "failed",
+      "status_reason": "line 309 is a literal `>>>>>>> d50249a (...)` conflict marker from the wave1/engine rebase, published in the README; the only conflict marker left in the tree",
+      "evidence": {
+        "file": "README.md",
+        "line": 309,
+        "marker": ">>>>>>> d50249a (feat(index): configurable content coverage, warm-up, and the policy in status (#17))"
+      },
+      "artifact": "README.md + bench/baseline/FINDINGS.md (F9)"
     },
     {
       "id": "author.boost-degraded",

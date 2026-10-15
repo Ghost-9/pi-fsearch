@@ -288,3 +288,12 @@ Findings **F1** and **F3** are now fixed; **F7** is still open as a recommendati
 are unchanged limitations. No Wave 1 claim failed verification.
 
 ---
+
+## New defect found during final verification (Wave 1, reported not fixed)
+
+**F9 — stray merge-conflict marker in `README.md`.** Line 309 carries
+`>>>>>>> d50249a (feat(index): configurable content coverage, warm-up, and the policy in status (#17))`
+as a literal line of the published README (the `<<<<<<<`/`=======` halves are gone, so it renders as
+text in the Content coverage / Running-an-isolated-instance section). Cosmetic, user-facing, and
+trivially greppable: `grep -n '^>>>>>>>' README.md`. No other conflict marker exists in the tree
+(`grep -rn '^<<<<<<<|^=======$|^>>>>>>>' --include='*.md' --include='*.ts' --include='*.mjs' --include='*.rs' .`).

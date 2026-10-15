@@ -332,6 +332,23 @@ row({
   artifact: "bench/verification/after/checks-rename.json",
 });
 
+row({
+  id: "check.readme_conflict_marker",
+  lane: "surface",
+  scope: "README.md",
+  before: null,
+  after: "failed",
+  delta: null,
+  ci95: null,
+  n: null,
+  method: "grep -n '^>>>>>>>' README.md",
+  status: "failed",
+  status_reason:
+    "line 309 is a literal `>>>>>>> d50249a (...)` conflict marker from the wave1/engine rebase, published in the README; the only conflict marker left in the tree",
+  evidence: { file: "README.md", line: 309, marker: ">>>>>>> d50249a (feat(index): configurable content coverage, warm-up, and the policy in status (#17))" },
+  artifact: "README.md + bench/baseline/FINDINGS.md (F9)",
+});
+
 // ---------------------------------------------------------------- author benches (degraded)
 const authorDir = path.join(A, "author");
 for (const f of fs.readdirSync(authorDir).filter((f) => f.endsWith(".json") && f.includes("2026-10-15")).sort()) {
