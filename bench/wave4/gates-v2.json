@@ -1,0 +1,770 @@
+{
+  "suite": "wave4-gates",
+  "generated_at": "2026-10-15T14:43:27.123Z",
+  "gates_version": 2,
+  "judgments": {
+    "v1": "bench/judgments/wave1-judgments.json",
+    "v2": "bench/judgments/wave1-judgments.v2.json"
+  },
+  "arms": {
+    "v1": {
+      "label": "v1-as-written",
+      "n_must_hit": 26,
+      "n_negative": 4,
+      "g1_recall10": {
+        "threshold": "== 1.00",
+        "observed": 0.796154,
+        "pass": false,
+        "n": 26,
+        "failing_rows": [
+          {
+            "id": "P3",
+            "lane": "path",
+            "recall_at_10": 0.5,
+            "missing": [
+              "test/client.test.ts:2"
+            ]
+          },
+          {
+            "id": "P6",
+            "lane": "path",
+            "recall_at_10": 0.333333,
+            "missing": [
+              "OPTIMIZATIONS.md:1",
+              "AUDIT-2026-10-14.md:1"
+            ]
+          },
+          {
+            "id": "G4",
+            "lane": "grep-literal",
+            "recall_at_10": 0.5,
+            "missing": [
+              "README.md:1"
+            ]
+          },
+          {
+            "id": "S1",
+            "lane": "symbol",
+            "recall_at_10": 0.2,
+            "missing": [
+              "test/client.test.ts:2",
+              "src/mcp.ts:1",
+              "src/tui.ts:1",
+              "index.ts:1"
+            ]
+          },
+          {
+            "id": "S3",
+            "lane": "symbol",
+            "recall_at_10": 0.5,
+            "missing": [
+              "AUDIT-2026-10-14.md:1"
+            ]
+          },
+          {
+            "id": "S4",
+            "lane": "symbol",
+            "recall_at_10": 0.333333,
+            "missing": [
+              "CHANGELOG.md:1",
+              "AUDIT-2026-10-14.md:1"
+            ]
+          },
+          {
+            "id": "K1",
+            "lane": "ranking-frecency",
+            "recall_at_10": 0.5,
+            "missing": [
+              "CONTRIBUTING.md:1"
+            ]
+          },
+          {
+            "id": "K2",
+            "lane": "ranking-proximity",
+            "recall_at_10": 0.333333,
+            "missing": [
+              "OPTIMIZATIONS.md:1",
+              "AUDIT-2026-10-14.md:1"
+            ]
+          },
+          {
+            "id": "K3",
+            "lane": "ranking-boost-ab",
+            "recall_at_10": 0.5,
+            "missing": [
+              "src/mcp.ts:1",
+              "README.md:1"
+            ]
+          }
+        ]
+      },
+      "g2_ndcg10_overall": {
+        "threshold": ">= 0.75",
+        "observed": 0.91207,
+        "pass": true,
+        "n": 26,
+        "ci95_over_rows": {
+          "bca": [
+            0.840909,
+            0.946616
+          ],
+          "pct": [
+            0.859164,
+            0.953594
+          ]
+        }
+      },
+      "g3_ndcg10_semantic": {
+        "threshold": ">= 0.60",
+        "observed": 0.831344,
+        "pass": true,
+        "n": 5,
+        "ci95_over_rows": {
+          "bca": [
+            0.522968,
+            0.940221
+          ],
+          "pct": [
+            0.622502,
+            0.954665
+          ]
+        }
+      },
+      "g4_zero_result_rate": {
+        "threshold": "== 0.00",
+        "observed": 0,
+        "pass": true,
+        "n": 26,
+        "failing_rows": []
+      },
+      "g5_false_positive_rate": {
+        "threshold": "== 0.00",
+        "observed": 0,
+        "pass": true,
+        "n": 4,
+        "failing_rows": []
+      },
+      "g6_reformulation_overall": {
+        "threshold": "<= 0.20",
+        "observed": 0.038462,
+        "pass": true,
+        "n": 26,
+        "ci95_over_rows": {
+          "bca": [
+            0,
+            0.115385
+          ],
+          "pct": [
+            0,
+            0.115385
+          ]
+        },
+        "failing_rows": [
+          "M4"
+        ]
+      },
+      "g7_reformulation_per_lane": {
+        "threshold": "<= 0.35 per lane",
+        "pass": true,
+        "lanes": {
+          "path": {
+            "n": 6,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": {
+              "bca": [
+                0,
+                0
+              ],
+              "pct": [
+                0,
+                0
+              ]
+            },
+            "rows": []
+          },
+          "grep-literal": {
+            "n": 5,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": {
+              "bca": [
+                0,
+                0
+              ],
+              "pct": [
+                0,
+                0
+              ]
+            },
+            "rows": []
+          },
+          "grep-regex": {
+            "n": 2,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "symbol": {
+            "n": 4,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "semantic": {
+            "n": 5,
+            "observed": 0.2,
+            "pass": true,
+            "ci95_over_rows": {
+              "bca": [
+                0,
+                0.4
+              ],
+              "pct": [
+                0,
+                0.6
+              ]
+            },
+            "rows": [
+              "M4"
+            ]
+          },
+          "ranking-frecency": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "ranking-proximity": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "ranking-boost-ab": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "ranking-symbol-intrafile": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          }
+        }
+      }
+    },
+    "v2": {
+      "label": "v2-amended",
+      "n_must_hit": 33,
+      "n_negative": 4,
+      "g1_recall10": {
+        "threshold": "== 1.00",
+        "observed": 1,
+        "pass": true,
+        "n": 33,
+        "failing_rows": []
+      },
+      "g2_ndcg10_overall": {
+        "threshold": ">= 0.75",
+        "observed": 0.925772,
+        "pass": true,
+        "n": 33,
+        "ci95_over_rows": {
+          "bca": [
+            0.849585,
+            0.967018
+          ],
+          "pct": [
+            0.867288,
+            0.974081
+          ]
+        }
+      },
+      "g3_ndcg10_semantic": {
+        "threshold": ">= 0.60",
+        "observed": 0.831344,
+        "pass": true,
+        "n": 5,
+        "ci95_over_rows": {
+          "bca": [
+            0.522968,
+            0.940221
+          ],
+          "pct": [
+            0.622502,
+            0.954665
+          ]
+        }
+      },
+      "g4_zero_result_rate": {
+        "threshold": "== 0.00",
+        "observed": 0,
+        "pass": true,
+        "n": 33,
+        "failing_rows": []
+      },
+      "g5_false_positive_rate": {
+        "threshold": "== 0.00",
+        "observed": 0,
+        "pass": true,
+        "n": 4,
+        "failing_rows": []
+      },
+      "g6_reformulation_overall": {
+        "threshold": "<= 0.20",
+        "observed": 0.121212,
+        "pass": true,
+        "n": 33,
+        "ci95_over_rows": {
+          "bca": [
+            0.030303,
+            0.242424
+          ],
+          "pct": [
+            0.030303,
+            0.242424
+          ]
+        },
+        "failing_rows": [
+          "P6c",
+          "M4",
+          "K2c",
+          "K3c"
+        ]
+      },
+      "g7_reformulation_per_lane": {
+        "threshold": "<= 0.35 per lane",
+        "pass": true,
+        "lanes": {
+          "path": {
+            "n": 6,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": {
+              "bca": [
+                0,
+                0
+              ],
+              "pct": [
+                0,
+                0
+              ]
+            },
+            "rows": []
+          },
+          "grep-literal": {
+            "n": 12,
+            "observed": 0.25,
+            "pass": true,
+            "ci95_over_rows": {
+              "bca": [
+                0,
+                0.416667
+              ],
+              "pct": [
+                0,
+                0.5
+              ]
+            },
+            "rows": [
+              "P6c",
+              "K2c",
+              "K3c"
+            ]
+          },
+          "grep-regex": {
+            "n": 2,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "symbol": {
+            "n": 4,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "semantic": {
+            "n": 5,
+            "observed": 0.2,
+            "pass": true,
+            "ci95_over_rows": {
+              "bca": [
+                0,
+                0.4
+              ],
+              "pct": [
+                0,
+                0.6
+              ]
+            },
+            "rows": [
+              "M4"
+            ]
+          },
+          "ranking-frecency": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "ranking-proximity": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "ranking-boost-ab": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          },
+          "ranking-symbol-intrafile": {
+            "n": 1,
+            "observed": 0,
+            "pass": true,
+            "ci95_over_rows": null,
+            "rows": []
+          }
+        }
+      }
+    }
+  },
+  "v1_audited": {
+    "artifact": "bench/wave4/results/v1-expectation-audit.json",
+    "sha256": "a91da4f6c4205e63a7d8e98d2e5120c3fd75835fd7c79d809a55c28c95fea4ce",
+    "reported_recall_at_10": 0.796154,
+    "audited_recall_at_10": 1,
+    "unreachable_by_class": {
+      "path-lane-content": 6,
+      "absent-string": 3,
+      "symbol-lane-reference": 7
+    },
+    "note": "the wave-3 audit re-run against this run's v1 artifact: the v1 metric is reported unchanged and its 16 unreachable expectations are attributed"
+  },
+  "result": {
+    "all_seven_green_on_v2": true,
+    "green_count_v2": 7
+  },
+  "paired_v1_v2": {
+    "ndcg_at_10": {
+      "n": 26,
+      "v1": 0.91207,
+      "v2": 0.961583,
+      "delta": 0.049512,
+      "ci95_bca_delta": [
+        0.024578,
+        0.089981
+      ],
+      "ci95_pct_delta": [
+        0.020703,
+        0.082228
+      ],
+      "sign_test": {
+        "n": 9,
+        "pos": 9,
+        "neg": 0,
+        "p": 0.00390625
+      },
+      "unchanged_rows": {
+        "n": 17,
+        "delta_max_abs": 0
+      },
+      "moved": [
+        {
+          "id": "P3",
+          "v1": 0.787155,
+          "v2": 1,
+          "delta": 0.212845
+        },
+        {
+          "id": "P6",
+          "v1": 0.86091,
+          "v2": 1,
+          "delta": 0.13909
+        },
+        {
+          "id": "G4",
+          "v1": 0.917319,
+          "v2": 1,
+          "delta": 0.082681
+        },
+        {
+          "id": "S1",
+          "v1": 0.685581,
+          "v2": 1,
+          "delta": 0.314419
+        },
+        {
+          "id": "S3",
+          "v1": 0.917319,
+          "v2": 1,
+          "delta": 0.082681
+        },
+        {
+          "id": "S4",
+          "v1": 0.86091,
+          "v2": 1,
+          "delta": 0.13909
+        },
+        {
+          "id": "K1",
+          "v1": 0.917319,
+          "v2": 1,
+          "delta": 0.082681
+        },
+        {
+          "id": "K2",
+          "v1": 0.86091,
+          "v2": 1,
+          "delta": 0.13909
+        },
+        {
+          "id": "K3",
+          "v1": 0.90526,
+          "v2": 1,
+          "delta": 0.09474
+        }
+      ],
+      "method": "paired by query id; the row is scored under its own set's expectations in each arm, so for the 9 amended rows the delta is the amendment effect and for the unchanged rows it must be exactly 0"
+    },
+    "recall_at_10": {
+      "n": 26,
+      "v1": 0.796154,
+      "v2": 1,
+      "delta": 0.203846,
+      "ci95_bca_delta": [
+        0.102564,
+        0.324359
+      ],
+      "ci95_pct_delta": [
+        0.096154,
+        0.317949
+      ],
+      "sign_test": {
+        "n": 9,
+        "pos": 9,
+        "neg": 0,
+        "p": 0.00390625
+      },
+      "unchanged_rows": {
+        "n": 17,
+        "delta_max_abs": 0
+      },
+      "moved": [
+        {
+          "id": "P3",
+          "v1": 0.5,
+          "v2": 1,
+          "delta": 0.5
+        },
+        {
+          "id": "P6",
+          "v1": 0.333333,
+          "v2": 1,
+          "delta": 0.666667
+        },
+        {
+          "id": "G4",
+          "v1": 0.5,
+          "v2": 1,
+          "delta": 0.5
+        },
+        {
+          "id": "S1",
+          "v1": 0.2,
+          "v2": 1,
+          "delta": 0.8
+        },
+        {
+          "id": "S3",
+          "v1": 0.5,
+          "v2": 1,
+          "delta": 0.5
+        },
+        {
+          "id": "S4",
+          "v1": 0.333333,
+          "v2": 1,
+          "delta": 0.666667
+        },
+        {
+          "id": "K1",
+          "v1": 0.5,
+          "v2": 1,
+          "delta": 0.5
+        },
+        {
+          "id": "K2",
+          "v1": 0.333333,
+          "v2": 1,
+          "delta": 0.666667
+        },
+        {
+          "id": "K3",
+          "v1": 0.5,
+          "v2": 1,
+          "delta": 0.5
+        }
+      ],
+      "method": "paired by query id; the row is scored under its own set's expectations in each arm, so for the 9 amended rows the delta is the amendment effect and for the unchanged rows it must be exactly 0"
+    },
+    "reformulation_signal": {
+      "n": 26,
+      "v1": 0.038462,
+      "v2": 0.038462,
+      "delta": 0,
+      "ci95_bca_delta": [
+        0,
+        0
+      ],
+      "ci95_pct_delta": [
+        0,
+        0
+      ],
+      "sign_test": {
+        "n": 0,
+        "pos": 0,
+        "neg": 0,
+        "p": 1
+      },
+      "unchanged_rows": {
+        "n": 17,
+        "delta_max_abs": 0
+      },
+      "moved": [],
+      "method": "paired by query id; the row is scored under its own set's expectations in each arm, so for the 9 amended rows the delta is the amendment effect and for the unchanged rows it must be exactly 0"
+    }
+  },
+  "strict_alternative": {
+    "definition": "v2 with every `content-mention-not-top10` removal restored to the must-hit set",
+    "restored": [
+      {
+        "row": "K3c",
+        "restored": [
+          "README.md:1"
+        ],
+        "recall_at_10": 0.5,
+        "missing": [
+          "README.md:1"
+        ]
+      }
+    ],
+    "recall10": 0.984848,
+    "gate1_passes": false,
+    "note": "reported so the seventh gate is never read without it; it does not change the v2 gate value"
+  },
+  "amendment_neutrality": {
+    "shared_rows": 30,
+    "retrieved_identical": true,
+    "calls_identical": true,
+    "sources_identical": true,
+    "changed_rows": [],
+    "note": "the amendment changes expectations only: every shared row's call, source and retrieved list must be bit-identical between the two arms"
+  },
+  "environment": {
+    "status": "provisional",
+    "rule": "each arm records AC + load1 < 1.5 + no cargo/rustc; anything else is provisional and the claims are provisional until the independent verifier round",
+    "arms": {
+      "v1": {
+        "status": "provisional",
+        "gate_pass": false,
+        "load1": 6.85,
+        "on_ac": true,
+        "competing": [],
+        "measured_at": "2026-10-15T14:42:05.616Z"
+      },
+      "v2": {
+        "status": "provisional",
+        "gate_pass": false,
+        "load1": 6.54,
+        "on_ac": true,
+        "competing": [],
+        "measured_at": "2026-10-15T14:42:08.890Z"
+      }
+    },
+    "isolated_daemon": {
+      "v1": "/Users/batra/.cache/us-w4g-w4-1792075320/ultrasearch.sock",
+      "v2": "/Users/batra/.cache/us-w4g-w4-1792075320/ultrasearch.sock",
+      "single_socket_owner": {
+        "v1": true,
+        "v2": true
+      }
+    },
+    "host_loadavg_at_score": [
+      6.09,
+      6.74,
+      9.56
+    ],
+    "PI_ULTRASEARCH_TEST": null
+  },
+  "evidence": {
+    "v1_judgments": {
+      "path": "bench/judgments/wave1-judgments.json",
+      "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+      "byte_identical_to_recorded": true
+    },
+    "v2_judgments": {
+      "path": "bench/judgments/wave1-judgments.v2.json",
+      "sha256": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05"
+    },
+    "v1_artifact": {
+      "path": "bench/wave4/results/v1.json",
+      "sha256": "e694e08dfb727b024656888c09701ccb10f8097739dbd8d1e7cd5262a8782c8b",
+      "engine": "5a784b0e1126433a49a45cbbcc4cce5db480b43a75dc6bd408009321de16faf1",
+      "head": "3fc033859765496e915c725e9a12ca9d586b4da7"
+    },
+    "v2_artifact": {
+      "path": "bench/wave4/results/v2.json",
+      "sha256": "4e303d689b2d0587eb3f75a77581fcf5682a8e02b80f568e1256020cb71543f4",
+      "engine": "5a784b0e1126433a49a45cbbcc4cce5db480b43a75dc6bd408009321de16faf1",
+      "head": "3fc033859765496e915c725e9a12ca9d586b4da7"
+    },
+    "corpus": {
+      "root": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+      "tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+      "files": 33
+    },
+    "scorer": {
+      "path": "bench/verification/checks/scoring.mjs",
+      "sha256": "aa502aeb8d449f8002144e5e604fcb063015d0c5d8baacd274cbddbe1e452aca"
+    },
+    "validator": {
+      "path": "bench/wave4/validate-judgments.mjs",
+      "sha256": "0f4eb834beaeb4fabadb424008c42f0c1817aa267f7b13e90fca2bdf605b9fd1"
+    },
+    "amendment_table": {
+      "path": "bench/wave4/amendment.mjs",
+      "sha256": "c7d34b2ab50e970fb59d923e1e4d9d0c5cbdbfc16a8a5713a792b99d17931211"
+    },
+    "companion_probe": {
+      "path": "bench/wave4/companion-probe.json",
+      "sha256": "9f984f4fe378503b27aa504077272e1e149a0f023d287fd904f711ff24914e7a"
+    },
+    "audit": {
+      "path": "bench/wave3/results/final-expectation-audit.json",
+      "sha256": "753d8816acd0256b476c61e38a1ac142dd1af7b6aa5ced501fb9411d27ab572a"
+    }
+  },
+  "method": {
+    "scorer": "bench/verification/checks/scoring.mjs (makeScoreQuery) for both arms; the re-score must equal the measurement's stored scores and does",
+    "statistics": "BCa 10000 resamples, splitmix64 seed 20261015 (bench/verification/wave3/lib-verify.mjs); percentile bootstrap alongside; exact paired sign test",
+    "measurement": "bench/wave3/measure.mjs on an isolated daemon (ULTRASEARCH_DIR/HOME/SCAN_ROOT, own socket) over the frozen wave-1 corpus",
+    "no_tuning": "no threshold was changed and no engine behaviour was altered for this file: the only change is the judgment set, and the amendment is validated against the corpus before scoring"
+  }
+}

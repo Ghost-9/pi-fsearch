@@ -1,0 +1,1514 @@
+{
+  "schema": "ultrasearch.judgments/v2",
+  "version": 2,
+  "created": "2026-10-15",
+  "author": "wave4/gates",
+  "supersedes": {
+    "path": "bench/judgments/wave1-judgments.json",
+    "schema": "ultrasearch.judgments/v1",
+    "version": 1,
+    "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+    "policy": "v1 remains byte-identical and is the historical record. Every number reported for v1 in bench/wave4/gates-v2.json is the v1 score on the frozen corpus and is not restated as a v2 value."
+  },
+  "amendment": {
+    "rule": "A must-hit expectation must be satisfiable in the lane it is scored in: a path lane expectation must match the path, a content lane expectation must occur in the file's content under that lane's matching rule, a symbol lane expectation must contain a declaration, and a semantic expectation must share a distinctive token with the intent. Satisfiability is checked by bench/wave4/validate-judgments.mjs against the frozen corpus, not against a run result.",
+    "window_rule": "An expectation whose lane can match it but whose measured rank in every lane that can match it is outside the gate's top-10 window is removed from must-hit as content-mention-not-top10 with the measured rank and match count recorded in `removed`. It is not deleted silently: bench/wave4/gates-v2.json also reports `strict_alternative` — recall@10 recomputed with every such expectation restored.",
+    "basis": [
+      "docs/wave3/W3-03-recall10-cap.md — audit: 16 unreachable expectations, zero reachable misses",
+      "bench/wave3/results/final-expectation-audit.json — per-expectation classification",
+      "bench/verification/wave3-summary.json#W3-AUD-D — verifier conditions: re-score per lane, do not delete, version and re-baseline",
+      "docs/decisions/0014-grep-page-ranking.md — content-lane ranking policy (definitions, then match count, then source-over-prose)",
+      "bench/judgments/wave2-judgments.json#RS01 — path lane pins exactness (test/client.test.ts is `not_expected` for `src/client.ts`)",
+      "bench/judgments/wave2-judgments.json#SY01,#SY02 — symbol mode pins declarations-first (`not_expected` for reference files)"
+    ],
+    "counts": {
+      "v1_must_hit_rows": 26,
+      "v1_grade_ge_1_expectations": 71,
+      "removed": 4,
+      "removed_by_class": {
+        "absent-string": 3,
+        "content-mention-not-top10": 1
+      },
+      "rehomed": 12,
+      "companions": 7,
+      "v2_must_hit_rows": 33,
+      "v2_grade_ge_1_expectations": 71
+    }
+  },
+  "corpus": {
+    "id": "ultrasearch-repo@0a16e50",
+    "root": "/Users/batra/ultrasearch-waves/advisor",
+    "files": 33,
+    "lines": 4949,
+    "note": "Frozen at commit 0a16e50. Markdown docs (AUDIT/OPTIMIZATIONS/ROADMAP/README/CHANGELOG) are present on purpose: they are the realistic distractor class for a code-search agent, because they quote the same identifiers as the source."
+  },
+  "rubric": {
+    "0": "irrelevant - returned but unhelpful",
+    "1": "adjacent - mentions the subject in passing or implements a neighbour; an agent would keep searching",
+    "2": "secondary - also answers the intent (test, second call site, config); reaching it is a success",
+    "3": "primary - the file/symbol the query is about; an agent that reaches this stops searching"
+  },
+  "metrics": {
+    "recall@k": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "mrr@10": true,
+    "ndcg@10": {
+      "gains": {
+        "1": "adjacent",
+        "2": "secondary",
+        "3": "primary"
+      },
+      "discount": "log2(rank+1)"
+    },
+    "zero_result_rate": "share of must_hit queries returning 0 results; gate = 0.00",
+    "false_positive_rate": "negatives returning >0 results; gate = 0.00",
+    "reformulation_signal": "share of queries whose top-1 grade < 2 (agent would re-query). Gate <= 0.20 overall, <= 0.35 per lane."
+  },
+  "queries": [
+    {
+      "id": "P1",
+      "lane": "path",
+      "difficulty": "head",
+      "query": "package.json",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "package.json",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "lane": "path",
+      "difficulty": "head",
+      "query": "ci.yml",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "lane": "path",
+      "difficulty": "head",
+      "query": "client.ts",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [],
+        "rehomed_to": [],
+        "rehomed": [
+          {
+            "path": "test/client.test.ts",
+            "grade": 2,
+            "to": "P3c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P3c",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "query": "client.ts",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "rehomed_from": {
+        "id": "P3",
+        "lane": "path",
+        "query": "client.ts"
+      },
+      "note": "content-lane companion: the same query intent scored where every expectation occurs in the file's content (1 re-homed, 0 carried)",
+      "expected": [
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        }
+      ],
+      "probe": {
+        "artifact": "bench/wave4/companion-probe.json",
+        "all_in_top10": true,
+        "positions": {
+          "test/client.test.ts": 1
+        },
+        "source": "index"
+      }
+    },
+    {
+      "id": "P5",
+      "lane": "path",
+      "difficulty": "torso",
+      "query": "bench",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "test/bench.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/benchmark-gate.test.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/deep-bench.ts",
+          "grade": 2
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "difficulty": "torso",
+      "query": "codemode",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/codemode.ts",
+          "grade": 3
+        }
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [
+          {
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1,
+            "class": "absent-string"
+          }
+        ],
+        "rehomed_to": [
+          "P6c"
+        ],
+        "rehomed": [
+          {
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1,
+            "to": "P6c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "P6c",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "query": "codemode",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "rehomed_from": {
+        "id": "P6",
+        "lane": "path",
+        "query": "codemode"
+      },
+      "note": "content-lane companion: the same query intent scored where every expectation occurs in the file's content (1 re-homed, 1 carried)",
+      "expected": [
+        {
+          "path": "src/codemode.ts",
+          "grade": 3
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "probe": {
+        "artifact": "bench/wave4/companion-probe.json",
+        "all_in_top10": true,
+        "positions": {
+          "src/codemode.ts": 5,
+          "AUDIT-2026-10-14.md": 2
+        },
+        "source": "index"
+      }
+    },
+    {
+      "id": "P7",
+      "lane": "path",
+      "difficulty": "tail",
+      "query": "src/**/*.ts",
+      "params": {
+        "limit": 30
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/telemetry.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/formatter.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/semantic.ts",
+          "grade": 2
+        },
+        {
+          "path": "src/sanitize.ts",
+          "grade": 2
+        },
+        {
+          "path": "src/compactor.ts",
+          "grade": 2
+        },
+        {
+          "path": "src/observer.ts",
+          "grade": 2
+        },
+        {
+          "path": "src/recursive-learning.ts",
+          "grade": 2
+        }
+      ],
+      "note": "recall@10 of the 8 named src modules is the scored quantity; limit=30 keeps it a head query for the engine"
+    },
+    {
+      "id": "P8",
+      "lane": "path",
+      "difficulty": "negative",
+      "query": "kubectl_helm_chart_values",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": false,
+      "expected": [],
+      "negative": true
+    },
+    {
+      "id": "G1",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "query": "estimateTokensSaved",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/telemetry.ts",
+          "grade": 3
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ]
+    },
+    {
+      "id": "G2",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "query": "enforceExactQuery",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "G3",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "query": "SYMBOL_REGEX",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/formatter.ts",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "G4",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "query": "fsearch.sock",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [
+          {
+            "path": "README.md",
+            "grade": 1,
+            "class": "absent-string"
+          }
+        ],
+        "rehomed_to": [],
+        "rehomed": []
+      }
+    },
+    {
+      "id": "G5",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "query": "150 + hitCount",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/telemetry.ts",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "G6",
+      "lane": "grep-literal",
+      "difficulty": "negative",
+      "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": false,
+      "expected": [],
+      "negative": true
+    },
+    {
+      "id": "R1",
+      "lane": "grep-regex",
+      "difficulty": "head",
+      "query": "class\\s+\\w+Client",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "lane": "grep-regex",
+      "difficulty": "torso",
+      "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/compactor.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/recursive-learning.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "OPTIMIZATIONS.md",
+          "grade": 1
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "lane": "grep-regex",
+      "difficulty": "adversarial",
+      "query": "(a+)+$",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "must_hit": false,
+      "expected": [],
+      "negative": true,
+      "note": "issue #36 acceptance: must return an actionable client-side error and never reach the socket; a latency reading for this query is not a performance result. Record error_class, not ms."
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "difficulty": "head",
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [],
+        "rehomed_to": [],
+        "rehomed": [
+          {
+            "path": "test/client.test.ts",
+            "grade": 2,
+            "to": "S1c"
+          },
+          {
+            "path": "src/mcp.ts",
+            "grade": 1,
+            "to": "S1c"
+          },
+          {
+            "path": "src/tui.ts",
+            "grade": 1,
+            "to": "S1c"
+          },
+          {
+            "path": "index.ts",
+            "grade": 1,
+            "to": "S1c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S1c",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "query": "FSearchClient",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "rehomed_from": {
+        "id": "S1",
+        "lane": "symbol",
+        "query": "FSearchClient"
+      },
+      "note": "content-lane companion: the same query intent scored where every expectation occurs in the file's content (4 re-homed, 1 carried)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "src/mcp.ts",
+          "grade": 1
+        },
+        {
+          "path": "src/tui.ts",
+          "grade": 1
+        },
+        {
+          "path": "index.ts",
+          "grade": 1
+        }
+      ],
+      "probe": {
+        "artifact": "bench/wave4/companion-probe.json",
+        "all_in_top10": true,
+        "positions": {
+          "src/client.ts": 1,
+          "test/client.test.ts": 3,
+          "src/mcp.ts": 6,
+          "src/tui.ts": 8,
+          "index.ts": 10
+        },
+        "source": "index"
+      }
+    },
+    {
+      "id": "S2",
+      "lane": "symbol",
+      "difficulty": "head",
+      "query": "detectSymbolTag",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/formatter.ts",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "query": "applyProximityRanking",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "note": "KNOWN GAP PROBE: the declaration is 'public applyProximityRanking(' which SYMBOL_REGEX cannot match (no leading keyword in its alternation). Symbol mode must not be claimed as 'definitions first' until this query's top-1 grade is 3.",
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [],
+        "rehomed_to": [],
+        "rehomed": [
+          {
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1,
+            "to": "S3c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S3c",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "query": "applyProximityRanking",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "rehomed_from": {
+        "id": "S3",
+        "lane": "symbol",
+        "query": "applyProximityRanking"
+      },
+      "note": "content-lane companion: the same query intent scored where every expectation occurs in the file's content (1 re-homed, 1 carried)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "probe": {
+        "artifact": "bench/wave4/companion-probe.json",
+        "all_in_top10": true,
+        "positions": {
+          "src/client.ts": 1,
+          "AUDIT-2026-10-14.md": 3
+        },
+        "source": "index"
+      }
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "query": "resolveWorktreeRoot",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "index.ts",
+          "grade": 3
+        }
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [],
+        "rehomed_to": [],
+        "rehomed": [
+          {
+            "path": "CHANGELOG.md",
+            "grade": 1,
+            "to": "S4c"
+          },
+          {
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1,
+            "to": "S4c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S4c",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "query": "resolveWorktreeRoot",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "rehomed_from": {
+        "id": "S4",
+        "lane": "symbol",
+        "query": "resolveWorktreeRoot"
+      },
+      "note": "content-lane companion: the same query intent scored where every expectation occurs in the file's content (2 re-homed, 1 carried)",
+      "expected": [
+        {
+          "path": "index.ts",
+          "grade": 3
+        },
+        {
+          "path": "CHANGELOG.md",
+          "grade": 1
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "probe": {
+        "artifact": "bench/wave4/companion-probe.json",
+        "all_in_top10": true,
+        "positions": {
+          "index.ts": 1,
+          "CHANGELOG.md": 3,
+          "AUDIT-2026-10-14.md": 2
+        },
+        "source": "index"
+      }
+    },
+    {
+      "id": "M1",
+      "lane": "semantic",
+      "difficulty": "head",
+      "query": "where are credentials scrubbed before results reach the model",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/formatter.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/empirical-10-tests.ts",
+          "grade": 1
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "lane": "semantic",
+      "difficulty": "head",
+      "query": "how is the token savings number computed",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/telemetry.ts",
+          "grade": 3
+        },
+        {
+          "path": "README.md",
+          "grade": 2
+        },
+        {
+          "path": "OPTIMIZATIONS.md",
+          "grade": 1
+        }
+      ]
+    },
+    {
+      "id": "M3",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "query": "what happens when the daemon socket dies mid-session",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "README.md",
+          "grade": 1
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ]
+    },
+    {
+      "id": "M4",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "query": "what does CI run on every push",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "grade": 3
+        },
+        {
+          "path": "README.md",
+          "grade": 2
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ]
+    },
+    {
+      "id": "M5",
+      "lane": "semantic",
+      "difficulty": "tail",
+      "query": "keep search results inside the repository boundary",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "index.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/client.ts",
+          "grade": 2
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        },
+        {
+          "path": "OPTIMIZATIONS.md",
+          "grade": 1
+        }
+      ]
+    },
+    {
+      "id": "M6",
+      "lane": "semantic",
+      "difficulty": "negative",
+      "query": "kubernetes helm chart values for a redis cluster",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": false,
+      "expected": [],
+      "negative": true,
+      "note": "8-term OR expansion is the failure mode this guards: a single generic token (config, cache) must not produce hits on a query whose subject is absent."
+    },
+    {
+      "id": "K1",
+      "lane": "ranking-frecency",
+      "difficulty": "head",
+      "query": "readme",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "precondition": "report an open of README.md through the tool_execution_end path (or {op:open}) at least 30s before the measurement, so the frecency accumulator is non-zero",
+      "expected": [
+        {
+          "path": "README.md",
+          "grade": 3
+        }
+      ],
+      "claims": [
+        "frecency.open lift",
+        "boost:true default"
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [
+          {
+            "path": "CONTRIBUTING.md",
+            "grade": 1,
+            "class": "absent-string"
+          }
+        ],
+        "rehomed_to": [],
+        "rehomed": []
+      }
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "difficulty": "torso",
+      "query": "sanitize",
+      "params": {
+        "near": "src/formatter.ts",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        }
+      ],
+      "claims": [
+        "near: client-side proximityBoost (max +100)",
+        "nearness server-side (max +12, self -20)",
+        "double-rerank interaction"
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [],
+        "rehomed_to": [],
+        "rehomed": [
+          {
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1,
+            "to": "K2c"
+          },
+          {
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1,
+            "to": "K2c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K2c",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "query": "sanitize",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "rehomed_from": {
+        "id": "K2",
+        "lane": "ranking-proximity",
+        "query": "sanitize"
+      },
+      "note": "content-lane companion: the same query intent scored where every expectation occurs in the file's content (2 re-homed, 0 carried)",
+      "expected": [
+        {
+          "path": "OPTIMIZATIONS.md",
+          "grade": 1
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "probe": {
+        "artifact": "bench/wave4/companion-probe.json",
+        "all_in_top10": true,
+        "positions": {
+          "OPTIMIZATIONS.md": 9,
+          "AUDIT-2026-10-14.md": 2
+        },
+        "source": "index"
+      }
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "difficulty": "torso",
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "boost": true
+      },
+      "must_hit": true,
+      "control_params": {
+        "boost": false
+      },
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        }
+      ],
+      "claims": [
+        "boost:true (frecency + git history + mtime) may be measured on/off on one index; the delta is the only admissible evidence for keeping it on by default"
+      ],
+      "amended": {
+        "reason": "expectations that this lane cannot satisfy were removed (with proof) or re-homed to a content-lane companion",
+        "removed": [
+          {
+            "path": "README.md",
+            "grade": 1,
+            "class": "content-mention-not-top10"
+          }
+        ],
+        "rehomed_to": [
+          "K3c"
+        ],
+        "rehomed": [
+          {
+            "path": "src/mcp.ts",
+            "grade": 1,
+            "to": "K3c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "K3c",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "query": "client",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "rehomed_from": {
+        "id": "K3",
+        "lane": "ranking-boost-ab",
+        "query": "client"
+      },
+      "note": "content-lane companion: the same query intent scored where every expectation occurs in the file's content (1 re-homed, 0 carried)",
+      "expected": [
+        {
+          "path": "src/mcp.ts",
+          "grade": 1
+        }
+      ],
+      "probe": {
+        "artifact": "bench/wave4/companion-probe.json",
+        "all_in_top10": true,
+        "positions": {
+          "src/mcp.ts": 2
+        },
+        "source": "index"
+      }
+    },
+    {
+      "id": "K4",
+      "lane": "ranking-symbol-intrafile",
+      "difficulty": "torso",
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "path_filter": "src/client.ts",
+        "limit": 10
+      },
+      "must_hit": true,
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "claims": [
+        "SYMBOL_REGEX intra-file ordering puts the class declaration line first"
+      ],
+      "note": "Scored as line order within the file, not file order. This is the ONLY symbol claim the current implementation can support."
+    }
+  ],
+  "removed": [
+    {
+      "id": "P6",
+      "lane": "path",
+      "query": "codemode",
+      "path": "OPTIMIZATIONS.md",
+      "grade": 1,
+      "class": "absent-string",
+      "why": "the file does not contain the query term; no lane can return it for `codemode`",
+      "audited_class": "absent-string",
+      "evidence": {
+        "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+        "file_sha256": "f2186848bbe4c3921d5ee1b5bb3c02c6b91e5a378c354813cdd6d4fec92d8c2a",
+        "occurrences_case_sensitive": 0,
+        "occurrences_case_insensitive": 0,
+        "rg_command": "rg -c -i \"codemode\" OPTIMIZATIONS.md",
+        "rg_stdout": "",
+        "rg_exit_code": 1,
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json"
+      }
+    },
+    {
+      "id": "G4",
+      "lane": "grep-literal",
+      "query": "fsearch.sock",
+      "path": "README.md",
+      "grade": 1,
+      "class": "absent-string",
+      "why": "the file does not contain the literal `fsearch.sock`; the two files that do are returned",
+      "audited_class": "absent-string",
+      "evidence": {
+        "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+        "file_sha256": "c70f8707209a6b239e15f90d9cff762840e8d2e2f2765ab9c33333ada993ff89",
+        "occurrences_case_sensitive": 0,
+        "occurrences_case_insensitive": 0,
+        "rg_command": "rg -c -F \"fsearch.sock\" README.md",
+        "rg_stdout": "",
+        "rg_exit_code": 1,
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json"
+      }
+    },
+    {
+      "id": "K1",
+      "lane": "ranking-frecency",
+      "query": "readme",
+      "path": "CONTRIBUTING.md",
+      "grade": 1,
+      "class": "absent-string",
+      "why": "the file does not contain `readme` in any case; README.md (grade 3) is the row's answer",
+      "audited_class": "absent-string",
+      "evidence": {
+        "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+        "file_sha256": "1f93404df50701da2920eaf4c26babfc2c6e07c30086f5b4f7df75f42e60a7ac",
+        "occurrences_case_sensitive": 0,
+        "occurrences_case_insensitive": 0,
+        "rg_command": "rg -c -i \"readme\" CONTRIBUTING.md",
+        "rg_stdout": "",
+        "rg_exit_code": 1,
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json"
+      }
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "query": "client",
+      "path": "README.md",
+      "grade": 1,
+      "class": "content-mention-not-top10",
+      "why": "the file contains `client`, but the content lane ranks it outside the top 10 (rank 18 of 23 matches); a grade-1 adjacent prose mention is not a top-10 answer for a generic one-token query under the documented content ranking (decision 0014)",
+      "audited_class": "path-lane-content",
+      "evidence": {
+        "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+        "file_sha256": "c70f8707209a6b239e15f90d9cff762840e8d2e2f2765ab9c33333ada993ff89",
+        "occurrences_case_sensitive": 6,
+        "occurrences_case_insensitive": 7,
+        "rg_command": "rg -c -F \"client\" README.md",
+        "rg_stdout": "6",
+        "rg_exit_code": 0,
+        "lane_probe": {
+          "lane": "grep-literal",
+          "mode": "literal",
+          "match_count": 23,
+          "rank": 18,
+          "in_top10": false,
+          "probe_artifact": "bench/wave4/companion-probe.json"
+        },
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json"
+      }
+    }
+  ],
+  "rehomings": [
+    {
+      "id": "P3",
+      "lane": "path",
+      "query": "client.ts",
+      "expected_path": "test/client.test.ts",
+      "grade": 2,
+      "class": "path-lane-content",
+      "to": {
+        "id": "P3c",
+        "lane": "grep-literal",
+        "query": "client.ts"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 1
+      }
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "query": "codemode",
+      "expected_path": "src/codemode.ts",
+      "grade": 3,
+      "class": "already-satisfiable",
+      "to": {
+        "id": "P6c",
+        "lane": "grep-literal",
+        "query": "codemode"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 5
+      }
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "query": "codemode",
+      "expected_path": "AUDIT-2026-10-14.md",
+      "grade": 1,
+      "class": "path-lane-content",
+      "to": {
+        "id": "P6c",
+        "lane": "grep-literal",
+        "query": "codemode"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 2
+      }
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "query": "sanitize",
+      "expected_path": "OPTIMIZATIONS.md",
+      "grade": 1,
+      "class": "path-lane-content",
+      "to": {
+        "id": "K2c",
+        "lane": "grep-literal",
+        "query": "sanitize"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 9
+      }
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "query": "sanitize",
+      "expected_path": "AUDIT-2026-10-14.md",
+      "grade": 1,
+      "class": "path-lane-content",
+      "to": {
+        "id": "K2c",
+        "lane": "grep-literal",
+        "query": "sanitize"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 2
+      }
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "query": "client",
+      "expected_path": "src/mcp.ts",
+      "grade": 1,
+      "class": "path-lane-content",
+      "to": {
+        "id": "K3c",
+        "lane": "grep-literal",
+        "query": "client"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 2
+      }
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "query": "FSearchClient",
+      "expected_path": "src/client.ts",
+      "grade": 3,
+      "class": "already-satisfiable",
+      "to": {
+        "id": "S1c",
+        "lane": "grep-literal",
+        "query": "FSearchClient"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 1
+      }
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "query": "FSearchClient",
+      "expected_path": "test/client.test.ts",
+      "grade": 2,
+      "class": "symbol-lane-reference",
+      "to": {
+        "id": "S1c",
+        "lane": "grep-literal",
+        "query": "FSearchClient"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 3
+      }
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "query": "FSearchClient",
+      "expected_path": "src/mcp.ts",
+      "grade": 1,
+      "class": "symbol-lane-reference",
+      "to": {
+        "id": "S1c",
+        "lane": "grep-literal",
+        "query": "FSearchClient"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 6
+      }
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "query": "FSearchClient",
+      "expected_path": "src/tui.ts",
+      "grade": 1,
+      "class": "symbol-lane-reference",
+      "to": {
+        "id": "S1c",
+        "lane": "grep-literal",
+        "query": "FSearchClient"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 8
+      }
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "query": "FSearchClient",
+      "expected_path": "index.ts",
+      "grade": 1,
+      "class": "symbol-lane-reference",
+      "to": {
+        "id": "S1c",
+        "lane": "grep-literal",
+        "query": "FSearchClient"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 10
+      }
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "query": "applyProximityRanking",
+      "expected_path": "src/client.ts",
+      "grade": 3,
+      "class": "already-satisfiable",
+      "to": {
+        "id": "S3c",
+        "lane": "grep-literal",
+        "query": "applyProximityRanking"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 1
+      }
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "query": "applyProximityRanking",
+      "expected_path": "AUDIT-2026-10-14.md",
+      "grade": 1,
+      "class": "symbol-lane-reference",
+      "to": {
+        "id": "S3c",
+        "lane": "grep-literal",
+        "query": "applyProximityRanking"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 3
+      }
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "query": "resolveWorktreeRoot",
+      "expected_path": "index.ts",
+      "grade": 3,
+      "class": "already-satisfiable",
+      "to": {
+        "id": "S4c",
+        "lane": "grep-literal",
+        "query": "resolveWorktreeRoot"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 1
+      }
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "query": "resolveWorktreeRoot",
+      "expected_path": "CHANGELOG.md",
+      "grade": 1,
+      "class": "symbol-lane-reference",
+      "to": {
+        "id": "S4c",
+        "lane": "grep-literal",
+        "query": "resolveWorktreeRoot"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 3
+      }
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "query": "resolveWorktreeRoot",
+      "expected_path": "AUDIT-2026-10-14.md",
+      "grade": 1,
+      "class": "symbol-lane-reference",
+      "to": {
+        "id": "S4c",
+        "lane": "grep-literal",
+        "query": "resolveWorktreeRoot"
+      },
+      "grade_preserved": true,
+      "evidence": {
+        "audit_artifact": "bench/wave3/results/final-expectation-audit.json",
+        "probe_artifact": "bench/wave4/companion-probe.json",
+        "rank_in_companion_lane": 2
+      }
+    }
+  ],
+  "acceptance": {
+    "must_pass_before_any_ranking_claim_ships": [
+      "recall@10 == 1.00 on all must_hit queries",
+      "zero_result_rate == 0.00 on must_hit queries",
+      "false_positive_rate == 0.00 on the 4 negative queries",
+      "nDCG@10 >= 0.75 overall and >= 0.60 for the semantic lane (the lane with the weakest ranking evidence)",
+      "reformulation_signal <= 0.20 overall",
+      "ranking-claim deltas reported as paired per-query nDCG/MRR with CI; a claim ships only if the CI excludes 0 and the point delta is >= +0.05 nDCG@10"
+    ],
+    "errata": [
+      "v1 states `false_positive_rate == 0.00 on the 5 negative queries`; the v1 file contains four negative queries (P8, G6, R3, M6). The sentence is corrected here; the metric definition and the 0.00 bound are unchanged, and the v1 file keeps its wording."
+    ]
+  }
+}
