@@ -52,11 +52,11 @@ config file sees the same searches and the same index as v0.2.1.
 counterbalanced alternating rounds, medians with bootstrap CIs, per-daemon
 cores). The recorded run `bench/results/engine/concurrency-2026-10-15-degraded.json`
 is **degraded/unquotable**: load1 13.0 (gate max 1.5) from unrelated processes.
-In that window the baseline used 3.17 cores and the treatment 5.21 cores for the
-same 3-concurrent workload (ratio-to-single 1.96 vs 1.93; paired delta 0.82 ms,
-CI [−19.0, +23.7], not significant). The reading is consistent with the fix
-(lanes are now shared) but the saturated machine cannot show a wall-time win, so
-**no speedup is claimed**. On an idle machine re-run the script and require the
+In that window the baseline used 5.13 cores and the treatment 5.01 cores for the
+same 3-concurrent workload (ratio-to-single 1.75 vs 1.70; paired delta 8.15 ms,
+CI [−32.5, +47.2], not significant). The machine is saturated (load1 14.9,
+AC power), so neither arm can win wall time; the record states exactly what was
+seen and **no speedup is claimed**. On an idle machine re-run the script and require the
 paired ratio CI to exclude 1 before repeating the `#18` acceptance claim. The
 deterministic engine test remains the evidence that the defect existed and is
 fixed.

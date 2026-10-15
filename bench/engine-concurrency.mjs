@@ -38,6 +38,7 @@ import { spawn, execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { makeTree, tmpdir, sleep, median, medianCI } from "../test/engine/harness.mjs";
 import { pairedDeltaCI, pairedRatioCI, ciExcludesZero, fmt, fmtCI } from "./lib/stats.mjs";
+import { checkEnvironment, formatEnvironmentGate } from "./lib/env-gate.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(HERE, "results", "engine");
@@ -155,10 +156,10 @@ async function main() {
     { name: "baseline", bin: args.baselineBin, ...base },
     { name: "treatment", bin: args.treatmentBin, ...treat },
   ];
-  const [l1] = os.loadavg();
-  const gate = { maxLoad: args.maxLoad, load1: Number(l1.toFixed(3)), ok: l1 < args.maxLoad };
+  const env = checkEnvironment({ maxLoad1m: args.maxLoad });
+  const gate = { ok: env.reasons.length === 0, reasons: env.reasons, info: env.info };
   console.log(`fixture ${args.files} files | pattern='${args.pattern}' limit=${args.limit} concurrent=${args.concurrent} pairs=${args.pairs}`);
-  console.log(`load1 ${gate.load1} (max ${gate.maxLoad}) -> ${gate.ok ? "gate ok" : "DEGRADED"}`);
+  console.log(formatEnvironmentGate(gate));
   for (const d of daemons) console.log(`[${d.name}] pid ${d.child.pid} entries ${d.status.entries} content_docs ${d.status.content_docs}`);
 
   const opts = { op: "grep", pattern: args.pattern, in: root, limit: args.limit, budget_ms: 15000, skipAudit: true };
