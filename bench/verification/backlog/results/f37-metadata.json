@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-10-15T20:18:48.001Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.76513671875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "mcp": {
+    "query": {
+      "complete": false,
+      "truncated": true,
+      "truncatedCount": 0,
+      "engineCapped": true,
+      "filteredCount": 0,
+      "tokenCount": 130,
+      "charCount": 520,
+      "source": "index",
+      "deadlineExceeded": false,
+      "rawCount": 5,
+      "tool": "ultrasearch_query",
+      "hitCount": 5
+    },
+    "grep": {
+      "complete": true,
+      "truncated": true,
+      "truncatedCount": 5,
+      "engineCapped": true,
+      "filteredCount": 0,
+      "tokenCount": 47,
+      "charCount": 595,
+      "source": "index",
+      "budgetMs": 2500,
+      "deadlineExceeded": false,
+      "rawCount": 10,
+      "tool": "ultrasearch_grep",
+      "fileCount": 5
+    },
+    "multi_grep": {
+      "complete": false,
+      "truncated": true,
+      "truncatedCount": 5,
+      "engineCapped": true,
+      "filteredCount": 0,
+      "tokenCount": 47,
+      "charCount": 595,
+      "source": "native_fallback",
+      "budgetMs": 3000,
+      "deadlineExceeded": false,
+      "rawCount": 10,
+      "withheld": 0,
+      "staleMs": 0,
+      "tool": "ultrasearch_multi_grep",
+      "fileCount": 5
+    }
+  },
+  "pi": {
+    "query": {
+      "tool": "ultrasearch_query",
+      "hitCount": 5,
+      "complete": false,
+      "truncated": true,
+      "truncatedCount": 20,
+      "filteredCount": 0,
+      "tokenCount": 130,
+      "charCount": 520,
+      "deadlineExceeded": false
+    },
+    "grep": {
+      "tool": "ultrasearch_grep",
+      "fileCount": 5,
+      "complete": true,
+      "truncated": true,
+      "truncatedCount": 5,
+      "filteredCount": 0,
+      "tokenCount": 38,
+      "charCount": 595,
+      "maxTokensDropped": 0,
+      "source": "index",
+      "budgetMs": 2500,
+      "deadlineExceeded": false
+    }
+  },
+  "mcp_call_errors": [
+    null,
+    null,
+    null
+  ],
+  "defects": []
+}

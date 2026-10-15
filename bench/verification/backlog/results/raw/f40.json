@@ -1,0 +1,17 @@
+[
+  {
+    "issue": 40,
+    "claim": "query history: opt-in default off, documented retention cap and opt-out, 0600, scrubbed, suggestions in TUI and CLI",
+    "verdict": "verified",
+    "evidence": "default run (no env): history file exists=false; ULTRASEARCH_HISTORY=1: exists=true, mode=600, credential-shaped token scrubbed=true; ULTRASEARCH_HISTORY=0: exists=false; retention max=10 after 12 appends: 10 stored (query-2..query-11); CLI --suggest returned: \"query-11  (prefix)\\n  query-10  (prefix)\\n  query-9  (prefix)\"; TUI reads the module=true",
+    "method": "real CLI (`bin/cli.ts`) runs under a temp HOME with an unreachable socket; retention and suggestion logic driven through the history module directly; the credential-shaped token is a verifier-constructed canary, never a real secret",
+    "n": 6,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f40-history.json",
+    "evidence_hashes": {
+      "artifact": "f9ba36adcd5ee15fa348c6ed370dfce8d89ec9d2704a9c349eb44bb75ceca25a",
+      "probe": "28ff2eba8a318c64545546bbaa6dba2e839dc4a21a8d7eb89debfffc52e7c857"
+    },
+    "notes": "opt-in, mode, scrub, cap, opt-out and both surfaces reproduced"
+  }
+]

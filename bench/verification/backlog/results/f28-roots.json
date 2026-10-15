@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-10-15T20:18:50.610Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.76513671875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "merged": {
+    "count": 3,
+    "duplicates": 1,
+    "roots": [
+      "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active",
+      "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other"
+    ],
+    "multi": true,
+    "hits": [
+      {
+        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active/active-only.ts",
+        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active",
+        "active": true
+      },
+      {
+        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active/shared.ts",
+        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other",
+        "active": false
+      },
+      {
+        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other/other-only.ts",
+        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other",
+        "active": false
+      }
+    ]
+  },
+  "attribution": {
+    "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active",
+    "active": true
+  },
+  "defects": []
+}

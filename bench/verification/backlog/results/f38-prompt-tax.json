@@ -1,0 +1,166 @@
+{
+  "generated_at": "2026-10-15T20:18:41.437Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.83203125,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "estimator": "ceil(chars/4) over JSON.stringify({name,description,inputSchema|parameters}), verifier-owned serializer",
+  "head": {
+    "mcp": {
+      "label": "head",
+      "tools": [
+        {
+          "name": "ultrasearch_query",
+          "chars": 930
+        },
+        {
+          "name": "ultrasearch_grep",
+          "chars": 1136
+        },
+        {
+          "name": "ultrasearch_multi_grep",
+          "chars": 663
+        },
+        {
+          "name": "ultrasearch_locate",
+          "chars": 337
+        },
+        {
+          "name": "ultrasearch_recent",
+          "chars": 236
+        },
+        {
+          "name": "ultrasearch_metrics",
+          "chars": 450
+        }
+      ],
+      "chars": 3752,
+      "tokens_c4": 938,
+      "tokens_c35": 1072
+    },
+    "pi": {
+      "label": "head",
+      "tools": [
+        {
+          "name": "ultrasearch_query",
+          "chars": 750
+        },
+        {
+          "name": "ultrasearch_grep",
+          "chars": 796
+        },
+        {
+          "name": "ultrasearch_multi_grep",
+          "chars": 456
+        },
+        {
+          "name": "ultrasearch_locate",
+          "chars": 219
+        },
+        {
+          "name": "ultrasearch_recent",
+          "chars": 159
+        },
+        {
+          "name": "ultrasearch_metrics",
+          "chars": 286
+        }
+      ],
+      "chars": 2666,
+      "tokens_c4": 667,
+      "tokens_c35": 762
+    }
+  },
+  "pre_trim": {
+    "mcp": {
+      "label": "pre-trim-3d1268d~1",
+      "tools": [
+        {
+          "name": "ultrasearch_query",
+          "chars": 1157
+        },
+        {
+          "name": "ultrasearch_grep",
+          "chars": 1201
+        },
+        {
+          "name": "ultrasearch_multi_grep",
+          "chars": 737
+        },
+        {
+          "name": "ultrasearch_locate",
+          "chars": 369
+        },
+        {
+          "name": "ultrasearch_recent",
+          "chars": 266
+        },
+        {
+          "name": "ultrasearch_metrics",
+          "chars": 493
+        }
+      ],
+      "chars": 4223,
+      "tokens_c4": 1056,
+      "tokens_c35": 1207
+    },
+    "pi": {
+      "label": "pre-trim-3d1268d~1",
+      "tools": [
+        {
+          "name": "ultrasearch_query",
+          "chars": 1150
+        },
+        {
+          "name": "ultrasearch_grep",
+          "chars": 1326
+        },
+        {
+          "name": "ultrasearch_multi_grep",
+          "chars": 696
+        },
+        {
+          "name": "ultrasearch_locate",
+          "chars": 315
+        },
+        {
+          "name": "ultrasearch_recent",
+          "chars": 221
+        },
+        {
+          "name": "ultrasearch_metrics",
+          "chars": 337
+        }
+      ],
+      "chars": 4045,
+      "tokens_c4": 1012,
+      "tokens_c35": 1156
+    }
+  },
+  "measured_tokens_c4": {
+    "mcp_before": 1056,
+    "mcp_after": 938,
+    "pi_before": 1012,
+    "pi_after": 667
+  },
+  "published": {
+    "mcp_after": 938,
+    "pi_after": 667,
+    "mcp_before": 1056,
+    "pi_before": 1012
+  },
+  "shipped_estimator_combined": {
+    "chars": 6418,
+    "tokens": 1605,
+    "tokensAlt": 1834
+  },
+  "deltas_pct": {
+    "mcp": -11.17,
+    "pi": -34.09
+  },
+  "defects": []
+}

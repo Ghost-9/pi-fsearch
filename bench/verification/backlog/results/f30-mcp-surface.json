@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-10-15T20:26:29.564Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 5.93017578125,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "default_surface": {
+    "tools": [
+      "ultrasearch_query",
+      "ultrasearch_grep",
+      "ultrasearch_multi_grep",
+      "ultrasearch_locate",
+      "ultrasearch_recent",
+      "ultrasearch_metrics"
+    ],
+    "frames": 2
+  },
+  "alias_surface": {
+    "tools": [
+      "ultrasearch_query",
+      "ultrasearch_grep",
+      "ultrasearch_multi_grep",
+      "ultrasearch_locate",
+      "ultrasearch_recent",
+      "ultrasearch_metrics",
+      "fsearch_query",
+      "fsearch_grep",
+      "fsearch_multi_grep",
+      "fsearch_locate",
+      "fsearch_recent",
+      "fsearch_metrics"
+    ],
+    "call": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "/Users/batra/ultrasearch-verify/package.json"
+          }
+        ],
+        "_meta": {
+          "complete": true,
+          "truncated": false,
+          "truncatedCount": 0,
+          "engineCapped": false,
+          "filteredCount": 0,
+          "tokenCount": 12,
+          "charCount": 45,
+          "source": "native_fallback",
+          "deadlineExceeded": false,
+          "rawCount": 1,
+          "tool": "ultrasearch_locate",
+          "hitCount": 1
+        }
+      }
+    }
+  },
+  "unconfigured_alias_call": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "error": {
+      "code": -32602,
+      "message": "Unknown tool: fsearch_locate"
+    }
+  },
+  "profiles": [
+    {
+      "client": "Claude Desktop",
+      "tools": 6,
+      "call_answered": true,
+      "call_error": null,
+      "negotiated": "2024-11-05"
+    },
+    {
+      "client": "VS Code",
+      "tools": 6,
+      "call_answered": true,
+      "call_error": null,
+      "negotiated": "2024-11-05"
+    },
+    {
+      "client": "Antigravity",
+      "tools": 6,
+      "call_answered": true,
+      "call_error": null,
+      "negotiated": "2025-03-26"
+    },
+    {
+      "client": "Cursor",
+      "tools": 6,
+      "call_answered": true,
+      "call_error": null,
+      "negotiated": "2025-03-26"
+    },
+    {
+      "client": "T3 Code",
+      "tools": 6,
+      "call_answered": true,
+      "call_error": null,
+      "negotiated": "2025-06-18"
+    }
+  ],
+  "build_tool_surface": {
+    "default": 6,
+    "alias": 12,
+    "env": [
+      "fsearch",
+      "fs"
+    ]
+  },
+  "defects": []
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "issue": "removal-matrix",
+    "claim": "every functional guard fails when the feature it guards is removed (non-vacuity)",
+    "verdict": "verified",
+    "evidence": "#25: baseline pass=2/fail=0, mutated pass=1/fail=1 → live=true; #27: baseline pass=1/fail=0, mutated pass=-1/fail=-1 (timed out) → live=true; #28: baseline pass=3/fail=0, mutated pass=2/fail=1 → live=true; #30: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #31: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #37: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #40: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #51: baseline pass=2/fail=0, mutated pass=0/fail=2 → live=true; #53: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true",
+    "method": "each case is a fresh `git archive HEAD` copy; one targeted mutation restores the pre-fix behaviour; the shipped guard test is re-run and must fail",
+    "n": 9,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/removal-matrix.json",
+    "evidence_hashes": {
+      "artifact": "28c38625fb82778276fcd1c50fe45ff1f47df3796c834c2f4d50b48533fb1e7d",
+      "probe": "9b1508f542942948335e61a0c1b5fc4783747e714c94f9980557ef7f423f9408"
+    },
+    "notes": "all guards are live"
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-10-15T20:19:57.836Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.76513671875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "case_archive_scope": {
+    "cwd": "git-archive-HEAD (pinned)",
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "skipped": 0,
+    "skip_reason": null,
+    "asserted": true,
+    "exit": 0
+  },
+  "case_main_scope": {
+    "cwd": "main-worktree (own daemon)",
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "skipped": 0,
+    "skip_reason": null,
+    "asserted": true,
+    "exit": 0
+  },
+  "removal_control_pre_49_shape": {
+    "ran": true,
+    "exit": 1,
+    "failed": true,
+    "skipped": true,
+    "tail": "t.test.ts:102:10)\n      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n      at async Test.run (node:internal/test_runner/test:1409:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: null,\n    expected: null,\n    operator: 'notStrictEqual',\n    diff: 'simple'\n  }\n"
+  },
+  "defects": []
+}

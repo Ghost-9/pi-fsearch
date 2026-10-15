@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-10-15T20:19:56.028Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.76513671875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "client_constant": "1.0",
+  "doc_versions": [
+    "1.0",
+    "1.0"
+  ],
+  "real_daemon_status_protocol_version": "1.0",
+  "real_daemon_keys": [
+    "compactions",
+    "compactions_postponed",
+    "content_bytes",
+    "content_docs",
+    "content_pending",
+    "content_policy",
+    "content_segments",
+    "deny_configured",
+    "deny_rules",
+    "dirs",
+    "entries",
+    "event_id"
+  ],
+  "mismatch_semantics": {
+    "mock_2_0": {
+      "client": "1.0",
+      "daemon": "2.0"
+    },
+    "same_major_1_9": true,
+    "major_2": false
+  },
+  "stale_binary_control": {
+    "ran": true,
+    "ref": "ba76d15~1 (source before #50)",
+    "build_exit": 0,
+    "binary_sha256": "f3c9343e31b66e2e7b479c1aa9dd18d4749910d084f298e2fb7befc0dd9b6734",
+    "exit": 1,
+    "failed": true,
+    "missing_protocol_version": true
+  },
+  "rebuilt_binary_sha256": "34a384c81e613c553bb0ed50310d25c369bc3893c922a361a89f344929f3d50e",
+  "defects": []
+}

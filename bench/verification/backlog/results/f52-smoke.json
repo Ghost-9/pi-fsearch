@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-10-15T20:20:03.515Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 6.87060546875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "matrix_check": {
+    "exit": 1,
+    "stdout_tail": "ecuted against a temp HOME/`CODEX_HOME`, so no live config is touched. Claude Code is pointed at a recording proxy (`bench/harness-smoke/probe-server.mjs`) so the artifact carries the harness's *measured* `protocolVersion` and `clientInfo`.\n- **CI** runs the protocol arm plus the matrix check; native arms run where the harness is installed and otherwise record `skipped:<reason>`.\n- The **Artifact** column is the commit the smoke ran against; `(dirty tree)` marks evidence produced with uncommitted changes present, and `--require-fresh` rejects artifacts from any commit other than HEAD.\n\n### Problems\n\n- stale:pi: artifact is from 397edb8, HEAD is 97beeb1\n- stale:t3code: artifact is from 397edb8, HEAD is 97beeb1\n- stale:codex: artifact is from 397edb8, HEAD is 97beeb1\n- stale:claude-code: artifact is from 397edb8, HEAD is 97beeb1\n- stale:claude-desktop: artifact is from 397edb8, HEAD is 97beeb1\n- stale:cursor: artifact is from 397edb8, HEAD is 97beeb1\n- stale:windsurf: artifact is from 397edb8, HEAD is 97beeb1\n- stale:zed: artifact is from 397edb8, HEAD is 97beeb1\n- stale:vscode: artifact is from 397edb8, HEAD is 97beeb1\n- stale:antigravity: artifact is from 397edb8, HEAD is 97beeb1\n\n"
+  },
+  "stored_artifacts": {
+    "pi": {
+      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "tools": 6,
+      "negotiated": "2025-06-18",
+      "status": "pass"
+    },
+    "codex": {
+      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "tools": 6,
+      "negotiated": "2025-06-18",
+      "status": "pass"
+    },
+    "claude-code": {
+      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "tools": 6,
+      "negotiated": "2025-06-18",
+      "status": "pass"
+    },
+    "zed": {
+      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "tools": 6,
+      "negotiated": "2025-06-18",
+      "status": "pass"
+    }
+  },
+  "live_protocol_run": {
+    "tools": [
+      "ultrasearch_query",
+      "ultrasearch_grep",
+      "ultrasearch_multi_grep",
+      "ultrasearch_locate",
+      "ultrasearch_recent",
+      "ultrasearch_metrics"
+    ],
+    "negotiated": "2025-06-18"
+  },
+  "defects": [
+    "harness-matrix --check --require-fresh exited 1"
+  ]
+}

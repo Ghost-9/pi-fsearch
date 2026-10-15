@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-10-15T20:20:04.013Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 6.400390625,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "artifacts": [
+    {
+      "file": "scopes-2026-10-14-degraded.json",
+      "status": "degraded",
+      "scopes": [
+        "small",
+        "monorepo",
+        "home"
+      ],
+      "queries": 9,
+      "with_stats": 9,
+      "with_ci": 9,
+      "equivalence_rows": 9,
+      "relevance_pass": false
+    },
+    {
+      "file": "scopes-2026-10-15-degraded.json",
+      "status": "degraded",
+      "scopes": [
+        "small",
+        "monorepo",
+        "home"
+      ],
+      "queries": 9,
+      "with_stats": 9,
+      "with_ci": 9,
+      "equivalence_rows": 9,
+      "relevance_pass": false
+    },
+    {
+      "file": "scopes-home-degraded.json",
+      "status": "degraded",
+      "scopes": [
+        "home"
+      ],
+      "queries": 3,
+      "with_stats": 3,
+      "with_ci": 3,
+      "equivalence_rows": 3,
+      "relevance_pass": false
+    },
+    {
+      "file": "scopes-monorepo-degraded.json",
+      "status": "degraded",
+      "scopes": [
+        "monorepo"
+      ],
+      "queries": 3,
+      "with_stats": 3,
+      "with_ci": 3,
+      "equivalence_rows": 3,
+      "relevance_pass": false
+    },
+    {
+      "file": "scopes-small-degraded.json",
+      "status": "degraded",
+      "scopes": [
+        "small"
+      ],
+      "queries": 3,
+      "with_stats": 3,
+      "with_ci": 3,
+      "equivalence_rows": 3,
+      "relevance_pass": false
+    }
+  ],
+  "equivalence_guard": {
+    "identical": {
+      "pass": true,
+      "indexCount": 2,
+      "nativeCount": 2,
+      "indexOnly": [],
+      "nativeOnly": [],
+      "indexOnlyCount": 0,
+      "nativeOnlyCount": 0,
+      "missRate": 0,
+      "extraRate": 0,
+      "jaccard": 1,
+      "tolerance": {
+        "nativeOnly": 0
+      }
+    },
+    "missing_from_index": {
+      "pass": false,
+      "indexCount": 1,
+      "nativeCount": 2,
+      "indexOnly": [],
+      "nativeOnly": [
+        "/a/y.ts"
+      ],
+      "indexOnlyCount": 0,
+      "nativeOnlyCount": 1,
+      "missRate": 0.5,
+      "extraRate": 0,
+      "jaccard": 0.5,
+      "tolerance": {
+        "nativeOnly": 0
+      }
+    },
+    "extra_in_index": {
+      "pass": false,
+      "indexCount": 2,
+      "nativeCount": 1,
+      "indexOnly": [
+        "/a/z.ts"
+      ],
+      "nativeOnly": [],
+      "indexOnlyCount": 1,
+      "nativeOnlyCount": 0,
+      "missRate": 0,
+      "extraRate": 0.5,
+      "jaccard": 0.5,
+      "tolerance": {
+        "nativeOnly": 0
+      }
+    },
+    "tolerance_allows": {
+      "pass": true,
+      "indexCount": 1,
+      "nativeCount": 2,
+      "indexOnly": [],
+      "nativeOnly": [
+        "/a/y.ts"
+      ],
+      "indexOnlyCount": 0,
+      "nativeOnlyCount": 1,
+      "missRate": 0.5,
+      "extraRate": 0,
+      "jaccard": 0.5,
+      "tolerance": {
+        "nativeOnly": 0.5
+      }
+    }
+  },
+  "golden_recheck": {
+    "rows": 30,
+    "pass_rate": 1,
+    "tolerance_values": [
+      "{\"nativeOnly\":0}"
+    ]
+  },
+  "defects": [
+    "scope artifact status=degraded, gate=provisional: the medians/CI may not be cited as production evidence"
+  ]
+}

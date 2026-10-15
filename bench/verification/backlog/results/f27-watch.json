@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-10-15T20:18:50.607Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.76513671875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "probe": {
+    "baseline": 1,
+    "add_latency_ms": 338,
+    "adds1": 1,
+    "adds2": 1,
+    "removes": 1,
+    "stats": {
+      "baseline": 1,
+      "added": 1,
+      "removed": 1,
+      "refreshes": 4,
+      "errors": 0,
+      "pollRefreshes": 0,
+      "stopped": true
+    },
+    "pool": {
+      "lanes": 0,
+      "open": 0,
+      "inFlight": 0,
+      "created": 0,
+      "closed": 0,
+      "activeFallbacks": 0,
+      "fallbackEnabled": false
+    },
+    "resources": [
+      "PipeWrap"
+    ],
+    "event_types": [
+      "baseline",
+      "ready",
+      "add",
+      "remove"
+    ],
+    "child_exit": 0
+  },
+  "defects": []
+}
