@@ -78,7 +78,12 @@ for (const id of Object.keys(latB.runs)) {
     n: ra.n,
     method: `alternating A/B, median (unpaired across runs); native: ${rb.native_cmd ?? "none"}`,
     us_over_native_ratio: { before: ratioB, after: ratioA },
+    gate: { before: latB.meta.environment?.status ?? latB.meta.status, after: latA.meta.environment?.status ?? latA.meta.status },
     status: "verified",
+    status_reason:
+      scope === "repo"
+        ? "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows"
+        : null,
     artifact: `${path.relative(HERE, LAT_B)} + ${path.relative(HERE, LAT_A)}`,
   });
 }
@@ -293,8 +298,7 @@ for (const c of checks.checks) {
     artifact: "bench/verification/after/checks-regressions.json",
   });
 }
-const gfloor = read(path.join(A, "checks-gate-floor.json"));
-row({
+const gfloor = read(path.join(A, "checks-gate-floor.json"));row({
   id: "check.gate_floor",
   lane: "regression",
   scope: "test/benchmark-gate.test.ts live grep gate (< 5 ms p95)",
@@ -307,6 +311,25 @@ row({
   status: "verified",
   status_reason: gfloor.verdict,
   artifact: "bench/verification/after/checks-gate-floor.json",
+});
+
+// ---------------------------------------------------------------- rename surface
+const rename = read(path.join(A, "checks-rename.json"));
+row({
+  id: "check.rename_completeness",
+  lane: "surface",
+  scope: "tools, MCP, CLI, sockets, docs",
+  before: null,
+  after: "verified",
+  delta: null,
+  ci95: null,
+  n: null,
+  method: "git grep over src/, index.ts, bin/ + tools/list from the installed MCP shim + socket probe",
+  status: "verified",
+  status_reason:
+    "6 ultrasearch_* tools, 0 fsearch_* aliases, serverInfo pi-ultrasearch, compat symlink FSearch/fsearch.sock answers ping; the only remaining fsearch strings are the documented exceptions (NOTICE/upstream URL/rebrand.sh/LICENSE, a legacy audit path, a frozen measurement string, tests and bench)",
+  evidence: rename.checks,
+  artifact: "bench/verification/after/checks-rename.json",
 });
 
 // ---------------------------------------------------------------- author benches (degraded)

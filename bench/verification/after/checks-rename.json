@@ -1,0 +1,31 @@
+{
+  "suite": "rename-completeness",
+  "commit": "3135e28",
+  "generated_at": "2026-10-15T05:05:00Z",
+  "claim": "no `fsearch` remains in user-facing surfaces (tools, MCP, CLI, sockets, docs) except NOTICE / upstream URL / rebrand.sh / LICENSE",
+  "status": "verified",
+  "checks": {
+    "tool_names_registered": { "ultrasearch_*": 6, "fsearch_*": 0, "names": ["ultrasearch_query","ultrasearch_grep","ultrasearch_multi_grep","ultrasearch_locate","ultrasearch_recent","ultrasearch_metrics"] },
+    "mcp_tools_list_via_installed_shim": { "shim": "~/.local/bin/ultrasearch-mcp (prefers dist/bin/mcp-server.js)", "serverInfo": {"name":"pi-ultrasearch","version":"0.3.1"}, "tool_count": 6, "fsearch_aliases": 0 },
+    "cli_binaries": { "dist/bin": ["cli.js","mcp-server.js","tui.js"], "fsearch_strings": 0, "installed_shims": ["~/.local/bin/ultrasearch","~/.local/bin/ultrasearch-mcp","~/.local/bin/ultrasearch-tui"] },
+    "sockets": {
+      "production": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+      "compat_symlink": "/Users/batra/Library/Application Support/FSearch/fsearch.sock -> .../UltraSearch/ultrasearch.sock",
+      "compat_symlink_answers": true,
+      "compat_probe": "{\"id\":1,\"ok\":true} (op: ping through the legacy path)"
+    },
+    "src_occurrences": [
+      { "file": "src/mcp.ts", "line": 45, "kind": "comment", "text": "historical `fsearch_*` aliases are deliberately gone" },
+      { "file": "src/telemetry.ts", "line": 39, "kind": "legacy-path", "text": "LEGACY_AUDIT_FILE = ~/.pi/agent/cache/pi-fsearch/audit.jsonl (read-only migration path)" },
+      { "file": "src/telemetry.ts", "line": 194, "kind": "frozen-measurement-string", "text": "GATE_SIGNATURE_QUERIES contains \"FSearchClient\" to recognise pre-0.3.1 audit rows" }
+    ],
+    "other_occurrences": [
+      { "file": "engine/README.md", "kind": "upstream attribution" },
+      { "file": "test/mcp.test.ts", "kind": "test asserting the rename stays complete" },
+      { "file": "test/engine/harness.mjs", "kind": "test harness accepting a pre-rebrand binary (FSEARCH_BIN)" },
+      { "file": "test/client.test.ts", "kind": "frozen gate-string test" },
+      { "file": "README.md / CHANGELOG.md / docs/*", "kind": "upstream attribution and the rebrand/migration runbook" },
+      { "file": "bench/**", "kind": "verifier harness, the frozen judgment set and raw results recorded before the rename" }
+    ]
+  }
+}

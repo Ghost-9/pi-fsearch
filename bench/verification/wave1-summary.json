@@ -3,17 +3,17 @@
   "wave": "wave1/verify-final",
   "base_ref": "0a16e50 (BEFORE, isolated under HOME=/Users/batra/.cache/us-verify/before-home + upstream engine at ~/.cache/fsearch)",
   "head_ref": "3135e28 (AFTER, main worktree + installed renamed daemon PID 8887)",
-  "generated_at": "2026-10-15T04:54:39.757Z",
+  "generated_at": "2026-10-15T04:57:26.673Z",
   "status_legend": {
     "verified": "independently re-measured; numbers agree with the artifact and the method is sound",
     "failed": "independently re-measured and the claim does not hold",
     "unverified": "measured, but not quotable as a before/after claim (scope mismatch, degraded gate, or an open recommendation)"
   },
   "counts": {
-    "verified": 48,
+    "verified": 49,
     "failed": 0,
     "unverified": 13,
-    "total": 61
+    "total": 62
   },
   "rows": [
     {
@@ -64,7 +64,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -115,7 +120,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -166,7 +176,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -217,7 +232,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -268,7 +288,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -319,7 +344,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -370,7 +400,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -421,7 +456,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -472,7 +512,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -523,7 +568,12 @@
           ]
         }
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -562,7 +612,12 @@
         "before": null,
         "after": null
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": "the repo scope differs between checkouts (304 vs 7 504 files): this row scales with tree size and is not a like-for-like comparison; use the fixture and /Users/batra/Search rows",
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -601,7 +656,12 @@
         "before": null,
         "after": null
       },
+      "gate": {
+        "before": "final",
+        "after": "provisional"
+      },
       "status": "verified",
+      "status_reason": null,
       "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
     },
     {
@@ -1561,6 +1621,108 @@
       "status": "verified",
       "status_reason": "the raw daemon alone exceeds the 5 ms gate on this machine: the gate measures the machine floor, not a client regression",
       "artifact": "bench/verification/after/checks-gate-floor.json"
+    },
+    {
+      "id": "check.rename_completeness",
+      "lane": "surface",
+      "scope": "tools, MCP, CLI, sockets, docs",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "git grep over src/, index.ts, bin/ + tools/list from the installed MCP shim + socket probe",
+      "status": "verified",
+      "status_reason": "6 ultrasearch_* tools, 0 fsearch_* aliases, serverInfo pi-ultrasearch, compat symlink FSearch/fsearch.sock answers ping; the only remaining fsearch strings are the documented exceptions (NOTICE/upstream URL/rebrand.sh/LICENSE, a legacy audit path, a frozen measurement string, tests and bench)",
+      "evidence": {
+        "tool_names_registered": {
+          "ultrasearch_*": 6,
+          "fsearch_*": 0,
+          "names": [
+            "ultrasearch_query",
+            "ultrasearch_grep",
+            "ultrasearch_multi_grep",
+            "ultrasearch_locate",
+            "ultrasearch_recent",
+            "ultrasearch_metrics"
+          ]
+        },
+        "mcp_tools_list_via_installed_shim": {
+          "shim": "~/.local/bin/ultrasearch-mcp (prefers dist/bin/mcp-server.js)",
+          "serverInfo": {
+            "name": "pi-ultrasearch",
+            "version": "0.3.1"
+          },
+          "tool_count": 6,
+          "fsearch_aliases": 0
+        },
+        "cli_binaries": {
+          "dist/bin": [
+            "cli.js",
+            "mcp-server.js",
+            "tui.js"
+          ],
+          "fsearch_strings": 0,
+          "installed_shims": [
+            "~/.local/bin/ultrasearch",
+            "~/.local/bin/ultrasearch-mcp",
+            "~/.local/bin/ultrasearch-tui"
+          ]
+        },
+        "sockets": {
+          "production": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+          "compat_symlink": "/Users/batra/Library/Application Support/FSearch/fsearch.sock -> .../UltraSearch/ultrasearch.sock",
+          "compat_symlink_answers": true,
+          "compat_probe": "{\"id\":1,\"ok\":true} (op: ping through the legacy path)"
+        },
+        "src_occurrences": [
+          {
+            "file": "src/mcp.ts",
+            "line": 45,
+            "kind": "comment",
+            "text": "historical `fsearch_*` aliases are deliberately gone"
+          },
+          {
+            "file": "src/telemetry.ts",
+            "line": 39,
+            "kind": "legacy-path",
+            "text": "LEGACY_AUDIT_FILE = ~/.pi/agent/cache/pi-fsearch/audit.jsonl (read-only migration path)"
+          },
+          {
+            "file": "src/telemetry.ts",
+            "line": 194,
+            "kind": "frozen-measurement-string",
+            "text": "GATE_SIGNATURE_QUERIES contains \"FSearchClient\" to recognise pre-0.3.1 audit rows"
+          }
+        ],
+        "other_occurrences": [
+          {
+            "file": "engine/README.md",
+            "kind": "upstream attribution"
+          },
+          {
+            "file": "test/mcp.test.ts",
+            "kind": "test asserting the rename stays complete"
+          },
+          {
+            "file": "test/engine/harness.mjs",
+            "kind": "test harness accepting a pre-rebrand binary (FSEARCH_BIN)"
+          },
+          {
+            "file": "test/client.test.ts",
+            "kind": "frozen gate-string test"
+          },
+          {
+            "file": "README.md / CHANGELOG.md / docs/*",
+            "kind": "upstream attribution and the rebrand/migration runbook"
+          },
+          {
+            "file": "bench/**",
+            "kind": "verifier harness, the frozen judgment set and raw results recorded before the rename"
+          }
+        ]
+      },
+      "artifact": "bench/verification/after/checks-rename.json"
     },
     {
       "id": "author.boost-degraded",
