@@ -1,0 +1,786 @@
+{
+  "meta": {
+    "suite": "wave4-companion-probe",
+    "generated_at": "2026-10-15T14:39:14.054Z",
+    "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+    "socket": "/Users/batra/.cache/us-w4g/iso/ultrasearch.sock",
+    "engine": {
+      "entries": 40,
+      "content_docs": 34
+    },
+    "purpose": "measure the proposed v2 companion rows before they are written into the judgment set"
+  },
+  "all_pass": true,
+  "rows": [
+    {
+      "id": "P3c",
+      "from": "P3",
+      "lane": "grep-literal",
+      "query": "client.ts",
+      "mode": "literal",
+      "source": "index",
+      "ok": true,
+      "retrieved": [
+        "test/client.test.ts",
+        "test/benchmark-gate.test.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "src/tui.ts"
+      ],
+      "positions": {
+        "test/client.test.ts": 1
+      },
+      "all_in_top10": true,
+      "full_match_count": 18,
+      "full_rank": {
+        "test/client.test.ts": 1
+      },
+      "full_order": [
+        "test/client.test.ts",
+        "test/benchmark-gate.test.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "src/tui.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "tsconfig.json",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md"
+      ],
+      "expected": [
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        }
+      ],
+      "matches": {
+        "test/client.test.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "assert.ok(res.files.some((f) => f.path.includes(\"client.ts\") || f.path.includes(\"client.test.ts\")));",
+          "path: \"/test/repo/src/client.ts\","
+        ],
+        "test/benchmark-gate.test.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "files: [{ path: path.join(cwd, \"src\", \"client.ts\"), matches: [{ line: 1, text: \"export class FSearch",
+          "files: [{ path: path.join(cwd, \"src\", \"client.ts\"), matches: [{ line: 1, text: \"export class FSearch"
+        ],
+        "bin/cli.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";"
+        ],
+        "index.ts": [
+          "import { FSearchClient } from \"./src/client.ts\";"
+        ],
+        "src/codemode.ts": [
+          "import type { FSearchClient } from \"./client.ts\";"
+        ],
+        "src/compactor.ts": [
+          "import { FSearchClient } from \"./client.ts\";"
+        ],
+        "src/mcp.ts": [
+          "import { FSearchClient } from \"./client.ts\";"
+        ],
+        "src/observer.ts": [
+          "import type { FSearchClient } from \"./client.ts\";"
+        ],
+        "src/semantic.ts": [
+          "import { FSearchClient } from \"./client.ts\";"
+        ],
+        "src/tui.ts": [
+          "import { FSearchClient } from \"./client.ts\";"
+        ]
+      }
+    },
+    {
+      "id": "P6c",
+      "from": "P6",
+      "lane": "grep-literal",
+      "query": "codemode",
+      "mode": "literal",
+      "source": "index",
+      "ok": true,
+      "retrieved": [
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "package.json",
+        "src/codemode.ts",
+        "tsconfig.json",
+        "ROADMAP.md"
+      ],
+      "positions": {
+        "src/codemode.ts": 5,
+        "AUDIT-2026-10-14.md": 2
+      },
+      "all_in_top10": true,
+      "full_match_count": 7,
+      "full_rank": {
+        "src/codemode.ts": 5,
+        "AUDIT-2026-10-14.md": 2
+      },
+      "full_order": [
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "package.json",
+        "src/codemode.ts",
+        "tsconfig.json",
+        "ROADMAP.md"
+      ],
+      "expected": [
+        {
+          "path": "src/codemode.ts",
+          "grade": 3
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "matches": {
+        "test/client.test.ts": [
+          "import { renderUltraSearchDeclarations, renderFSearchDeclarations, getFSearchCodemodeTools } from \".",
+          "test(\"codemode: renders TypeScript declarations\", () => {",
+          "test(\"codemode: sandbox tool definitions\", async () => {"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| 6 | Code Mode declarations | v0.2.0 completed | `src/codemode.ts` exports `renderUltraSearchDeclar",
+          "6. Wire the dead modules or delete them: `semantic.ts`, `src/codemode.ts`, `startAutoCompaction()`, ",
+          "- Dead code: semantic.ts, codemode declarations, startAutoCompaction(), recordMistake/learnCorrectio"
+        ],
+        "CHANGELOG.md": [
+          "- **QuickJS WASM Code Mode Declarations (#6)**: Exported `renderUltraSearchDeclarations()` and `getF"
+        ],
+        "package.json": [
+          "\"codemode\","
+        ],
+        "src/codemode.ts": [
+          "export function getFSearchCodemodeTools(client: FSearchClient) {"
+        ],
+        "tsconfig.json": [
+          "\"src/codemode.ts\","
+        ],
+        "ROADMAP.md": [
+          "- [x] #6 Code Mode TypeScript declarations (`src/codemode.ts`) — *library only*; the harness exposes"
+        ]
+      }
+    },
+    {
+      "id": "K2c",
+      "from": "K2",
+      "lane": "grep-literal",
+      "query": "sanitize",
+      "mode": "literal",
+      "source": "index",
+      "ok": true,
+      "retrieved": [
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "index.ts",
+        "src/client.ts",
+        "src/formatter.ts",
+        "test/empirical-10-tests.ts",
+        "tsconfig.json",
+        "CHANGELOG.md",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md"
+      ],
+      "positions": {
+        "OPTIMIZATIONS.md": 9,
+        "AUDIT-2026-10-14.md": 2
+      },
+      "all_in_top10": true,
+      "full_match_count": 10,
+      "full_rank": {
+        "OPTIMIZATIONS.md": 9,
+        "AUDIT-2026-10-14.md": 2
+      },
+      "full_order": [
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "index.ts",
+        "src/client.ts",
+        "src/formatter.ts",
+        "test/empirical-10-tests.ts",
+        "tsconfig.json",
+        "CHANGELOG.md",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md"
+      ],
+      "expected": [
+        {
+          "path": "OPTIMIZATIONS.md",
+          "grade": 1
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "matches": {
+        "test/client.test.ts": [
+          "import { scrubSecrets, isPathSafe, matchesIgnorePattern, isSensitiveFile } from \"../src/sanitize.ts\"",
+          "test(\"sanitize: scrubs secrets properly\", () => {",
+          "test(\"sanitize: identifies sensitive environment and credential files\", () => {"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| 12 | `.gitignore`/`.ignore` evaluation | v0.4.0 completed | `loadIgnoreRules()` / `matchesIgnorePa",
+          "* **Malformed private-key regex** in `src/sanitize.ts` (`[[\\s\\S]*?`) — multi-line PEM bodies will no"
+        ],
+        "index.ts": [
+          "import { isPathSafe } from \"./src/sanitize.ts\";"
+        ],
+        "src/client.ts": [
+          "import { loadIgnoreRules, matchesIgnorePattern } from \"./sanitize.ts\";"
+        ],
+        "src/formatter.ts": [
+          "import { scrubSecrets, isSensitiveFile } from \"./sanitize.ts\";"
+        ],
+        "test/empirical-10-tests.ts": [
+          "import { scrubSecrets, isPathSafe, isSensitiveFile } from \"../src/sanitize.ts\";"
+        ],
+        "tsconfig.json": [
+          "\"src/sanitize.ts\","
+        ],
+        "CHANGELOG.md": [
+          "- **Dynamic Ignore Rules (#12)**: Trie-based pattern matcher in `src/sanitize.ts` evaluating `.gitig"
+        ],
+        "OPTIMIZATIONS.md": [
+          "| F1 | PEM regex is malformed | `[[\\s\\S]*?` in `src/sanitize.ts` | Fix to `([\\s\\S]*?)`; add multi-li"
+        ],
+        "ROADMAP.md": [
+          "- [x] #3 Secret scrubbing and sensitive-file masking (`src/sanitize.ts`)"
+        ]
+      }
+    },
+    {
+      "id": "K3c",
+      "from": "K3",
+      "lane": "grep-literal",
+      "query": "client",
+      "mode": "literal",
+      "source": "index",
+      "ok": true,
+      "retrieved": [
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/benchmark-gate.test.ts",
+        "src/codemode.ts",
+        "test/client.test.ts"
+      ],
+      "positions": {
+        "src/mcp.ts": 2
+      },
+      "all_in_top10": true,
+      "full_match_count": 23,
+      "full_rank": {
+        "src/mcp.ts": 2
+      },
+      "full_order": [
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "test/benchmark-gate.test.ts",
+        "src/codemode.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "ROADMAP.md",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "src/client.ts",
+        "CONTRIBUTING.md",
+        "src/sanitize.ts",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "expected": [
+        {
+          "path": "src/mcp.ts",
+          "grade": 1
+        }
+      ],
+      "matches": {
+        "src/compactor.ts": [
+          "import { FSearchClient } from \"./client.ts\";",
+          "private client: FSearchClient;",
+          "constructor(client?: FSearchClient, options: { overlayThreshold?: number; checkIntervalMs?: number }"
+        ],
+        "src/mcp.ts": [
+          "import { FSearchClient } from \"./client.ts\";",
+          "private client: FSearchClient;",
+          "constructor(client?: FSearchClient, cwd = process.cwd()) {"
+        ],
+        "src/tui.ts": [
+          "import { FSearchClient } from \"./client.ts\";",
+          "private client: FSearchClient;",
+          "this.client = new FSearchClient();"
+        ],
+        "bin/cli.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "const client = new FSearchClient();",
+          "const res = await client.search(query, { in: scope, limit });"
+        ],
+        "index.ts": [
+          "import { FSearchClient } from \"./src/client.ts\";",
+          "const client = new FSearchClient();",
+          "const res = await client.search(cleanedQuery, {"
+        ],
+        "test/bench.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "const client = new FSearchClient();",
+          "// 3. FSearch Client Search"
+        ],
+        "test/deep-bench.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "const client = new FSearchClient();",
+          "await client.ping();"
+        ],
+        "test/benchmark-gate.test.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "* while still measuring the real client IPC round-trip path.",
+          "files: [{ path: path.join(cwd, \"src\", \"client.ts\"), matches: [{ line: 1, text: \"export class FSearch"
+        ],
+        "src/codemode.ts": [
+          "import type { FSearchClient } from \"./client.ts\";",
+          "* Sandbox helper returning callable JavaScript function wrappers around FSearchClient",
+          "export function getFSearchCodemodeTools(client: FSearchClient) {"
+        ],
+        "test/client.test.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "const sharedClient = new FSearchClient();",
+          "sharedClient.close();"
+        ]
+      }
+    },
+    {
+      "id": "S1c",
+      "from": "S1",
+      "lane": "grep-literal",
+      "query": "FSearchClient",
+      "mode": "literal",
+      "source": "index",
+      "ok": true,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/codemode.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts"
+      ],
+      "positions": {
+        "src/client.ts": 1,
+        "test/client.test.ts": 3,
+        "src/mcp.ts": 6,
+        "src/tui.ts": 8,
+        "index.ts": 10
+      },
+      "all_in_top10": true,
+      "full_match_count": 16,
+      "full_rank": {
+        "src/client.ts": 1,
+        "test/client.test.ts": 3,
+        "src/mcp.ts": 6,
+        "src/tui.ts": 8,
+        "index.ts": 10
+      },
+      "full_order": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/codemode.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "CHANGELOG.md"
+      ],
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "src/mcp.ts",
+          "grade": 1
+        },
+        {
+          "path": "src/tui.ts",
+          "grade": 1
+        },
+        {
+          "path": "index.ts",
+          "grade": 1
+        }
+      ],
+      "matches": {
+        "src/client.ts": [
+          "export interface FSearchClientOptions {",
+          "export class FSearchClient {",
+          "constructor(options: FSearchClientOptions = {}) {"
+        ],
+        "test/benchmark-gate.test.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "files: [{ path: path.join(cwd, \"src\", \"client.ts\"), matches: [{ line: 1, text: \"export class FSearch",
+          "files: [{ path: path.join(cwd, \"src\", \"client.ts\"), matches: [{ line: 1, text: \"export class FSearch"
+        ],
+        "test/client.test.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "const sharedClient = new FSearchClient();",
+          "test(\"FSearchClient ping\", { skip: liveOnly }, async () => {"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| Test suite | Local 25/25 pass only because a daemon is running. In CI it is 23/25 (`FSearchClient ",
+          "| 15 | Deterministic sub-10 ms p95 CI gate (1M+ files) | v1.0.0 completed | `test/benchmark-gate.tes",
+          "writes 100 rows into the production `audit.jsonl`. Confirmed: 101 of 139 rows are `package.json`/`FS"
+        ],
+        "src/compactor.ts": [
+          "import { FSearchClient } from \"./client.ts\";",
+          "private client: FSearchClient;",
+          "constructor(client?: FSearchClient, options: { overlayThreshold?: number; checkIntervalMs?: number }"
+        ],
+        "src/mcp.ts": [
+          "import { FSearchClient } from \"./client.ts\";",
+          "private client: FSearchClient;",
+          "constructor(client?: FSearchClient, cwd = process.cwd()) {"
+        ],
+        "src/codemode.ts": [
+          "import type { FSearchClient } from \"./client.ts\";",
+          "* Sandbox helper returning callable JavaScript function wrappers around FSearchClient",
+          "export function getFSearchCodemodeTools(client: FSearchClient) {"
+        ],
+        "src/tui.ts": [
+          "import { FSearchClient } from \"./client.ts\";",
+          "private client: FSearchClient;",
+          "this.client = new FSearchClient();"
+        ],
+        "bin/cli.ts": [
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "const client = new FSearchClient();"
+        ],
+        "index.ts": [
+          "import { FSearchClient } from \"./src/client.ts\";",
+          "const client = new FSearchClient();"
+        ]
+      }
+    },
+    {
+      "id": "S3c",
+      "from": "S3",
+      "lane": "grep-literal",
+      "query": "applyProximityRanking",
+      "mode": "literal",
+      "source": "index",
+      "ok": true,
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md"
+      ],
+      "positions": {
+        "src/client.ts": 1,
+        "AUDIT-2026-10-14.md": 3
+      },
+      "all_in_top10": true,
+      "full_match_count": 3,
+      "full_rank": {
+        "src/client.ts": 1,
+        "AUDIT-2026-10-14.md": 3
+      },
+      "full_order": [
+        "src/client.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md"
+      ],
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "matches": {
+        "src/client.ts": [
+          "res.hits = this.applyProximityRanking(res.hits, options.near);",
+          "public applyProximityRanking(hits: FSearchHit[], nearPath: string): FSearchHit[] {"
+        ],
+        "test/client.test.ts": [
+          "const ranked = sharedClient.applyProximityRanking(hits, \"/Users/batra/repo/src/components/card.ts\");"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| 10 | Proximity re-ranking | v0.3.0 completed | `applyProximityRanking()` + `near:` parsing + unit "
+        ]
+      }
+    },
+    {
+      "id": "S4c",
+      "from": "S4",
+      "lane": "grep-literal",
+      "query": "resolveWorktreeRoot",
+      "mode": "literal",
+      "source": "index",
+      "ok": true,
+      "retrieved": [
+        "index.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md"
+      ],
+      "positions": {
+        "index.ts": 1,
+        "CHANGELOG.md": 3,
+        "AUDIT-2026-10-14.md": 2
+      },
+      "all_in_top10": true,
+      "full_match_count": 3,
+      "full_rank": {
+        "index.ts": 1,
+        "CHANGELOG.md": 3,
+        "AUDIT-2026-10-14.md": 2
+      },
+      "full_order": [
+        "index.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md"
+      ],
+      "expected": [
+        {
+          "path": "index.ts",
+          "grade": 3
+        },
+        {
+          "path": "CHANGELOG.md",
+          "grade": 1
+        },
+        {
+          "path": "AUDIT-2026-10-14.md",
+          "grade": 1
+        }
+      ],
+      "matches": {
+        "index.ts": [
+          "function resolveWorktreeRoot(startDir = process.cwd()): string {",
+          "const worktreeRoot = resolveWorktreeRoot();",
+          "const worktreeRoot = resolveWorktreeRoot();"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| 5 | Worktree / CWD scoping | v0.2.0 completed | `resolveWorktreeRoot()` walks up to the nearest `."
+        ],
+        "CHANGELOG.md": [
+          "- **Git Worktree Isolation (#5)**: Added `resolveWorktreeRoot` using `git rev-parse --show-toplevel`"
+        ]
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "id": "P3",
+      "path": "src/client.ts",
+      "query": "client.ts",
+      "lane": "path",
+      "why": "stays in the path lane; not a literal content match in the corpus",
+      "literal_occurrences_smart_case": 0,
+      "literal_occurrences_case_sensitive": 0,
+      "match_count": 18,
+      "rank": null,
+      "in_top10": false,
+      "order": [
+        "test/client.test.ts",
+        "test/benchmark-gate.test.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "src/tui.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "tsconfig.json",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md"
+      ]
+    },
+    {
+      "id": "K2",
+      "path": "src/sanitize.ts",
+      "query": "sanitize",
+      "lane": "path",
+      "why": "stays in the path lane; the corpus file does not contain the literal term",
+      "literal_occurrences_smart_case": 0,
+      "literal_occurrences_case_sensitive": 0,
+      "match_count": 10,
+      "rank": null,
+      "in_top10": false,
+      "order": [
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "index.ts",
+        "src/client.ts",
+        "src/formatter.ts",
+        "test/empirical-10-tests.ts",
+        "tsconfig.json",
+        "CHANGELOG.md",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md"
+      ]
+    },
+    {
+      "id": "K3",
+      "path": "src/client.ts",
+      "query": "client",
+      "lane": "path",
+      "why": "stays in the path lane; it is a smart-case content match too but ranks 19th of 23 there",
+      "literal_occurrences_smart_case": 4,
+      "literal_occurrences_case_sensitive": 0,
+      "match_count": 23,
+      "rank": 19,
+      "in_top10": false,
+      "order": [
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "test/benchmark-gate.test.ts",
+        "src/codemode.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "ROADMAP.md",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "src/client.ts",
+        "CONTRIBUTING.md",
+        "src/sanitize.ts",
+        "package.json",
+        "tsconfig.json"
+      ]
+    },
+    {
+      "id": "K3",
+      "path": "test/client.test.ts",
+      "query": "client",
+      "lane": "path",
+      "why": "stays in the path lane where it is retrieved; it is also a literal content match but ranks 11th there",
+      "literal_occurrences_smart_case": 31,
+      "literal_occurrences_case_sensitive": 7,
+      "match_count": 23,
+      "rank": 11,
+      "in_top10": false,
+      "order": [
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "test/benchmark-gate.test.ts",
+        "src/codemode.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "ROADMAP.md",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "src/client.ts",
+        "CONTRIBUTING.md",
+        "src/sanitize.ts",
+        "package.json",
+        "tsconfig.json"
+      ]
+    },
+    {
+      "id": "K3",
+      "path": "README.md",
+      "query": "client",
+      "lane": "grep-literal",
+      "why": "content-mention-not-top10: literal content match, rank outside the top 10",
+      "literal_occurrences_smart_case": 7,
+      "literal_occurrences_case_sensitive": 6,
+      "match_count": 23,
+      "rank": 18,
+      "in_top10": false,
+      "order": [
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "test/benchmark-gate.test.ts",
+        "src/codemode.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "ROADMAP.md",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "src/client.ts",
+        "CONTRIBUTING.md",
+        "src/sanitize.ts",
+        "package.json",
+        "tsconfig.json"
+      ]
+    }
+  ]
+}
