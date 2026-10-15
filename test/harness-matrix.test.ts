@@ -148,3 +148,29 @@ test("matrix: staleness is reported but only fatal with --require-fresh", () => 
   const strict = buildMatrix({ specs: [cursor], artifacts, headCommit: headCommit(), requireFresh: true });
   assert.match(strict.problems.join("\n"), /artifact is from/);
 });
+
+test("matrix: freshness follows dirty flag, ancestry and the MCP surface, not HEAD equality", () => {
+  const cursor = HARNESSES.find((h) => h.id === "cursor") as (typeof HARNESSES)[number];
+  const artifacts = new Map([["cursor", passingArtifact("cursor", { commit: "a".repeat(40) })]]);
+  const head = "b".repeat(40);
+
+  // ancestor commit, clean tree, unchanged surface → fresh even though commit != HEAD
+  const fresh = buildMatrix({ specs: [cursor], artifacts, headCommit: head, requireFresh: true, staleCheck: () => ({ stale: false }) });
+  assert.deepEqual(fresh.problems, []);
+  assert.equal(fresh.rows[0]?.stale, false);
+
+  // surface changed since the artifact's commit → stale
+  const moved = buildMatrix({
+    specs: [cursor], artifacts, headCommit: head, requireFresh: true,
+    staleCheck: () => ({ stale: true, reason: "MCP surface changed between aaaa and bbbb" }),
+  });
+  assert.match(moved.problems.join("\n"), /MCP surface changed/);
+  assert.equal(moved.rows[0]?.stale, true);
+
+  // generated on a dirty tree → stale, because the commit does not identify the tree
+  const dirty = buildMatrix({
+    specs: [cursor], artifacts, headCommit: head, requireFresh: true,
+    staleCheck: () => ({ stale: true, reason: "artifact was generated on a dirty tree" }),
+  });
+  assert.match(dirty.problems.join("\n"), /dirty tree/);
+});

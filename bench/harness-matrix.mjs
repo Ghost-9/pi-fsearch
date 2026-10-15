@@ -12,7 +12,8 @@
  *                                 [--check] [--require-fresh] [--json] [--print]
  *
  *   --check          validate every row and exit 1 on any problem
- *   --require-fresh  also fail when an artifact was produced for another commit
+ *   --require-fresh  also fail when an artifact was generated on a dirty tree,
+ *                    from a non-ancestor commit, or before an MCP-surface change
  */
 
 import { spawnSync } from "node:child_process";
@@ -24,6 +25,20 @@ import { SERVER_VERSION, SUPPORTED_PROTOCOL_VERSIONS } from "../src/mcp.ts";
 import { canonicalToolNames } from "../src/tool-schema.ts";
 
 export const SMOKE_SCHEMA = "ultrasearch/harness-smoke@1";
+
+/**
+ * Files that can change what a harness smoke observes. Freshness under
+ * `--require-fresh` is judged by whether any of these differ between the
+ * artifact's commit and HEAD — not by strict equality with HEAD, which no
+ * committed artifact could ever satisfy once HEAD moves past it.
+ */
+export const MCP_SURFACE_PATHS = [
+  "src/tool-schema.ts",
+  "src/mcp.ts",
+  "bin/mcp-server.ts",
+  "src/harness-registry.ts",
+  "package.json",
+];
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -60,7 +75,7 @@ function canonicMatch(names) {
 /**
  * Validate one artifact against its registry row. Pure; returns problems.
  */
-export function validateArtifact(spec, artifact, { headCommit } = {}) {
+export function validateArtifact(spec, artifact, { headCommit, staleCheck } = {}) {
   const problems = [];
   const prefix = `${spec.id}:`;
   if (!artifact) return [`${prefix} no smoke artifact`];
@@ -105,7 +120,10 @@ export function validateArtifact(spec, artifact, { headCommit } = {}) {
     if (!native.measuredProtocolVersion) problems.push(`${prefix} a measured row must record the measured protocol version`);
   }
 
-  if (headCommit && artifact.commit !== headCommit) {
+  if (staleCheck) {
+    const verdict = staleCheck(artifact);
+    if (verdict?.stale) problems.push(`stale:${prefix} ${verdict.reason ?? "artifact is stale"}`);
+  } else if (headCommit && artifact.commit !== headCommit) {
     problems.push(`stale:${prefix} artifact is from ${shortCommit(artifact.commit)}, HEAD is ${shortCommit(headCommit)}`);
   }
   return problems;
@@ -140,15 +158,17 @@ function nativeCell(artifact) {
 
 const STATUS_ORDER = { fail: 0, partial: 1, skipped: 2, pass: 3 };
 
-export function buildMatrix({ specs = HARNESSES, artifacts, headCommit, generatedAt = new Date().toISOString(), requireFresh = false } = {}) {
+export function buildMatrix({ specs = HARNESSES, artifacts, headCommit, generatedAt = new Date().toISOString(), requireFresh = false, staleCheck } = {}) {
   const generatedDate = String(generatedAt).slice(0, 10);
   const problems = [];
   const rows = [];
   for (const spec of specs) {
     const artifact = artifacts.get(spec.id);
-    const rowProblems = validateArtifact(spec, artifact, requireFresh ? { headCommit } : {});
+    const rowProblems = validateArtifact(spec, artifact, requireFresh ? { headCommit, staleCheck } : {});
     problems.push(...rowProblems);
-    const stale = Boolean(headCommit && artifact && artifact.commit !== headCommit);
+    const stale = staleCheck
+      ? Boolean(artifact && staleCheck(artifact)?.stale)
+      : Boolean(headCommit && artifact && artifact.commit !== headCommit);
     rows.push({
       spec,
       artifact,
@@ -276,11 +296,38 @@ function headCommit() {
   return res.status === 0 ? res.stdout.trim() : "unknown";
 }
 
+/**
+ * Freshness rule: an artifact is fresh when it was generated on a clean tree,
+ * its commit is an ancestor of HEAD, and none of the MCP-surface files changed
+ * between that commit and HEAD. A non-ancestor commit or a changed surface is
+ * stale; a dirty tree at generation time is stale because the recorded commit
+ * then does not identify the tree that was exercised.
+ */
+function makeStaleCheck(head) {
+  return (artifact) => {
+    if (!artifact?.commit) return { stale: true, reason: "artifact has no commit" };
+    if (artifact.worktreeDirty === true) return { stale: true, reason: "artifact was generated on a dirty tree" };
+    if (artifact.commit === head) return { stale: false };
+    const ancestor = spawnSync("git", ["merge-base", "--is-ancestor", artifact.commit, head], { cwd: repoRoot });
+    if (ancestor.status !== 0) {
+      return { stale: true, reason: `artifact commit ${shortCommit(artifact.commit)} is not an ancestor of ${shortCommit(head)}` };
+    }
+    const diff = spawnSync("git", ["diff", "--quiet", artifact.commit, head, "--", ...MCP_SURFACE_PATHS], { cwd: repoRoot });
+    if (diff.status === 1) {
+      return { stale: true, reason: `MCP surface changed between ${shortCommit(artifact.commit)} and ${shortCommit(head)}` };
+    }
+    if (diff.status !== 0) {
+      return { stale: true, reason: `could not compare ${shortCommit(artifact.commit)} with ${shortCommit(head)}` };
+    }
+    return { stale: false };
+  };
+}
+
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
   const { artifacts, problems: loadProblems } = loadArtifacts(opts.dir);
   const commit = headCommit();
-  const matrix = buildMatrix({ specs: HARNESSES, artifacts, headCommit: commit, requireFresh: opts.requireFresh });
+  const matrix = buildMatrix({ specs: HARNESSES, artifacts, headCommit: commit, requireFresh: opts.requireFresh, staleCheck: makeStaleCheck(commit) });
   const problems = [...loadProblems, ...matrix.problems];
   if (!opts.check && !opts.print) {
     fs.mkdirSync(path.dirname(opts.out), { recursive: true });
