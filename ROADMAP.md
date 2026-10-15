@@ -63,8 +63,22 @@ Legend: ✅ shipped & reachable · 🟡 partial / limited · ❌ not delivered a
 ### Milestone 6 — Production CI & latency gates (v1.0.0) — 🟡 **in progress** (was mislabelled complete)
 - [x] #15 🔧 CI is now **hermetic and green-capable**: daemon-dependent integration tests skip cleanly on a bare
       runner, and a **mock-socket latency gate** runs everywhere (0.3.1)
+- [x] #15 🔧 CI is a platform matrix: `test-macos` (engine `cargo test`, `test:engine` on a real isolated daemon,
+      `test:gate`) and `test-linux` (client tests + hermetic gate + no-daemon CLI smoke), plus a non-gating
+      `linux-daemon-blockers` job that archives the compiler output (`docs/linux-daemon-blockers.md`) (wave 2)
+- [x] #15 🔧 the live gate derives its threshold from a **measured floor measured in the same run**
+      (`max(12 ms, rawP95×2+1)`, client overhead < 3 ms), and a cold/stale window can no longer skip a real client
+      regression (`docs/decisions/0012`, `docs/sla.md`) (wave 2)
 - [ ] #15 remaining: real multi-scope benchmark fixtures (repo / monorepo / home / whole disk) with medians,
       confidence intervals, and output-equivalence checks — see `OPTIMIZATIONS.md` §E
+
+### SLAs and release artifacts (#33)
+- [x] per-scope contracts (warm path, cold/global with `budget_ms`, content grep, explicitly unmeasured scan path),
+      each with the test that enforces it, in [`docs/sla.md`](docs/sla.md); thresholds derive only from `final`
+      artifacts; the release workflow (`v*` tag) attaches `bench/results/release-<tag>.json` with check results and
+      reference-artifact hashes, and never claims absolute runner latency
+- [ ] re-run the latency suite under a passing environment gate and promote its medians from `provisional` to
+      `final` in `docs/sla.md`
 
 ---
 

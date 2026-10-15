@@ -407,7 +407,20 @@ pub struct Progress {
     deadline: Option<std::time::Instant>,
     /// The most candidates to score (`candidates`), if any (#35).
     max_candidates: Option<usize>,
+    /// Entries in a row that did not improve the k-th best before the scan
+    /// stops (#35). `None`: no run limit, the deadline alone bounds it.
+    max_low_run: Option<usize>,
+    /// Entries since the k-th best last improved, reset on an improvement.
+    low_run: std::sync::atomic::AtomicUsize,
+    /// A low-score run ended the scan (`complete: false`).
+    low_run_stop: std::sync::atomic::AtomicBool,
 }
+
+/// The low-score run that ends an `early_exit` whole-disk search if nothing
+/// better turns up (#35). Large enough that ordinary scoped queries never
+/// reach it, small enough to bound a cold whole-disk scan that is finding
+/// nothing new.
+pub const LOW_RUN_DEFAULT: usize = 1 << 20;
 
 impl Progress {
     /// A budget of `ms` from now (0: no deadline, counters still collected).
@@ -418,6 +431,9 @@ impl Progress {
             expired: Default::default(),
             deadline: (ms > 0).then(|| std::time::Instant::now() + std::time::Duration::from_millis(ms)),
             max_candidates: None,
+            max_low_run: None,
+            low_run: Default::default(),
+            low_run_stop: Default::default(),
         }
     }
 
@@ -448,6 +464,39 @@ impl Progress {
     /// query that would otherwise walk millions of candidates.
     pub fn cap_candidates(self, cap: Option<usize>) -> Progress {
         Progress { max_candidates: cap, ..self }
+    }
+
+    /// End a scan early after `n` considered entries in a row that did not
+    /// improve the k-th best (#35). The result is partial (`complete:
+    /// false`): the top-k of what was scanned, not of the whole index.
+    pub fn low_run(self, n: Option<usize>) -> Progress {
+        Progress { max_low_run: n, ..self }
+    }
+
+    /// One considered entry that did not enter the top-k, or one that did
+    /// (which resets the run): `true` when the run limit is reached and the
+    /// scan should stop. Cheap: one load when no limit is set.
+    #[inline]
+    pub fn note_candidate(&self, improved: bool) -> bool {
+        use std::sync::atomic::Ordering::Relaxed;
+        let Some(max) = self.max_low_run else { return false };
+        if improved {
+            self.low_run.store(0, Relaxed);
+            return false;
+        }
+        if self.low_run.fetch_add(1, Relaxed) + 1 < max {
+            return false;
+        }
+        self.low_run_stop.store(true, Relaxed);
+        self.expired.store(true, Relaxed);
+        true
+    }
+
+    /// A low-score run ended the scan (rather than the deadline or the
+    /// candidate cap).
+    #[inline]
+    pub fn low_run_stopped(&self) -> bool {
+        self.low_run_stop.load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// Over the candidate cap? Cheap: one load, no clock.
@@ -482,7 +531,7 @@ fn budget_tick(progress: Option<&Progress>, seen: &mut usize, tick: &mut u32, ev
     }
     p.scanned.fetch_add(*seen, std::sync::atomic::Ordering::Relaxed);
     *seen = 0;
-    if p.capped() {
+    if p.capped() || p.low_run_stopped() {
         p.expired.store(true, std::sync::atomic::Ordering::Relaxed);
         return false;
     }
@@ -3755,8 +3804,18 @@ impl<'a> Scan<'a> {
                                 pg.considered.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                             }
                             let nh = NameHit { score: s.score, bits: s.bits, flags: s.flags, best: [0; 4] };
-                            if let Some(k) = scan.score(i, p, nh, m, top.floor, &mut pbuf, re.as_ref()) {
+                            let before = top.floor;
+                            if let Some(k) = scan.score(i, p, nh, m, before, &mut pbuf, re.as_ref()) {
                                 top.push(k);
+                            }
+                            // A long run of considered entries that did not
+                            // improve the k-th best: stop here (#35). Partial
+                            // by contract (`early_exit`), so a run this long
+                            // on a whole-disk scan is not worth the tail.
+                            if let Some(pg) = progress
+                                && pg.note_candidate(top.floor > before)
+                            {
+                                break 'scan;
                             }
                         }
                     }
@@ -3794,8 +3853,14 @@ impl<'a> Scan<'a> {
                     }
                     let p = idx.parent(i);
                     let m = if self.need_dirs { self.memo_of(p, &mut memo, &mut |k| self.names.get(k)) } else { DirMemo::default() };
-                    if let Some(k) = self.score(i, p, nh, m, top.floor, &mut pbuf, re.as_ref()) {
+                    let before = top.floor;
+                    if let Some(k) = self.score(i, p, nh, m, before, &mut pbuf, re.as_ref()) {
                         top.push(k);
+                    }
+                    if let Some(pg) = progress
+                        && pg.note_candidate(top.floor > before)
+                    {
+                        break 'scan;
                     }
                 }
             }
@@ -4368,5 +4433,69 @@ mod tests {
         let (scanned, considered) = p.counted();
         assert_eq!(scanned, 4096, "every entry must be counted");
         assert_eq!(considered, 4096);
+    }
+
+    /// `note_candidate` counts a run, resets it on an improvement, and stops
+    /// exactly at the limit (#35).
+    #[test]
+    fn a_low_run_is_reset_by_an_improvement() {
+        let p = Progress::budget(0).low_run(Some(3));
+        assert!(!p.note_candidate(false));
+        assert!(!p.note_candidate(false));
+        assert!(!p.note_candidate(true), "an improvement resets the run");
+        assert!(!p.note_candidate(false));
+        assert!(!p.note_candidate(false));
+        assert!(p.note_candidate(false), "the third low candidate in a row stops");
+        assert!(p.low_run_stopped());
+        assert!(p.expired());
+    }
+
+    /// No run limit: `note_candidate` is inert, whatever it is told.
+    #[test]
+    fn no_low_run_limit_never_stops() {
+        let p = Progress::budget(0);
+        for _ in 0..10_000 {
+            assert!(!p.note_candidate(false));
+        }
+        assert!(!p.low_run_stopped());
+        assert!(!p.expired());
+    }
+
+    /// The low-score run (#35) ends a whole-disk scan that is finding
+    /// nothing new: the answer is marked partial, says why, and stays a
+    /// genuine subset of the full scan's top hits.
+    #[test]
+    fn a_low_run_stops_and_says_so() {
+        let l = many(4096);
+        let want = Searcher { live: &l }.search(&Query::parse("limit:50 alpha", "/h").unwrap());
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::budget(0).low_run(Some(64)));
+        q.progress = Some(p.clone());
+        let hits = Searcher { live: &l }.search(&q);
+        assert!(p.low_run_stopped(), "the run must be reported");
+        assert!(p.expired());
+        let (_, considered) = p.counted();
+        assert!(considered < 4096, "considered {considered} of 4096 entries despite the run limit");
+        assert!(hits.len() <= q.limit);
+        let key = |h: &Hit| (h.score, h.idx);
+        let full: std::collections::HashSet<_> = want.iter().map(key).collect();
+        for h in &hits {
+            assert!(full.contains(&key(h)), "a partial answer must not invent hits");
+        }
+    }
+
+    /// A low-run limit nothing reaches changes nothing: the answer equals
+    /// the unbudgeted one, with the same order.
+    #[test]
+    fn a_low_run_out_of_reach_is_equivalent_to_no_budget() {
+        let l = many(4096);
+        let want = Searcher { live: &l }.search(&Query::parse("limit:50 alpha", "/h").unwrap());
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::budget(0).low_run(Some(usize::MAX)));
+        q.progress = Some(p.clone());
+        let got = Searcher { live: &l }.search(&q);
+        assert!(!p.low_run_stopped());
+        let key = |h: &Hit| (h.score, h.idx);
+        assert_eq!(got.iter().map(key).collect::<Vec<_>>(), want.iter().map(key).collect::<Vec<_>>());
     }
 }

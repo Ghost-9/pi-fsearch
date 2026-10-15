@@ -3128,28 +3128,53 @@ unsafe impl Send for Lanes {}
 unsafe impl Sync for Lanes {}
 
 impl Lanes {
-    fn work(&self) {
+    /// Run one lane if any is left: `false` when every lane has been claimed
+    /// (no work was done). A lane already claimed always completes, so a
+    /// caller that stops claiming only ever leaves *unclaimed* lanes behind.
+    fn claim(&self) -> bool {
         use std::sync::atomic::Ordering::*;
-        while self.next.fetch_add(1, Relaxed) < self.n {
-            let job = std::panic::AssertUnwindSafe(|| unsafe { (*self.job)() });
-            if std::panic::catch_unwind(job).is_err() {
-                self.panicked.store(true, Relaxed);
-            }
-            self.done.fetch_add(1, Release);
+        if self.next.fetch_add(1, Relaxed) >= self.n {
+            return false;
         }
+        let job = std::panic::AssertUnwindSafe(|| unsafe { (*self.job)() });
+        if std::panic::catch_unwind(job).is_err() {
+            self.panicked.store(true, Relaxed);
+        }
+        self.done.fetch_add(1, Release);
+        true
+    }
+
+    /// Every lane claimed and completed: `run_lanes` has returned (or is
+    /// about to), so the job pointer is no longer live and the set can go.
+    fn finished(&self) -> bool {
+        self.done.load(std::sync::atomic::Ordering::Acquire) >= self.n
+    }
+
+    /// A lane is still unclaimed.
+    fn claimable(&self) -> bool {
+        self.next.load(std::sync::atomic::Ordering::Relaxed) < self.n
     }
 }
 
-/// Threads that help searches: the latest search's lanes, and a bell.
+/// Threads that help searches: every live `run_lanes` call's lanes, and a
+/// bell.
+///
+/// All live sets are kept, not just the newest: a helper serves whichever
+/// live sets still have unclaimed lanes, so concurrent greps (or a grep and
+/// a content build) share the pool. With a single newest-only slot the
+/// helpers all piled onto the last published search and every earlier one
+/// ran on its own caller thread alone: three concurrent greps that each
+/// wanted four to six lanes used ~3.6 cores in total and took ~2.1x one
+/// call, whatever the lane count.
 struct Helpers {
-    latest: std::sync::Mutex<(u64, Option<std::sync::Arc<Lanes>>)>,
+    active: std::sync::Mutex<Vec<std::sync::Arc<Lanes>>>,
     bell: std::sync::Condvar,
 }
 
 fn helpers() -> &'static Helpers {
     static H: std::sync::OnceLock<&'static Helpers> = std::sync::OnceLock::new();
     H.get_or_init(|| {
-        let h: &'static Helpers = Box::leak(Box::new(Helpers { latest: Default::default(), bell: Default::default() }));
+        let h: &'static Helpers = Box::leak(Box::new(Helpers { active: Default::default(), bell: Default::default() }));
         let n = std::thread::available_parallelism().map_or(1, |n| n.get()).max(SCAN_READERS);
         for i in 1..n {
             let spawned = std::thread::Builder::new().name(format!("ultrasearch-help-{i}")).spawn(move || {
@@ -3157,19 +3182,41 @@ fn helpers() -> &'static Helpers {
                 // throttled IO tiers, and never download iCloud placeholders.
                 unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INITIATED, 0) };
                 crate::no_materialize();
-                let mut seen = 0;
+                // Which live set this helper served last: the next one it
+                // looks at after that, so one search cannot take every
+                // helper while another waits.
+                let mut next = 0usize;
                 loop {
                     let lanes = {
-                        let mut g = h.latest.lock().unwrap();
-                        while g.0 == seen {
-                            g = h.bell.wait(g).unwrap();
+                        let mut g = h.active.lock().unwrap();
+                        loop {
+                            // A finished set is dead even if its caller is
+                            // briefly still in `run_lanes`.
+                            g.retain(|l| !l.finished());
+                            if g.is_empty() {
+                                g = h.bell.wait(g).unwrap();
+                                continue;
+                            }
+                            let mut picked = None;
+                            for k in 0..g.len() {
+                                let i = (next + k) % g.len();
+                                if g[i].claimable() {
+                                    next = i + 1;
+                                    picked = Some(g[i].clone());
+                                    break;
+                                }
+                            }
+                            match picked {
+                                Some(l) => break l,
+                                // Every live set's lanes are claimed and
+                                // running: wait until one finishes (or a
+                                // new search appears).
+                                None => g = h.bell.wait(g).unwrap(),
+                            }
                         }
-                        seen = g.0;
-                        g.1.clone()
                     };
-                    if let Some(l) = lanes {
-                        l.work();
-                    }
+                    // Raced another helper for the last lane: look again.
+                    lanes.claim();
                 }
             });
             if spawned.is_err() {
@@ -3195,17 +3242,24 @@ fn run_lanes(n: usize, job: &(dyn Fn() + Sync)) {
     let job: *const (dyn Fn() + Sync + 'static) = unsafe { std::mem::transmute(job) };
     let lanes = std::sync::Arc::new(Lanes { n, next: AtomicUsize::new(0), done: AtomicUsize::new(0), panicked: AtomicBool::new(false), job });
     {
-        let mut g = h.latest.lock().unwrap();
-        g.0 += 1;
-        g.1 = Some(lanes.clone());
+        let mut g = h.active.lock().unwrap();
+        g.push(lanes.clone());
     }
-    for _ in 1..n {
-        h.bell.notify_one();
-    }
-    lanes.work();
+    h.bell.notify_all();
+    // The caller takes lanes too (the old `Lanes::work` loop): a search
+    // never depends on a helper thread turning up, and a helper that wakes
+    // late finds fewer lanes left rather than none.
+    while lanes.claim() {}
     while lanes.done.load(Acquire) < n {
         std::thread::yield_now();
     }
+    {
+        let mut g = h.active.lock().unwrap();
+        g.retain(|l| !std::sync::Arc::ptr_eq(l, &lanes));
+    }
+    // A helper waiting for work must re-check now that this set is gone
+    // (and a search that finished may have freed a lane for it).
+    h.bell.notify_all();
     assert!(!lanes.panicked.load(Relaxed), "a search lane panicked");
 }
 
@@ -4933,5 +4987,78 @@ mod tests {
         let seg = Segment::load(&d, 1);
         let _ = std::fs::remove_dir_all(&d);
         assert_eq!(seg.unwrap().live_docs, 0);
+    }
+
+    /// A gate several lanes must reach together: a lane that arrives waits
+    /// (at most 5 s) for the others. Used to prove *which* lanes ran: a
+    /// search whose lanes a helper pool refuses to serve can never gather
+    /// four of them.
+    struct Gate {
+        parties: usize,
+        arrived: std::sync::atomic::AtomicUsize,
+        timed_out: std::sync::atomic::AtomicBool,
+        m: std::sync::Mutex<()>,
+        cv: std::sync::Condvar,
+    }
+
+    impl Gate {
+        fn new(parties: usize) -> Gate {
+            Gate {
+                parties,
+                arrived: Default::default(),
+                timed_out: Default::default(),
+                m: Default::default(),
+                cv: Default::default(),
+            }
+        }
+
+        fn arrive(&self) {
+            use std::sync::atomic::Ordering::SeqCst;
+            let mut g = self.m.lock().unwrap();
+            let n = self.arrived.fetch_add(1, SeqCst) + 1;
+            if n >= self.parties {
+                self.cv.notify_all();
+                return;
+            }
+            let (guard, wait) = self.cv.wait_timeout_while(g, std::time::Duration::from_secs(5), |_| self.arrived.load(SeqCst) < self.parties).unwrap();
+            if wait.timed_out() {
+                // Never hang the suite on a regression: the lane returns and
+                // the test fails on `timed_out` instead.
+                self.timed_out.store(true, SeqCst);
+            }
+            drop(guard);
+        }
+    }
+
+    /// Two concurrent `run_lanes(4, ..)` calls, each lane arriving at one
+    /// gate of 8: it only opens when both searches' four lanes run. With a
+    /// single "newest search" helper slot the helpers all served the set
+    /// published last (its four lanes plus the two callers = 6 of 8) while
+    /// the other search could never gather more than its own caller, so the
+    /// gate timed out. The registry of live sets lets helpers serve both.
+    #[test]
+    fn concurrent_runs_share_the_helper_pool() {
+        use std::sync::atomic::Ordering::SeqCst;
+        let gate = std::sync::Arc::new(Gate::new(8));
+        let (tx, rx) = std::sync::mpsc::channel();
+        let handles: Vec<_> = (0..2)
+            .map(|_| {
+                let gate = gate.clone();
+                let tx = tx.clone();
+                std::thread::spawn(move || {
+                    run_lanes(4, &|| gate.arrive());
+                    let _ = tx.send(());
+                })
+            })
+            .collect();
+        // `run_lanes` only returns when a set's lanes all ran. If a helper
+        // pool serves only the newest set, the older one stays unclaimed
+        // (its caller ran one of four) and never returns: report that as a
+        // failure rather than hanging the suite.
+        for _ in handles.iter() {
+            assert!(rx.recv_timeout(std::time::Duration::from_secs(8)).is_ok(), "a search's lanes never all ran: helpers served only one live set");
+        }
+        assert!(!gate.timed_out.load(SeqCst), "each search's four lanes must run: helpers served only one live set");
+        assert!(gate.arrived.load(SeqCst) >= 8);
     }
 }

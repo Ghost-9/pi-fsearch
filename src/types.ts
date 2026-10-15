@@ -164,6 +164,30 @@ export interface UltraSearchStatusResponse {
   stale_ms?: number;
   /** Results the daemon's policy held back: deny-list, or the caller `root` (#23). */
   withheld?: number;
+  /** This daemon's pid (#45). */
+  pid?: number;
+  /** Milliseconds since this engine started (#45): the cold-start window. */
+  uptime_ms?: number;
+  /** The socket path the daemon serves (#45). */
+  socket?: string;
+  socket_dev?: number;
+  socket_ino?: number;
+  /** The pid recorded in the daemon's single-instance `socket.lock` (#45). */
+  lock_pid?: number;
+  /**
+   * Duplicate/stale daemon signals collected by the client (#45): socket
+   * owner pids, a lock/answering pid mismatch, or a second daemon on the
+   * legacy socket. Present on `client.status()` replies.
+   */
+  daemon_health?: {
+    pid?: number;
+    uptime_ms?: number;
+    socket: string;
+    socket_owners: number[];
+    lock_pid?: number;
+    duplicate_suspected: boolean;
+    duplicates: Array<{ path: string; pid?: number; reason: string }>;
+  };
 }
 
 export interface SearchOptions {
@@ -188,6 +212,14 @@ export interface SearchOptions {
   respectIgnore?: boolean;
   /** Server-side deadline in milliseconds; partial results carry complete:false. */
   budget_ms?: number;
+  /**
+   * End the scan after a long run of considered entries that did not improve
+   * the k-th best (issue #35). The answer is then partial (`complete:false`,
+   * `stopped_by:"low_run"`). Off by default; see docs/engine-changes.md.
+   */
+  early_exit?: boolean;
+  /** Explicit low-score run length for `early_exit`; omit for the engine default. */
+  low_run?: number;
   /** Cancellation for fallback work (agent turn aborted). */
   signal?: AbortSignal;
 }

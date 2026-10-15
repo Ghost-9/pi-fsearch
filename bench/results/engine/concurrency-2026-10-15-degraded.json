@@ -1,0 +1,227 @@
+{
+  "schema": "ultrasearch.bench.engine-concurrency/v1",
+  "status": "degraded",
+  "date": "2026-10-15",
+  "generatedAt": "2026-10-15T06:09:31.691Z",
+  "gate": {
+    "ok": false,
+    "reasons": [
+      "load1m 14.94 >= 1.5"
+    ],
+    "info": {
+      "checkedAt": "2026-10-15T06:09:04.355Z",
+      "platform": "darwin",
+      "arch": "arm64",
+      "hostname": "Mayanks-MacBook-Pro.local",
+      "cpuCount": 10,
+      "cpuModel": "Apple M1 Pro",
+      "onAC": true,
+      "powerSource": "AC Power",
+      "load1m": 14.943,
+      "load5m": 14.04,
+      "load15m": 10.208,
+      "competingProcesses": [],
+      "daemonPids": [
+        8887
+      ],
+      "daemonPid": 8887,
+      "socketOwnerPid": 8887,
+      "daemonWarnings": []
+    }
+  },
+  "method": {
+    "design": "counterbalanced alternating rounds; raw sockets; two daemons over one fixture",
+    "statistic": "median of paired rounds; batch = concurrent greps issued together",
+    "ci": "seeded bootstrap, 10000 resamples",
+    "note": "ratio ~1 = batch finishes like one call; ~N = serialized; cores = daemon cputime / wall during the batch"
+  },
+  "platform": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpus": 10,
+    "loadavg": [
+      22.04833984375,
+      15.76025390625,
+      10.93701171875
+    ]
+  },
+  "fixture": {
+    "root": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/us-conc-tree-17093-0-EEpl2Z/tree",
+    "files": 5000
+  },
+  "workload": {
+    "pattern": "value",
+    "limit": 100000,
+    "concurrent": 3,
+    "pairs": 20
+  },
+  "daemons": [
+    {
+      "name": "baseline",
+      "bin": "/tmp/us-base/engine/target/release/ultrasearch",
+      "pid": 17110,
+      "entries": 5001,
+      "content_docs": 5000,
+      "socket": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/us-conc-17093-1-khHAQs/data/ultrasearch.sock"
+    },
+    {
+      "name": "treatment",
+      "bin": "/Users/batra/ultrasearch-waves2/platform/engine/target/release/ultrasearch",
+      "pid": 17112,
+      "entries": 5001,
+      "content_docs": 5000,
+      "socket": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/us-conc-17093-2-lL93YQ/data/ultrasearch.sock"
+    }
+  ],
+  "summary": {
+    "baseline": {
+      "singleMedianMs": 181.1910000000007,
+      "batchMedianMs": 316.4302705000009,
+      "ratio": 1.7463906623397392,
+      "singleCI": [
+        143.60562500000015,
+        220.71762499999977
+      ],
+      "batchCI": [
+        274.4892710000004,
+        330.11441699999887
+      ],
+      "coresUsed": 5.126963592562422,
+      "n": 20
+    },
+    "treatment": {
+      "singleMedianMs": 190.84349999999995,
+      "batchMedianMs": 324.9397919999999,
+      "ratio": 1.702650559227849,
+      "singleCI": [
+        172.10485399999834,
+        211.8272079999997
+      ],
+      "batchCI": [
+        301.57218700000067,
+        346.4592499999999
+      ],
+      "coresUsed": 5.006872847844247,
+      "n": 20
+    }
+  },
+  "pairedBatchDeltaMs": {
+    "n": 20,
+    "point": 8.150458999999046,
+    "lo": -32.49587599999904,
+    "hi": 47.238374999999905,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": -0.22163247446846462,
+    "acceleration": 0,
+    "quantity": "delta(a - b)"
+  },
+  "pairedBatchRatio": {
+    "n": 20,
+    "point": 0.9748754644598424,
+    "lo": 0.8589844531280322,
+    "hi": 1.1095402148233489,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": 0.2111118416892475,
+    "acceleration": -0.000036425735689293113,
+    "quantity": "ratio(medianB / medianA)"
+  },
+  "significant": false,
+  "samples": {
+    "baseline": {
+      "single": [
+        130.13066700000036,
+        128.61024999999972,
+        104.15758300000016,
+        174.6304170000003,
+        218.05779200000052,
+        125.54387499999939,
+        157.4103329999998,
+        195.18116699999882,
+        110.74391699999978,
+        161.06587500000023,
+        224.16804199999933,
+        148.1599580000002,
+        139.0512920000001,
+        317.3991249999999,
+        224.83029199999874,
+        241.57604100000026,
+        241.14450000000215,
+        188.8425419999985,
+        223.37745799999902,
+        187.75158300000112
+      ],
+      "batch": [
+        256.791917,
+        265.4663330000003,
+        238.64279199999964,
+        310.2649170000004,
+        319.534584,
+        267.8110830000005,
+        269.20058400000016,
+        263.2228749999995,
+        330.95270900000105,
+        342.6662500000002,
+        287.7486250000002,
+        279.7779580000006,
+        316.2519160000011,
+        467.86933299999873,
+        541.2235409999994,
+        376.30670800000007,
+        329.2761249999967,
+        329.15291699999943,
+        316.60862500000076,
+        338.2983340000028
+      ]
+    },
+    "treatment": {
+      "single": [
+        126.632791,
+        201.58016700000007,
+        131.58841699999994,
+        199.0200419999992,
+        172.4869579999995,
+        261.7414579999995,
+        162.38462499999878,
+        128.492166,
+        219.43333299999904,
+        97.76470800000061,
+        184.65079199999855,
+        177.09312499999942,
+        256.820334,
+        582.3330829999995,
+        372.08358299999963,
+        197.03620800000135,
+        204.22108300000036,
+        171.72274999999718,
+        181.28883300000234,
+        244.60800000000017
+      ],
+      "batch": [
+        324.4023750000001,
+        334.9870000000001,
+        255.20737499999996,
+        325.4772089999997,
+        309.9875410000004,
+        368.2062500000011,
+        339.25004199999967,
+        259.1655410000003,
+        330.51629200000025,
+        278.7317920000005,
+        318.3130830000009,
+        296.6570410000004,
+        350.375,
+        494.32166699999834,
+        503.31145900000047,
+        441.4188329999997,
+        294.8435419999987,
+        272.6474999999991,
+        362.4022079999995,
+        306.48733300000094
+      ]
+    }
+  }
+}

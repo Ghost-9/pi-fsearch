@@ -50,6 +50,12 @@ export interface UltraSearchClientOptions {
   maxOverscan?: number;
   /** Attempt to launch the daemon binary when the socket is unreachable. Default true. */
   autoSpawnDaemon?: boolean;
+  /**
+   * Binaries to try, in order, when a spawn is needed. Default: the known
+   * install paths. Injectable so a test can prove the connect-before-spawn
+   * guard without launching a real daemon (issue #45).
+   */
+  daemonBinaries?: string[];
 }
 
 export interface RequestOptions {
@@ -105,6 +111,74 @@ const DEFAULT_MAX_OVERSCAN = 500;
 const DEFAULT_GREP_BUDGET_MS = 2500;
 const DEFAULT_MULTI_GREP_BUDGET_MS = 3000;
 const IGNORE_TTL_MS = 60_000;
+/** "Connect before spawn" grace window (#45): 4 probes x 250 ms + 3 pauses. */
+const SPAWN_GRACE_ATTEMPTS = 4;
+const SPAWN_PROBE_MS = 250;
+const SPAWN_GRACE_PAUSE_MS = 150;
+
+/** Pids owning `socket`, via `lsof -t` (async: the request path never blocks). */
+function socketOwnerPids(socket: string): Promise<number[]> {
+  return new Promise((resolve) => {
+    child_process.execFile("lsof", ["-t", socket], { timeout: 750 }, (err, stdout) => {
+      if (err) return resolve([]);
+      resolve([...new Set(String(stdout).split("\n").map((s) => Number(s.trim())).filter((n) => Number.isFinite(n) && n > 0))]);
+    });
+  });
+}
+
+/** The pre-rename legacy socket path, when it exists (macOS migration only). */
+function legacySocketPath(): string | null {
+  if (process.platform !== "darwin") return null;
+  const p = path.join(os.homedir(), "Library", "Application Support", "FSearch", "fsearch.sock");
+  try {
+    return fs.existsSync(p) ? p : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Whether two paths resolve to one file (a symlinked legacy socket is not a duplicate). */
+function sameFile(a: string, b: string): boolean {
+  try {
+    return fs.realpathSync(a) === fs.realpathSync(b);
+  } catch {
+    return false;
+  }
+}
+
+/** Ask a daemon on `socket` for its pid (bounded); null when none answers. */
+function probeDaemonPid(socket: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    const sock = net.connect(socket);
+    let buf = "";
+    let settled = false;
+    const done = (pid: number | null) => {
+      if (settled) return;
+      settled = true;
+      sock.removeAllListeners();
+      sock.destroy();
+      resolve(pid);
+    };
+    const timer = setTimeout(() => done(null), 500);
+    sock.once("connect", () => sock.write(JSON.stringify({ op: "status", id: 0 }) + "\n"));
+    sock.on("data", (d) => {
+      buf += d.toString();
+      const i = buf.indexOf("\n");
+      if (i < 0) return;
+      clearTimeout(timer);
+      try {
+        const msg = JSON.parse(buf.slice(0, i));
+        done(typeof msg.pid === "number" ? msg.pid : null);
+      } catch {
+        done(null);
+      }
+    });
+    sock.once("error", () => {
+      clearTimeout(timer);
+      done(null);
+    });
+  });
+}
 
 /**
  * Extracts plain words that must be strictly matched in exact mode.
@@ -187,6 +261,7 @@ export class UltraSearchClient {
   private rrIndex = 0;
   private spawnAttempted = false;
   private autoSpawnDaemon: boolean;
+  private daemonBinaries?: string[];
   private activeFallbacks = new Set<AbortController>();
 
   constructor(options: UltraSearchClientOptions = {}) {
@@ -198,7 +273,8 @@ export class UltraSearchClient {
     this.fallbackTimeoutMs = options.fallbackTimeoutMs ?? DEFAULT_FALLBACK_TIMEOUT_MS;
     this.deadlineSlackMs = options.deadlineSlackMs ?? DEFAULT_DEADLINE_SLACK_MS;
     this.maxOverscan = options.maxOverscan ?? DEFAULT_MAX_OVERSCAN;
-    this.autoSpawnDaemon = options.autoSpawnDaemon ?? true;
+    this.autoSpawnDaemon = (options.autoSpawnDaemon ?? true) && process.env.PI_ULTRASEARCH_NO_SPAWN !== "1";
+    this.daemonBinaries = options.daemonBinaries;
     for (let i = 0; i < this.maxLanes; i++) this.lanes.push(this.createLane(i));
   }
 
@@ -290,16 +366,32 @@ export class UltraSearchClient {
     this.ignoreDensity.set(scope, prev === undefined ? observed : prev * 0.7 + observed * 0.3);
   }
 
-  private trySpawnDaemon(): void {
-    // One spawn attempt per client, and never when the caller opted out (benchmarks
-    // and tests must not start a competing daemon mid-measurement).
-    if (!this.autoSpawnDaemon || this.spawnAttempted) return;
+  private trySpawnDaemon(): Promise<void> {
+    // One spawn attempt per client, and never when the caller opted out
+    // (benchmarks and tests must not start a competing daemon mid-measurement).
+    if (!this.autoSpawnDaemon || this.spawnAttempted) return Promise.resolve();
     this.spawnAttempted = true;
+    return this.spawnDaemonIfNoServer();
+  }
+
+  /**
+   * "Connect before spawn" (issue #45): a daemon that is already starting
+   * may not have bound the socket yet, and a failed connect is not evidence
+   * that none is coming. Probe the socket directly for a short grace window
+   * first; only when nothing answers for the whole window do we start one.
+   * A spawn while one is live is a no-op on the engine side too (flock on
+   * `socket.lock`), but each spawn attempt would otherwise be a churn storm.
+   */
+  private async spawnDaemonIfNoServer(): Promise<void> {
+    for (let i = 0; i < SPAWN_GRACE_ATTEMPTS; i++) {
+      if (await this.socketAnswers(SPAWN_PROBE_MS)) return;
+      await sleep(SPAWN_GRACE_PAUSE_MS);
+    }
     try {
       // Never spawn from ~/Applications: that path historically held a stale
       // pre-rename build that bound the legacy socket and started a second,
       // divergent index (issue #45). Only spawn from a known-fresh install.
-      const candidates = [
+      const candidates = this.daemonBinaries ?? [
         "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch",
         path.join(os.homedir(), ".local/bin/ultrasearch-daemon"),
         "/usr/local/bin/ultrasearch-daemon",
@@ -316,6 +408,31 @@ export class UltraSearchClient {
         }
       }
     } catch {}
+  }
+
+  /** A bounded direct connect+ping: does anything answer on `socketPath` right now? */
+  private socketAnswers(timeoutMs: number): Promise<boolean> {
+    return new Promise((resolve) => {
+      const sock = net.connect(this.socketPath);
+      let settled = false;
+      const done = (ok: boolean) => {
+        if (settled) return;
+        settled = true;
+        sock.removeAllListeners();
+        sock.destroy();
+        resolve(ok);
+      };
+      const timer = setTimeout(() => done(false), timeoutMs);
+      sock.once("connect", () => sock.write(JSON.stringify({ op: "ping", id: 0 }) + "\n"));
+      sock.once("data", (d) => {
+        clearTimeout(timer);
+        done(d.toString().includes("\"ok\":true") || d.toString().includes("\"ok\": true"));
+      });
+      sock.once("error", () => {
+        clearTimeout(timer);
+        done(false);
+      });
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -386,7 +503,7 @@ export class UltraSearchClient {
     try {
       return await lane.connecting;
     } catch (err) {
-      if (retryCount === 0) this.trySpawnDaemon();
+      if (retryCount === 0) await this.trySpawnDaemon();
       if (retryCount >= this.maxReconnectRetries) throw err;
       await sleep(Math.min(100 * Math.pow(2, retryCount), 500));
       return this.connectLane(lane, retryCount + 1);
@@ -513,7 +630,54 @@ export class UltraSearchClient {
   }
 
   public async status(): Promise<UltraSearchStatusResponse> {
-    return await this.request({ op: "status" });
+    const res = await this.request<UltraSearchStatusResponse>({ op: "status" });
+    await this.annotateDaemonHealth(res);
+    return res;
+  }
+
+  /**
+   * Duplicate-daemon detection for `status` (issue #45). The engine can only
+   * report its own pid and the single-instance lock; a second daemon from a
+   * stale install answers on a *different* socket, so the client checks the
+   * socket's owner pids and probes the pre-rename legacy path when it is not
+   * the same socket. Best-effort: a missing `lsof`, a permission failure or
+   * a legacy path that is a symlink to this socket is not a duplicate.
+   */
+  private async annotateDaemonHealth(res: UltraSearchStatusResponse): Promise<void> {
+    const socket = res.socket ?? this.socketPath;
+    const owners = await socketOwnerPids(socket);
+    const duplicates: Array<{ path: string; pid?: number; reason: string }> = [];
+    if (owners.length > 1) {
+      duplicates.push({ path: socket, reason: `socket owned by ${owners.length} processes: ${owners.join(",")}` });
+    } else if (owners.length === 1 && typeof res.pid === "number" && owners[0] !== res.pid) {
+      duplicates.push({ path: socket, pid: owners[0], reason: `socket owner ${owners[0]} != answering pid ${res.pid}` });
+    }
+    if (typeof res.lock_pid === "number" && res.lock_pid !== 0 && typeof res.pid === "number" && res.lock_pid !== res.pid) {
+      duplicates.push({ path: socket, pid: res.lock_pid, reason: `socket.lock pid ${res.lock_pid} != answering pid ${res.pid}` });
+    }
+    const legacy = sameFile(socket, resolveDefaultSocketPath()) ? legacySocketPath() : null;
+    if (legacy && !sameFile(legacy, socket)) {
+      const pid = await probeDaemonPid(legacy);
+      if (pid !== null && pid !== res.pid) {
+        duplicates.push({ path: legacy, pid, reason: "a second daemon answers on the legacy socket" });
+      }
+    }
+    res.daemon_health = {
+      pid: res.pid,
+      uptime_ms: res.uptime_ms,
+      socket,
+      socket_owners: owners,
+      lock_pid: res.lock_pid,
+      duplicate_suspected: duplicates.length > 0,
+      duplicates,
+    };
+    if (duplicates.length > 0) {
+      // A runtime warning, not a measurement refusal: the caller decides.
+      process.emitWarning(
+        `ultrasearch: ${duplicates.length} duplicate/stale daemon signal(s): ${duplicates.map((d) => d.reason).join("; ")}`,
+        { code: "ULTRASEARCH_DUPLICATE_DAEMON" }
+      );
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -624,6 +788,8 @@ export class UltraSearchClient {
       // docs/engine-changes.md.
       if (options.root) payload.root = options.root;
       if (budgetMs !== undefined) payload.budget_ms = budgetMs;
+      if (options.early_exit !== undefined) payload.early_exit = options.early_exit;
+      if (options.low_run !== undefined) payload.low_run = options.low_run;
 
       let res: UltraSearchSearchResponse = await this.request<UltraSearchSearchResponse>(
         payload,

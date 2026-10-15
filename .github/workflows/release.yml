@@ -1,0 +1,74 @@
+# Release: verify the commit, attach the evidence (#33).
+#
+# Every release must carry a benchmark artifact. The workflow runs the checks
+# that are meaningful on a hosted runner (unit tests, engine tests, hermetic
+# gate), records them, and attaches the result together with the frozen
+# reference measurements, whose own `status` fields are copied verbatim.
+# Absolute latency numbers are NOT produced here: see docs/sla.md.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (must already exist)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      # Records each check's exit status into checks.json for the artifact.
+      - name: Run checks (recorded)
+        run: node bench/run-checks.mjs --out "$RUNNER_TEMP/checks.json"
+
+      - name: Package smoke test
+        run: |
+          set -euo pipefail
+          npm pack --pack-destination "$RUNNER_TEMP"
+          TARBALL="$(ls "$RUNNER_TEMP"/pi-ultrasearch-*.tgz)"
+          tar -tzf "$TARBALL" | grep -q 'package/dist/bin/cli.js'
+          cp "$TARBALL" "$RUNNER_TEMP/pi-ultrasearch-$TAG.tgz"
+
+      - name: Write release artifact
+        run: node bench/release-artifact.mjs --tag "$TAG" --checks-json "$RUNNER_TEMP/checks.json"
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" > /dev/null 2>&1 || gh release create "$TAG" --generate-notes
+          gh release upload "$TAG" --clobber \
+            "bench/results/release-$TAG.json" \
+            "$RUNNER_TEMP/pi-ultrasearch-$TAG.tgz"
+          gh release view "$TAG" --json assets --jq '.assets[].name'

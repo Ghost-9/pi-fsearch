@@ -281,31 +281,42 @@ recipes, per-client matrix), `test/roots.test.ts`, `test/history.test.ts`, `test
 
 A note for a **fresh worktree**: the live latency gate greps the repository root, and a newly created checkout
 starts with a cold content index in the resident daemon; the first run can exceed the p95 threshold until the
-daemon has indexed that path. Warm it with a couple of grep calls (or re-run the gate) before treating a failing
-live gate as a regression.
+daemon has indexed that path (the re-scoped live gate derives its ceiling from the raw daemon leg measured in the
+same run, so a cold index raises both sides of the comparison; warm the path with a couple of grep calls before
+treating a failure as a regression).
 
-The CI workflow runs on a bare `macos-latest` runner with **no daemon installed**. It executes
-`typecheck → build → npm test → package smoke → test:gate`. The package smoke step runs `npm pack`,
-asserts the tarball contains `package/dist/bin/cli.js`, extracts it and runs the packed CLI's `--help`.
-The hermetic tests pass, daemon-dependent integration tests report as skipped,
-and the hermetic mock-socket gate enforces p95 < 10 ms (search) and < 5 ms (grep) on the client IPC path.
+The CI workflow now runs two jobs. `test-macos` (the reference platform) executes
+`typecheck → build → npm test → package smoke → cargo test --release → test:engine → test:gate`, the last on a real
+isolated daemon. `test-linux` runs `typecheck → build → npm test → package smoke → test:gate` (hermetic part; the
+live part skips without a daemon) plus a no-daemon CLI smoke test; a third, non-gating job archives the Linux
+daemon compiler output as a known blocker (`docs/linux-daemon-blockers.md`). The package smoke step runs
+`npm pack`, asserts the tarball contains `package/dist/bin/cli.js`, extracts it and runs the packed CLI's `--help`.
+The hermetic mock-socket gate enforces p95 < 10 ms (search) and < 5 ms (grep) on the client IPC path.
 
-The historical latency gate (real daemon, `test/benchmark-gate.test.ts`) still runs on developer machines and any
-runner that provides the daemon.
+### Service levels
+
+The live gate calibrates against the bare daemon socket in the same run
+(`ceiling = max(12 ms, rawP95 × 2 + 1)`) and asserts client overhead < 3 ms; a cold/stale window can only relax the
+absolute ceiling, up to a hard blow-up cap. The contracts this repository promises per scope (warm path, cold/global
+with `budget_ms`, content grep, and the explicitly unmeasured scan path), the evidence each one is enforced by, and the
+release artifact that carries it are in **[`docs/sla.md`](docs/sla.md)**.
 
 ---
 
 ## Known limits & gaps
 
 - **Content-index coverage is partial** — the daemon indexes text for its tracked corpus (e.g. ~129 k docs of
-  3.7 M entries on this machine). Path search is whole-disk; content grep is not.
-- **Tail latency** — cold/global queries have been observed at 1.7–4.0 s. Per-query deadlines and partial results
-  are not implemented yet.
+  3.7 M entries on this machine). Path search is whole-disk; content grep is not. The policy is configurable and
+  reported in `status.content_policy` ([`docs/content-index-policy.md`](docs/content-index-policy.md)).
+- **Tail latency** — cold/global queries are bounded by `budget_ms` (partial answers carry `complete:false`);
+  an opt-in `early_exit`/`low_run` adds a low-score-run stop. An unbounded query can still take seconds on a
+  whole-disk scope, by design.
 - **Fallback quality** — when the daemon is unavailable the client falls back to `rg`/`find` (sync spawn). This is
   a correctness net, not the fast path.
-- **Staleness windows** — `FSEvents dropped events` and segment compactions can briefly delay fresh results;
-  `status` does not yet surface a staleness metric.
-- **Platforms** — socket path resolution exists for Linux/Windows, but the daemon and CI are macOS-only today.
+- **Staleness windows** — `status` reports `event_lag`, `staleness_ms` and `replay_in_progress` (#19); a result may
+  still miss changes made during a replay window, which the fields make visible.
+- **Platforms** — socket path resolution exists for Linux/Windows, and the client, tests and hermetic gate run on
+  Linux CI; the daemon itself is macOS-only (exact blockers in [`docs/linux-daemon-blockers.md`](docs/linux-daemon-blockers.md)).
 - **Frecency hook** — wired and covered by unit-level code paths, but no end-to-end regression test yet.
 - Full list with priorities: [`OPTIMIZATIONS.md`](OPTIMIZATIONS.md).
 
