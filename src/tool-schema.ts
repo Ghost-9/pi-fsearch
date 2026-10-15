@@ -45,6 +45,7 @@ const QUERY: UltraSearchToolSchema = {
     global: { type: "boolean", description: "Search whole disk instead of workspace" },
     near: { type: "string", description: "Optional file path to re-rank results by folder proximity" },
     budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
+    explain: { type: "boolean", description: "Append engine reason tags ([exact] [glob] [git:modified] [proximity] [frecency] [symbol]) to each result. Default true." },
   },
   required: ["query"],
   returns: "search",

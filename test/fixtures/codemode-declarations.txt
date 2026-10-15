@@ -14,6 +14,8 @@ declare namespace tools {
     near?: string;
     /** Optional server-side deadline (ms); partial results carry complete:false */
     budget_ms?: number;
+    /** Append engine reason tags ([exact] [glob] [git:modified] [proximity] [frecency] [symbol]) to each result. Default true. */
+    explain?: boolean;
   }): Promise<{
     matches: Array<{
       path: string;

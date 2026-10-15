@@ -1,7 +1,7 @@
 import * as readline from "node:readline";
 import * as path from "node:path";
 import { UltraSearchClient } from "./client.ts";
-import { formatGrepFiles } from "./formatter.ts";
+import { formatGrepFiles, explainReasonTags } from "./formatter.ts";
 import { searchSemanticIntent } from "./semantic.ts";
 import { summarizeAudit, formatAuditSummary } from "./telemetry.ts";
 import { diagnoseEmptyQuery } from "./observer.ts";
@@ -365,7 +365,13 @@ export class UltraSearchMcpServer {
         const hint = await diagnoseEmptyQuery(args.query, activeRoot, this.client);
         return text(`No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}${rootNote}`, false, meta);
       }
-      const attributed = hits.map((h: any) => (rootNote && !h.active && h.root ? `${h.path} [root: ${h.root}] (${h.kind}, score: ${h.score})` : `${h.path} (${h.kind}, score: ${h.score})`));
+      const attributed = hits.map((h: any) => {
+        const tags = args.explain === false ? "" : explainReasonTags(args.query, h).map((t: string) => `[${t}]`).join(" ");
+        const suffix = tags ? ` ${tags}` : "";
+        return rootNote && !h.active && h.root
+          ? `${h.path} [root: ${h.root}] (${h.kind}, score: ${h.score})${suffix}`
+          : `${h.path} (${h.kind}, score: ${h.score})${suffix}`;
+      });
       return text(`${attributed.join("\n")}${rootNote}`, false, meta);
     }
 
