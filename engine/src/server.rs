@@ -1099,7 +1099,10 @@ fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Val
         .map(|f| {
             let matches = f.lines.iter().zip(&f.hits).map(|((n, t), h)| {
                 let mut m = json!({"line": n, "text": t, "col": h.col, "ranges": h.ranges});
-                if h.def {
+                // `def` is emitted only when it was asked for: the flag is now
+                // computed for ranking too (`Grep::rank`), and that must not
+                // change the shape of a plain grep answer.
+                if g.defs && h.def {
                     m["def"] = true.into();
                 }
                 if g.before > 0 {

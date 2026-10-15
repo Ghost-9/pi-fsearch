@@ -2005,6 +2005,11 @@ fn path_ok<'a>(filt: &Query, ext_only: bool, paths: &mut PathCursor<'a>, s: &'a 
 }
 
 /// Candidate order tier: your files first, then dot-dirs, logs and transcripts.
+/// Prose (`.md`, `.rst`, ...) sorts with the logs: a grep page is filled from
+/// the candidates read first, so a document must not crowd out the source file
+/// that declares what the caller is looking for. On a fresh checkout, where
+/// every mtime ties, this tier is what keeps `src/` ahead of a changelog; see
+/// `page_key`, which then orders the page by what the files actually contain.
 fn doc_rank(path: &[u8]) -> i8 {
     let mut r = 0i8;
     if path.split(|&b| b == b'/').any(|c| c.first() == Some(&b'.')) {
@@ -2012,6 +2017,9 @@ fn doc_rank(path: &[u8]) -> i8 {
     }
     let name = &path[path.iter().rposition(|&b| b == b'/').map_or(0, |p| p + 1)..];
     if [&b".jsonl"[..], b".ndjson", b".log", b".lock", b".sum"].iter().any(|x| name.ends_with(x)) {
+        r -= 1;
+    }
+    if class_rank(path) == 1 {
         r -= 1;
     }
     r
@@ -3436,6 +3444,11 @@ pub struct Grep {
     pub after: usize,
     /// Tell which matched lines define the name they matched (`Hit::def`).
     pub defs: bool,
+    /// Order the returned page by what its files contain (a definition of the
+    /// match first, then more matches, then source over prose) instead of by
+    /// the candidate order. Off for symbol mode, whose candidate plan already
+    /// means "the docs that define it". See `page_key`.
+    pub rank: bool,
     /// Candidates to pass over: the `next` of the page before.
     pub skip: usize,
     /// The matching regex, compiled when first needed (a plain ASCII
@@ -3485,6 +3498,7 @@ impl Grep {
             before: 0,
             after: 0,
             defs: false,
+            rank: mode != GrepMode::Symbol,
             skip: 0,
             re: std::sync::OnceLock::new(),
             src,
@@ -3652,6 +3666,32 @@ pub struct Hit {
     pub after: Vec<String>,
 }
 
+/// A page's order, best first: a file whose match is a definition beats one
+/// that only mentions it; then more matches beat fewer; then source beats
+/// prose. It is a *content* key — nothing here is known before the file is
+/// read — so it orders the page the search already read, and cannot by itself
+/// pull a file into the page.
+///
+/// Returns keys in comparing order: `(def, Reverse(matches), class)`.
+fn page_key(f: &FileMatches) -> (u8, std::cmp::Reverse<usize>, u8) {
+    let def = f.hits.iter().any(|h| h.def);
+    let matches = f.hits.iter().map(|h| h.ranges.len()).sum::<usize>();
+    (if def { 0 } else { 1 }, std::cmp::Reverse(matches), class_rank(&f.path))
+}
+
+/// 0 for anything you would edit, 1 for a document about it. Only a tie-break:
+/// when a definition and a match count leave two files level, the source file
+/// is the one the caller can act on.
+fn class_rank(path: &[u8]) -> u8 {
+    let name = &path[path.iter().rposition(|&b| b == b'/').map_or(0, |p| p + 1)..];
+    let dot = name.iter().position(|&b| b == b'.').unwrap_or(name.len());
+    let (stem, ext) = (&name[..dot], &name[dot..]);
+    const DOC_EXTS: [&[u8]; 8] = [b".md", b".markdown", b".rst", b".txt", b".adoc", b".asciidoc", b".org", b".tex"];
+    const DOC_NAMES: [&[u8]; 7] = [b"README", b"CHANGELOG", b"CONTRIBUTING", b"NOTICE", b"LICENSE", b"AUTHORS", b"COPYING"];
+    let prose = DOC_EXTS.iter().any(|e| ext.eq_ignore_ascii_case(e)) || DOC_NAMES.iter().any(|n| stem.eq_ignore_ascii_case(n));
+    u8::from(prose)
+}
+
 /// Read candidates in rank order until `limit` files have matched or the
 /// time budget is spent (best-ranked results first, so a cut-short search
 /// still returns the ones you most likely wanted). Each read thread claims
@@ -3777,8 +3817,15 @@ fn verify_from<'a>(
     hits.truncate(limit);
     let done = next.into_inner().min(n);
     let complete = done == n || hits.len() >= limit;
-    // The next page: past the last file shown, or where reading stopped.
-    let more = if hits.len() >= limit { hits.last().map(|h| h.0 + 1) } else { (done < n).then_some(done) };
+    // Paging stays in candidate order: the page after this one resumes past
+    // the furthest candidate read, whatever order this page is shown in.
+    let more = if hits.len() >= limit { hits.iter().map(|h| h.0).max().map(|i| i + 1) } else { (done < n).then_some(done) };
+    // The page's own order: what the files contain decides (see `page_key`).
+    // `sort_by_key` is stable, so candidates the key cannot separate keep the
+    // order the read found them in.
+    if g.rank && hits.len() > 1 {
+        hits.sort_by_key(|h| page_key(&h.1));
+    }
     let files = hits.into_iter().map(|h| h.1).collect();
     (GrepResult { files, candidates: n, read: read.into_inner(), complete, next: more }, done)
 }
@@ -3908,8 +3955,12 @@ fn lines_at(
             hit.ranges.push((a, b.max(a)));
         }
         // With an AST, every kept line is a declaration line (the filter
-        // above); without one the lexical confirmation decides.
-        hit.def |= g.defs && (ast_defs.is_some() || defined_at(buf, start, end - start));
+        // above); without one the lexical confirmation decides. Only matches
+        // inside the shown text (the line's first 400 bytes) can be one of
+        // them, and once a line has one the rest of its matches are free.
+        if (g.defs || g.rank) && !hit.def && start - ls < raw.len() {
+            hit.def = ast_defs.is_some() || defined_at(buf, start, end - start);
+        }
     }
     (lines, hits)
 }

@@ -1,0 +1,2669 @@
+{
+  "meta": {
+    "suite": "wave3-measure",
+    "label": "final-rank",
+    "generated_at": "2026-10-15T12:10:56.480Z",
+    "status": "provisional",
+    "gate": {
+      "status": "provisional",
+      "gate_pass": false,
+      "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "on_ac": true,
+      "load1": 18.9,
+      "competing_processes": [],
+      "checked_at": "2026-10-15T12:10:56.318Z"
+    },
+    "daemon_provenance": {
+      "socket": "/Users/batra/.cache/us-verify/w3-g-rank-1792064657/ultrasearch.sock",
+      "socket_owner_pid": 3197,
+      "socket_owner_count": 1,
+      "serve_process_count": 1,
+      "single_socket_owner": true,
+      "entries": 40,
+      "content_docs": 34,
+      "content_pending": 0,
+      "index_bytes": 11904,
+      "full_disk_access": false,
+      "staleness_ms": 0
+    },
+    "head_commit": "189673580d4285c275a2f4d454071f7cb85d50b8",
+    "engine": {
+      "bin": "/tmp/rf-bins/rank/ultrasearch",
+      "sha256": "7b413d874fa2a824d2a4c6c9c679b10c1f83693311761d4453be582988b24a3e"
+    },
+    "client_tree_dirty": true,
+    "judgments": {
+      "path": "bench/judgments/wave1-judgments.json",
+      "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+      "queries": 30
+    },
+    "corpus": {
+      "root": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+      "files": 33,
+      "bytes": 273239,
+      "tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d"
+    },
+    "metric_definitions": {
+      "recall10": "mean over must-hit rows of |expected(grade>=1) ∩ top10| / |expected(grade>=1)|",
+      "ndcg10": "mean nDCG@10, gains 2^g-1, discount 1/log2(rank+1), IDCG over all expected grades",
+      "reformulation_signal": "share of must-hit rows whose top-1 grade < 2",
+      "recall_at_limit": "over the FULL returned list (no kMax clamp)"
+    }
+  },
+  "aggregates": {
+    "all": {
+      "n": 26,
+      "recall10": 0.7961538461538461,
+      "recall5": 0.6733974358974358,
+      "recall3": 0.6160256410256412,
+      "success3": 0.6160256410256412,
+      "success10": 0.9615384615384616,
+      "mrr10": 0.9692307692307692,
+      "ndcg10": 0.9120703849896526,
+      "zero_result_rate": 0,
+      "ms_p50": 0.9429380000000265,
+      "ms_p95": 14.552843749999965,
+      "ms_max": 38.167958
+    },
+    "recall_at_10": 0.7961538461538461,
+    "ndcg_at_10": 0.9120703849896526,
+    "mrr_at_10_rel1": 0.9692307692307692,
+    "zero_result_rate": 0,
+    "false_positive_rate": 0,
+    "reformulation_signal": 0.038461538461538464,
+    "reformulation_by_lane": {
+      "path": 0,
+      "grep-literal": 0,
+      "grep-regex": 0,
+      "symbol": 0,
+      "semantic": 0.2,
+      "ranking-frecency": 0,
+      "ranking-proximity": 0,
+      "ranking-boost-ab": 0,
+      "ranking-symbol-intrafile": 0
+    },
+    "ndcg_by_lane": {
+      "path": 0.9174054120491127,
+      "grep-literal": 0.9834638825425914,
+      "grep-regex": 0.9940283442155129,
+      "symbol": 0.8659526309842432,
+      "semantic": 0.8313442974252547,
+      "ranking-frecency": 0.9173194127129571,
+      "ranking-proximity": 0.8609101556836468,
+      "ranking-boost-ab": 0.9052598568324595,
+      "ranking-symbol-intrafile": 1
+    },
+    "recall10_by_lane": {
+      "path": 0.8055555555555557,
+      "grep-literal": 0.9,
+      "grep-regex": 1,
+      "symbol": 0.5083333333333333,
+      "semantic": 1,
+      "ranking-frecency": 0.5,
+      "ranking-proximity": 0.3333333333333333,
+      "ranking-boost-ab": 0.5,
+      "ranking-symbol-intrafile": 1
+    },
+    "ms_p50": 0.9429380000000265,
+    "ms_p95": 14.552843749999965,
+    "negatives": 4,
+    "neg_rows": []
+  },
+  "rows": [
+    {
+      "id": "P1",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "package.json",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"package.json\", in=<root>, limit=10)",
+      "ms": 2.0627079999999296,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "package.json"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "package.json",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "P2",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "ci.yml",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"ci.yml\", in=<root>, limit=10)",
+      "ms": 0.788332999999966,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        ".github/workflows/ci.yml"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": ".github/workflows/ci.yml",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "P3",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "client.ts",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"client.ts\", in=<root>, limit=10)",
+      "ms": 0.6065830000000005,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.7871546029909718,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.5,
+        "recall_at_limit_frozen_kmax10": 0.5
+      }
+    },
+    {
+      "id": "P5",
+      "lane": "path",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "bench",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"bench\", in=<root>, limit=10)",
+      "ms": 0.6537500000001728,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "test/bench.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 3
+          },
+          {
+            "rank": 3,
+            "path": "test/deep-bench.ts",
+            "grade": 2
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "codemode",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"codemode\", in=<root>, limit=10)",
+      "ms": 0.5437079999999241,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "src/codemode.ts"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/codemode.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.3333333333333333,
+        "recall_at_limit_frozen_kmax10": 0.3333333333333333
+      }
+    },
+    {
+      "id": "P7",
+      "lane": "path",
+      "difficulty": "tail",
+      "must_hit": true,
+      "negative": false,
+      "query": "src/**/*.ts",
+      "params": {
+        "limit": 30
+      },
+      "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
+      "ms": 0.9090840000001208,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts",
+        "src/observer.ts",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/codemode.ts",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/compactor.ts",
+            "grade": 2
+          },
+          {
+            "rank": 4,
+            "path": "src/formatter.ts",
+            "grade": 3
+          },
+          {
+            "rank": 5,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "src/observer.ts",
+            "grade": 2
+          },
+          {
+            "rank": 7,
+            "path": "src/recursive-learning.ts",
+            "grade": 2
+          },
+          {
+            "rank": 8,
+            "path": "src/sanitize.ts",
+            "grade": 2
+          },
+          {
+            "rank": 9,
+            "path": "src/semantic.ts",
+            "grade": 2
+          },
+          {
+            "rank": 10,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.125,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.375,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8563677136200579,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "P8",
+      "lane": "path",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "kubectl_helm_chart_values",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
+      "ms": 0.5575000000001182,
+      "source": null,
+      "error": null,
+      "retrieved": [],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": true,
+      "false_positive": false,
+      "score": {
+        "top10": [],
+        "recall_at_1": null,
+        "recall_at_3": null,
+        "recall_at_5": null,
+        "recall_at_10": null,
+        "success_recall_at_10": null,
+        "mrr_at_10_rel1": 0,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": null,
+        "top1_grade": 0,
+        "reformulation_signal": true,
+        "recall_at_limit": null,
+        "recall_at_limit_frozen_kmax10": null
+      }
+    },
+    {
+      "id": "G1",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "estimateTokensSaved",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.7913750000000164,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/telemetry.ts",
+        "AUDIT-2026-10-14.md"
+      ],
+      "matches": {
+        "src/telemetry.ts": [
+          "export function estimateTokensSaved(",
+          "row.tokensSaved = estimateTokensSaved(row.tool, row.hitCount);",
+          "const saved = r.tokensSaved ?? estimateTokensSaved(r.tool, r.hitCount);"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "3. **Heuristic tokens:** `estimateTokensSaved()` is a formula, not a measurement; it counts *files*, not matched text, and is"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "G2",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "enforceExactQuery",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.35950000000002547,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "matches": {
+        "src/client.ts": [
+          "export function enforceExactQuery(query: string): string {",
+          "const finalQuery = options.fuzzy ? query : enforceExactQuery(query);"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "G3",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "SYMBOL_REGEX",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.3503329999998641,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/formatter.ts"
+      ],
+      "matches": {
+        "src/formatter.ts": [
+          "const SYMBOL_REGEX = /^\\s*(?:pub\\s+)?(?:async\\s+)?(?:export\\s+)?(?:default\\s+)?(?:func|fn|function|class|struct|interface|type|trait|enum|def|protocol|actor|extension)\\b/;",
+          "const aIsDef = SYMBOL_REGEX.test(a.text) ? 1 : 0;",
+          "const bIsDef = SYMBOL_REGEX.test(b.text) ? 1 : 0;",
+          "const defCount = sortedMatches.filter((m) => SYMBOL_REGEX.test(m.text)).length;"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/formatter.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "G4",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "fsearch.sock",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.6569999999999254,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/client.ts",
+        "CHANGELOG.md"
+      ],
+      "matches": {
+        "src/client.ts": [
+          "return path.join(process.env.XDG_RUNTIME_DIR, \"fsearch.sock\");",
+          "return path.join(home, \".local/share/fsearch/fsearch.sock\");",
+          "return path.join(home, \"Library/Application Support/FSearch/fsearch.sock\");"
+        ],
+        "CHANGELOG.md": [
+          "- **Line-Buffered UNIX Socket Client (#1)**: Implemented `FSearchClient` in `src/client.ts` communicating with `~/Library/Application Support/FSearch/fsearch.sock`. Uses Node.js `readline` to guarantee clean message boundaries."
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9173194127129571,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.5,
+        "recall_at_limit_frozen_kmax10": 0.5
+      }
+    },
+    {
+      "id": "G5",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "150 + hitCount",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.3814589999999498,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/telemetry.ts"
+      ],
+      "matches": {
+        "src/telemetry.ts": [
+          "return hitCount > 0 ? 150 + hitCount * 75 : 50;"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "G6",
+      "lane": "grep-literal",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
+      "ms": 0.22499999999990905,
+      "source": "index",
+      "error": null,
+      "retrieved": [],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": true,
+      "false_positive": false,
+      "score": {
+        "top10": [],
+        "recall_at_1": null,
+        "recall_at_3": null,
+        "recall_at_5": null,
+        "recall_at_10": null,
+        "success_recall_at_10": null,
+        "mrr_at_10_rel1": 0,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": null,
+        "top1_grade": 0,
+        "reformulation_signal": true,
+        "recall_at_limit": null,
+        "recall_at_limit_frozen_kmax10": null
+      }
+    },
+    {
+      "id": "R1",
+      "lane": "grep-regex",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "class\\s+\\w+Client",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
+      "ms": 1.214125000000422,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "matches": {
+        "src/client.ts": [
+          "export class FSearchClient {"
+        ],
+        "test/benchmark-gate.test.ts": [
+          "files: [{ path: path.join(cwd, \"src\", \"client.ts\"), matches: [{ line: 1, text: \"export class FSearchClient {\" }] }],",
+          "files: [{ path: path.join(cwd, \"src\", \"client.ts\"), matches: [{ line: 1, text: \"export class FSearchClient {\" }] }],"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "R2",
+      "lane": "grep-regex",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
+      "ms": 0.9767919999999322,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/recursive-learning.ts",
+        "src/compactor.ts",
+        "src/sanitize.ts",
+        "AUDIT-2026-10-14.md",
+        "src/observer.ts",
+        "test/client.test.ts",
+        "OPTIMIZATIONS.md",
+        "index.ts",
+        "src/client.ts",
+        "ROADMAP.md"
+      ],
+      "matches": {
+        "src/recursive-learning.ts": [
+          "export function recordMistake(",
+          "recordMistake(\"typo\", typo, `Agent intended '${correct}'`);"
+        ],
+        "src/compactor.ts": [
+          "public startAutoCompaction(): void {"
+        ],
+        "src/sanitize.ts": [
+          "export function loadIgnoreRules(dirPath: string, options: { includeDefaults?: boolean } = {}): string[] {"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| Dead code | `semantic.ts`, the Code Mode declaration module, `startAutoCompaction()`, `recordMistake()/learnCorrection()` and `loadIgnoreRules()` are **never invoked by production paths**. |",
+          "| 12 | `.gitignore`/`.ignore` evaluation | v0.4.0 completed | `loadIgnoreRules()` / `matchesIgnorePattern()` exist in `src/sanitize.ts` and are unit-tested, but **`loadIgnoreRules` is never called by any production path**. No search/format/filter code consults ignore rules. | ❌ Not delivered |",
+          "| LSM compactor + supervisor (`src/compactor.ts`) | 🟡 Manual only | `compact()` works (~600 ms via `{op:\"save\"}`) from TUI/CLI; `startAutoCompaction()` is defined at `src/compactor.ts:93` and **called nowhere**. Writes `fsearch_compact` audit rows whose `hitCount` is the whole index size (2.9 M). |",
+          "| Recursive learning (`src/recursive-learning.ts`) | ❌ Read-only downstream | `getLearnedCorrection()` is consulted by `diagnoseEmptyQuery()`; `recordMistake()` / `learnCorrection()` are **only called by tests**. The TUI therefore displays test-fixture \"learnings\" (3 patterns, \"pckage.json → package.json\") as if they were harvested from real sessions. |",
+          "5. **Recursive learning is a facade:** nothing in production calls `recordMistake()/learnCorrection()`; the TUI displays"
+        ],
+        "src/observer.ts": [
+          "import { getLearnedCorrection, recordMistake } from \"./recursive-learning.ts\";",
+          "recordMistake(\"cli_bypass\", trimmed.slice(0, 120), \"Use fsearch_query with the resident radix index.\");",
+          "recordMistake(\"cli_bypass\", trimmed.slice(0, 120), \"Use fsearch_grep / fsearch_multi_grep on the trigram index.\");",
+          "recordMistake(\"typo\", cleanQ, `Agent intended '${learned}'`);",
+          "recordMistake(\"path_mismatch\", cleanQ, `Exact match exists at different path: ${paths}`);"
+        ],
+        "test/client.test.ts": [
+          "import { recordMistake, learnCorrection, getLearnedCorrection, formatRecursiveLearningReport } from \"../src/recursive-learning.ts\";",
+          "recordMistake(\"typo\", \"pckage.json\", \"User intended package.json\");",
+          "recordMistake(\"dlp_violation\", \"sk_live_test\", \"Intercepted stripe secret\");",
+          "recordMistake(\"cli_bypass\", \"find . -name '*.ts'\", \"CLI bypass detected\");"
+        ],
+        "OPTIMIZATIONS.md": [
+          "| B4 | `.gitignore` evaluation was dead code | `loadIgnoreRules()` never called | **DONE**: applied to query/grep/multi-grep with 60 s per-scope cache | Honest \"outside repo\" ignore support | S |",
+          "| B7 | Recursive learner had no production writers | `recordMistake()` only in tests | **DONE**: empty-result, path-mismatch, DLP, CLI-bypass writers | The learner actually learns from sessions | S |",
+          "| B8 | Auto-compaction supervisor never started | `startAutoCompaction()` uncalled | **DONE**: wired into interactive TUI lifecycle | Long sessions keep index healthy | S |"
+        ],
+        "index.ts": [
+          "import { recordMistake } from \"./src/recursive-learning.ts\";",
+          "recordMistake(\"dlp_violation\", params.pattern, `DLP masked credential material while grepping ${searchScope ?? \"workspace\"}`);"
+        ],
+        "src/client.ts": [
+          "import { loadIgnoreRules, matchesIgnorePattern } from \"./sanitize.ts\";",
+          "const rules = loadIgnoreRules(dir, { includeDefaults: false });"
+        ],
+        "ROADMAP.md": [
+          "- Learner: `recordMistake()` now called from real empty-result, path-mismatch, DLP and CLI-bypass paths.",
+          "- Ignore rules: `loadIgnoreRules()` is production code, applied to `query`, `grep`, and `multi_grep`."
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/recursive-learning.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/compactor.ts",
+            "grade": 3
+          },
+          {
+            "rank": 3,
+            "path": "src/sanitize.ts",
+            "grade": 3
+          },
+          {
+            "rank": 4,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 5,
+            "path": "src/observer.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "test/client.test.ts",
+            "grade": 2
+          },
+          {
+            "rank": 7,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 8,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "src/client.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "ROADMAP.md",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.16666666666666666,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9880566884310259,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "R3",
+      "lane": "grep-regex",
+      "difficulty": "adversarial",
+      "must_hit": false,
+      "negative": true,
+      "query": "(a+)+$",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
+      "ms": 0.020582999999987805,
+      "source": null,
+      "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+      "retrieved": [],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": true,
+      "false_positive": false,
+      "score": {
+        "top10": [],
+        "recall_at_1": null,
+        "recall_at_3": null,
+        "recall_at_5": null,
+        "recall_at_10": null,
+        "success_recall_at_10": null,
+        "mrr_at_10_rel1": 0,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": null,
+        "top1_grade": 0,
+        "reformulation_signal": true,
+        "recall_at_limit": null,
+        "recall_at_limit_frozen_kmax10": null
+      }
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+      "ms": 3.508208000000195,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "matches": {
+        "src/client.ts": [
+          "export class FSearchClient {"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.2,
+        "recall_at_3": 0.2,
+        "recall_at_5": 0.2,
+        "recall_at_10": 0.2,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.6855809555403688,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.2,
+        "recall_at_limit_frozen_kmax10": 0.2
+      }
+    },
+    {
+      "id": "S2",
+      "lane": "symbol",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "detectSymbolTag",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
+      "ms": 0.993750000000091,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/formatter.ts"
+      ],
+      "matches": {
+        "src/formatter.ts": [
+          "export function detectSymbolTag(lineText: string): string | null {"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/formatter.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "applyProximityRanking",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
+      "ms": 3.3215409999997974,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "matches": {
+        "src/client.ts": [
+          "public applyProximityRanking(hits: FSearchHit[], nearPath: string): FSearchHit[] {"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9173194127129571,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.5,
+        "recall_at_limit_frozen_kmax10": 0.5
+      }
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "resolveWorktreeRoot",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
+      "ms": 1.9491250000000946,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "index.ts"
+      ],
+      "matches": {
+        "index.ts": [
+          "function resolveWorktreeRoot(startDir = process.cwd()): string {"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "index.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.3333333333333333,
+        "recall_at_limit_frozen_kmax10": 0.3333333333333333
+      }
+    },
+    {
+      "id": "M1",
+      "lane": "semantic",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "where are credentials scrubbed before results reach the model",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
+      "ms": 38.167958,
+      "source": "semantic_intent",
+      "error": null,
+      "retrieved": [
+        "src/sanitize.ts",
+        "src/mcp.ts",
+        "src/formatter.ts",
+        "CHANGELOG.md",
+        "src/semantic.ts",
+        "src/recursive-learning.ts",
+        "OPTIMIZATIONS.md",
+        "test/client.test.ts",
+        "test/empirical-10-tests.ts",
+        "AUDIT-2026-10-14.md"
+      ],
+      "matches": {
+        "src/sanitize.ts": [
+          "* Enterprise Secret redaction patterns to prevent leaking credentials into LLM contexts.",
+          "// Database connection strings with credentials (postgres, mysql, mongodb, redis)",
+          "/credentials\\.json$/i,",
+          "* Checks if a file path is a sensitive credentials or environment file.",
+          "* Scrub sensitive credentials from text lines before LLM prompt injection.",
+          "const BASE_SECRET_PATTERNS: RegExp[] = [",
+          "// Generic token / key assignments with prefix, secret, suffix",
+          "/((?:api[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|password|private[_-]?key|jwt|bearer)[\\s:=]+['\"]?)([a-zA-Z0-9_\\-\\.]{12,})(['\"]?)/gi,",
+          "// Environment variable secret assignments (KEY=secret)",
+          "export function scrubSecrets(line: string, customPatterns: RegExp[] = []): string {",
+          "return `${prefix}[REDACTED_${secret.slice(0, 4)}...]${suffix}`;",
+          "return `[REDACTED_${token.slice(0, 4)}...]`;",
+          "return \"[REDACTED_SECRET]\";",
+          "* Defends against directory traversal attacks (e.g. `../../etc/passwd`)",
+          "/^([A-Z0-9_]*(?:SECRET|KEY|TOKEN|PASSWORD|PASS|AUTH|CREDS|PRIVATE)[A-Z0-9_]*[\\s:=]+['\"]?)([^'\"\\s\\r\\n]{8,})(['\"]?)/gim,"
+        ],
+        "src/mcp.ts": [
+          "description: \"Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.\","
+        ],
+        "src/formatter.ts": [
+          "scrubbed = \"[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]\";",
+          "scrubbed = \"[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]\";",
+          "import { scrubSecrets, isSensitiveFile } from \"./sanitize.ts\";",
+          "let scrubbed = scrubSecrets(m.text).trim();",
+          "const bLine = `${relPath}-${bLineNum}- ${scrubSecrets(m.before[bIdx]).trim()}`;",
+          "const aLine = `${relPath}-${aLineNum}- ${scrubSecrets(m.after[aIdx]).trim()}`;",
+          "const lineStr = `${relPath}:${m.line}: ${tagPrefix}${scrubbed}`;",
+          "* - Enterprise DLP Protection: Completely redacts environment variables & private keys from `.env*`, `.pem`, `.key`, `id_rsa`.",
+          "const fileHeader = `\\n=== ${relPath} (${sortedMatches.length} matches${defCount > 0 ? `, ${defCount} defs` : \"\"})${isSensitive ? \" [DLP PROTECTED FILE]\" : \"\"} ===`;"
+        ],
+        "CHANGELOG.md": [
+          "- **Enterprise Credential Scrubbing (#13)**: Hardened regex scrubbing covering Slack tokens, Stripe live keys, AWS temporary credentials (STS), GCP API keys, fine-grained GitHub PATs, and path traversal (`../`) protection.",
+          "- **Security Scrubbing (#3)**: Built-in credential redactor removing GitHub tokens, AWS keys, JWTs, and private keys.",
+          "- **Dynamic Ignore Rules (#12)**: Trie-based pattern matcher in `src/sanitize.ts` evaluating `.gitignore` and `.ignore` outside git repositories.",
+          "- **Recursive learning**: `recordMistake()` is invoked by real failure paths (empty results, path mismatch, DLP interception, CLI bypass) instead of only tests.",
+          "- Recursive learning store (`src/recursive-learning.ts`) with typo remappings, mistake patterns, and CLI bypass/DLP counters.",
+          "- Daemon management: launchd `com.pi.ultrasearch` LaunchAgent with `KeepAlive`, `authorize` command, and unified `UltraSearch.app` branding for stable Full Disk Access attribution."
+        ],
+        "src/semantic.ts": [
+          "auth: [\"auth\", \"login\", \"jwt\", \"token\", \"password\", \"session\", \"authenticate\"],"
+        ],
+        "src/recursive-learning.ts": [
+          "\"Rule 03: Mask all credentials and block .env files before LLM prompt injection\",",
+          "`DLP Secret Interceptions: ${state.dlpInterceptions}`,",
+          "category: \"typo\" | \"cli_bypass\" | \"dlp_violation\" | \"path_mismatch\" | \"empty_result\";",
+          "dlpInterceptions: number;",
+          "dlpInterceptions: 0,",
+          "category: \"typo\" | \"cli_bypass\" | \"dlp_violation\" | \"path_mismatch\" | \"empty_result\",",
+          "} else if (category === \"dlp_violation\") {"
+        ],
+        "OPTIMIZATIONS.md": [
+          "| F2 | DLP not applied to path results | `fsearch_query` returns raw paths | Scrub query output with the same redactor | No credential-shaped paths in prompts | S |",
+          "| F1 | PEM regex is malformed | `[[\\s\\S]*?` in `src/sanitize.ts` | Fix to `([\\s\\S]*?)`; add multi-line key tests | Correct private-key masking | S |",
+          "| F5 | DLP counter was test-only | TUI \"masked\" count | Real interception count from production paths (0.3.1 feeds the learner) | Honest security telemetry | S |",
+          "| B7 | Recursive learner had no production writers | `recordMistake()` only in tests | **DONE**: empty-result, path-mismatch, DLP, CLI-bypass writers | The learner actually learns from sessions | S |"
+        ],
+        "test/client.test.ts": [
+          "test(\"sanitize: identifies sensitive environment and credential files\", () => {",
+          "assert.equal(isSensitiveFile(\"credentials.json\"), true);",
+          "assert.equal(isPathSafe(\"/Users/batra/.aws/credentials\", \"/Users/batra/repo\"), false);",
+          "assert.ok(res.text.includes(\"[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]\"));",
+          "import { scrubSecrets, isPathSafe, matchesIgnorePattern, isSensitiveFile } from \"../src/sanitize.ts\";",
+          "const res = await sharedClient.multiGrep([\"FSearchClient\", \"scrubSecrets\"], {",
+          "test(\"sanitize: scrubs secrets properly\", () => {",
+          "\"DATABASE_URL=postgres://app_user:SuperSecretPassword123@db.prod.internal:5432/main\",",
+          "const scrubbed = scrubSecrets(input);",
+          "test(\"sanitize: path boundary safety and traversal protection\", () => {",
+          "test(\"sanitize: ignore pattern matching\", () => {",
+          "assert.ok(scrubbed.includes(\"[REDACTED\"));",
+          "test(\"formatter: masks sensitive .env and key files with DLP protection\", () => {",
+          "recordMistake(\"dlp_violation\", \"sk_live_test\", \"Intercepted stripe secret\");",
+          "assert.equal(isPathSafe(\"/Users/batra/repo/../../etc/passwd\", \"/Users/batra/repo\"), false);",
+          "assert.ok(!scrubbed.includes(\"SuperSecretPassword123\"));",
+          "{ line: 2, text: \"DB_PASS=supersecretpassword\" },",
+          "assert.ok(!res.text.includes(\"supersecretpassword\"));",
+          "const keywords = expandIntentKeywords(\"where is the user authentication and login logic?\");",
+          "assert.ok(keywords.includes(\"auth\"));",
+          "const res = await searchSemanticIntent(sharedClient, \"auth token secret\", {"
+        ],
+        "test/empirical-10-tests.ts": [
+          "securityStatus: \"❌ LEAKS PLAINTEXT CREDENTIALS\",",
+          "import { scrubSecrets, isPathSafe, isSensitiveFile } from \"../src/sanitize.ts\";",
+          "// --- TEST 7: Secret & API Key DLP Redaction ---",
+          "const testSecretStr = \"const apiKey = 'sk-proj-99998888777766665555444433332222';\\nconst aws = 'AKIA1234567890ABCDEF';\\nconst db = 'postgres://admin:superSecretPassword123@localhost:5432/prod';\";",
+          "const scrubbed = scrubSecrets(testSecretStr);",
+          "const hasLeak = scrubbed.includes(\"superSecretPassword123\") || scrubbed.includes(\"9999888877776666\");",
+          "securityStatus: \"DLP scrubbed\",",
+          "securityStatus: \"Token bounded & scrubbed\",",
+          "securityStatus: \"Raw unredacted output\",",
+          "securityStatus: \"✅ [REDACTED_SECRET] Masked\",",
+          "testName: \"Secret & API Key DLP Masking\",",
+          "notes: \"Automatic regex & entropy masking for OpenAI, AWS, Stripe, DB passwords.\",",
+          "category: \"Performance\" | \"Scale\" | \"Token Efficiency\" | \"Enterprise DLP & Security\";",
+          "category: \"Enterprise DLP & Security\",",
+          "const traversalCheck = isPathSafe(\"/Users/batra/Search/../../etc/passwd\", repo);"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| 3 | Credential scrubbing + path safety | v0.1.0 released | 14 regex patterns + sensitive-file masking work (unit-tested). Path safety is applied only to `fsearch_grep`'s `path_filter`; `fsearch_query` has no containment check. Private-key regex is malformed: `/-----BEGIN ...-----[[\\s\\S]*?-----END .../` — character class `[[\\s\\S]`, not `[\\s\\S]`. | 🟡 Partial |",
+          "| 13 | Enterprise credential patterns + fail-closed boundary | v0.4.0 completed | Slack/Stripe/GCP/AWS-STS patterns added. \"Configurable fail-closed directory blocklists\" from the issue objective: not implemented. Boundary checks remain partial (see #3). | 🟡 Partial |",
+          "* Secret scrubbing covers the main families and is unit-tested; DLP masking of `.env`/key files works.",
+          "* `scrubSecrets` is applied to grep matches, **not** to `fsearch_query` path output (paths can leak usernames/project names; lower risk).",
+          "* Nothing in this audit found vault/secret exfiltration paths — reads stay on loopback through the daemon socket.",
+          "| 12 | `.gitignore`/`.ignore` evaluation | v0.4.0 completed | `loadIgnoreRules()` / `matchesIgnorePattern()` exist in `src/sanitize.ts` and are unit-tested, but **`loadIgnoreRules` is never called by any production path**. No search/format/filter code consults ignore rules. | ❌ Not delivered |",
+          "* **Malformed private-key regex** in `src/sanitize.ts` (`[[\\s\\S]*?`) — multi-line PEM bodies will not match as intended.",
+          "**45×–78×** faster than `find`/`rg` on the same scope, with working typo-intolerance, DLP scrubbing, git filters, and a",
+          "12. Fix the PEM regex; apply DLP consistently; enforce containment for query scopes; implement the fail-closed blocklist promised on #13."
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/sanitize.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/formatter.ts",
+            "grade": 2
+          },
+          {
+            "rank": 4,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "src/semantic.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "src/recursive-learning.ts",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "test/client.test.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "test/empirical-10-tests.ts",
+            "grade": 1
+          },
+          {
+            "rank": 10,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          }
+        ],
+        "recall_at_1": 0.25,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9253449841090406,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "M2",
+      "lane": "semantic",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "how is the token savings number computed",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
+      "ms": 14.716249999999945,
+      "source": "semantic_intent",
+      "error": null,
+      "retrieved": [
+        "src/telemetry.ts",
+        "src/codemode.ts",
+        "src/tui.ts",
+        "src/recursive-learning.ts",
+        "test/deep-bench.ts",
+        "OPTIMIZATIONS.md",
+        "src/mcp.ts",
+        "README.md",
+        "AUDIT-2026-10-14.md",
+        "src/semantic.ts"
+      ],
+      "matches": {
+        "src/telemetry.ts": [
+          "tokensSaved?: number;",
+          "* Estimates LLM context tokens saved by using index-accelerated surgical search",
+          "export function estimateTokensSaved(",
+          "// Average source file: 1,200 tokens. Surgical grep match: ~30 tokens.",
+          "// Conservative estimated savings: ~75 tokens per hit, plus base 150 tokens for targeted hit list.",
+          "sessionId?: string;",
+          "if (row.tokensSaved === undefined) {",
+          "row.tokensSaved = estimateTokensSaved(row.tool, row.hitCount);",
+          "let estimatedLineCount = -1;",
+          "* Appends a telemetry row to the persistent audit log asynchronously/safely.",
+          "// Non-blocking telemetry",
+          "parts.push(\"--- Latency & Quality Metrics ---\");",
+          "ts: number;",
+          "ms: number;",
+          "hitCount: number;",
+          "hitCount: number"
+        ],
+        "src/codemode.ts": [
+          "/** Token budget limit */",
+          "max_tokens?: number;",
+          "max_tokens?: number;",
+          "* Returns telemetry profiler metrics (p50/p90/p95 latency) and toolchain advice.",
+          "function fsearch_metrics(args?: {",
+          "limit?: number;",
+          "score: number;",
+          "took_us: number;",
+          "limit?: number;"
+        ],
+        "src/tui.ts": [
+          "// Cumulative token savings",
+          "const totalTokensSaved = summary.totalTokensSaved;",
+          "` [💰 Tokens Saved]: \\x1B[1;32m~${totalTokensSaved.toLocaleString()} tokens\\x1B[0m   ` +",
+          "const tokensSavedCount = entry.tokensSaved ?? 85;",
+          "`${prefix}${bg}\\x1B[90m${timeStr}\\x1B[0m \\x1B[36m${toolStr}\\x1B[0m \\x1B[37m${queryStr}\\x1B[0m \\x1B[33m${msStr}\\x1B[0m \\x1B[32m${hitsStr}\\x1B[0m \\x1B[90m(+${tokensSavedCount}t saved)\\x1B[0m${resetBg}`",
+          "// Start the LSM compaction supervisor for this long-lived interactive session",
+          "lines.push(`║ \\x1B[1mDLP Status\\x1B[0m:    ✅ Fully scrubbed; credentials & .env prevented from prompt leakage`);",
+          "const savedCount = sel.tokensSaved ?? 85;",
+          "import { loadAudit, summarizeAudit } from \"./telemetry.ts\";",
+          "import type { FSearchAuditRow } from \"./telemetry.ts\";",
+          "// Metrics KPI Cards",
+          "lines.push(\"\\x1B[1;33m--- LIVE OBSERVABILITY & EFFICIENCY METRICS ---\\x1B[0m\");"
+        ],
+        "src/recursive-learning.ts": [
+          "\"Rule 03: Mask all credentials and block .env files before LLM prompt injection\",",
+          "saveLearningMemory();",
+          "export function saveLearningMemory(): void {",
+          "saveLearningMemory();",
+          "saveLearningMemory();",
+          "occurrenceCount: number;",
+          "lastObserved: number;",
+          "confidence: number;",
+          "version: number;",
+          "lastUpdated: number;"
+        ],
+        "test/deep-bench.ts": [
+          "estimatedTokens: number;",
+          "tokenSavingsPct?: string;",
+          "const estTokens = Math.ceil(outStr.length / 4);",
+          "estimatedTokens: estTokens,",
+          "tokenSavingsPct: savings,",
+          "const tokenSavings = `${Math.round((1 - compactText.length / (verboseText.length || 1)) * 100)}% saved`;",
+          "const tokenSavings = `${Math.round((1 - compactText.length / (verboseText.length || 1)) * 100)}% saved`;",
+          "console.table(results, [\"category\", \"tool\", \"meanMs\", \"p50Ms\", \"p95Ms\", \"opsPerSec\", \"estimatedTokens\", \"tokenSavingsPct\"]);",
+          "meanMs: number;",
+          "p50Ms: number;",
+          "p90Ms: number;",
+          "p95Ms: number;",
+          "minMs: number;",
+          "function computeStats(",
+          "results.push(computeStats(times, memDelta, outText, hits, \"Exact File Lookup\", \"Repo (521 files)\", \"pi-ultrasearch (socket)\"));",
+          "results.push(computeStats(findTimes, 0, findOut, findOut.trim().split(\"\\n\").filter(Boolean).length, \"Exact File Lookup\", \"Repo (521 files)\", \"native find (subprocess)\"));",
+          "results.push(computeStats(globalTimes, memDeltaGlobal, globalOut, globalHits, \"Exact File Lookup\", \"Whole Disk (2.89M files)\", \"pi-ultrasearch (socket)\"));",
+          "results.push(computeStats(times, memDelta, outText, hits, \"Glob Pattern Search\", \"Repo (521 files)\", \"pi-ultrasearch (socket)\"));"
+        ],
+        "OPTIMIZATIONS.md": [
+          "| B2 | Audit rows were written twice (client + tool wrapper) | duplicate audit pairs (`*taste*` 39.7/40.8 ms) | **DONE**: single-layer recording with `auditTool` | Trustworthy percentiles and token stats | S |",
+          "| B6 | Semantic expansion module was unreachable | `src/semantic.ts` imported by no production path | **DONE**: `mode: \"semantic\"` in Pi + MCP | Natural-language → code tokens in one call | S |",
+          "## C. Token & context efficiency",
+          "| C1 | \"Tokens saved\" is a formula, not a measurement | `150 + 75 × hits` in `telemetry.ts` | Build an A/B harness that counts prompt tokens for identical tasks with/without the extension | Real, defensible savings numbers | M |",
+          "| C2 | No per-call output budget visibility | `max_tokens` optional and unused by default | Report `tokenCount`/`truncatedCount` in every grep result (already computed) and surface it in metadata | Agents can self-tune | S |",
+          "- real-session `fsearch_query` p50 41 ms, p95 1.95 s, max 4.0 s",
+          "| B7 | Recursive learner had no production writers | `recordMistake()` only in tests | **DONE**: empty-result, path-mismatch, DLP, CLI-bypass writers | The learner actually learns from sessions | S |",
+          "| B8 | Auto-compaction supervisor never started | `startAutoCompaction()` uncalled | **DONE**: wired into interactive TUI lifecycle | Long sessions keep index healthy | S |",
+          "| E4 | No real-session dashboard | telemetry mixed with synthetic data | Split audit views: real vs synthetic; nightly summary | Detect regressions from actual usage | M |",
+          "| G6 | No architecture decision log | decisions scattered in chat | `docs/decisions/` with one file per decision (format: choice, reason, rejected alternatives) | Future sessions stop re-deriving | S |",
+          "| F2 | DLP not applied to path results | `fsearch_query` returns raw paths | Scrub query output with the same redactor | No credential-shaped paths in prompts | S |",
+          "| B3 | Benchmark gate wrote into production telemetry | 101/139 rows were synthetic | **DONE**: `PI_ULTRASEARCH_TEST=1` isolation | Metrics reflect real usage | S |",
+          "| F5 | DLP counter was test-only | TUI \"masked\" count | Real interception count from production paths (0.3.1 feeds the learner) | Honest security telemetry | S |",
+          "| A4 | Compaction churns the index (4.53 M → 3.67 M entries) | daemon log compaction lines; `fsearch_compact` ~600 ms | Track segment/overlay pressure; pause compaction during active query bursts; expose compaction metrics | Fewer latency spikes; visible index health | M |",
+          "| E1 | Gate tested a ~25-file repo | issue #15 claimed 1 M+ files | Fixture generator: small repo, monorepo, home-scale, whole-disk; committed JSON results | Claims backed by reproducible numbers | M |",
+          "| E2 | Single-shot percentiles | earlier numbers from one run | Median + confidence interval over ≥20 alternating A/B runs (see the \"verify a performance win\" skill) | Statistically defensible | S |"
+        ],
+        "src/mcp.ts": [
+          "max_tokens: { type: \"number\", description: \"Optional token budget ceiling\" },",
+          "max_tokens: { type: \"number\", description: \"Optional token budget ceiling\" },",
+          "maxTokens: args.max_tokens,",
+          "maxTokens: args.max_tokens,",
+          "description: \"Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.\",",
+          "import { summarizeAudit, formatAuditSummary } from \"./telemetry.ts\";",
+          "name: \"fsearch_metrics\",",
+          "description: \"Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice.\",",
+          "if (toolName === \"fsearch_metrics\") {",
+          "limit: { type: \"number\", description: \"Max results (default: 30)\" },",
+          "limit: { type: \"number\", description: \"Max files to return\" },",
+          "context: { type: \"number\", description: \"Lines of surrounding code context (0-5, default: 0)\" },"
+        ],
+        "README.md": [
+          "Planned performance work (tail latency, content coverage, concurrency, token accounting) is listed in",
+          "Latency percentiles, fallback rate, zero-hit diagnostics, CLI-bypass detector, and honest \"tokens saved\"",
+          "- **\"Tokens saved\" is an estimate**, computed as `150 + 75 × hits` for grep and `100 + 30 × hits` for path searches.",
+          "It is not a prompt-token measurement; an A/B token-accounting harness is on the roadmap.",
+          "> session-level numbers, and claimed a green CI that never existed. Every figure below is now labelled with its",
+          "### Real agent-session telemetry (production audit log, 38 organic calls)",
+          "(is an estimate — see below).",
+          "- a **Pi Agent extension** (6 tools + metrics tool + `/ultrasearch` commands),",
+          "- a **standalone CLI** (`ultrasearch query|grep|metrics|tui|compact`),",
+          "### 6. `fsearch_metrics`",
+          "`status` does not yet surface a staleness metric.",
+          "[`OPTIMIZATIONS.md`](OPTIMIZATIONS.md). The audit that produced these numbers is in [`AUDIT-2026-10-14.md`](AUDIT-2026-10-14.md)."
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| Token savings | The TUI's \"tokens saved\" number is a **hard-coded heuristic** (`150 + 75 × hitCount`), never measured, and double-counted on duplicate rows. |",
+          "| 8 | `git:` query filters | v0.3.0 completed | Works against upstream git engine. Probe: modified file appears with `[git:modified]` after ~2.5 s refresh window (immediate probe missed it). Issue body promised a `gitStatus` parameter; only free-text query tokens exist. | ✅ Shipped (docs drift) |",
+          "| Observability TUI (`src/tui.ts`, `bin/tui.ts`) | 🟡 Works, metrics polluted | Renders; but reads the contaminated audit log and the heuristic token number. |",
+          "| \"Tokens saved\" (TUI) | TUI | ~49,065 | `150 + 75×hitCount` heuristic; double-counted on duplicate rows; 73% of the log is synthetic | ❌ Unsupported |",
+          "This inflates call counts, \"tokens saved\" and distorts percentiles.",
+          "| Real-world latency | Warm micro-benchmarks are real, but **real agent-session rows show `fsearch_query` p50 41 ms, p95 ~1.95 s, max 4.0 s** and **29% native-fallback rate**. |",
+          "| 2 | Pi tool registration | v0.1.0 released | 6 tools + `fsearch_metrics` + `/ultrasearch` (+`/fsearch`) commands registered in `index.ts`. Verified live in this T3 session. | ✅ Shipped |",
+          "| 9 | Frecency lifecycle tracking | v0.3.0 completed | Hook on `tool_execution_end` forwards `{op:\"open\"}` to the daemon; `fsearch_recent` returns 10 rows. Event name exists in the installed Pi SDK. **Not end-to-end verified in a live session** (no telemetry for `open` ops). | 🟡 Unverified |",
+          "| Recursive learning (`src/recursive-learning.ts`) | ❌ Read-only downstream | `getLearnedCorrection()` is consulted by `diagnoseEmptyQuery()`; `recordMistake()` / `learnCorrection()` are **only called by tests**. The TUI therefore displays test-fixture \"learnings\" (3 patterns, \"pckage.json → package.json\") as if they were harvested from real sessions. |",
+          "| GitHub hygiene | ❌ | 15 issues, all closed, no milestones, no releases, no tags, no PRs, no branch protection. The \"20 next milestones\" promised in the session were never filed. |",
+          "| 3 | Credential scrubbing + path safety | v0.1.0 released | 14 regex patterns + sensitive-file masking work (unit-tested). Path safety is applied only to `fsearch_grep`'s `path_filter`; `fsearch_query` has no containment check. Private-key regex is malformed: `/-----BEGIN ...-----[[\\s\\S]*?-----END .../` — character class `[[\\s\\S]`, not `[\\s\\S]`. | 🟡 Partial |",
+          "| 13 | Enterprise credential patterns + fail-closed boundary | v0.4.0 completed | Slack/Stripe/GCP/AWS-STS patterns added. \"Configurable fail-closed directory blocklists\" from the issue objective: not implemented. Boundary checks remain partial (see #3). | 🟡 Partial |",
+          "| LSM compactor + supervisor (`src/compactor.ts`) | 🟡 Manual only | `compact()` works (~600 ms via `{op:\"save\"}`) from TUI/CLI; `startAutoCompaction()` is defined at `src/compactor.ts:93` and **called nowhere**. Writes `fsearch_compact` audit rows whose `hitCount` is the whole index size (2.9 M). |",
+          "3. **Heuristic tokens:** `estimateTokensSaved()` is a formula, not a measurement; it counts *files*, not matched text, and is",
+          "and forensic analysis of the production telemetry file (`~/.pi/agent/cache/pi-ultrasearch/audit.jsonl`).",
+          "| Telemetry | **101 of 139 rows (73%) in the \"production\" audit log are synthetic rows written by the regression gate.** Real agent calls are mixed with benchmark runs; search/multi-grep calls are recorded twice (inner client + outer tool). |",
+          "### 3.2 Real agent-session telemetry (production audit log, 38 non-synthetic rows)",
+          "## 4. Telemetry integrity (the \"observability\" system is not trustworthy yet)",
+          "9. Improve fallback quality: async spawn instead of `execFileSync`, drop `-maxdepth 6`, include dotfiles intentionally, prefer `rg`; instrument a fallback-rate metric and alarm on the 29%.",
+          "5. Correct or delete unsupported numbers: 21 MB RSS, 82.2 MB index, \"90%+ savings\", \"0 bytes I/O\", \"1 M+ files gate\", CI badge.",
+          "**P2 — make the numbers honest**"
+        ],
+        "src/semantic.ts": [
+          "* to concrete code tokens and symbols.",
+          "auth: [\"auth\", \"login\", \"jwt\", \"token\", \"password\", \"session\", \"authenticate\"],",
+          "matchedTokens: string[];",
+          "* Performs a semantic/concept search by expanding terms into code tokens",
+          "matchedTokens: [],",
+          "import type { AuditTool } from \"./telemetry.ts\";",
+          "confidence: number;",
+          "options: { in?: string; limit?: number; auditTool?: AuditTool } = {}"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/codemode.ts",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/tui.ts",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "src/recursive-learning.ts",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "test/deep-bench.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 7,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "README.md",
+            "grade": 2
+          },
+          {
+            "rank": 9,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "src/semantic.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8839335778767115,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "M3",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "what happens when the daemon socket dies mid-session",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
+      "ms": 14.062625000000025,
+      "source": "semantic_intent",
+      "error": null,
+      "retrieved": [
+        "src/client.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "AUDIT-2026-10-14.md",
+        "README.md",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md",
+        "CHANGELOG.md",
+        "test/benchmark-gate.test.ts",
+        "bin/cli.ts"
+      ],
+      "matches": {
+        "src/client.ts": [
+          "private trySpawnDaemon(): void {",
+          "path.join(os.homedir(), \".local/bin/ultrasearch-daemon\"),",
+          "\"/usr/local/bin/ultrasearch-daemon\",",
+          "if (retryCount === 0) { this.trySpawnDaemon(); }",
+          "req.reject(new Error(\"FSearch daemon connection closed\"));",
+          "const child = child_process.spawn(bin, [\"serve\"], {",
+          "export function resolveDefaultSocketPath(): string {",
+          "socketPath?: string;",
+          "private socketPath: string;",
+          "private socket: net.Socket | null = null;",
+          "this.socketPath = options.socketPath ?? resolveDefaultSocketPath();",
+          "return path.join(process.env.XDG_RUNTIME_DIR, \"fsearch.sock\");",
+          "return path.join(home, \".local/share/fsearch/fsearch.sock\");",
+          "return path.join(home, \"Library/Application Support/FSearch/fsearch.sock\");",
+          "maxReconnectRetries?: number;",
+          "private maxReconnectRetries: number;",
+          "this.maxReconnectRetries = options.maxReconnectRetries ?? 3;",
+          "private async ensureConnection(retryCount = 0): Promise<net.Socket> {",
+          "if (retryCount < this.maxReconnectRetries) {",
+          "const backoffMs = Math.min(100 * Math.pow(2, retryCount), 500);",
+          "const retried = await this.ensureConnection(retryCount + 1);",
+          "enableFallback?: boolean;",
+          "private enableFallback: boolean;",
+          "this.enableFallback = options.enableFallback ?? true;",
+          "* Fast file search with STRICT ZERO TYPO TOLERANCE, globs, proximity ranking, and fail-open native fallback.",
+          "this.enableFallback"
+        ],
+        "src/telemetry.ts": [
+          "`LSM Compaction p95 latency is ${stat.p95Ms.toFixed(1)}ms (>2500ms maintenance threshold). Daemon memory or disk I/O may be saturated.`",
+          "`Tool ${stat.tool} has p95 latency of ${stat.p95Ms.toFixed(1)}ms (>10ms target). Ensure scope paths are narrowed or FSearch daemon content index is warm.`",
+          "source: \"index\" | \"scan\" | \"native_fallback\" | \"cli_subprocess\";",
+          "fallbackCount: number;",
+          "const fallbackCount = toolRows.filter((r) => r.source === \"native_fallback\").length;",
+          "fallbackCount,",
+          "`• ${s.tool.padEnd(18)}: ${s.calls} calls | p50: ${s.p50Ms.toFixed(2)}ms | p90: ${s.p90Ms.toFixed(2)}ms | p95: ${s.p95Ms.toFixed(2)}ms | Success: ${s.okRate.toFixed(1)}% | 0-Hit: ${s.emptyRate.toFixed(1)}% | Fallbacks: ${s.fallbackCount}`"
+        ],
+        "src/tui.ts": [
+          "this.statusMessage = \"\\x1B[1;36m🔐 Opening macOS Full Disk Access Settings & revealing daemon in Finder...\\x1B[0m\";",
+          "execSync(\"open -R ~/Applications/UltraSearch.app || open -R ~/.local/bin/ultrasearch-daemon\");",
+          "private async getDaemonInfo(): Promise<{ status: any; connected: boolean }> {",
+          "const { status, connected } = await this.getDaemonInfo();",
+          "// Daemon Status Line",
+          "` Daemon Socket: ${statusDot} | FDA: ${fdaBadge} | Indexed: \\x1B[1m${entriesIndexed}\\x1B[0m files | Segments: \\x1B[33m${segmentsCount}\\x1B[0m`",
+          "// Set up interactive terminal with cross-platform fallback"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "socket benchmarks against the resident daemon (`/Applications/UltraSearch.app/.../UltraSearch serve`, launchd `com.pi.ultrasearch`, PID 786),",
+          "resident daemon that survives restarts. That part is real.",
+          "| Test suite | Local 25/25 pass only because a daemon is running. In CI it is 23/25 (`FSearchClient ping`, `compactor`). Tests are integration tests, not hermetic. |",
+          "| 1 | Line-buffered UDS IPC client | v0.1.0 released | `src/client.ts`: `readline` framing, correlation ids, retry/backoff, daemon auto-spawn. Single socket, no pool. Works. | ✅ Shipped |",
+          "| 9 | Frecency lifecycle tracking | v0.3.0 completed | Hook on `tool_execution_end` forwards `{op:\"open\"}` to the daemon; `fsearch_recent` returns 10 rows. Event name exists in the installed Pi SDK. **Not end-to-end verified in a live session** (no telemetry for `open` ops). | 🟡 Unverified |",
+          "— both require the resident daemon, which CI never provisions.",
+          "| 14 | MCP server registration (T3 Code + Antigravity) | v0.5.0 completed | A stdio MCP server exists (`src/mcp.ts`, dual `fsearch_*`/`ultrasearch_*` aliases, richer grep options) — **but it is registered nowhere**: no entry in `~/.pi/agent/mcp.json`, VS Code `mcp.json`, `~/.t3` settings, or Antigravity `mcp_config.json`. | ❌ Not delivered |",
+          "| Idle daemon RSS | vault | ~21 MB | **135 MB now**, 391 MB observed while indexing | ❌ False (6–19×) |",
+          "full_disk_access true · RSS 135 MB (peak 391 MB observed)",
+          "4. Reconcile versioning: package/README/CHANGELOG/MCP `serverInfo`; add 0.3.x changelog; create release tags; make `ROADMAP.md` reflect reality (v0.4/v0.5/v1.0 are **not** complete at 0.3.0).",
+          "The extension's **core engine works and is genuinely fast** — measured p50 **0.03–0.5 ms** for warm socket queries,",
+          "### 3.1 Warm socket benchmarks (live daemon, Oct 14)",
+          "* Nothing in this audit found vault/secret exfiltration paths — reads stay on loopback through the daemon socket.",
+          "9. Improve fallback quality: async spawn instead of `execFileSync`, drop `-maxdepth 6`, include dotfiles intentionally, prefer `rg`; instrument a fallback-rate metric and alarm on the 29%.",
+          "| 7 | Auto-reconnect + fail-open fallback | v0.2.0 completed | Works: exponential backoff, `find`/`grep` fallback. But fallback is **synchronous `execFileSync`**, `find` is capped at `-maxdepth 6`, excludes dotfiles, and `grep -rn` is the slowest possible tool. 11 of 38 real calls (29%) took the fallback path. | 🟡 Partial |",
+          "| Real-world latency | Warm micro-benchmarks are real, but **real agent-session rows show `fsearch_query` p50 41 ms, p95 ~1.95 s, max 4.0 s** and **29% native-fallback rate**. |",
+          "| 11 | `fsearch_multi_grep` | v0.3.0 completed | Works, but not \"one IPC pass\" in practice: real-world p50 **47 ms**; fallback path runs N sequential greps and still records `source: index`; duplicate audit rows show both 13-file and 6-file results for the same call. | 🟡 Partial |",
+          "| Multi-grep \"one IPC pass\" | README | sub-1 ms | Real p50 **47 ms**; fallback merges sequentially | ❌ Inflated |",
+          "| Tool | Calls | p50 | p95 | Max | Fallbacks |"
+        ],
+        "README.md": [
+          "> Whole-disk filesystem search, trigram content grep, and git-aware code discovery for **Pi Agent**, **T3 Code**, and MCP clients — backed by a persistent resident Rust daemon (`fsearch`).",
+          "### Warm socket micro-benchmarks (resident daemon, repeated calls)",
+          "| native fallback | 11/38 (29%) | — | — | — | daemon not used; being reduced |",
+          "- Content index covers the daemon's tracked text corpus — see *Known limits* below.",
+          "npm test            # unit + integration (integration tests skip cleanly when the daemon is absent)",
+          "Agents lose time and context to `find`, `rg`, and `grep -rn` subprocesses. `pi-ultrasearch` keeps a resident index",
+          "B -->|line-buffered JSON over UDS| C[\"fsearch daemon (Rust, resident)\"]",
+          "- a **stdio MCP server** for Antigravity, VS Code, Claude Desktop, and any MCP client,",
+          "## MCP server",
+          "`bin/mcp-server.ts` speaks JSON-RPC 2.0 over stdio and exposes both `fsearch_*` and `ultrasearch_*` tool names.",
+          "\"mcpServers\": {",
+          "\"args\": [\"/Users/batra/.pi/agent/extensions/pi-ultrasearch/bin/mcp-server.ts\"]",
+          "of the filesystem (paths + trigram content) and answers those questions over a UNIX socket in **0.03–0.5 ms** while",
+          "npm run test:gate   # hermetic mock-socket latency gate + live daemon gate (skips live if unavailable)",
+          "and the hermetic mock-socket gate enforces p95 < 10 ms (search) and < 5 ms (grep) on the client IPC path.",
+          "- **Platforms** — socket path resolution exists for Linux/Windows, but the daemon and CI are macOS-only today.",
+          "- **Fallback quality** — when the daemon is unavailable the client falls back to `rg`/`find` (sync spawn). This is",
+          "seconds. Tail latency and fallback rate are tracked as open work items (see `OPTIMIZATIONS.md`).",
+          "Latency percentiles, fallback rate, zero-hit diagnostics, CLI-bypass detector, and honest \"tokens saved\"",
+          "B -->|daemon unavailable| F[\"rg / find fallback\"]"
+        ],
+        "OPTIMIZATIONS.md": [
+          "Measurement baseline used throughout (this machine, live daemon):",
+          "- daemon: 3.73 M path entries, 611 k dirs, 129 k content docs (3.5% coverage), 121.5 MB index + 134 MB content",
+          "## A. Engine & daemon",
+          "| A2 | Content coverage is 3.5% and undocumented | `content_docs 129,295` vs `entries 3,732,605` | Configurable include rules (extensions, size caps, dirs), documented policy, warm-up indexing on daemon start | Predictable grep coverage; fewer 0-hit surprises | L |",
+          "| A3 | FSEvents drops force replays; freshness is invisible | `daemon.log`: repeated `FSEvents dropped events before we read them` | Surface `staleness_ms` / `last_event_id` in `op: status`; warn the client when a replay is in flight | Agent can decide to re-run or trust results | M |",
+          "| A5 | Single socket = head-of-line blocking | `src/client.ts` uses one `net.Socket` for all requests | Connection pool (2–4 lanes) or request multiplexing with per-request deadlines | Parallel agent calls stop queuing behind a large grep | M |",
+          "| B9 | Async fallback | fallback still uses `execFileSync` | Convert fallback to async `spawn` with cancellation | No event-loop stalls on fallback | M |",
+          "- native fallback on 29% of real calls (before the 0.3.1 fallback upgrade)",
+          "| B1 | Fallback used `grep -rn` and `find -maxdepth 6` | 29% of real calls; `find` 21–35 ms vs `rg` 12 ms | **DONE**: prefer `rg` (grep fallback), remove max-depth cap | Fallback ~2× faster and finds deep files | S |"
+        ],
+        "ROADMAP.md": [
+          "### Milestone 1 — IPC daemon & core Pi extension (v0.1.0) — ✅ released",
+          "- [x] #15 🔧 CI is now **hermetic and green-capable**: daemon-dependent integration tests skip cleanly on a bare",
+          "2. Content-index coverage configuration + warm-up on daemon start (currently ~129 k docs / 3.7 M entries).",
+          "11. Cross-platform daemon distribution + Linux CI matrix.",
+          "- Cross-platform support for at least macOS + Linux, with the daemon packaged and verifiable.",
+          "- **0.3.x** — git filters, ranking, multi-grep, TUI, learner, MCP server, **honesty release 0.3.1** (current)",
+          "MCP server was registered nowhere, `.gitignore` evaluation was dead code, and the \"1 M+ file\" gate tested a ~25-file",
+          "- [x] #14 stdio MCP server (`src/mcp.ts`, dual `fsearch_*` / `ultrasearch_*` names, semantic mode, context, tags)",
+          "1. Search-side `budget_ms` deadlines and partial-result streaming for cold/global queries (tail: 1.7–4.0 s observed).",
+          "- **0.1.x** — socket client, core tool bindings (released)",
+          "- [x] #1 Line-buffered UNIX socket client with correlation ids (`src/client.ts`)",
+          "runner, and a **mock-socket latency gate** runs everywhere (0.3.1)",
+          "- CI: hermetic tests + mock-socket gate; the job can pass on a clean machine and the gate now actually executes.",
+          "3. Socket concurrency (connection lanes) to remove head-of-line blocking for parallel agent calls.",
+          "- [x] #7 Reconnect watchdog + `rg`/`find` fallback",
+          "- Fallback upgraded from `grep -rn` to `rg` (with `grep` fallback) and `find` max-depth cap removed."
+        ],
+        "CHANGELOG.md": [
+          "- **CI**: daemon-dependent integration tests now skip cleanly on a bare runner and a **hermetic mock-socket latency gate** runs everywhere, so the GitHub Actions job can pass and the benchmark gate actually executes. Previously 18/18 runs failed and the gate step was unreachable.",
+          "- Daemon management: launchd `com.pi.ultrasearch` LaunchAgent with `KeepAlive`, `authorize` command, and unified `UltraSearch.app` branding for stable Full Disk Access attribution.",
+          "- **Resilience Watchdog & Fail-Open Fallback (#7)**: Implemented auto-reconnecting socket watchdog with exponential backoff and seamless fallback to native `ripgrep`/`find` on daemon disconnection.",
+          "- **Frecency Lifecycle Tracking (#9)**: Automated hook into `tool_execution_end` tracking file operations (`read`, `edit`, `write`, `view_file`) and forwarding touches to daemon `{\"op\": \"open\"}`.",
+          "- **Extension & Repository Rebranding**: Formally renamed extension to `pi-ultrasearch` across all documentation, metadata, type definitions, MCP server declarations (`pi-ultrasearch-mcp`), and package repository manifests (`https://github.com/Ghost-9/pi-ultrasearch.git`).",
+          "- **Toolchain Shadow Detector** (`src/observer.ts`): Intercepts `bash` and `powershell` execution to flag CLI search bypasses (`find`, `rg`) where indexed search would be 12–45× faster.",
+          "- **Profiler Tool & Slash Command**: Registered `fsearch_metrics` tool and `/ultrasearch` (and `/fsearch`) slash command (`metrics`, `audit`, `reset`, `status`) to observe p50/p90/p95 latency and anti-patterns.",
+          "- **Model Context Protocol (MCP) Server (#14)**: Native stdio JSON-RPC 2.0 server in `src/mcp.ts` and executable `bin/mcp-server.ts` for universal integration with T3 Code and Antigravity.",
+          "- **Line-Buffered UNIX Socket Client (#1)**: Implemented `FSearchClient` in `src/client.ts` communicating with `~/Library/Application Support/FSearch/fsearch.sock`. Uses Node.js `readline` to guarantee clean message boundaries.",
+          "- **Fallback quality**: native fallback prefers `rg` (with `grep` fallback) and the `find` max-depth cap was removed.",
+          "- Dynamic native fallback for consent-gated workspaces (Downloads/Documents/Desktop).",
+          "- **Zero Typo Tolerance Enforced**: Completely eliminated all fuzzy typo forgiveness across `fsearch_query` and fallback search. Plain query terms are transformed into strict exact match mode (`Mode::Exact`), guaranteeing zero false positives and deterministic resolution.",
+          "- **Extension Tool Registration**: Fixed `pi.defineTool is not a function` runtime error by migrating to `pi.registerTool(...)` API with unified loader fallback across Pi Agent runtimes."
+        ],
+        "test/benchmark-gate.test.ts": [
+          "* Hermetic mock daemon: line-delimited JSON over a temp UNIX socket.",
+          "const daemonUp = await live.ping();",
+          "const liveOnly = daemonUp ? false : \"fsearch daemon not running (live gate skipped)\";",
+          "test(\"Hermetic CI Gate: client round-trip p95 search < 10ms (mock socket, no daemon)\", async () => {",
+          "test(\"Hermetic CI Gate: client round-trip p95 grep < 5ms (mock socket, no daemon)\", async () => {",
+          "const mockServer = net.createServer((sock) => {",
+          "await new Promise<void>((resolve) => mockServer.listen(sockPath, resolve));",
+          "mockServer.close();",
+          "const hermetic = new FSearchClient({ socketPath: sockPath });",
+          "const sockPath = path.join(os.tmpdir(), `ults-gate-${process.pid}-${Date.now()}.sock`);",
+          "sock.on(\"data\", (chunk) => {",
+          "sock.write(JSON.stringify(reply) + \"\\n\");"
+        ],
+        "bin/cli.ts": [
+          "console.log(\"🔐 Checking macOS Full Disk Access status for UltraSearch daemon...\");",
+          "const target = fs.existsSync(sysApp) ? sysApp : (fs.existsSync(userApp) ? userApp : path.join(os.homedir(), \".local/bin/ultrasearch-daemon\"));",
+          "case \"daemon\": {",
+          "console.error(\"Daemon is not reachable:\", e.message);",
+          "console.log(\"🔄 Restarting ultrasearch daemon...\");",
+          "execSync(\"pkill -9 -f 'UltraSearch serve' ; pkill -9 -f 'ultrasearch-daemon serve' ; pkill -9 -f 'fsearch serve' || true\");",
+          "execSync(`nohup \"${daemonBin}\" serve > \"${logFile}\" 2>&1 &`);",
+          "<string>serve</string>"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/telemetry.ts",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/tui.ts",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 5,
+            "path": "README.md",
+            "grade": 1
+          },
+          {
+            "rank": 6,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "bin/cli.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9614557747069621,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "M4",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "what does CI run on every push",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
+      "ms": 9.111582999999882,
+      "source": "semantic_intent",
+      "error": null,
+      "retrieved": [
+        "src/compactor.ts",
+        "src/tui.ts",
+        "src/telemetry.ts",
+        "src/client.ts",
+        ".github/workflows/ci.yml",
+        "AUDIT-2026-10-14.md",
+        "src/formatter.ts",
+        "test/benchmark-gate.test.ts",
+        "README.md",
+        "ROADMAP.md"
+      ],
+      "matches": {
+        "src/compactor.ts": [
+          "export interface CompactionStats {",
+          "const compactionHistory: CompactionStats[] = [];",
+          "* Manually trigger LSM segment compaction and name index consolidation.",
+          "public async compact(automated = false): Promise<{ ok: boolean; stats?: CompactionStats; message: string }> {",
+          "return { ok: false, message: \"Compaction already in progress\" };",
+          "compactionHistory.push(stats);",
+          "// If overlay modifications or deletions exceed thresholds, run auto compaction"
+        ],
+        "src/tui.ts": [
+          "const isInteractive = Boolean(process.stdin.isTTY && process.stdout.isTTY && !once && !process.env.CI);",
+          "lines.push(\"\\x1B[1;33m--- LIVE OBSERVABILITY & EFFICIENCY METRICS ---\\x1B[0m\");",
+          "// Start the LSM compaction supervisor for this long-lived interactive session",
+          "this.compactor.startAutoCompaction();",
+          "this.statusMessage = \"⏳ Running LSM Compaction...\";",
+          "this.compactor.stopAutoCompaction();",
+          "lines.push(\"\\x1B[1;36m========================================================================================\\x1B[0m\");",
+          "lines.push(",
+          "lines.push(\"\\x1B[1;36m========================================================================================\\x1B[0m\");",
+          "lines.push(",
+          "lines.push(\"\");",
+          "public async run(once = false): Promise<void> {",
+          "lines.push(\"  (No invocations recorded yet. Run a search to populate logs)\");"
+        ],
+        "src/telemetry.ts": [
+          "const latencies = toolRows.map((r) => r.ms);",
+          "p50Ms: pct(latencies, 50),",
+          "p90Ms: pct(latencies, 90),",
+          "p95Ms: pct(latencies, 95),",
+          "advice.push(\"Toolchain running optimally. Sub-10ms CI gates maintained and zero CLI bypasses detected.\");",
+          "// Compaction is a disk maintenance operation over millions of files; evaluate against 2.5s gate",
+          "`LSM Compaction p95 latency is ${stat.p95Ms.toFixed(1)}ms (>2500ms maintenance threshold). Daemon memory or disk I/O may be saturated.`",
+          "parts.push(\"--- Recursive Learning & Actionable Advice ---\");",
+          "cliBypasses.push({",
+          "byTool.get(r.tool)!.push(r);",
+          "zeroHitQueries.push({",
+          "toolStats.push({",
+          "advice.push(`Detected ${cliBypasses.length} CLI subprocess searches (find/rg). Directing agent to fsearch tools will save 10-40ms per call.`);"
+        ],
+        "src/client.ts": [
+          "existing.matches.push(m);",
+          "args.push(\"-iname\", `*${cleanQ}*`);",
+          "args.push(\"-print\");",
+          "fileMap.get(filePath)!.matches.push({ line: lineNum, text: matchText });",
+          "if (process.env.XDG_RUNTIME_DIR) {",
+          "return path.join(process.env.XDG_RUNTIME_DIR, \"fsearch.sock\");",
+          "// Fallback: run individual greps concurrently and merge unique files",
+          "const runSearch = (bin: string, args: string[]): string => {",
+          "out = runSearch(\"rg\", rgArgs);"
+        ],
+        ".github/workflows/ci.yml": [
+          "name: CI & Benchmark Gate",
+          "- name: Install Dependencies",
+          "uses: actions/checkout@v4",
+          "uses: actions/setup-node@v4",
+          "push:",
+          "jobs:",
+          "runs-on: macos-latest",
+          "run: npm install",
+          "run: npm run typecheck",
+          "- name: Run Unit Tests",
+          "run: npm test"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "| CI | **18 of 18 GitHub Actions runs have failed. Zero passes.** The \"CI Gate p95 < 10 ms\" badge is false and the benchmark gate has never executed in CI. |",
+          "| Test suite | Local 25/25 pass only because a daemon is running. In CI it is 23/25 (`FSearchClient ping`, `compactor`). Tests are integration tests, not hermetic. |",
+          "| Milestones | 15/15 issues closed and \"Done\" on the project board; at least **#12 is dead code, #14 was never registered anywhere, and #15 is factually wrong** (gate tests a ~25-file repo, not \"1M+ file trees\"; CI never passed). |",
+          "| 5 | Worktree / CWD scoping | v0.2.0 completed | `resolveWorktreeRoot()` walks up to the nearest `.git` (directory or worktree pointer file), caches 60 s, falls back to `git rev-parse`. Works for single repos; **no test with two linked worktrees**, `global: true` bypasses by design, no containment validator as the issue specified. | 🟡 Partial |",
+          "| 15 | Deterministic sub-10 ms p95 CI gate (1M+ files) | v1.0.0 completed | `test/benchmark-gate.test.ts` measures 50 warm calls of `package.json` / `FSearchClient` **inside this ~25-file repository**, requires a running daemon, and **has never run in CI** (the job dies at `npm test` first). No 1M-file fixture exists. | ❌ Broken / misdescribed |",
+          "* Workflow: `npm install → typecheck → npm test → node --test test/benchmark-gate.test.ts` on `macos-latest`.",
+          "| Versions | `package.json` 0.3.0, README badge 0.2.2, CHANGELOG ends at 0.2.2, **zero git tags, zero GitHub releases**, 14 commits after the last changelog entry. |",
+          "All 15 issues exist on GitHub and on project board #5, all marked **Done**. GitHub has **no milestones created** (the",
+          "| GitHub hygiene | ❌ | 15 issues, all closed, no milestones, no releases, no tags, no PRs, no branch protection. The \"20 next milestones\" promised in the session were never filed. |",
+          "15. File the promised \"20 next milestones\" as GitHub issues with acceptance criteria and evidence; reopen/correct #12, #14, #15.",
+          "| Dead code | `semantic.ts`, the Code Mode declaration module, `startAutoCompaction()`, `recordMistake()/learnCorrection()` and `loadIgnoreRules()` are **never invoked by production paths**. |",
+          "| LSM compactor + supervisor (`src/compactor.ts`) | 🟡 Manual only | `compact()` works (~600 ms via `{op:\"save\"}`) from TUI/CLI; `startAutoCompaction()` is defined at `src/compactor.ts:93` and **called nowhere**. Writes `fsearch_compact` audit rows whose `hitCount` is the whole index size (2.9 M). |",
+          "Daemon log shows recurring `FSEvents dropped events before we read them` plus automatic compactions",
+          "* **18 runs, 18 failures.** Failing tests in the last run: `FSearchClient ping`, `compactor: manual and automated compaction supervisor`",
+          "## 1. Milestone / issue implementation matrix",
+          "16. Cross-platform CI matrix (Linux at minimum) for socket paths and TUI fallbacks.",
+          "**Method:** source reading of every module, `gh` API state (issues/milestones/runs), local execution of the test suites, live",
+          "| Telemetry | **101 of 139 rows (73%) in the \"production\" audit log are synthetic rows written by the regression gate.** Real agent calls are mixed with benchmark runs; search/multi-grep calls are recorded twice (inner client + outer tool). |",
+          "| 11 | `fsearch_multi_grep` | v0.3.0 completed | Works, but not \"one IPC pass\" in practice: real-world p50 **47 ms**; fallback path runs N sequential greps and still records `source: index`; duplicate audit rows show both 13-file and 6-file results for the same call. | 🟡 Partial |"
+        ],
+        "src/formatter.ts": [
+          "lines.push(bLine);",
+          "lines.push(`\\n[... Truncated: ${omitted} additional matches omitted to protect token ceiling. Omit max_tokens or refine path_filter to see more]`);",
+          "lines.push(lineStr);",
+          "lines.push(aLine);",
+          "lines.push(`\\n[... Truncated: ${omitted} additional matches omitted. Omit max_tokens or refine path_filter to see more]`);",
+          "): { text: string; tokenCount: number; truncatedCount: number } {",
+          "truncatedCount: omitted,",
+          "truncatedCount: omitted,"
+        ],
+        "test/benchmark-gate.test.ts": [
+          "* This lets the CI gate run on a clean machine with no fsearch install,",
+          "function p95Of(latencies: number[]): { p50: number; p95: number } {",
+          "const sorted = [...latencies].sort((a, b) => a - b);",
+          "test(\"Hermetic CI Gate: client round-trip p95 search < 10ms (mock socket, no daemon)\", async () => {",
+          "const latencies: number[] = [];",
+          "latencies.push(performance.now() - start);",
+          "latencies.push(performance.now() - start);",
+          "latencies.push(elapsed);",
+          "latencies.push(elapsed);",
+          "const liveOnly = daemonUp ? false : \"fsearch daemon not running (live gate skipped)\";"
+        ],
+        "README.md": [
+          "[![CI](https://github.com/Ghost-9/pi-ultrasearch/actions/workflows/ci.yml/badge.svg)](https://github.com/Ghost-9/pi-ultrasearch/actions/workflows/ci.yml)",
+          "> session-level numbers, and claimed a green CI that never existed. Every figure below is now labelled with its",
+          "## Testing & CI",
+          "The CI workflow runs on a bare `macos-latest` runner with **no daemon installed**. It executes",
+          "- **Platforms** — socket path resolution exists for Linux/Windows, but the daemon and CI are macOS-only today.",
+          "Upstream engine: [`noahdunnagan/fsearch`](https://github.com/noahdunnagan/fsearch) (MIT, © Noah Dunnagan), pinned at",
+          "- **Staleness windows** — `FSEvents dropped events` and segment compactions can briefly delay fresh results;",
+          "with test/benchmark runs isolated via `PI_ULTRASEARCH_TEST=1`. The regression gate no longer pollutes production data.",
+          "npm run test:gate   # hermetic mock-socket latency gate + live daemon gate (skips live if unavailable)",
+          "npm run typecheck   # tsc --noEmit",
+          "The historical latency gate (real daemon, `test/benchmark-gate.test.ts`) still runs on developer machines and any"
+        ],
+        "ROADMAP.md": [
+          "- **1.0.0** — production gates: deterministic multi-scope benchmark suite, hermetic CI, documented SLAs",
+          "The first version of this roadmap declared milestones 4–6 complete at version 0.3.0 while CI had never passed, the",
+          "### Milestone 6 — Production CI & latency gates (v1.0.0) — 🟡 **in progress** (was mislabelled complete)",
+          "- [x] #15 🔧 CI is now **hermetic and green-capable**: daemon-dependent integration tests skip cleanly on a bare",
+          "- CI: hermetic tests + mock-socket gate; the job can pass on a clean machine and the gate now actually executes.",
+          "- Auto-compaction supervisor wired into the interactive TUI lifecycle.",
+          "4. Staleness metric in `status` (FSEvents drops + compaction windows) and agent-visible freshness hints.",
+          "- **0.5.x** — interop polish: MCP parity across clients, Code Mode pipelines, cross-platform groundwork",
+          "- Code Mode pipeline recipes (search → grep → read in one sandbox turn) with generated declarations.",
+          "repository. The audit matrix is reproduced in `AUDIT-2026-10-14.md`; the corrective work is itemised in",
+          "11. Cross-platform daemon distribution + Linux CI matrix.",
+          "repository audit (`AUDIT-2026-10-14.md`). Milestone statuses now reflect what is actually reachable in a running",
+          "sandbox directly, so this module is not required at runtime",
+          "runner, and a **mock-socket latency gate** runs everywhere (0.3.1)",
+          "- Telemetry: benchmark/gate runs isolated from production audit log; single-layer audit recording (no duplicates);",
+          "- Deterministic benchmark suite committed as JSON results, run on every release."
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/compactor.ts",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "src/tui.ts",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/telemetry.ts",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "src/client.ts",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": ".github/workflows/ci.yml",
+            "grade": 3
+          },
+          {
+            "rank": 6,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 7,
+            "path": "src/formatter.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "README.md",
+            "grade": 2
+          },
+          {
+            "rank": 10,
+            "path": "ROADMAP.md",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 0.2,
+        "mrr_at_10_rel2": 0.2,
+        "ndcg_at_10": 0.42237366501290213,
+        "top1_grade": 0,
+        "reformulation_signal": true,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "M5",
+      "lane": "semantic",
+      "difficulty": "tail",
+      "must_hit": true,
+      "negative": false,
+      "query": "keep search results inside the repository boundary",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
+      "ms": 12.627166999999645,
+      "source": "semantic_intent",
+      "error": null,
+      "retrieved": [
+        "index.ts",
+        "src/sanitize.ts",
+        "src/mcp.ts",
+        "src/types.ts",
+        "src/client.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "README.md",
+        "OPTIMIZATIONS.md",
+        "bin/cli.ts"
+      ],
+      "matches": {
+        "index.ts": [
+          "import { FSearchClient } from \"./src/client.ts\";",
+          "import { searchSemanticIntent } from \"./src/semantic.ts\";",
+          "export default function piUltraSearchExtension(pi: ExtensionAPI): void {",
+          "const client = new FSearchClient();",
+          "// 1. fsearch_query: Fast path/file discovery with strict zero typo tolerance, globs, git filters, and proximity ranking",
+          "* caching results to avoid expensive child process spawns on every query.",
+          "limit: Type.Optional(Type.Number({ description: \"Maximum results to return (default: 30).\" })),",
+          "near: Type.Optional(Type.String({ description: \"Optional active file path to re-rank results by folder proximity.\" })),",
+          "\"Ultra-fast indexed trigram content search (<1ms). Searches inside text files for identifiers, function definitions, or literals without running slow recursive disk walks. Modes: literal, regex, symbol (definitions first), semantic (intent expansion). Optional context lines (-C) and AST symbol tags. Results scrubbed for credentials.\",",
+          "max_tokens: Type.Optional(Type.Number({ description: \"Optional token budget ceiling. Omit for complete, uncapped results.\" })),",
+          "description: \"Instant O(1) lookup for exact filenames (e.g., 'package.json', 'Cargo.toml', 'ROADMAP.md') within current workspace.\",",
+          "import { isPathSafe } from \"./src/sanitize.ts\";",
+          "if (searchScope && !isPathSafe(searchScope, worktreeRoot) && !params.global) {",
+          "\"Instant indexed whole-disk or workspace file search (<0.1ms). Strict deterministic matching (zero typo tolerance) for exact symbol, glob, and path resolution. Supports globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.\",",
+          "const searchScope = params.global ? undefined : worktreeRoot;",
+          "in: searchScope,",
+          "const baseScope = params.global ? undefined : worktreeRoot;",
+          "const searchScope = params.path_filter"
+        ],
+        "src/sanitize.ts": [
+          "* Ensures path is within allowed boundaries if scope is enforced.",
+          "export function isPathSafe(filePath: string, allowedRoot?: string): boolean {",
+          "// 1. Textual path boundary check"
+        ],
+        "src/mcp.ts": [
+          "import { FSearchClient } from \"./client.ts\";",
+          "import { searchSemanticIntent } from \"./semantic.ts\";",
+          "export class FSearchMcpServer {",
+          "private client: FSearchClient;",
+          "constructor(client?: FSearchClient, cwd = process.cwd()) {",
+          "result: {",
+          "return { jsonrpc: \"2.0\", id, result: {} };",
+          "limit: { type: \"number\", description: \"Max results (default: 30)\" },",
+          "near: { type: \"string\", description: \"Optional file path to re-rank results by folder proximity\" },",
+          "result: {",
+          "description: \"Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.\",",
+          "description: \"Instant O(1) filename lookup (e.g. 'package.json', 'Cargo.toml') within current workspace.\",",
+          "const searchScope = args.global ? undefined : activeRoot;",
+          "const res = await this.client.search(args.query, { in: searchScope, limit: args.limit ?? 30, near: args.near });",
+          "const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;",
+          "const semantic = await searchSemanticIntent(this.client, args.pattern, { in: searchScope, limit: args.limit ?? 30, auditTool: \"fsearch_grep\" });",
+          "in: searchScope,"
+        ],
+        "src/types.ts": [
+          "export interface FSearchHit {",
+          "export interface FSearchSearchResponse {",
+          "hits?: FSearchHit[];",
+          "export interface FSearchGrepMatch {",
+          "export interface FSearchGrepFile {",
+          "/** Respect local .gitignore/.ignore rules declared in the scope root (default: true). */",
+          "/** Respect local .gitignore/.ignore rules declared in the scope root (default: true). */"
+        ],
+        "src/client.ts": [
+          "return \"\\\\\\\\.\\\\pipe\\\\fsearch\";",
+          "return path.join(process.env.XDG_RUNTIME_DIR, \"fsearch.sock\");",
+          "return path.join(home, \".local/share/fsearch/fsearch.sock\");",
+          "return path.join(home, \"Library/Application Support/FSearch/fsearch.sock\");",
+          "FSearchSearchResponse,",
+          "const results = await Promise.all(",
+          "for (const r of results) {",
+          "// Respect declared .gitignore/.ignore rules for scopes outside git repositories",
+          "// Respect declared .gitignore/.ignore rules for scopes outside git repositories",
+          "/** Cached per-scope .gitignore/.ignore evaluation (declared rules only). */",
+          "private isIgnoredPath(absOrRel: string, scope: string): boolean {",
+          "const rel = path.isAbsolute(absOrRel) ? path.relative(scope, absOrRel) : absOrRel;",
+          "return matchesIgnorePattern(rel, this.getIgnoreRules(scope));",
+          "private filterIgnoredHits(hits: FSearchHit[], scope: string): FSearchHit[] {",
+          "// Strict Zero Typo Tolerance post-filter: remove low-scoring partial matches that do not contain exact query words"
+        ],
+        "AUDIT-2026-10-14.md": [
+          "The **surrounding claims, delivery bookkeeping and observability are not trustworthy**:",
+          "| Daemon supervision / branding (`UltraSearch.app`, launchd, FDA) | ✅ Working | `~/Library/LaunchAgents/com.pi.ultrasearch.plist` (`KeepAlive`), PID 786, `full_disk_access: true`. Three *different* binaries on disk: app `dc0166d2…`, `ultrasearch-daemon` `a09177e6…`, `fsearch` `46d93c33…`; usage text still says `fsearch`. |",
+          "# pi-ultrasearch — Full Repository Audit",
+          "socket benchmarks against the resident daemon (`/Applications/UltraSearch.app/.../UltraSearch serve`, launchd `com.pi.ultrasearch`, PID 786),",
+          "and forensic analysis of the production telemetry file (`~/.pi/agent/cache/pi-ultrasearch/audit.jsonl`).",
+          "| Test suite | Local 25/25 pass only because a daemon is running. In CI it is 23/25 (`FSearchClient ping`, `compactor`). Tests are integration tests, not hermetic. |",
+          "| Telemetry | **101 of 139 rows (73%) in the \"production\" audit log are synthetic rows written by the regression gate.** Real agent calls are mixed with benchmark runs; search/multi-grep calls are recorded twice (inner client + outer tool). |",
+          "| 11 | `fsearch_multi_grep` | v0.3.0 completed | Works, but not \"one IPC pass\" in practice: real-world p50 **47 ms**; fallback path runs N sequential greps and still records `source: index`; duplicate audit rows show both 13-file and 6-file results for the same call. | 🟡 Partial |",
+          "| Rich results (`-C` context, symbol tags) | 🟡 Half-wired | Formatter supports `showContext` / `tagSymbols`; MCP passes them (`src/mcp.ts`); the **Pi tools do not** — `index.ts` requests `context: 1` from the daemon and then discards it because `showContext` is never set. |",
+          "8. Expose rich results (`context`, `tag_symbols`) through the Pi tools, or stop requesting `context: 1` from the daemon.",
+          "13. Real benchmark harness: median + CI, multiple scopes (repo / monorepo / home / whole disk), output-equivalence check, committed JSON results.",
+          "| 15 | Deterministic sub-10 ms p95 CI gate (1M+ files) | v1.0.0 completed | `test/benchmark-gate.test.ts` measures 50 warm calls of `package.json` / `FSearchClient` **inside this ~25-file repository**, requires a running daemon, and **has never run in CI** (the job dies at `npm test` first). No 1M-file fixture exists. | ❌ Broken / misdescribed |",
+          "| Semantic intent expansion (`src/semantic.ts`) | ❌ Dead code | Not imported anywhere outside its test. |",
+          "* Path containment (`isPathSafe`) is only enforced for `fsearch_grep(path_filter)`; `fsearch_query` accepts scope/SDK paths",
+          "**Scope:** roadmap milestones ↔ issue closures ↔ actual code ↔ live measurements ↔ published claims.",
+          "**45×–78×** faster than `find`/`rg` on the same scope, with working typo-intolerance, DLP scrubbing, git filters, and a",
+          "| Speedup vs native | README | 45.3× (find), 11.9× (rg) | 45× (find/Search), **78×** (rg/Search), 95× (find/repo) — medians | ✅ Confirmed on tested scopes |",
+          "| Gate scope | issue #15 | 1 M+ file trees | ~25-file repo directory | ❌ False |",
+          "| 13 | Enterprise credential patterns + fail-closed boundary | v0.4.0 completed | Slack/Stripe/GCP/AWS-STS patterns added. \"Configurable fail-closed directory blocklists\" from the issue objective: not implemented. Boundary checks remain partial (see #3). | 🟡 Partial |",
+          "| 3 | Credential scrubbing + path safety | v0.1.0 released | 14 regex patterns + sensitive-file masking work (unit-tested). Path safety is applied only to `fsearch_grep`'s `path_filter`; `fsearch_query` has no containment check. Private-key regex is malformed: `/-----BEGIN ...-----[[\\s\\S]*?-----END .../` — character class `[[\\s\\S]`, not `[\\s\\S]`. | 🟡 Partial |",
+          "| 5 | Worktree / CWD scoping | v0.2.0 completed | `resolveWorktreeRoot()` walks up to the nearest `.git` (directory or worktree pointer file), caches 60 s, falls back to `git rev-parse`. Works for single repos; **no test with two linked worktrees**, `global: true` bypasses by design, no containment validator as the issue specified. | 🟡 Partial |",
+          "without a containment check; `global: true` bypasses all scoping by design.",
+          "12. Fix the PEM regex; apply DLP consistently; enforce containment for query scopes; implement the fail-closed blocklist promised on #13."
+        ],
+        "CHANGELOG.md": [
+          "The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),",
+          "- **MCP registration**: registered in Antigravity (`~/.gemini/antigravity/mcp_config.json`, `~/.gemini/config/mcp_config.json`), VS Code user `mcp.json`, and Claude Desktop. Pi deliberately keeps the native extension rather than a duplicate MCP tool surface.",
+          "- Daemon management: launchd `com.pi.ultrasearch` LaunchAgent with `KeepAlive`, `authorize` command, and unified `UltraSearch.app` branding for stable Full Disk Access attribution.",
+          "All notable changes to `pi-ultrasearch` will be documented in this file.",
+          "- **Telemetry integrity**: benchmark-gate runs are isolated with `PI_ULTRASEARCH_TEST=1`; audit rows are recorded in a **single layer** (client) instead of client + tool wrapper duplicates; `fsearch_compact` rows no longer report the whole index as `hitCount`.",
+          "- **Rich results**: `fsearch_grep` no longer requests and discards context lines; optional `context` and `tag_symbols` parameters are exposed to Pi and MCP clients.",
+          "- `mode: \"semantic\"` in `fsearch_grep` (Pi + MCP) wiring the intent-expansion module into a reachable path.",
+          "- `near` parameter on the MCP `fsearch_query` tool.",
+          "- **Recursive learning**: `recordMistake()` is invoked by real failure paths (empty results, path mismatch, DLP interception, CLI bypass) instead of only tests.",
+          "- **`.gitignore` / `.ignore` evaluation** was dead code; it is now applied to `query`, `grep`, and `multi_grep` results for the declared scope, with a 60-second per-scope cache.",
+          "- Rich grep results: code context windows (`-C`), AST symbol tags, and MCP support (`src/formatter.ts`, `src/mcp.ts`).",
+          "- **Git Worktree Isolation (#5)**: Added `resolveWorktreeRoot` using `git rev-parse --show-toplevel` to prevent search results from leaking across sibling Git worktrees.",
+          "- **Dynamic Ignore Rules (#12)**: Trie-based pattern matcher in `src/sanitize.ts` evaluating `.gitignore` and `.ignore` outside git repositories."
+        ],
+        "README.md": [
+          "Agents lose time and context to `find`, `rg`, and `grep -rn` subprocesses. `pi-ultrasearch` keeps a resident index",
+          "# pi-ultrasearch",
+          "> Whole-disk filesystem search, trigram content grep, and git-aware code discovery for **Pi Agent**, **T3 Code**, and MCP clients — backed by a persistent resident Rust daemon (`fsearch`).",
+          "[![CI](https://github.com/Ghost-9/pi-ultrasearch/actions/workflows/ci.yml/badge.svg)](https://github.com/Ghost-9/pi-ultrasearch/actions/workflows/ci.yml)",
+          "- a **Pi Agent extension** (6 tools + metrics tool + `/ultrasearch` commands),",
+          "- Strict zero typo tolerance: misspellings return 0 results (verified).",
+          "- **Recursive learner**: `recordMistake()` is now invoked by real failure paths (empty results, path mismatches,",
+          "- **Tail latency** — cold/global queries have been observed at 1.7–4.0 s. Per-query deadlines and partial results",
+          "- **Staleness windows** — `FSEvents dropped events` and segment compactions can briefly delay fresh results;",
+          "staying inside the workspace boundary.",
+          "- Respects declared `.gitignore` / `.ignore` rules in the scope root (outside git repos too).",
+          "> measurement scope, and the full audit (`AUDIT-2026-10-14.md`) lists what was inflated and what changed.",
+          "| Trigram grep — trigram-heavy scope | 0.480 ms | 0.784 ms | 50 calls |",
+          "| Multi-pattern grep | 1.842 ms | 5.886 ms | 10 calls, small scope |",
+          "Baseline comparison on the same scope (medians): **`find -name` 21.4 ms (45× slower)**, **`rg -l` 11.9 ms (78× slower)**,",
+          "Indexed file and path discovery, scoped to the active worktree (nearest `.git`), with an optional `global: true`."
+        ],
+        "OPTIMIZATIONS.md": [
+          "| B8 | Auto-compaction supervisor never started | `startAutoCompaction()` uncalled | **DONE**: wired into interactive TUI lifecycle | Long sessions keep index healthy | S |",
+          "| G5 | Upstream MIT notice not tracked | rebranded daemon binary | Keep attribution in README; document binary provenance | License compliance | S |",
+          "- warm path search p50 0.37–0.48 ms, p95 ~1.1 ms (small repo)",
+          "- real-session `fsearch_query` p50 41 ms, p95 1.95 s, max 4.0 s",
+          "| A1 | Cold/global queries cause multi-second tails | 1,721 ms / 1,952 ms / 4,007 ms rows for a whole-disk query | Add `budget_ms` to `op: search`; return partial results with `complete:false` when the budget expires | Bounded worst-case; agent gets *something* instead of waiting | M |",
+          "| A4 | Compaction churns the index (4.53 M → 3.67 M entries) | daemon log compaction lines; `fsearch_compact` ~600 ms | Track segment/overlay pressure; pause compaction during active query bursts; expose compaction metrics | Fewer latency spikes; visible index health | M |",
+          "| A6 | Whole-disk path search has no ranking budget guard | `limit` truncates results but work continues | Score-then-stop with early termination for low-score matches | Lower p95 on global queries | M |",
+          "| A3 | FSEvents drops force replays; freshness is invisible | `daemon.log`: repeated `FSEvents dropped events before we read them` | Surface `staleness_ms` / `last_event_id` in `op: status`; warn the client when a replay is in flight | Agent can decide to re-run or trust results | M |",
+          "| B7 | Recursive learner had no production writers | `recordMistake()` only in tests | **DONE**: empty-result, path-mismatch, DLP, CLI-bypass writers | The learner actually learns from sessions | S |",
+          "| B10 | Result-limit accounting | `limit` applies before/after ignore filtering inconsistently | Filter first, then apply limit; report `truncated` counts | Predictable result counts | S |",
+          "| B4 | `.gitignore` evaluation was dead code | `loadIgnoreRules()` never called | **DONE**: applied to query/grep/multi-grep with 60 s per-scope cache | Honest \"outside repo\" ignore support | S |",
+          "| F3 | Containment only on grep `path_filter` | `fsearch_query` accepts arbitrary scope | Apply `isPathSafe` to all scopes before dispatch | Boundary guarantees match the docs | S |"
+        ],
+        "bin/cli.ts": [
+          "<key>KeepAlive</key>",
+          "import { FSearchClient } from \"../src/client.ts\";",
+          "import { UltraSearchTui } from \"../src/tui.ts\";",
+          "const client = new FSearchClient();",
+          "case \"search\": {",
+          "console.error(\"Usage: ultrasearch query <pattern> [--in <dir>] [--limit <n>]\");",
+          "let scope = process.cwd();",
+          "if (args[i] === \"--in\" && args[i + 1]) scope = path.resolve(args[i + 1]);",
+          "const res = await client.search(query, { in: scope, limit });",
+          "let scope = process.cwd();",
+          "if (args[i] === \"--in\" && args[i + 1]) scope = path.resolve(args[i + 1]);"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "index.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/sanitize.ts",
+            "grade": 3
+          },
+          {
+            "rank": 3,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "src/types.ts",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "src/client.ts",
+            "grade": 2
+          },
+          {
+            "rank": 6,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 7,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "README.md",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 10,
+            "path": "bin/cli.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.2,
+        "recall_at_3": 0.4,
+        "recall_at_5": 0.6,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9636134854206578,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    },
+    {
+      "id": "M6",
+      "lane": "semantic",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "kubernetes helm chart values for a redis cluster",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
+      "ms": 3.2848329999997077,
+      "source": "semantic_intent",
+      "error": null,
+      "retrieved": [],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": true,
+      "false_positive": false,
+      "score": {
+        "top10": [],
+        "recall_at_1": null,
+        "recall_at_3": null,
+        "recall_at_5": null,
+        "recall_at_10": null,
+        "success_recall_at_10": null,
+        "mrr_at_10_rel1": 0,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": null,
+        "top1_grade": 0,
+        "reformulation_signal": true,
+        "recall_at_limit": null,
+        "recall_at_limit_frozen_kmax10": null
+      }
+    },
+    {
+      "id": "K1",
+      "lane": "ranking-frecency",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "readme",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"readme\", in=<root>, limit=10)",
+      "ms": 0.5561249999996107,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "README.md"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "README.md",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9173194127129571,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.5,
+        "recall_at_limit_frozen_kmax10": 0.5
+      }
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "sanitize",
+      "params": {
+        "near": "src/formatter.ts",
+        "limit": 10
+      },
+      "call": "search(\"sanitize\", in=<root>, limit=10, near=src/formatter.ts)",
+      "ms": 0.48424999999997453,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "src/sanitize.ts"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/sanitize.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.3333333333333333,
+        "recall_at_limit_frozen_kmax10": 0.3333333333333333
+      }
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "boost": true
+      },
+      "call": "search(\"client\", in=<root>, limit=10, boost=true)",
+      "ms": 0.7910000000001673,
+      "source": null,
+      "error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "matches": {},
+      "extra": null,
+      "control": {
+        "params": {
+          "boost": false
+        },
+        "retrieved": [
+          "src/client.ts",
+          "test/client.test.ts"
+        ]
+      },
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/client.test.ts",
+            "grade": 2
+          }
+        ],
+        "recall_at_1": 0.25,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9052598568324595,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 0.5,
+        "recall_at_limit_frozen_kmax10": 0.5
+      }
+    },
+    {
+      "id": "K4",
+      "lane": "ranking-symbol-intrafile",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "path_filter": "src/client.ts",
+        "limit": 10
+      },
+      "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+      "ms": 3.145208999999795,
+      "source": "index",
+      "error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "matches": {
+        "src/client.ts": [
+          "export class FSearchClient {"
+        ]
+      },
+      "extra": null,
+      "control": null,
+      "zero_result": false,
+      "false_positive": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false,
+        "recall_at_limit": 1,
+        "recall_at_limit_frozen_kmax10": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,1404 @@
+{
+  "meta": {
+    "suite": "wave3-work-probe",
+    "label": "final-work-rank",
+    "generated_at": "2026-10-15T12:20:16.236Z",
+    "rounds": 5,
+    "engine": "/tmp/rf-bins/rank/ultrasearch",
+    "engine_sha256": "7b413d874fa2a824d2a4c6c9c679b10c1f83693311761d4453be582988b24a3e",
+    "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+    "note": "read/candidates/took_us come from the daemon's own answer; they are invariant under host load, unlike wall-clock"
+  },
+  "rows": [
+    {
+      "id": "P1",
+      "lane": "path",
+      "op": "search",
+      "query": "package.json",
+      "samples": [
+        {
+          "wall_ms": 1.1487919999999576,
+          "took_us": 270,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.4068339999998898,
+          "took_us": 44,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.37800000000015643,
+          "took_us": 29,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.3206249999998363,
+          "took_us": 25,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.29329199999983757,
+          "took_us": 22,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "lane": "path",
+      "op": "search",
+      "query": "ci.yml",
+      "samples": [
+        {
+          "wall_ms": 0.31112499999994725,
+          "took_us": 46,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.28112499999997453,
+          "took_us": 22,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.27691699999991215,
+          "took_us": 25,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2781249999998181,
+          "took_us": 23,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.35579199999983757,
+          "took_us": 31,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "lane": "path",
+      "op": "search",
+      "query": "client.ts",
+      "samples": [
+        {
+          "wall_ms": 0.3605000000000018,
+          "took_us": 46,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.3051669999999831,
+          "took_us": 25,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.4313329999999951,
+          "took_us": 37,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2980000000000018,
+          "took_us": 24,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2886670000000322,
+          "took_us": 29,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "lane": "path",
+      "op": "search",
+      "query": "bench",
+      "samples": [
+        {
+          "wall_ms": 0.3083750000000691,
+          "took_us": 42,
+          "read": null,
+          "candidates": null,
+          "n": 3
+        },
+        {
+          "wall_ms": 0.30733299999997143,
+          "took_us": 26,
+          "read": null,
+          "candidates": null,
+          "n": 3
+        },
+        {
+          "wall_ms": 0.30883300000004965,
+          "took_us": 25,
+          "read": null,
+          "candidates": null,
+          "n": 3
+        },
+        {
+          "wall_ms": 0.3471669999998994,
+          "took_us": 30,
+          "read": null,
+          "candidates": null,
+          "n": 3
+        },
+        {
+          "wall_ms": 0.30166700000017954,
+          "took_us": 26,
+          "read": null,
+          "candidates": null,
+          "n": 3
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "op": "search",
+      "query": "codemode",
+      "samples": [
+        {
+          "wall_ms": 0.2892500000000382,
+          "took_us": 38,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2612500000000182,
+          "took_us": 23,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2539170000000013,
+          "took_us": 24,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.25108399999999165,
+          "took_us": 24,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2504999999998745,
+          "took_us": 24,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "P7",
+      "lane": "path",
+      "op": "search",
+      "query": "src/**/*.ts",
+      "samples": [
+        {
+          "wall_ms": 0.6140410000000429,
+          "took_us": 68,
+          "read": null,
+          "candidates": null,
+          "n": 12
+        },
+        {
+          "wall_ms": 0.45716700000002675,
+          "took_us": 42,
+          "read": null,
+          "candidates": null,
+          "n": 12
+        },
+        {
+          "wall_ms": 0.378832999999986,
+          "took_us": 33,
+          "read": null,
+          "candidates": null,
+          "n": 12
+        },
+        {
+          "wall_ms": 0.3589159999999083,
+          "took_us": 29,
+          "read": null,
+          "candidates": null,
+          "n": 12
+        },
+        {
+          "wall_ms": 0.3509999999998854,
+          "took_us": 30,
+          "read": null,
+          "candidates": null,
+          "n": 12
+        }
+      ]
+    },
+    {
+      "id": "P8",
+      "lane": "path",
+      "op": "search",
+      "query": "kubectl_helm_chart_values",
+      "samples": [
+        {
+          "wall_ms": 0.2894579999999678,
+          "took_us": 29,
+          "read": null,
+          "candidates": null,
+          "n": 0
+        },
+        {
+          "wall_ms": 0.2504590000000917,
+          "took_us": 20,
+          "read": null,
+          "candidates": null,
+          "n": 0
+        },
+        {
+          "wall_ms": 0.2624160000000302,
+          "took_us": 14,
+          "read": null,
+          "candidates": null,
+          "n": 0
+        },
+        {
+          "wall_ms": 0.2722079999998641,
+          "took_us": 12,
+          "read": null,
+          "candidates": null,
+          "n": 0
+        },
+        {
+          "wall_ms": 0.2711659999999938,
+          "took_us": 13,
+          "read": null,
+          "candidates": null,
+          "n": 0
+        }
+      ]
+    },
+    {
+      "id": "G1",
+      "lane": "grep-literal",
+      "op": "grep:literal",
+      "query": "estimateTokensSaved",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 130,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 86,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 97,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 71,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 100,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 2
+        }
+      ]
+    },
+    {
+      "id": "G2",
+      "lane": "grep-literal",
+      "op": "grep:literal",
+      "query": "enforceExactQuery",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 63,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 78,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 90,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 91,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 89,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "G3",
+      "lane": "grep-literal",
+      "op": "grep:literal",
+      "query": "SYMBOL_REGEX",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 73,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 90,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 73,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 79,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 65,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "G4",
+      "lane": "grep-literal",
+      "op": "grep:literal",
+      "query": "fsearch.sock",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 76,
+          "read": 2,
+          "candidates": 4,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 76,
+          "read": 2,
+          "candidates": 4,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 74,
+          "read": 2,
+          "candidates": 4,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 70,
+          "read": 2,
+          "candidates": 4,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 67,
+          "read": 2,
+          "candidates": 4,
+          "complete": true,
+          "n": 2
+        }
+      ]
+    },
+    {
+      "id": "G5",
+      "lane": "grep-literal",
+      "op": "grep:literal",
+      "query": "150 + hitCount",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 68,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 60,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 72,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 66,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 79,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "G6",
+      "lane": "grep-literal",
+      "op": "grep:literal",
+      "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 23,
+          "read": 0,
+          "candidates": 0,
+          "complete": true,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": 22,
+          "read": 0,
+          "candidates": 0,
+          "complete": true,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": 22,
+          "read": 0,
+          "candidates": 0,
+          "complete": true,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": 33,
+          "read": 0,
+          "candidates": 0,
+          "complete": true,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": 23,
+          "read": 0,
+          "candidates": 0,
+          "complete": true,
+          "n": 0
+        }
+      ]
+    },
+    {
+      "id": "R1",
+      "lane": "grep-regex",
+      "op": "grep:regex",
+      "query": "class\\s+\\w+Client",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 307,
+          "read": 14,
+          "candidates": 14,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 312,
+          "read": 14,
+          "candidates": 14,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 286,
+          "read": 14,
+          "candidates": 14,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 309,
+          "read": 14,
+          "candidates": 14,
+          "complete": true,
+          "n": 2
+        },
+        {
+          "wall_ms": null,
+          "took_us": 281,
+          "read": 14,
+          "candidates": 14,
+          "complete": true,
+          "n": 2
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "lane": "grep-regex",
+      "op": "grep:regex",
+      "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 293,
+          "read": 13,
+          "candidates": 13,
+          "complete": true,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": 267,
+          "read": 13,
+          "candidates": 13,
+          "complete": true,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": 230,
+          "read": 13,
+          "candidates": 13,
+          "complete": true,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": 244,
+          "read": 13,
+          "candidates": 13,
+          "complete": true,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": 229,
+          "read": 13,
+          "candidates": 13,
+          "complete": true,
+          "n": 10
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "lane": "grep-regex",
+      "op": "grep:regex",
+      "query": "(a+)+$",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": false,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": false,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": false,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": false,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": false,
+          "n": 0
+        }
+      ]
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "op": "grep:symbol",
+      "query": "FSearchClient",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 2847,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2853,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 3084,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2793,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2901,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "lane": "symbol",
+      "op": "grep:symbol",
+      "query": "detectSymbolTag",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 674,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 627,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 622,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 634,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 674,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "op": "grep:symbol",
+      "query": "applyProximityRanking",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 2718,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2795,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2706,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2662,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2579,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "op": "grep:symbol",
+      "query": "resolveWorktreeRoot",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 1661,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 1647,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 1734,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 1664,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 1662,
+          "read": 1,
+          "candidates": 1,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "M1",
+      "lane": "semantic",
+      "op": "semantic",
+      "query": "where are credentials scrubbed before results reach the model",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        }
+      ]
+    },
+    {
+      "id": "M2",
+      "lane": "semantic",
+      "op": "semantic",
+      "query": "how is the token savings number computed",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        }
+      ]
+    },
+    {
+      "id": "M3",
+      "lane": "semantic",
+      "op": "semantic",
+      "query": "what happens when the daemon socket dies mid-session",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        }
+      ]
+    },
+    {
+      "id": "M4",
+      "lane": "semantic",
+      "op": "semantic",
+      "query": "what does CI run on every push",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        }
+      ]
+    },
+    {
+      "id": "M5",
+      "lane": "semantic",
+      "op": "semantic",
+      "query": "keep search results inside the repository boundary",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 10
+        }
+      ]
+    },
+    {
+      "id": "M6",
+      "lane": "semantic",
+      "op": "semantic",
+      "query": "kubernetes helm chart values for a redis cluster",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 0
+        },
+        {
+          "wall_ms": null,
+          "took_us": null,
+          "read": null,
+          "candidates": null,
+          "complete": null,
+          "n": 0
+        }
+      ]
+    },
+    {
+      "id": "K1",
+      "lane": "ranking-frecency",
+      "op": "search",
+      "query": "readme",
+      "samples": [
+        {
+          "wall_ms": 0.5765840000003664,
+          "took_us": 67,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.4752080000002934,
+          "took_us": 41,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.30729199999996126,
+          "took_us": 25,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.324333999999908,
+          "took_us": 30,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.3360829999996895,
+          "took_us": 28,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "op": "search",
+      "query": "sanitize",
+      "samples": [
+        {
+          "wall_ms": 0.3184590000000753,
+          "took_us": 44,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.3002499999997781,
+          "took_us": 25,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2951249999996435,
+          "took_us": 24,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.26575000000002547,
+          "took_us": 23,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        },
+        {
+          "wall_ms": 0.2528339999998934,
+          "took_us": 22,
+          "read": null,
+          "candidates": null,
+          "n": 1
+        }
+      ]
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "op": "search",
+      "query": "client",
+      "samples": [
+        {
+          "wall_ms": 0.30345800000031886,
+          "took_us": 45,
+          "read": null,
+          "candidates": null,
+          "n": 2
+        },
+        {
+          "wall_ms": 0.2749589999998534,
+          "took_us": 25,
+          "read": null,
+          "candidates": null,
+          "n": 2
+        },
+        {
+          "wall_ms": 0.25562500000023647,
+          "took_us": 23,
+          "read": null,
+          "candidates": null,
+          "n": 2
+        },
+        {
+          "wall_ms": 0.3512080000000424,
+          "took_us": 67,
+          "read": null,
+          "candidates": null,
+          "n": 2
+        },
+        {
+          "wall_ms": 0.3517079999996895,
+          "took_us": 32,
+          "read": null,
+          "candidates": null,
+          "n": 2
+        }
+      ]
+    },
+    {
+      "id": "K4",
+      "lane": "ranking-symbol-intrafile",
+      "op": "grep:symbol",
+      "query": "FSearchClient",
+      "samples": [
+        {
+          "wall_ms": null,
+          "took_us": 2928,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2953,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 3183,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2943,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        },
+        {
+          "wall_ms": null,
+          "took_us": 2863,
+          "read": 2,
+          "candidates": 2,
+          "complete": true,
+          "n": 1
+        }
+      ]
+    }
+  ]
+}

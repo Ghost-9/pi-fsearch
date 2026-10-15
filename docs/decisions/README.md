@@ -24,3 +24,4 @@ messages, and every later session re-litigates them (#39).
 | [0011](0011-connect-before-spawn.md) | Connect before spawn, detect duplicates in status | accepted (wave 2) |
 | [0012](0012-live-gate-floor.md) | The live gate derives its floor in-run and keeps overhead strict | accepted (wave 2) |
 | [0013](0013-promote-main-engine.md) | Promote the main engine to the live daemon; keep wave-3 timings provisional | accepted (wave 3 ops) |
+| [0014](0014-grep-page-ranking.md) | A grep page is ranked by what its files contain | accepted (wave 3) |

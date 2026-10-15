@@ -26,6 +26,7 @@ import * as path from "node:path";
 import { performance } from "node:perf_hooks";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { makeScoreQuery } from "./scoring.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, "..", "..", "..");
@@ -123,34 +124,11 @@ const tryExec = (cmd, args) => {
 
 // ---------------------------------------------------------------- grading (wave-1 definitions)
 
-function scoreQuery(retrieved, expected, kMax = 10) {
-  const grades = new Map(expected.map((e) => [norm(e.path), e.grade]));
-  const top = retrieved.slice(0, kMax).map((p, i) => ({ rank: i + 1, path: p, grade: grades.get(p) ?? 0 }));
-  const rel1 = expected.filter((e) => e.grade >= 1).map((e) => norm(e.path));
-  const rel2 = expected.filter((e) => e.grade >= 2).map((e) => norm(e.path));
-  const recallAt = (k, relSet) => {
-    if (!relSet.length) return null;
-    const set = new Set(relSet);
-    return top.slice(0, k).filter((r) => set.has(r.path)).length / relSet.length;
-  };
-  const firstRank = (min) => top.find((x) => x.grade >= min)?.rank ?? null;
-  const gain = (g) => Math.pow(2, g) - 1;
-  const dcg = (list) => list.reduce((a, r, i) => a + gain(r.grade) / Math.log2(i + 2), 0);
-  const ideal = [...expected.map((e) => e.grade)].sort((a, b) => b - a).map((g) => ({ grade: g }));
-  const idcg = dcg(ideal);
-  return {
-    top10: top,
-    recall_at_1: recallAt(1, rel1),
-    recall_at_3: recallAt(3, rel1),
-    recall_at_5: recallAt(5, rel1),
-    recall_at_10: recallAt(10, rel1),
-    success_recall_at_10: recallAt(10, rel2),
-    mrr_at_10: firstRank(1) ? 1 / firstRank(1) : 0,
-    ndcg_at_10: idcg > 0 ? dcg(top) / idcg : null,
-    top1_grade: top[0]?.grade ?? 0,
-    recall_at_limit: recallAt(retrieved.length, rel1),
-  };
-}
+const scoreQuery = makeScoreQuery(norm);
+// `scoreQuery` is the shared, tested definition in ./scoring.mjs. Its
+// `recall_at_limit` — the Tier-L `glob_set_completeness` input — counts the
+// whole returned list; the pre-correction clamped value is still recorded as
+// `recall_at_limit_kmax_clamped`. See scoring.test.mjs.
 
 // ---------------------------------------------------------------- dispatch
 
