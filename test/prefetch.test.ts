@@ -183,6 +183,10 @@ test("prefetch: tool_execution_end on edit/write sends a daemon prefetch request
   const client = new UltraSearchClient({ socketPath: daemon.socketPath, autoSpawnDaemon: false });
   try {
     const harness = await loadPiHarness({ socketPath: daemon.socketPath });
+    // One listener owns the hook: frecency and prefetch share a single
+    // `pi.on("tool_execution_end")` registration, so ordering is defined and
+    // no sibling can double-register the same side effect.
+    assert.equal((harness.handlers.get("tool_execution_end") ?? []).length, 1, "exactly one tool_execution_end listener must be registered");
     const file = path.join(tmp, "edited.ts");
     fs.writeFileSync(file, "export function editedSymbol() {}\n");
     await harness.emit("tool_execution_end", { toolName: "edit", params: { path: file } });
