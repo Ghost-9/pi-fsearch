@@ -230,6 +230,8 @@ const AST_KIND_BY_NODE: Record<string, SymbolKind> = {
   lexical_declaration: "var",
   variable_declaration: "var",
   property_declaration: "property",
+  field_definition: "property",
+  public_field_definition: "property",
   const_declaration: "var",
 };
 
@@ -282,11 +284,23 @@ export async function extractSymbolsTreeSitter(
       const nameNode = extractNameNode(node);
       const name = nameNode?.text;
       if (!name || name.length > 120 || !/^[A-Za-z_$][\w$]*$/.test(name)) continue;
-      // Skip declarations nested in a function body: too noisy for file-level ranking.
+      // Skip declarations nested in a function body: locals are not API
+      // symbols (a test's `const client = ...` must not outrank the class).
       let p = node.parent;
       let depth = 0;
       while (p && depth < 6) {
-        if (p.type === "function_declaration" || p.type === "function_item" || p.type === "method_definition") break;
+        if (
+          p.type === "function_declaration" ||
+          p.type === "function_item" ||
+          p.type === "method_definition" ||
+          p.type === "arrow_function" ||
+          p.type === "function_expression" ||
+          p.type === "generator_function" ||
+          p.type === "generator_function_declaration" ||
+          p.type === "closure_expression"
+        ) {
+          break;
+        }
         p = p.parent;
         depth++;
       }
@@ -346,119 +360,4 @@ export async function indexFile(filePath: string): Promise<SymbolIndexEntry | nu
 /** Test seam / cache hygiene. */
 export function clearSymbolCache(): void {
   indexCache.clear();
-}
-
-function normalName(name: string): string {
-  return name.replace(/^.*[.:]/, "").replace(/[<>]/g, "").trim();
-}
-
-/** Exact declaration of `symbolName` (case-sensitive, last dotted segment aware). */
-export function declarationOf(entry: SymbolIndexEntry, symbolName: string): SymbolDefinition | null {
-  const wanted = normalName(symbolName);
-  for (const d of entry.definitions) {
-    if (d.name === symbolName || d.name === wanted) return d;
-  }
-  return null;
-}
-
-function referenceLines(file: UltraSearchGrepFile, symbolName: string): number {
-  const wanted = normalName(symbolName);
-  let n = 0;
-  for (const m of file.matches ?? []) {
-    if (typeof m.text === "string" && (m.text.includes(symbolName) || m.text.includes(wanted))) n++;
-  }
-  return n;
-}
-
-export interface RankSymbolFilesOptions {
-  /** Cap on files that get an AST index read (perf guard). */
-  maxIndex?: number;
-}
-
-/**
- * Definitions-first file ranking for `mode: "symbol"`.
- *
- * Tier 0: the file declares the symbol (AST when available, regex otherwise).
- * Tier 1: the file declares a symbol whose name contains the queried one.
- * Tier 2: references only (kept, ranked after declarations).
- *
- * Every input file is preserved (recall), and declaration matches are tagged
- * `def:<kind>` so the formatter can print `[def:fn]` from real definitions.
- */
-export async function rankSymbolFiles(
-  files: UltraSearchGrepFile[],
-  symbolName: string,
-  options: RankSymbolFilesOptions = {}
-): Promise<{ files: TaggedGrepFile[]; engine: SymbolEngine; engineByFile: Record<string, SymbolEngine> }> {
-  const maxIndex = options.maxIndex ?? 200;
-  const wanted = normalName(symbolName);
-  const ranked: Array<{ file: TaggedGrepFile; tier: number; refs: number; engine: SymbolEngine }> = [];
-  const engineByFile: Record<string, SymbolEngine> = {};
-  let anyTreeSitter = false;
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    let tier = 2;
-    let declaration: SymbolDefinition | null = null;
-    let engine: SymbolEngine = "regex";
-    if (i < maxIndex && /^[A-Za-z_$][\w$]*$/.test(wanted)) {
-      const entry = await indexFile(file.path);
-      if (entry) {
-        engine = entry.engine;
-        if (engine === "tree-sitter") anyTreeSitter = true;
-        declaration = declarationOf(entry, symbolName);
-        if (declaration) tier = 0;
-        else if (entry.definitions.some((d) => d.name.includes(wanted) || wanted.includes(d.name))) tier = 1;
-      }
-    }
-    engineByFile[file.path] = engine;
-    const decorated: TaggedGrepFile = {
-      ...file,
-      matches: (file.matches ?? []).map((m) => {
-        if (!declaration || m.line !== declaration.line) return { ...m } as TaggedGrepMatch;
-        return { ...m, symbolTag: `def:${declaration.kind}`, symbolTier: 0 } as TaggedGrepMatch;
-      }),
-      symbolExplain: { tier, declaration, engine },
-    };
-    ranked.push({ file: decorated, tier, refs: referenceLines(file, symbolName), engine });
-  }
-
-  ranked.sort((a, b) => {
-    if (a.tier !== b.tier) return a.tier - b.tier;
-    // More references first inside a tier: the file that talks about the symbol most.
-    if (b.refs !== a.refs) return b.refs - a.refs;
-    const da = a.file.path.split("/").length;
-    const db = b.file.path.split("/").length;
-    if (da !== db) return da - db;
-    return a.file.path.localeCompare(b.file.path);
-  });
-
-  return {
-    files: ranked.map((r) => r.file),
-    engine: anyTreeSitter ? "tree-sitter" : "regex",
-    engineByFile,
-  };
-}
-
-/**
- * Formatter support: tag match lines with the symbol they declare, using an
- * already-computed symbol index when the caller has one.
- */
-export function tagGrepMatchesWithDefinitions(
-  files: UltraSearchGrepFile[],
-  entryByPath: Map<string, SymbolIndexEntry>
-): TaggedGrepFile[] {
-  return files.map((f) => {
-    const entry = entryByPath.get(f.path);
-    if (!entry) return f as TaggedGrepFile;
-    const byLine = new Map<number, SymbolDefinition>();
-    for (const d of entry.definitions) byLine.set(d.line, d);
-    return {
-      ...f,
-      matches: (f.matches ?? []).map((m) => {
-        const d = byLine.get(m.line);
-        return d ? ({ ...m, symbolTag: `def:${d.kind}` } as TaggedGrepMatch) : ({ ...m } as TaggedGrepMatch);
-      }),
-    } as TaggedGrepFile;
-  });
 }

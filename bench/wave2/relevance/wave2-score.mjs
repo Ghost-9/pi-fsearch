@@ -155,7 +155,7 @@ async function runQuery(q) {
     } else if (lane === "semantic-paraphrase") {
       const res = await searchSemanticIntent(client, q.query, { in: ROOT, limit });
       rec.retrieved = (res.files ?? []).map((f) => norm(f.path));
-      rec.extra = { confidence: res.confidence ?? null, abstained: res.evidence?.abstained ?? null, coverage_ratio: res.evidence?.coverage_ratio ?? null, reason: res.evidence?.reason ?? null, expanded: (res.matchedTokens ?? []).slice(0, 14) };
+      rec.extra = { confidence: res.confidence ?? null, abstained: res.evidence?.abstained ?? null, coverage_ratio: res.evidence?.coverage_ratio ?? null, reason: res.evidence?.reason ?? null, expanded: (res.matchedTokens ?? []).slice(0, 14), groups: res.evidence?.groups ?? null, ranking: res.evidence?.ranking ?? null };
     } else if (q.params?.mode === "literal" || q.params?.mode === "regex" || q.params?.mode === "symbol") {
       const res = await client.grep(q.query, { in: ROOT, limit, mode: q.params.mode, budget_ms: 2500, context: 0 });
       rec.retrieved = (res.files ?? []).map((f) => norm(f.path));
@@ -194,6 +194,10 @@ async function runQuery(q) {
 
 // ------------------------------------------------------------------- run all
 const queries = judgments.queries.filter((q) => !ONLY_LANE || q.lane === ONLY_LANE);
+// Warm the daemon (index handles, tree-sitter parsers) outside the timed rows.
+await client.search("warmup", { in: ROOT, limit: 1 }).catch(() => null);
+await client.grep("warmup", { in: ROOT, limit: 1, mode: "symbol", budget_ms: 2500 }).catch(() => null);
+await searchSemanticIntent(client, "warmup semantic query for cache priming", { in: ROOT, limit: 5 }).catch(() => null);
 const results = [];
 for (const q of queries) {
   const rec = await runQuery(q);
