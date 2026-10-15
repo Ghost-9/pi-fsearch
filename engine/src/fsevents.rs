@@ -159,7 +159,7 @@ pub fn watch(since: u64, latency: f64, tx: Sender<Vec<Event>>, stream: u32) -> S
         // busy threads (a first build runs on every core at user-initiated
         // QoS): fseventsd drops what a client falls behind on, and the drop
         // costs a relist of every folder changed since the last sync.
-        let qos = libc::qos_class_t::QOS_CLASS_USER_INITIATED as u32;
+        let qos = crate::qos::USER_INITIATED_DISPATCH_QOS;
         let q = dispatch_queue_create(c"ultrasearch.fsevents".as_ptr(), dispatch_queue_attr_make_with_qos_class(std::ptr::null(), qos, 0));
         (a.set_queue)(s, q);
         (a.start)(s);

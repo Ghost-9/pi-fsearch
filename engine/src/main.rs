@@ -147,7 +147,7 @@ fn bench(qs: &str) {
     let content = grep.as_ref().map(|_| ultrasearch::content::Content::open_shared(dir.join("content")));
     let pool = rayon::ThreadPoolBuilder::new()
         .start_handler(|_| {
-            unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INTERACTIVE, 0) };
+            ultrasearch::qos::set_self(ultrasearch::qos::Qos::UserInteractive);
             ultrasearch::alloc::keep_on_this_thread();
         })
         .build()
