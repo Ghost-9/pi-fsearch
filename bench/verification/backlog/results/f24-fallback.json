@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T20:34:09.546Z",
+  "generated_at": "2026-10-15T20:46:24.544Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 5.33203125,
+    "load1": 6.62060546875,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
@@ -20,10 +20,10 @@
     "bin/cli.ts:475:          execSync(`launchctl bootstrap gui/$(id -u) \"${plistPath}\" 2>/dev/null || launchctl kickstart -k gui/$(id -u)/com.pi.ultrasearch 2>/dev/null || true`);"
   ],
   "async_probe": {
-    "elapsed_ms": 594,
-    "max_gap_ms": 14.35,
-    "ticks": 72,
-    "expected_ticks": 79,
+    "elapsed_ms": 752,
+    "max_gap_ms": 17.82,
+    "ticks": 82,
+    "expected_ticks": 95,
     "source": "native_fallback",
     "hits": 1,
     "error": null,
@@ -32,10 +32,10 @@
   "removal_control": {
     "mutation_error": null,
     "sync_probe": {
-      "elapsed_ms": 478,
-      "max_gap_ms": 478.31,
-      "ticks": 20,
-      "expected_ticks": 68,
+      "elapsed_ms": 468,
+      "max_gap_ms": 468.45,
+      "ticks": 19,
+      "expected_ticks": 67,
       "source": "native_fallback",
       "hits": 1,
       "error": null,
@@ -49,8 +49,8 @@
     "old_client_only_guard_passed": true
   },
   "index_request_path_probe": {
-    "elapsed_ms": 1340,
-    "max_gap_ms": 12.99,
+    "elapsed_ms": 1335,
+    "max_gap_ms": 19.76,
     "git_invocations": 0,
     "error": null
   },

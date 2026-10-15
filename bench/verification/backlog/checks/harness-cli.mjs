@@ -250,28 +250,41 @@ export async function check() {
   });
 
   // ============================ #52 smoke matrix ============================
-  const matrixCheck = await run("node", [path.join(REPO, "bench", "harness-matrix.mjs"), "--check", "--require-fresh", "--print"], { cwd: REPO, env, timeoutMs: 180000 });
-
-  // re-derive two stored artifacts from a real protocol run
+  // The freshness rule is no longer `artifact.commit === HEAD`: it is
+  // (1) clean tree at generation, (2) artifact commit is an ancestor of HEAD,
+  // (3) the MCP-surface paths are unchanged between that commit and HEAD.
+  // This block measures all three directly per artifact and drives the rule's
+  // four outcomes through the real CLI with verifier-forged artifacts.
+  const SURFACE = ["src/tool-schema.ts", "src/mcp.ts", "bin/mcp-server.ts", "src/harness-registry.ts", "package.json"];
+  const matrixCheck = await run("node", [path.join(REPO, "bench", "harness-matrix.mjs"), "--check", "--require-fresh", "--print"], { cwd: REPO, env, timeoutMs: 240000 });
   const head = (await run("git", ["rev-parse", "HEAD"], { cwd: REPO, timeoutMs: 30000 })).stdout.trim();
+
   const artifacts = ["pi", "codex", "claude-code", "zed"].map((id) => path.join(REPO, "bench", "harness-smoke", `${id}.json`));
   const stored = {};
   for (const a of artifacts) {
-    if (fs.existsSync(a)) {
-      const j = JSON.parse(fs.readFileSync(a, "utf-8"));
-      const arms = Array.isArray(j.arms) ? j.arms : Object.values(j.arms ?? {});
-      const arm = arms.find((x) => x?.arm === "protocol") ?? arms[0] ?? {};
-      stored[path.basename(a, ".json")] = {
-        commit: j.commit ?? j.head ?? null,
-        worktreeDirty: j.worktreeDirty ?? null,
-        fresh: (j.commit ?? null) === head,
-        tools: arm?.toolCount ?? arm?.tools?.length ?? arm?.toolNames?.length ?? null,
-        negotiated: arm?.negotiatedProtocolVersion ?? arm?.protocolVersion ?? null,
-        status: arm?.status ?? j.status ?? null,
-        launchSource: arm?.launch?.source ?? null,
-      };
-    }
+    if (!fs.existsSync(a)) continue;
+    const j = JSON.parse(fs.readFileSync(a, "utf-8"));
+    const arms = Array.isArray(j.arms) ? j.arms : Object.values(j.arms ?? {});
+    const arm = arms.find((x) => x?.arm === "protocol") ?? arms[0] ?? {};
+    const commit = j.commit ?? j.head ?? null;
+    const ancestor = commit ? (await run("git", ["merge-base", "--is-ancestor", commit, head], { cwd: REPO, timeoutMs: 30000 })).code === 0 : false;
+    const surfaceDiff = commit
+      ? (await run("git", ["diff", "--quiet", commit, head, "--", ...SURFACE], { cwd: REPO, timeoutMs: 30000 })).code
+      : null;
+    stored[path.basename(a, ".json")] = {
+      commit,
+      worktreeDirty: j.worktreeDirty ?? null,
+      ancestor,
+      surface_diff_status: surfaceDiff,
+      surface_unchanged: surfaceDiff === 0,
+      tools: arm?.toolCount ?? arm?.toolNames?.length ?? null,
+      negotiated: arm?.negotiatedProtocolVersion ?? null,
+      status: arm?.status ?? j.status ?? null,
+      launchSource: arm?.launch?.source ?? null,
+    };
   }
+
+  // the verifier's own live protocol run against the checkout's MCP server
   const liveProbe = await mcpRun({
     socket: "/tmp/ults-nonexistent.sock",
     requests: [
@@ -283,6 +296,10 @@ export async function check() {
   const liveTools = (liveProbe.find((f) => f.id === 2)?.result?.tools ?? []).map((t) => t.name);
   const liveProtocol = liveProbe.find((f) => f.id === 1)?.result?.protocolVersion ?? null;
 
+  // independent controls for the freshness predicate (real CLI, real history)
+  const { runFreshnessControls } = await import("./lib/freshness-controls.mjs");
+  const controls = await runFreshnessControls({ headCommit: head });
+
   const f52Defects = [];
   if (matrixCheck.code !== 0) f52Defects.push(`harness-matrix --check --require-fresh exited ${matrixCheck.code}`);
   const rechecked = Object.entries(stored).filter(([, v]) => v.tools !== null);
@@ -290,33 +307,51 @@ export async function check() {
   for (const [id, v] of rechecked) {
     if (v.tools !== liveTools.length) f52Defects.push(`${id} artifact records ${v.tools} tools, a live run reports ${liveTools.length}`);
     if (v.negotiated && liveProtocol && v.negotiated !== liveProtocol) f52Defects.push(`${id} artifact negotiated ${v.negotiated}, live run ${liveProtocol}`);
-    if (v.worktreeDirty === true) f52Defects.push(`${id} artifact declares worktreeDirty=true: it names a tree that was not the tested one`);
-    if (v.fresh === false) f52Defects.push(`${id} artifact commit ${String(v.commit).slice(0, 7)} != HEAD ${head.slice(0, 7)}`);
+    if (v.worktreeDirty === true) f52Defects.push(`${id} artifact was generated on a dirty tree`);
+    if (v.ancestor !== true) f52Defects.push(`${id} artifact commit ${String(v.commit).slice(0, 7)} is not an ancestor of HEAD ${head.slice(0, 7)}`);
+    if (v.surface_unchanged !== true) f52Defects.push(`${id} MCP surface changed between ${String(v.commit).slice(0, 7)} and HEAD`);
   }
+  const branches = controls.all_branches_exercised;
+  const allBranches = Object.values(branches).every(Boolean);
+  if (!allBranches) f52Defects.push(`freshness-rule controls did not all behave: ${JSON.stringify(branches)}`);
+  const matrixSuite = await run("node", ["--test", path.join(REPO, "test", "harness-matrix.test.ts")], { cwd: REPO, env, timeoutMs: 180000 });
+  const suitePass = Number((matrixSuite.stdout.match(/^[ℹ#] pass (\d+)/m) ?? [])[1] ?? -1);
+  const suiteFail = Number((matrixSuite.stdout.match(/^[ℹ#] fail (\d+)/m) ?? [])[1] ?? -1);
+  if (!(suitePass === 7 && suiteFail === 0)) f52Defects.push(`matrix suite ${suitePass} pass / ${suiteFail} fail, expected 7/0`);
 
   const f52Artifact = {
     generated_at: new Date().toISOString(),
     gate: g,
-    matrix_check: { exit: matrixCheck.code, stdout_tail: matrixCheck.stdout.slice(-1200) },
-    stored_artifacts: stored,
-    live_protocol_run: { tools: liveTools, negotiated: liveProtocol, head },
     head_commit: head,
+    mcp_surface_paths: SURFACE,
+    matrix_check: { exit: matrixCheck.code, stdout_tail: matrixCheck.stdout.slice(-600) },
+    artifacts: stored,
+    live_protocol_run: { tools: liveTools, negotiated: liveProtocol, head },
+    freshness_rule_controls: controls,
+    matrix_suite: { pass: suitePass, fail: suiteFail },
     defects: f52Defects,
+    note:
+      "the matrix suite's new test injects stub staleCheck verdicts, so it covers the verdict->problem contract; the predicate's git logic (dirty, ancestry, surface diff) is covered by the verifier's own controls below it",
   };
   const f52Written = writeArtifact("bench/verification/backlog/results/f52-smoke.json", f52Artifact);
   rows.push({
     issue: 52,
-    claim: "capability matrix + smoke per harness: every claimed harness has a current artifact, unsupported harnesses are explicit, --check --require-fresh passes, and stored artifacts agree with a real protocol run",
+    claim: "capability matrix + smoke per harness: every claimed harness has a current artifact under the documented freshness rule, unsupported harnesses are explicit, and the stored surface agrees with a real protocol run",
     verdict: f52Defects.length ? "needs-work" : "verified",
     evidence:
-      `bench/harness-matrix.mjs --check --require-fresh exit=${matrixCheck.code}; HEAD=${head.slice(0, 7)}; stored artifacts read: ${JSON.stringify(stored)}; ` +
-      `verifier's own live protocol run: ${liveTools.length} tools, negotiated ${liveProtocol}`,
-    method: "the shipped matrix checker run by the verifier, plus an independent MCP initialize/tools-list handshake compared against the stored artifacts",
-    n: 5,
+      `bench/harness-matrix.mjs --check --require-fresh exit=${matrixCheck.code} at HEAD ${head.slice(0, 7)}; ` +
+      `per-artifact checks — ${rechecked.map(([id, v]) => `${id}: commit ${String(v.commit).slice(0, 7)} dirty=${v.worktreeDirty} ancestor=${v.ancestor} surface_unchanged=${v.surface_unchanged} tools=${v.tools} proto=${v.negotiated}`).join("; ")}; ` +
+      `verifier's own live protocol run: ${liveTools.length} tools, negotiated ${liveProtocol}; ` +
+      `freshness-rule controls exercised through the real CLI: ${JSON.stringify(branches)}; matrix suite ${suitePass}/${suitePass + suiteFail}`,
+    method:
+      "shipped checker run by the verifier at HEAD; direct git measurements of the three freshness conditions per artifact; the verifier's own MCP initialize/tools-list handshake from the checkout; four forged-artifact controls (older-ancestor/fresh, dirty/stale, non-ancestor/stale, surface-changed/stale) plus the HEAD==commit state, all through the real CLI against real git history",
+    n: 6,
     gate: g.status,
     artifact: "bench/verification/backlog/results/f52-smoke.json",
     evidence_hashes: { artifact: f52Written.sha256, probe: stableHash(f52Artifact) },
-    notes: f52Defects.length ? f52Defects.join(" | ") : "matrix check green and stored artifacts agree with a live handshake",
+    notes: f52Defects.length
+      ? f52Defects.join(" | ")
+      : "freshness rule verified end to end; see FINDINGS F25 for the scope of the MCP-surface path list",
   });
 
   rmrf(home);

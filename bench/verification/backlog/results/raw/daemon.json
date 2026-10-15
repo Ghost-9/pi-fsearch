@@ -9,8 +9,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f25-limit.json",
     "evidence_hashes": {
-      "artifact": "1b0332bc6e48cb2ccd2ab6efe6136e3ff565e534a7a1eccbab0be4037317b338",
-      "probe": "84b57f23db324f22f9bdcea02636cb4bff0a25b288b4b1b00d6af76572df9656"
+      "artifact": "509d24fcb25d5075b0d3f3b8194f76501f3940500e936c1af2626bab033315e8",
+      "probe": "de35680c0afc47d750bbee5639f23232a9c587b0ae32017cb10e8ad1cb89437e"
     },
     "notes": "ordering and both counters reproduced, exact arithmetic on the mock control"
   },
@@ -24,8 +24,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f37-metadata.json",
     "evidence_hashes": {
-      "artifact": "9abe82c39107a7ad1236a81f712fdfb7de06c312991de78725ee76567c533183",
-      "probe": "ee1f35a1c7f0bc88bb49eb86a736542552d8fb9fa52cd06b7a8d16f3b7962392"
+      "artifact": "ce47b33d575a8d1a4630dcb4786254fe27e625231823904df2a892822e831312",
+      "probe": "6a77e0118aa5226bacdf6d9610a911c08b70747bbec0a27cea3c3aa071d936d4"
     },
     "notes": "all five surfaces carry numeric counts and a boolean complete"
   },
@@ -33,14 +33,14 @@
     "issue": 27,
     "claim": "watch mode streams new matches on change, exits cleanly, and leaks neither sockets nor duplicate events",
     "verdict": "verified",
-    "evidence": "real WatchSession against a real isolated daemon in a child process: baseline=1; first add after 287ms; a second write to the same path added 0 event(s); deletion emitted 1 remove event(s); stats={\"baseline\":1,\"added\":1,\"removed\":1,\"refreshes\":4,\"errors\":0,\"pollRefreshes\":0,\"stopped\":true}; client lanes after stop=0; active resources after stop=[\"PipeWrap\"]; child exit=0",
+    "evidence": "real WatchSession against a real isolated daemon in a child process: baseline=1; first add after 314ms; a second write to the same path added 0 event(s); deletion emitted 1 remove event(s); stats={\"baseline\":1,\"added\":1,\"removed\":1,\"refreshes\":4,\"errors\":0,\"pollRefreshes\":0,\"stopped\":true}; client lanes after stop=0; active resources after stop=[\"PipeWrap\"]; child exit=0",
     "method": "verifier child process runs the real WatchSession over a verifier fixture: baseline, create, same-path rewrite, delete, stop(); residual sockets/timers read from process.getActiveResourcesInfo() and the process must exit on its own",
     "n": 5,
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f27-watch.json",
     "evidence_hashes": {
-      "artifact": "c3fc5462d42efb33128f5f0e9037980a857e882e5cdc23e83e2b938bbf4f422b",
-      "probe": "32feb28a9d329b34a553a74f4a61fe41225e1f513fec5903b8e6ed7e153ec375"
+      "artifact": "b61d7331629a3e05debbd5c9807a8d5837a5d7bea953be63a5dacc782f24d169",
+      "probe": "4feb211f0726e7850db1db5ce33d8d5907c3c3d0137e4e22ac2d8355295b1908"
     },
     "notes": "stream, dedupe and clean shutdown reproduced end to end"
   },
@@ -48,14 +48,14 @@
     "issue": 28,
     "claim": "multi-root search deduplicates by realpath, keeps the active worktree's copy and attributes every hit to its root",
     "verdict": "verified",
-    "evidence": "fan-out over active=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active and extra=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/other: 3 unique hits, duplicates=1; the surviving row is the active root's alias=true (path=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active/shared.ts); a file physically in the active root is attributed active=true (root=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active); attributeRoot(active-only path)={\"root\":\"/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active\",\"active\":true}",
+    "evidence": "fan-out over active=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-wNTwCo/effort/active and extra=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-wNTwCo/effort/other: 3 unique hits, duplicates=1; the surviving row is the active root's alias=true (path=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-wNTwCo/effort/active/shared.ts); a file physically in the active root is attributed active=true (root=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-wNTwCo/effort/active); attributeRoot(active-only path)={\"root\":\"/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-wNTwCo/effort/active\",\"active\":true}",
     "method": "two configured roots where the active root holds a symlink to the other root's file (same inode, different string paths), searched through the real daemon so the dedupe sees genuine daemon rows",
     "n": 4,
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f28-roots.json",
     "evidence_hashes": {
-      "artifact": "f0c71e981633ae701786c36f6cbb68494c0a3364ab6239bf5dbd4b78d69e5b10",
-      "probe": "002db818a52e37c1f74fc9dc261759407e8851c91cfaf37eac221a50c2ea6434"
+      "artifact": "9c4f230271c67ea66fd6fdeda31390fc5bde901d58f7d86260d88444a78b7ad4",
+      "probe": "d5529e8a84fab703a37657d5c06e547de3e8f22711ab62465cadd0854d2295f7"
     },
     "notes": "dedupe, active-copy preference and attribution reproduced against real daemon rows"
   },
@@ -69,8 +69,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f50-protocol.json",
     "evidence_hashes": {
-      "artifact": "c0e603d1ce46ea44c3313fd9e7403d1fd9b2fde72642f0cbd5de6a2ed0f653be",
-      "probe": "92c7c60604044bb9037614e4f1f273105382ed9d3dfddd0f1750d99cf7e59398"
+      "artifact": "301b8c2b44047252d2271b044c4e0ff1b187201dfacc031ed4869f19b399034c",
+      "probe": "f80ad0bdf12fd19c23d8a88f5b8ade9bcc865421c488ed3158d2a67345ca2871"
     },
     "notes": "doc, constant and daemon agree; mismatch semantics reproduced"
   },
@@ -84,8 +84,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f49-trigram.json",
     "evidence_hashes": {
-      "artifact": "f822eb154b8fbd3eaff0c5062fe96d466e8abf10fbe04dda453f092c2347dbda",
-      "probe": "6c981b75c40dde4f8750417e643ec199c0330bec7bb9a7fe92d6102b8c31abcd"
+      "artifact": "71f65b273f2df2ae718f961ac82c38aded595df5e722d13bc6f56626d35bb9ac",
+      "probe": "789a545e6324c091395974269fc57f1d3860ec30ff7d1b2f5ba9c770d25044ed"
     },
     "notes": "full assertion on both scopes; the pre-#49 shape fails, so the change is load-bearing"
   }

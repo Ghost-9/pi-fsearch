@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T20:34:34.425Z",
+  "generated_at": "2026-10-15T20:46:49.487Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 3.73486328125,
+    "load1": 5.59228515625,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
@@ -26,7 +26,7 @@
     "filteredOutRows": 1
   },
   "stamped_row": {
-    "ts": 1792096474240,
+    "ts": 1792097209283,
     "tool": "ultrasearch_query",
     "query": "stamp",
     "ms": 1,

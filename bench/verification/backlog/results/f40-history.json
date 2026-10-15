@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-10-15T20:34:12.623Z",
+  "generated_at": "2026-10-15T20:46:27.596Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 4.51171875,
+    "load1": 6.27197265625,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
   "default_run": {
     "exit": 0,
     "history_exists": false,
-    "stdout": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-hist-L7l6F9/repo/needle-file.txt"
+    "stdout": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-hist-C9mT4p/repo/needle-file.txt"
   },
   "opt_in_run": {
     "exit": 0,

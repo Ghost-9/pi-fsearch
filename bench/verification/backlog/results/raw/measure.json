@@ -3,14 +3,14 @@
     "issue": 20,
     "claim": "prompt-token accounting harness with measured deltas and the heuristic's overstatement; estimate formula labelled everywhere",
     "verdict": "needs-work",
-    "evidence": "harness artifacts: [\"tokens-2026-10-14-degraded.json\",\"tokens-2026-10-15-degraded.json\"] (status=degraded); TOKENS.md documents the scope/method, a measured paired delta and a heuristic-vs-measurement table (overstatement rows: 7); estimate labelling present in [{\"file\":\"src/telemetry.ts\",\"shown\":1,\"unlabelled\":0,\"sample\":[\"    `Tokens Saved (ESTIMATE ONLY — formula 150+75×hits, not measured; see bench/results/TOKENS.md): ${summary.totalTokensSaved.toLocaleString()}`\"]},{\"file\":\"src/tui.ts\",\"shown\":2,\"unlabelled\":0,\"sample\":[\"      ` [💰 Tokens Saved (est)]: \\\\x1B[1;32m~${totalTokensSaved.toLocaleString()} tokens\\\\x1B[0m   ` +\",\"        lines.push(`║ \\\\x1B[1mTokens Saved (ESTIMATE)\\\\x1B[0m:  +${savedCount} tokens (formula 150+75×hits, not measured)`);\"]}]; shipped label test pass=true; environment gate: provisional (load1 2.67 vs < 1.5)",
+    "evidence": "harness artifacts: [\"tokens-2026-10-14-degraded.json\",\"tokens-2026-10-15-degraded.json\"] (status=degraded); TOKENS.md documents the scope/method, a measured paired delta and a heuristic-vs-measurement table (overstatement rows: 7); estimate labelling present in [{\"file\":\"src/telemetry.ts\",\"shown\":1,\"unlabelled\":0,\"sample\":[\"    `Tokens Saved (ESTIMATE ONLY — formula 150+75×hits, not measured; see bench/results/TOKENS.md): ${summary.totalTokensSaved.toLocaleString()}`\"]},{\"file\":\"src/tui.ts\",\"shown\":2,\"unlabelled\":0,\"sample\":[\"      ` [💰 Tokens Saved (est)]: \\\\x1B[1;32m~${totalTokensSaved.toLocaleString()} tokens\\\\x1B[0m   ` +\",\"        lines.push(`║ \\\\x1B[1mTokens Saved (ESTIMATE)\\\\x1B[0m:  +${savedCount} tokens (formula 150+75×hits, not measured)`);\"]}]; shipped label test pass=true; environment gate: provisional (load1 10.59 vs < 1.5)",
     "method": "verifier reads the committed token artifacts and the shipped doc, re-runs the labelling guard, and applies the frozen gate rule: a measurement on a provisional host may not be promoted to verified",
     "n": 5,
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/m20-tokens.json",
     "evidence_hashes": {
-      "artifact": "f1c9a3650a54474778247adc6f26b02bf137cf705f76857e895cf4107a4cb051",
-      "probe": "e51a725aff6f43118cdf07a1c2e0b4f1de8daf1060ebfb9204eb970a70d2bb64"
+      "artifact": "821df8ef02fc229e07b1a019ee329eb2095268735501d39b7dc0a0b552f0dc11",
+      "probe": "7d918b0a62125509da6445a7a69cb23a6c81fdc844164b52fb2a205d098cbeb0"
     },
     "notes": "measurement artifact status=degraded, gate=provisional: the measured deltas may not be cited as production evidence; fidelity note: the TUI per-row savings figure is unlabelled on its own line (the labelled header and inspector cover it)"
   },
@@ -18,14 +18,14 @@
     "issue": 21,
     "claim": "multi-scope fixtures with medians/p95/n/CI committed per release, plus an output-equivalence check that fails beyond a documented tolerance",
     "verdict": "needs-work",
-    "evidence": "artifacts: [{\"f\":\"scopes-2026-10-14-degraded.json\",\"status\":\"degraded\",\"queries\":9,\"with_stats\":9,\"with_ci\":9},{\"f\":\"scopes-2026-10-15-degraded.json\",\"status\":\"degraded\",\"queries\":9,\"with_stats\":9,\"with_ci\":9},{\"f\":\"scopes-home-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3},{\"f\":\"scopes-monorepo-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3},{\"f\":\"scopes-small-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3}]; equivalence guard non-vacuous: identical=true missing=false extra=false tolerance=true; re-check over the committed golden: 30 rows, pass rate 1; environment gate: provisional (load1 2.67 vs < 1.5)",
+    "evidence": "artifacts: [{\"f\":\"scopes-2026-10-14-degraded.json\",\"status\":\"degraded\",\"queries\":9,\"with_stats\":9,\"with_ci\":9},{\"f\":\"scopes-2026-10-15-degraded.json\",\"status\":\"degraded\",\"queries\":9,\"with_stats\":9,\"with_ci\":9},{\"f\":\"scopes-home-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3},{\"f\":\"scopes-monorepo-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3},{\"f\":\"scopes-small-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3}]; equivalence guard non-vacuous: identical=true missing=false extra=false tolerance=true; re-check over the committed golden: 30 rows, pass rate 1; environment gate: provisional (load1 10.59 vs < 1.5)",
     "method": "verifier reads the committed scope artifacts for the required statistics, drives the shipped compareSets with four constructed cases, and re-runs it over the committed equivalence golden",
     "n": 4,
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/m21-scopes.json",
     "evidence_hashes": {
-      "artifact": "3dc0562f0679ef08d96b4e63739384cac80a04ff31cbfaf395e919c13685ed13",
-      "probe": "8b5c808a1afe836c8ec4a5bea2b491c1e4ce7789e3abf43e31bbbb0ffca4e0a7"
+      "artifact": "a57f0107da71843583c2ff635d19f3d922b58088432d6ae082e3543c91bbeae5",
+      "probe": "e9e36b27d1a78669b877bcfa0eda3a85378cab3fac6b3b92c834ce24df801605"
     },
     "notes": "scope artifact status=degraded, gate=provisional: the medians/CI may not be cited as production evidence"
   }

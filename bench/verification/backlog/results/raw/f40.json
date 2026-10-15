@@ -9,8 +9,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f40-history.json",
     "evidence_hashes": {
-      "artifact": "00f6e44806082243988cc54580f35519ebad82d3e891ef3d5be294c9727cb051",
-      "probe": "f9b94110304e6221c0dce339c43de825f2af5403a2fb62b216ad61fb70d047b6"
+      "artifact": "e4b75c51014ce230b29bc8f73705f2d0d717f143b0804103c40525496357edd9",
+      "probe": "f16183ad0024e9c04dc945783c7b0d21905f4ef2079f661c3683138977a8725e"
     },
     "notes": "opt-in, mode, scrub, cap, opt-out and both surfaces reproduced"
   }

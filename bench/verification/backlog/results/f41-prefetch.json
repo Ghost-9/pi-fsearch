@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T20:34:37.309Z",
+  "generated_at": "2026-10-15T20:46:52.412Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 3.515625,
+    "load1": 5.59228515625,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
@@ -30,7 +30,7 @@
     ],
     "open_requests": 5,
     "prefetch_requests_after_read": 5,
-    "scratch": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-mutate-f41-bSTyDc"
+    "scratch": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-mutate-f41-x9tjwc"
   },
   "prefetch_latency_claims_in_docs": [],
   "defects": [

@@ -9,10 +9,10 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f29-codemode.json",
     "evidence_hashes": {
-      "artifact": "f251186019d4b4a714ee62d3676a75529d460cb0c4730fd9175a687bbd7e603b",
+      "artifact": "d96ffecc18aaba63e1c13e1ad050e47b91dc4875166653b58f826ea5ea49225a",
       "regenerated": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
       "golden": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
-      "probe": "bd83ff3c5df4bd7002ff74a690fb602ffee68ef2a9f2190c8a2fe77bc6802fa6"
+      "probe": "3bb5d20aec1d33b6c3db8ce7ae22bad614d5448478b3e274a0e4b19725d487e5"
     },
     "notes": "generation is the single source, the guard is live and non-vacuous, recipes execute"
   },
@@ -26,8 +26,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f30-mcp-surface.json",
     "evidence_hashes": {
-      "artifact": "73c9d25b37244f04ba844a56e4542864687107f5e041b06d3a0e1cb916786bab",
-      "probe": "28435b67b55de3936ea1f4332ed7baec5a826bc43c5426138233b245856b9198"
+      "artifact": "ca691ede04ac047fefd5c473094868c903e4234aee56a044f82572860de1f546",
+      "probe": "7581cb448cab494da6f02141c5e63134813c5c296e3a29d4e4dc2b1e28075462"
     },
     "notes": "default prefix, alias copies, alias call and every profile reproduced over real stdio; the tool *calls* run with an intentionally unreachable socket (NO_SPAWN + /tmp socket), so what they prove is alias/call routing — the native fallback answered — not daemon behaviour"
   }

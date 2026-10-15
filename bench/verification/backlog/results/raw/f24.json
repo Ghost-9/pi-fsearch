@@ -3,17 +3,17 @@
     "issue": 24,
     "claim": "async fallback with timeout + cancellation; no `execFileSync` in the request path; a cancelled fallback stops the child; event loop responsive (measured)",
     "verdict": "verified",
-    "evidence": "real fallback trigger with a sleeping stubbed rg: event loop max gap 14.35ms over 72 ticks (79 expected) for a 594ms call, source=native_fallback, hits=1; removal control (src/spawn.ts -> execFileSync in a scratch copy): max gap 478.31ms; cancellation: 1 child tracked mid-flight, 0 after abort (\"native fallback cancelled\"); index.ts::resolveWorktreeRoot from a non-git cwd: 0 sync git invocation(s), max gap 12.99ms; guard non-vacuity: re-adding the pre-fix call makes the widened guard fail=true while the old client.ts-only scope still passes=true",
+    "evidence": "real fallback trigger with a sleeping stubbed rg: event loop max gap 17.82ms over 82 ticks (95 expected) for a 752ms call, source=native_fallback, hits=1; removal control (src/spawn.ts -> execFileSync in a scratch copy): max gap 468.45ms; cancellation: 1 child tracked mid-flight, 0 after abort (\"native fallback cancelled\"); index.ts::resolveWorktreeRoot from a non-git cwd: 0 sync git invocation(s), max gap 19.76ms; guard non-vacuity: re-adding the pre-fix call makes the widened guard fail=true while the old client.ts-only scope still passes=true",
     "method": "verifier probe: HOME=temp so the consent-gated fallback trigger fires; stubbed `rg` sleeps 400ms; 10ms event-loop sampler around client.search(); removal control mutates src/spawn.ts in a scratch copy of HEAD; index.ts probed through the real Pi harness with a stubbed `git` from a non-git cwd",
     "n": 5,
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f24-fallback.json",
     "evidence_hashes": {
-      "artifact": "d6eb64e34ad008424fc5fa322b7abf461cee00c568ff8a0f6ed4ce412e8bc97b",
+      "artifact": "cd460a93f5b0315cf298bdf1d675114e3f17989e3827e7cf9d52da4ac986c4f6",
       "lexical": "a6784549ba57234766cb94bd7b0ea0b6e2b64a5bdf9dad10523da4099d8d247c",
-      "async_probe": "7b0f3846aa172894a5fb2ebfea75308f75b3e072f315ebc4d6a67fb43414c858",
-      "sync_probe": "d58d5d18792ac18689e28363641e35247ae0d5f7fea97e6ec6ab6cb915a947d7",
-      "index_probe": "e70000eef7d1dc1190e4756d5890e565ecea53f962922d2d1148e4e8550a3255",
+      "async_probe": "596b00e4206a136c29db847dd594fba832bae779633b49c33775646750779283",
+      "sync_probe": "f4621fe506e9608470a9ac3dfabddeee2a2c674fc5bee1d32efc98846d90bcd2",
+      "index_probe": "99677993333b1fbf873988bf40d1e1a333ec110c79d44f7a3878d59e656abeb3",
       "cancellation": "f62ff7cb3ab632dce8a14ef9476b42b77d40f44c85a7039ff9ba83ae69524afd"
     },
     "notes": "all three acceptance lines reproduced independently (async path, cancellation, no blocking)"

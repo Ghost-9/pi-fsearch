@@ -1,17 +1,18 @@
 # Wave-5 backlog closure — independent verification report
 
 Verifier: independent session (`wave1/verify-final`). Commit under test: `0ad4919` (= `origin/main`).
-Re-adjudication round: `#24` and `#52` re-measured after the `0ad4919` fix. Deliverable:
+Re-adjudication rounds: `#24` re-measured after the `0ad4919` fix; `#52` re-measured after the
+freshness-rule fix (`219c0c5`) and the clean-tree regeneration (`9f5e3da`). Deliverable:
 `bench/verification/backlog-closure.json` (18 issue rows + 1 control row).
 Raw evidence: `bench/verification/backlog/results/**`. Findings: `bench/verification/backlog/FINDINGS.md`.
 
-**Verdict: 13 verified · 5 needs-work · 0 refuted.** Nothing verified here was verified from an
+**Verdict: 14 verified · 4 needs-work · 0 refuted.** Nothing verified here was verified from an
 author summary; every row is a fresh run, a fresh derivation, or a mutation control.
 
 | re-adjudicated | before | now | evidence |
 |---|---|---|---|
 | #24 async fallback | needs-work | **verified** | non-git cwd: 0 `git` invocations, max loop gap 11.81 ms (was 1 invocation / 773 ms); widened guard fails when the pre-fix call is restored, old client-only scope still passes |
-| #52 smoke matrix | needs-work | **needs-work** | `--check --require-fresh` still exits 1: all 10 artifacts name `cc37a9a` with `worktreeDirty: true`; HEAD is `0ad4919`. The live handshake itself agrees (6 tools, `2025-06-18`) |
+| #52 smoke matrix | needs-work | **verified** | `--check --require-fresh` exits 0 at HEAD `9f5e3da`; all 10 artifacts name `219c0c5`, `worktreeDirty: false`, ancestor true, no MCP-surface diff; verifier's live handshake agrees (6 tools, `2025-06-18`); all six freshness-rule outcomes exercised through the real CLI with forged artifacts (A–E table in F15); matrix suite 7/7 |
 
 ## Method
 
@@ -49,7 +50,7 @@ author summary; every row is a fresh run, a fresh derivation, or a mutation cont
 | 49 | **verified** | full assertion on the `git archive HEAD` scope and on the main worktree (2/2 pass, 0 skipped each); the pre-#49 cwd+limit-30 shape fails on the archive scope; control test discriminates | shipped test run from two indexed scopes + scratch mutation | 3 |
 | 50 | **verified** | doc `1.0` (×2) == `PROTOCOL_VERSION` == real daemon `status.protocol_version`; 1.9 compatible / 2.0 not; mock 2.0 → `protocol_mismatch`; pre-#50 engine fails the shipped engine test | real daemon + mock + stale-engine build | 5 |
 | 51 | **verified** | 8/8 harnesses registered on a fresh HOME; dry-run writes nothing; one timestamped backup; idempotent second write reports unchanged and adds no backup; printed revert restores bytes exactly; unparseable config refused (exit 1) and untouched | real CLI on temp HOMEs | 8 |
-| 52 | **needs-work** | live handshake agrees (6 tools, `2025-06-18`) with the stored artifacts, but **`--check --require-fresh` exits 1: all 10 artifacts name `cc37a9a` and carry `worktreeDirty: true`, HEAD is `0ad4919`** | shipped checker + own MCP handshake | 5 |
+| 52 | **verified** | `--check --require-fresh` exit 0 at HEAD `9f5e3da`; per-artifact direct measurement: commit `219c0c5`, `dirty=false`, ancestor true, surface unchanged, 6 tools, `2025-06-18`; the verifier's live MCP handshake matches; the dirty/ancestry/surface branches are all exercised by verifier-owned forged-artifact controls (F15) | shipped checker + direct git measurements + forged-artifact controls + own MCP handshake | 6 |
 | 53 | **verified** | default/dry-run write nothing; `--write` injects both markers with 1 backup and the measured reason; second write byte-identical; `--remove --write` restores the original bytes; half-marker refused; create+delete on a fresh root | real CLI on temp roots | 6 |
 
 Control row — **removal matrix (verified)**: 9/9 mutated guards fail when their feature is removed
@@ -57,10 +58,11 @@ Control row — **removal matrix (verified)**: 9/9 mutated guards fail when thei
 
 ## Safe to close
 
-`#24, #25, #27, #28, #29, #30, #37, #38, #40, #49, #50, #51, #53`
+`#24, #25, #27, #28, #29, #30, #37, #38, #40, #49, #50, #51, #52, #53`
 
 Notes attached to closing: #51 carries a non-blocking fidelity nit (F19); #50 is verified on a
-source-built engine (F22 shows the guard is live); #24 was re-verified after the `0ad4919` fix (F18).
+source-built engine (F22 shows the guard is live); #24 was re-verified after the `0ad4919` fix (F18);
+#52 carries a scope note (F25) on how wide the MCP-surface path list should be.
 
 ## Must stay open
 
@@ -70,16 +72,16 @@ source-built engine (F22 shows the guard is live); #24 was re-verified after the
 | 21 | same gate rule; artifacts are `-degraded`, so medians/CI may not be cited (F: gate) |
 | 31 | nightly summary not produced without a manual step (F16) |
 | 41 | no edit→grep latency measurement published (F17) |
-| 52 | smoke artifacts name `cc37a9a` with `worktreeDirty: true`; `--require-fresh` exits 1 at HEAD `0ad4919`. The acceptance is only satisfiable in a regenerate-then-check window (CI form), or by relaxing the checker; the MCP surface itself is correct (F15, F21) |
 
 ## Findings
 
-F15 smoke artifacts not fresh at HEAD (#52, open — regenerated at `cc37a9a` with a dirty tree) ·
+F15 smoke-matrix freshness (**resolved at `219c0c5`/`9f5e3da`**, rule verified with six controls) ·
 F16 unwired nightly (#31) · F17 missing prefetch latency
 measurement (#41) · F18 `execFileSync` on the tool path (#24, **resolved at `0ad4919`**) · F19 `init --remove` trailing-newline
 fidelity (#51) · F20 unlabelled TUI per-row savings (#20) · F21 smoke arm exercises the installed
 shim (#52) · F22 #50 engine guard is live (positive) · F23 all functional guards are live
-(positive) · F24 `npm test` excludes the engine (process). Full reproductions:
+(positive) · F24 `npm test` excludes the engine (process) · F25 MCP-surface path-list scope (#52,
+scope note). Full reproductions:
 `bench/verification/backlog/FINDINGS.md`.
 
 ## Reproduction

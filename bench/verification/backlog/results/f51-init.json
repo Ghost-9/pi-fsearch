@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-15T20:35:53.561Z",
+  "generated_at": "2026-10-15T20:48:22.889Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 2.55810546875,
+    "load1": 11.5888671875,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
-  "home": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-init-uPRu5Q",
+  "home": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-init-UlWzrE",
   "list_exit": 0,
   "dry_run": {
     "exit": 0,
@@ -19,7 +19,7 @@
   "write": {
     "exit": 0,
     "backups": [
-      "config.toml.bak-20261016-020552-ultrasearch-init"
+      "config.toml.bak-20261016-021822-ultrasearch-init"
     ],
     "contains_registration": true,
     "has_revert_command": true,
@@ -29,7 +29,7 @@
     "exit": 0,
     "identical": true,
     "backups": [
-      "config.toml.bak-20261016-020552-ultrasearch-init"
+      "config.toml.bak-20261016-021822-ultrasearch-init"
     ],
     "reported": true
   },

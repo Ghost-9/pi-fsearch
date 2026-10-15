@@ -9,27 +9,37 @@ thing under test: every verdict is a fresh run, a fresh derivation, or a mutatio
 
 ---
 
-## F15 — smoke-matrix artifacts are still not fresh at HEAD (#52, open)
+## F15 — smoke-matrix freshness — **RESOLVED at `219c0c5` / `9f5e3da`** (#52)
 
-**Status: open at `0ad4919`.** The artifacts were regenerated (commit `0ad4919` touches all ten),
-but they were generated *before* that commit landed: every artifact names `cc37a9a0` — the parent
-— and carries `"worktreeDirty": true`, i.e. the tested tree included uncommitted changes (the
-`index.ts` fix). Verified at HEAD `0ad4919`:
+**Was:** `--require-fresh` compared `artifact.commit` with `git rev-parse HEAD`, which no committed
+artifact can satisfy once the artifact-bearing commit moves HEAD (the wave-5 artifacts were stuck at
+`cc37a9a` with `worktreeDirty: true` while HEAD was `0ad4919`).
 
-```bash
-PI_ULTRASEARCH_TEST=1 node bench/harness-matrix.mjs --check --require-fresh; echo $?
-# 10 problem(s): stale:pi … stale:antigravity   → exit 1
-python3 -c "import json;d=json.load(open('bench/harness-smoke/pi.json'));print(d['commit'][:7], d['worktreeDirty'])"
-# cc37a9a True
-```
+**Now:** freshness is judged by `bench/harness-matrix.mjs::makeStaleCheck`:
+(1) `worktreeDirty === true` → stale; (2) the artifact commit must be an ancestor of HEAD;
+(3) `git diff --quiet <commit> HEAD -- src/tool-schema.ts src/mcp.ts bin/mcp-server.ts
+src/harness-registry.ts package.json` must be empty.
 
-**Mechanism (not a defect in the checker):** `--require-fresh` compares `artifact.commit` with
-`git rev-parse HEAD`, and `worktreeDirty` is sampled before the smoke writes anything. Once the
-artifact-bearing commit moves HEAD, committed artifacts can never be fresh again — the acceptance is
-only satisfiable in the regenerate-then-check window (the CI form: clean checkout at HEAD, regenerate,
-check, do not commit). The MCP surface itself is correct: the verifier's own live `initialize` →
-`tools/list` handshake from the checkout returns the canonical six tools at `2025-06-18`, agreeing
-with every stored artifact.
+**Measured at HEAD `9f5e3da`:** `--check --require-fresh` exits **0**; all ten artifacts name
+`219c0c5` with `worktreeDirty: false`, ancestry true and no surface diff. The verifier's own live
+`initialize → tools/list` handshake from the checkout returns the canonical six tools at
+`2025-06-18`, matching the stored artifacts.
+
+**The rule is exercised, not just described.** Because `makeStaleCheck` is not exported, the
+verifier drove the real CLI with forged artifacts and real git history
+(`checks/lib/freshness-controls.mjs`) — all six outcomes behave as documented:
+
+| control | construction | expected | observed |
+|---|---|---|---|
+| committed-at-HEAD | the shipped artifacts | fresh | exit 0 |
+| A older ancestor | artifacts name `0ad4919`, clean, surface unchanged | fresh | exit 0 |
+| B dirty tree | `worktreeDirty: true` | stale | exit 1 · "artifact was generated on a dirty tree" |
+| C non-ancestor | artifact names a side-branch commit | stale | exit 1 · "artifact commit a910711 is not an ancestor of 9ca6981" |
+| D surface changed | commit touching `src/tool-schema.ts` after the artifact's commit | stale | exit 1 · "MCP surface changed between 9f5e3da and 9ca6981" |
+| E HEAD == artifact commit | the pre-artifact-commit state | fresh | exit 0 |
+
+The repo's matrix suite is 7/7. Its new test injects stub `staleCheck` verdicts, so it covers the
+verdict→problem contract; the predicate's git logic is covered by the controls above (F25).
 
 ## F16 — nightly real-session summary is not wired to any scheduler (#31, acceptance unmet)
 
@@ -107,6 +117,24 @@ shim's surface (against a mock daemon), not the checkout's. The verifier's own r
 **Reproduction:** `python3 -c "import json;print(json.load(open('bench/harness-smoke/pi.json'))['arms']['protocol']['launch'])"`.
 
 ---
+
+## F25 — the MCP-surface path list is narrower than the smoke's observable surface (#52, scope note)
+
+**Observed:** `MCP_SURFACE_PATHS` covers the *registration/transport* surface
+(`src/tool-schema.ts`, `src/mcp.ts`, `bin/mcp-server.ts`, `src/harness-registry.ts`, `package.json`).
+The protocol arm's `tools/call` result also depends on `src/client.ts` (search/locate/grep),
+`src/formatter.ts` (rendered text), `src/sanitize.ts` (DLP on output), `src/roots.ts` (multi-root
+fan-out) and `src/history.ts` (query recording). A regression in one of those would leave the stored
+artifact "fresh" while what the smoke observes has changed.
+
+**Why this is a note, not a refutation:** the rule is documented and testable, and every behaviour
+the *registration* surface promises (six canonical tools, schemas, protocol negotiation, tool-call
+success) is asserted per row. If the intent is behaviour-freshness rather than registration-freshness,
+the list should gain those five files; if registration-freshness is the intent, the doc/help text
+should say "tool registration surface" so the weaker claim is explicit.
+
+**Reproduction:** `bench/verification/backlog/checks/lib/freshness-controls.mjs` and
+`results/f52-smoke.json` (`mcp_surface_paths`).
 
 ## F22 — the #50 engine guard is live (positive control)
 

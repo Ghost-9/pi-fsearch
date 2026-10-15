@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T20:35:52.008Z",
+  "generated_at": "2026-10-15T20:48:21.295Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 3.515625,
+    "load1": 5.22412109375,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },

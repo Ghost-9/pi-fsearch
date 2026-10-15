@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T20:35:54.873Z",
+  "generated_at": "2026-10-15T20:48:24.227Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 2.55810546875,
+    "load1": 11.5888671875,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
@@ -17,7 +17,7 @@
   "write": {
     "exit": 0,
     "backups": [
-      "AGENTS.md.bak-20261016-020554"
+      "AGENTS.md.bak-20261016-021823"
     ],
     "bytes_sha256": "80c5273244813daecdc28baae0f4109b312e08547072343f131c09fdb77f6e2b",
     "carries_reason": true

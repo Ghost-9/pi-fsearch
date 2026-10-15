@@ -9,8 +9,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f41-prefetch.json",
     "evidence_hashes": {
-      "artifact": "0b40fcef0f830e3807fdc589cfe68029dc15fde9c89df7dd28a879f312a0d1f7",
-      "probe": "4686432f92a57db26029021535b621ee864e81c49f979a9eb8163bb02e5c3b14"
+      "artifact": "4b3660c70f431ba1200928af2d21a775e0789cd8ad41c60895d15c86059f3721",
+      "probe": "abe1645c4a91ecb17053af514d83a77ca3f9afd766a1ac202791fe7eaa6f9192"
     },
     "notes": "acceptance line 'edit→grep latency measured before/after' has no published artifact (no ungated latency claim either)"
   }
