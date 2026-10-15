@@ -1,0 +1,1171 @@
+{
+  "schema": "ultrasearch.judgments/v2",
+  "version": 2,
+  "created": "2026-10-15",
+  "author": "wave2/advisor2",
+  "supersedes": "bench/judgments/wave1-judgments.json (stays frozen on corpus 0a16e50; this file is a new corpus + new query set, not an edit)",
+  "corpus": {
+    "id": "ultrasearch-repo@8d1419d",
+    "commit": "8d1419d",
+    "root": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean",
+    "files": 97,
+    "bytes": 1390437,
+    "tree_sha256": "c9c2e4ac15e88df9c5c0e241b0dd1c0281abce57155be58bc94120218f7f9665",
+    "reproduce": "git -C <repo> archive 8d1419d --format=tar -- . ':(exclude)bench/**' ':(exclude)ADVISOR-WAVE1.md' ':(exclude)VERIFICATION-PROTOCOL.md' | tar -x -C $HOME/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean",
+    "spoiler_guard": [
+      "bench/** excluded: bench/judgments/wave1-judgments.json quotes every wave-1 query and expected path (F8); bench/baseline/results/* are harness artifacts.",
+      "ADVISOR-WAVE1.md and VERIFICATION-PROTOCOL.md excluded: both quote judged query strings, F8 reproductions and expected paths.",
+      "Product docs (README, AUDIT, OPTIMIZATIONS, CHANGELOG, docs/*) are deliberately kept: they quote identifiers and are the realistic distractor class.",
+      "This file is committed after 8d1419d, so it is not inside the archive.",
+      "OPEN: the corpus root also holds the harness-written .corpus-meta.json (wave-1 make-corpus.mjs writes it inside the root). It is a harness file, is returned by semantic queries and must be excluded from the corpus or written outside the root. Wave 2 probe observed it at rank 1 for SE01."
+    ]
+  },
+  "rubric": {
+    "0": "irrelevant - returned but unhelpful; includes every path listed in not_expected",
+    "1": "adjacent - discusses or consumes the subject; an agent would keep searching",
+    "2": "secondary - also answers the intent (test, second declaration site, config); reaching it is a success",
+    "3": "primary - the declaration the query names (symbol lane) or the file the query is about; an agent that reaches this stops searching"
+  },
+  "lanes": {
+    "symbol-ast": {
+      "queries": 12,
+      "must_hit": 9,
+      "negatives": 3,
+      "scored_on": "declaration files only; `not_expected` paths grade 0",
+      "metrics": [
+        "recall@1/3/5/10",
+        "success_recall@3 (grade>=2)",
+        "mrr@10",
+        "ndcg@10",
+        "declaration_rank1 (file rank of the queried declaration)",
+        "intra_file_order",
+        "zero_result_rate",
+        "false_positive_rate"
+      ]
+    },
+    "semantic-paraphrase": {
+      "queries": 12,
+      "must_hit": 10,
+      "negatives": 2,
+      "sub_lanes": [
+        "mapped (SE01-SE05)",
+        "paraphrase (SE06-SE10)"
+      ],
+      "negative_semantics": "Semantic negatives are defined by absent_concept, not by absent strings: their words are generic by construction. FP=0.00 requires an abstention or confidence mechanism, not a literal filter.",
+      "metrics": [
+        "recall@1/3/5/10",
+        "success_recall@3",
+        "mrr@10",
+        "ndcg@10",
+        "zero_result_rate",
+        "false_positive_rate",
+        "top3_doc_share (precision guard: share of top-3 slots taken by docs when the answer is source)"
+      ]
+    },
+    "ranking-signal": {
+      "queries": 10,
+      "must_hit": 9,
+      "negatives": 1,
+      "metrics": [
+        "paired rank deltas per signal",
+        "ndcg@10",
+        "mrr@10",
+        "glob recall@k",
+        "explanation_present",
+        "zero_result_rate",
+        "false_positive_rate"
+      ]
+    },
+    "control": {
+      "queries": 4,
+      "must_hit": 4,
+      "negatives": 0,
+      "metrics": [
+        "recall@10",
+        "ndcg@10",
+        "zero_result_rate"
+      ]
+    }
+  },
+  "counts": {
+    "total": 38,
+    "must_hit": 32,
+    "negatives": 6,
+    "probes_known_fail": 4,
+    "feature_gated": 4
+  },
+  "queries": [
+    {
+      "id": "SY01",
+      "lane": "symbol-ast",
+      "difficulty": "head",
+      "query": "UltraSearchClient",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"UltraSearchClient\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/benchmark-gate.test.ts",
+          "grade": 0
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "src/client.ts",
+          "first_match_matches": "^\\s*export\\s+class\\s+UltraSearchClient\\b",
+          "expect_file_rank": 1
+        }
+      ],
+      "not_expected": [
+        {
+          "path": "test/benchmark-gate.test.ts",
+          "why": "line inside a mock JSON string literal ('export class UltraSearchClient {'), not a declaration - the AST discriminator"
+        }
+      ],
+      "note": "Declaration is `export class`, which the current SYMBOL_REGEX matches, yet the mock string is also returned (measured rank 2). A tree-sitter index must drop it."
+    },
+    {
+      "id": "SY02",
+      "lane": "symbol-ast",
+      "difficulty": "head",
+      "query": "validateRegexPattern",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"validateRegexPattern\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "src/validate.ts",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "src/validate.ts",
+          "first_match_matches": "^\\s*export\\s+function\\s+validateRegexPattern\\b",
+          "expect_file_rank": 1
+        }
+      ],
+      "not_expected": [
+        {
+          "path": "src/client.ts",
+          "why": "two call sites, no declaration; symbol mode must not return usage as a declaration"
+        }
+      ],
+      "note": "New file after 0a16e50; declaration is `export function`. Tests file-level rank against a file with call sites only."
+    },
+    {
+      "id": "SY03",
+      "lane": "symbol-ast",
+      "difficulty": "torso",
+      "query": "applyProximityRanking",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "src/client.ts",
+          "first_match_matches": "^\\s*public\\s+applyProximityRanking\\s*\\(",
+          "expect_file_rank": 1
+        }
+      ],
+      "known_fail": true,
+      "known_fail_reason": "Declaration carries the access modifier `public`; SYMBOL_REGEX has no access-modifier alternative, so symbol mode returns 0 files (measured). Issue #26 acceptance probe."
+    },
+    {
+      "id": "SY04",
+      "lane": "symbol-ast",
+      "difficulty": "torso",
+      "query": "trySpawnDaemon",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"trySpawnDaemon\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "src/client.ts",
+          "first_match_matches": "^\\s*private\\s+trySpawnDaemon\\s*\\(",
+          "expect_file_rank": 1
+        }
+      ],
+      "known_fail": true,
+      "known_fail_reason": "Same access-modifier gap, `private`. Second #26 acceptance probe."
+    },
+    {
+      "id": "SY05",
+      "lane": "symbol-ast",
+      "difficulty": "head",
+      "query": "searchSemanticIntent",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"searchSemanticIntent\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "src/semantic.ts",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "src/semantic.ts",
+          "first_match_matches": "^\\s*export\\s+async\\s+function\\s+searchSemanticIntent\\b",
+          "expect_file_rank": 1
+        }
+      ]
+    },
+    {
+      "id": "SY06",
+      "lane": "symbol-ast",
+      "difficulty": "torso",
+      "query": "EngineHarness",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"EngineHarness\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "test/engine/harness.mjs",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "test/engine/harness.mjs",
+          "first_match_matches": "^\\s*export\\s+class\\s+EngineHarness\\b",
+          "expect_file_rank": 1
+        }
+      ],
+      "note": "Declaration lives in a .mjs test harness used by 5 test files; symbol mode must return the declaration, not the uses."
+    },
+    {
+      "id": "SY07",
+      "lane": "symbol-ast",
+      "difficulty": "torso",
+      "query": "Policy",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"Policy\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "engine/src/coverage.rs",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "engine/src/coverage.rs",
+          "first_match_matches": "^\\s*pub\\s+struct\\s+Policy\\b",
+          "expect_file_rank": 1
+        }
+      ],
+      "intra_file_order": [
+        "pub struct Policy",
+        "impl Policy",
+        "pub fn policy"
+      ],
+      "note": "Rust lane. Intra-file line order is the only symbol-ordering claim the current implementation can support."
+    },
+    {
+      "id": "SY08",
+      "lane": "symbol-ast",
+      "difficulty": "torso",
+      "query": "nearness",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"nearness\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "engine/src/server.rs",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "engine/src/server.rs",
+          "first_match_matches": "^\\s*fn\\s+nearness\\b",
+          "expect_file_rank": 1
+        }
+      ],
+      "note": "Private Rust fn (no `pub`): tests both the language coverage and the missing access modifier."
+    },
+    {
+      "id": "SY09",
+      "lane": "symbol-ast",
+      "difficulty": "torso",
+      "query": "isPathSafe",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"isPathSafe\", in=<root>, mode=symbol, limit=10)",
+      "expected": [
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        }
+      ],
+      "symbol_assertions": [
+        {
+          "path": "src/sanitize.ts",
+          "first_match_matches": "^\\s*export\\s+function\\s+isPathSafe\\b",
+          "expect_file_rank": 1
+        }
+      ]
+    },
+    {
+      "id": "SY10",
+      "lane": "symbol-ast",
+      "difficulty": "negative",
+      "query": "kubernetesPodReconcilerV2",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": false,
+      "negative": true,
+      "expected": [],
+      "call": "grep(\"kubernetesPodReconcilerV2\", in=<root>, mode=symbol, limit=10)",
+      "note": "Absent identifier: 0 results (measured)."
+    },
+    {
+      "id": "SY11",
+      "lane": "symbol-ast",
+      "difficulty": "negative",
+      "query": "DeserializeWorktreeOverlayIndex",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": false,
+      "negative": true,
+      "expected": [],
+      "call": "grep(\"DeserializeWorktreeOverlayIndex\", in=<root>, mode=symbol, limit=10)",
+      "note": "Absent identifier: 0 results (measured)."
+    },
+    {
+      "id": "SY12",
+      "lane": "symbol-ast",
+      "difficulty": "negative",
+      "query": "ultraThinMaterial",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "must_hit": false,
+      "negative": true,
+      "expected": [],
+      "call": "grep(\"ultraThinMaterial\", in=<root>, mode=symbol, limit=10)",
+      "note": "STRICTNESS probe: the literal exists in test/empirical-10-tests.ts only as a string assigned to const `pattern`. It is not a declaration, so symbol mode must return 0 (measured 0). Returns >0 only if the lane degrades to substring matching."
+    },
+    {
+      "id": "SE01",
+      "lane": "semantic-paraphrase",
+      "difficulty": "head",
+      "query": "search client options and default configuration values",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"search client options and default configuration values\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/types.ts",
+          "grade": 2
+        },
+        {
+          "path": "README.md",
+          "grade": 1
+        }
+      ],
+      "sub_lane": "mapped",
+      "concept_buckets": [
+        "config"
+      ],
+      "note": "Expansion adds config/options/settings/env/constant; the answer is the UltraSearchClientOptions/DEFAULT_* block."
+    },
+    {
+      "id": "SE02",
+      "lane": "semantic-paraphrase",
+      "difficulty": "head",
+      "query": "how are tests mocking the daemon socket",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"how are tests mocking the daemon socket\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "test/helpers/mock-daemon.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/mcp.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 1
+        }
+      ],
+      "sub_lane": "mapped",
+      "concept_buckets": [
+        "test"
+      ],
+      "note": "Expansion adds test/spec/assert/mock/fixture."
+    },
+    {
+      "id": "SE03",
+      "lane": "semantic-paraphrase",
+      "difficulty": "head",
+      "query": "where are api tokens and passwords masked before they reach the model",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"where are api tokens and passwords masked before they reach the model\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/formatter.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/sanitize.test.ts",
+          "grade": 2
+        }
+      ],
+      "sub_lane": "mapped",
+      "concept_buckets": [
+        "crypto"
+      ],
+      "note": "Expansion adds hash/encrypt/decrypt/cipher/salt/signature; the true answer is redaction (sanitize.ts)."
+    },
+    {
+      "id": "SE04",
+      "lane": "semantic-paraphrase",
+      "difficulty": "head",
+      "query": "is there a cache with a ttl for the ignore rules",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"is there a cache with a ttl for the ignore rules\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/sanitize.ts",
+          "grade": 2
+        }
+      ],
+      "sub_lane": "mapped",
+      "concept_buckets": [
+        "cache"
+      ],
+      "note": "ignoreCache + IGNORE_TTL_MS live in src/client.ts."
+    },
+    {
+      "id": "SE05",
+      "lane": "semantic-paraphrase",
+      "difficulty": "head",
+      "query": "where is the ipc request handler and response correlation id",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"where is the ipc request handler and response correlation id\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/types.ts",
+          "grade": 2
+        },
+        {
+          "path": "docs/wave1-engine-report.md",
+          "grade": 1
+        }
+      ],
+      "sub_lane": "mapped",
+      "concept_buckets": [
+        "api"
+      ],
+      "note": "dispatchLine + lane.pending id live in src/client.ts."
+    },
+    {
+      "id": "SE06",
+      "lane": "semantic-paraphrase",
+      "difficulty": "torso",
+      "query": "what stops a runaway regular expression from reaching the daemon",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"what stops a runaway regular expression from reaching the daemon\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "src/validate.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/client.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/client-features.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "README.md",
+          "grade": 1
+        }
+      ],
+      "sub_lane": "paraphrase",
+      "note": "No concept bucket matches; only a lexical/co-occurrence ranker can reach validate.ts."
+    },
+    {
+      "id": "SE07",
+      "lane": "semantic-paraphrase",
+      "difficulty": "torso",
+      "query": "what happens when the daemon socket goes away in the middle of a session",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"what happens when the daemon socket goes away in the middle of a session\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/fallback.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "docs/engine-changes.md",
+          "grade": 1
+        }
+      ],
+      "sub_lane": "paraphrase"
+    },
+    {
+      "id": "SE08",
+      "lane": "semantic-paraphrase",
+      "difficulty": "torso",
+      "query": "keep results inside the workspace even if a symlink points out of it",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"keep results inside the workspace even if a symlink points out of it\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "index.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/sanitize.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/empirical-10-tests.ts",
+          "grade": 2
+        }
+      ],
+      "sub_lane": "paraphrase",
+      "note": "resolveWorktreeRoot (index.ts) + isPathSafe (sanitize.ts)."
+    },
+    {
+      "id": "SE09",
+      "lane": "semantic-paraphrase",
+      "difficulty": "torso",
+      "query": "which files decide what gets ignored while searching a project",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"which files decide what gets ignored while searching a project\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/client.ts",
+          "grade": 2
+        },
+        {
+          "path": ".gitignore",
+          "grade": 2
+        },
+        {
+          "path": "docs/content-index-policy.md",
+          "grade": 1
+        }
+      ],
+      "sub_lane": "paraphrase",
+      "note": "loadIgnoreRules + the scope's declared .gitignore."
+    },
+    {
+      "id": "SE10",
+      "lane": "semantic-paraphrase",
+      "difficulty": "torso",
+      "query": "why does a whole disk search return partial results",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "searchSemanticIntent(client, \"why does a whole disk search return partial results\", {in:<root>, limit:10})",
+      "expected": [
+        {
+          "path": "docs/engine-changes.md",
+          "grade": 3
+        },
+        {
+          "path": "src/client.ts",
+          "grade": 2
+        },
+        {
+          "path": "engine/src/query.rs",
+          "grade": 2
+        },
+        {
+          "path": "README.md",
+          "grade": 1
+        }
+      ],
+      "sub_lane": "paraphrase",
+      "note": "budget_ms / complete:false semantics. This is the one paraphrase already reachable (measured rank 2)."
+    },
+    {
+      "id": "SE11",
+      "lane": "semantic-paraphrase",
+      "difficulty": "negative",
+      "query": "database migration and schema",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": false,
+      "negative": true,
+      "expected": [],
+      "call": "searchSemanticIntent(client, \"database migration and schema\", {in:<root>, limit:10})",
+      "absent_concept": "no file in the corpus implements or documents a database migration or schema layer",
+      "fp_rule": "any returned file is a false positive for Tier-L unless the semantic path marks it below a documented confidence threshold that the caller is told to ignore; silent junk is a failure. Words are deliberately generic (database/schema/query) - that overlap is the mechanism under test.",
+      "note": "Absent domain; the `database` bucket (db/query/connection/schema/model) generic-matches engine source. Measured 10 junk files (FP)."
+    },
+    {
+      "id": "SE12",
+      "lane": "semantic-paraphrase",
+      "difficulty": "negative",
+      "query": "react component state management hook",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "must_hit": false,
+      "negative": true,
+      "expected": [],
+      "call": "searchSemanticIntent(client, \"react component state management hook\", {in:<root>, limit:10})",
+      "absent_concept": "no file in the corpus implements or documents a React component or a state-management hook",
+      "fp_rule": "same rule as SE11: abstain, or mark low confidence and say so; returning junk silently is a failure.",
+      "note": "Absent domain. Measured 10 junk files (FP)."
+    },
+    {
+      "id": "RS01",
+      "lane": "ranking-signal",
+      "difficulty": "head",
+      "query": "src/client.ts",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "search(\"src/client.ts\", in=<root>, limit=10)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "signal": "exact-path",
+      "not_expected": [
+        {
+          "path": "test/client.test.ts",
+          "why": "exact path query must not degrade into a substring match"
+        }
+      ],
+      "note": "enforceExactQuery prefixes the token, matching the whole path; measured 1 file."
+    },
+    {
+      "id": "RS02",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "src/**/*.ts",
+      "params": {
+        "limit": 20
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "search(\"src/**/*.ts\", in=<root>, limit=20)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/telemetry.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/validate.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/spawn.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/types.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/tui.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/semantic.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/sanitize.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/recursive-learning.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/observer.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/mcp.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/formatter.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/compactor.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/codemode.ts",
+          "grade": 3
+        }
+      ],
+      "signal": "glob",
+      "scored_metric": "recall@limit (limit=20): the expected set is 14 files, so recall@10 for this query is capped at 10/14 by definition and must NOT be used. Measured 14/14 at limit 20.",
+      "note": "All 14 src/*.ts. At limit=10 the list truncates to 10 (correct); at limit=20 it is complete. Excluded from the lane recall@10 aggregate."
+    },
+    {
+      "id": "RS03",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "client",
+      "params": {
+        "near": "src/client.ts",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "search(\"client\", in=<root>, near=<root>/src/client.ts, limit=10)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/client-features.test.ts",
+          "grade": 2
+        }
+      ],
+      "signal": "proximity",
+      "paired_with": "RS04",
+      "ranking_invariant": "same_folder_peer_of_near_must_rank_1",
+      "known_fail": true,
+      "known_fail_reason": "Engine nearness returns -20 when path == near (engine/src/server.rs:837-846), so the file the caller passes as `near` is demoted to last. Measured: [test/client.test.ts, test/client-features.test.ts, src/client.ts].",
+      "note": "The primary defect this lane must expose: `near` currently cannot mean 'rank the file I am editing first'."
+    },
+    {
+      "id": "RS04",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "client",
+      "params": {
+        "near": "test/client.test.ts",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "search(\"client\", in=<root>, near=<root>/test/client.test.ts, limit=10)",
+      "expected": [
+        {
+          "path": "test/client-features.test.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/client.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        }
+      ],
+      "signal": "proximity-control",
+      "paired_with": "RS03",
+      "measurement": "The pair RS03/RS04 is the proximity test: identical query, only `near` moves. Require (a) the two result orders differ, (b) the same-folder peer of `near` is rank 1 in both, (c) the near file itself is not rank 1 in either until the -20 rule is revisited.",
+      "note": "Measured (near=test/client.test.ts): [test/client-features.test.ts, src/client.ts, test/client.test.ts]."
+    },
+    {
+      "id": "RS05",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "readme",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "requires": "frecency",
+      "call": "search(\"readme\", in=<root>, limit=10) after {op:\"open\"} of <root>/README.md >=30s earlier",
+      "expected": [
+        {
+          "path": "README.md",
+          "grade": 3
+        },
+        {
+          "path": "engine/README.md",
+          "grade": 2
+        },
+        {
+          "path": "docs/engine-changes.md",
+          "grade": 1
+        }
+      ],
+      "signal": "frecency",
+      "measurement": "Paired: run the query once before any open (control) and once >=30s after an open of README.md. Accept the frecency claim only if the paired rank delta of README.md is >= 1 with a CI excluding 0 over >=10 alternated rounds. A single open followed by a single query is not evidence.",
+      "known_fail": false,
+      "note": "Not measured by the advisor probe (precondition costs 30s and is stateful)."
+    },
+    {
+      "id": "RS06",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "boost": true
+      },
+      "control_params": {
+        "boost": false
+      },
+      "must_hit": true,
+      "negative": false,
+      "requires_corpus_feature": "git",
+      "call": "search(\"client\", in=<root>, limit=10, boost=true) vs boost=false",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        },
+        {
+          "path": "test/client-features.test.ts",
+          "grade": 2
+        }
+      ],
+      "signal": "boost-ab",
+      "measurement": "boost = frecency + git history + mtime. On the archive corpus (no .git, uniform mtimes) both arms measured byte-identical output - a structurally degenerate test. Run it on a git-initialised corpus or the live worktree; a tie is a valid result and must disable the default.",
+      "note": "Measured identical: [src/client.ts, test/client.test.ts, test/client-features.test.ts] for both arms."
+    },
+    {
+      "id": "RS07",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "git": "modified"
+      },
+      "must_hit": true,
+      "negative": false,
+      "requires_corpus_feature": "git",
+      "call": "search(\"client\", in=<root>, limit=10, git=\"modified\") after touching a known file",
+      "expected": [
+        {
+          "path": "test/client-features.test.ts",
+          "grade": 3
+        },
+        {
+          "path": "src/client.ts",
+          "grade": 2
+        }
+      ],
+      "signal": "git-filter",
+      "note": "The archive corpus has no .git, so this query is currently unmeasurable; it is listed to make the corpus requirement explicit, not to score. The touched file is chosen by the scorer so the expectation is computed, not hardcoded."
+    },
+    {
+      "id": "RS08",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "client",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "requires_feature": "#42",
+      "call": "search(\"client\", in=<root>, limit=10) - inspect result text for reason tags",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        }
+      ],
+      "signal": "explanation",
+      "measurement": "Accept #42 only when each returned row carries a reason tag ([exact], [glob], [git:modified], [proximity], or an engine-computed score component) AND the tag is consistent with the ordering (a row tagged [exact] must not be outranked by a row with no reason). Tags alone are not acceptance evidence.",
+      "note": "Non-gating until #42 ships."
+    },
+    {
+      "id": "RS09",
+      "lane": "ranking-signal",
+      "difficulty": "torso",
+      "query": "format grep files",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "search(\"format grep files\", in=<root>, limit=10)",
+      "expected": [
+        {
+          "path": "src/formatter.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/deep-bench.ts",
+          "grade": 2
+        }
+      ],
+      "signal": "multi-term-exact",
+      "known_fail": true,
+      "known_fail_reason": "enforceExactQuery rewrites each word to an exact token (`'format 'grep 'files`) and the client then keeps only paths containing every token; measured 0 results. An agent-phrased multi-word path query is unusable.",
+      "note": "Probe for the reformulation class, not for ranking. Non-gating for Tier-L; blocking for any 'agents find files first try' claim."
+    },
+    {
+      "id": "RS10",
+      "lane": "ranking-signal",
+      "difficulty": "negative",
+      "query": "zodSchemaValidator",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": false,
+      "negative": true,
+      "expected": [],
+      "call": "search(\"zodSchemaValidator\", in=<root>, limit=10)",
+      "note": "Absent identifier: 0 results (measured)."
+    },
+    {
+      "id": "CR01",
+      "lane": "control",
+      "difficulty": "head",
+      "query": "package.json",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "search(\"package.json\", in=<root>, limit=10)",
+      "expected": [
+        {
+          "path": "package.json",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "CR02",
+      "lane": "control",
+      "difficulty": "head",
+      "query": "ci.yml",
+      "params": {
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "search(\"ci.yml\", in=<root>, limit=10)",
+      "expected": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "grade": 3
+        }
+      ]
+    },
+    {
+      "id": "CR03",
+      "lane": "control",
+      "difficulty": "head",
+      "query": "SYMBOL_REGEX",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
+      "expected": [
+        {
+          "path": "src/formatter.ts",
+          "grade": 3
+        }
+      ],
+      "not_expected": [
+        {
+          "path": "docs/engine-changes.md",
+          "why": "mention only"
+        }
+      ],
+      "note": "Literal controls carry over the wave-1 retrieval anchors so a ranking change cannot hide a retrieval regression."
+    },
+    {
+      "id": "CR04",
+      "lane": "control",
+      "difficulty": "head",
+      "query": "class\\s+\\w+Client",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "must_hit": true,
+      "negative": false,
+      "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/benchmark-gate.test.ts",
+          "grade": 1
+        }
+      ],
+      "note": "Measured: both files. The second is a mock string literal; grading it 1 keeps the regex lane honest."
+    }
+  ],
+  "acceptance": {
+    "pointer": "bench/judgments/wave2-bars.json - per-lane floors, claim gates and latency budgets",
+    "non_negotiables": [
+      "A wave2 baseline run of THIS file on the corpus above must be committed before any ranking claim (pre-registration). wave2-probes.json is the advisor's provisional observation, not the baseline.",
+      "Tier-L (lane gate): zero_result_rate = 0.00 on declared-answerable must_hit queries; false_positive_rate = 0.00 on negatives; feature-gated and known_fail rows are excluded from Tier-L but reported.",
+      "Tier-C (claim gate): paired per-query delta with BCa CI excluding 0 and point delta >= +0.05 nDCG@10, and no lane regressing by > 0.02.",
+      "Never cite the corpus-meta contaminant or held-out overfitting: publish this set as a smoke set and require the verifier to run a generated/permuted variant for acceptance."
+    ]
+  },
+  "measurement_notes": {
+    "env": "PI_ULTRASEARCH_TEST=1 in every process; the production audit log must be hash-identical before/after.",
+    "run": "The wave-1 scorer (bench/baseline/judgments.mjs) needs three extensions: (1) mode `symbol` assertions and `not_expected`, (2) `searchSemanticIntent` for the semantic lane, (3) paired controls for RS03/RS04/RS05/RS06. Do not fork the metric definitions.",
+    "gate": "Wave-2 bars are corpus-relative; the whole-disk/5k-fixture latency rows stay governed by the wave-1 latency baseline (paired comparison, CI excluding 0).",
+    "freshness": "The corpus was verified live during the advisor probe: symbol/grep/semantic queries returned corpus files at the recorded tree_sha256; re-verify before a scored run."
+  }
+}

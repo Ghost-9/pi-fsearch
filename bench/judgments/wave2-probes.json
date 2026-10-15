@@ -1,0 +1,763 @@
+{
+  "schema": "ultrasearch.probes/v1",
+  "version": 1,
+  "created": "2026-10-15",
+  "author": "wave2/advisor2",
+  "status": "provisional - single pass, no environment gate; behavioural observations only (which files, which order, which error)",
+  "method": "Advisor probe (read-only client surface), PI_ULTRASEARCH_TEST=1, one process, live daemon, corpus-8d1419d-clean. Latencies are indicative only: they are single samples, no CI, no gate, and load1 was >=7 during the session.",
+  "environment": {
+    "ac_power": true,
+    "battery": "100% charged",
+    "load1_at_write": 13.34,
+    "note": "the machine was NOT measurement-idle (concurrent wave agents plus this probe); do not cite any ms here as a result"
+  },
+  "daemon": {
+    "pid": 8887,
+    "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+    "entries": 3889155,
+    "content_docs": 145724,
+    "content_pending": 0,
+    "index_bytes": 120383168,
+    "compactions": 6,
+    "deny_configured": false,
+    "observed_at": "2026-10-15T05:2xZ"
+  },
+  "corpus": {
+    "id": "ultrasearch-repo@8d1419d",
+    "commit": "8d1419d",
+    "root": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean",
+    "files": 97,
+    "bytes": 1390437,
+    "tree_sha256": "c9c2e4ac15e88df9c5c0e241b0dd1c0281abce57155be58bc94120218f7f9665",
+    "reproduce": "git -C <repo> archive 8d1419d --format=tar -- . ':(exclude)bench/**' ':(exclude)ADVISOR-WAVE1.md' ':(exclude)VERIFICATION-PROTOCOL.md' | tar -x -C $HOME/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean",
+    "spoiler_guard": [
+      "bench/** excluded: bench/judgments/wave1-judgments.json quotes every wave-1 query and expected path (F8); bench/baseline/results/* are harness artifacts.",
+      "ADVISOR-WAVE1.md and VERIFICATION-PROTOCOL.md excluded: both quote judged query strings, F8 reproductions and expected paths.",
+      "Product docs (README, AUDIT, OPTIMIZATIONS, CHANGELOG, docs/*) are deliberately kept: they quote identifiers and are the realistic distractor class.",
+      "This file is committed after 8d1419d, so it is not inside the archive.",
+      "OPEN: the corpus root also holds the harness-written .corpus-meta.json (wave-1 make-corpus.mjs writes it inside the root). It is a harness file, is returned by semantic queries and must be excluded from the corpus or written outside the root. Wave 2 probe observed it at rank 1 for SE01."
+    ]
+  },
+  "behavioral_probes": {
+    "R3_regex_rejection": {
+      "call": "client.grep(\"(a+)+$\", {mode:\"regex\", in:<corpus>})",
+      "ok": false,
+      "error_class": "rejected regex pattern: quantified group contains an inner quantifier",
+      "files": 0,
+      "ms": 0.61,
+      "consequence": "On main (8d1419d) the wave-1 negative R3 is no longer a false positive: the scorer's rule (false_positive = files>0 || no error) would score it pass. The wave1-summary 'after' artifact (bench/verification/after/judgments-baseline.json, sha256 ab4e4ac7..., byte-identical to bench/baseline/results/judgments-baseline.json) predates this and still reports R3 with 2 files, so the published FP 0.50 is stale; the real main figure cannot be 0.50."
+    },
+    "S3_symbol_access_modifier": {
+      "call": "client.grep(\"applyProximityRanking\", {mode:\"symbol\", in:<corpus>})",
+      "ok": true,
+      "files": 0,
+      "consequence": "A real declaration returns 0 files (public access modifier). Same for trySpawnDaemon (private). Hard zero-result, not a ranking miss."
+    },
+    "M6_semantic_negative": {
+      "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\")",
+      "files": 10,
+      "consequence": "The 8-term OR expansion still surfaces generic-token files on absent subjects. FP persists at main."
+    },
+    "symbol_vs_literal": {
+      "call": "client.grep(\"UltraSearchClient\", {mode:\"symbol\"}) vs {mode:\"literal\"}",
+      "symbol_files": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "literal_files": 20,
+      "consequence": "symbol mode is an engine-side declaration filter (20 files -> 2). The second hit is a declaration-shaped line inside a mock string literal - the AST/precision discriminator (SY01 not_expected)."
+    }
+  },
+  "observations": [
+    {
+      "id": "SY01",
+      "lane": "symbol-ast",
+      "query": "UltraSearchClient",
+      "status": "observed",
+      "ms": 11.63,
+      "files": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "first_match": "export class UltraSearchClient {",
+      "expanded_terms": null
+    },
+    {
+      "id": "SY02",
+      "lane": "symbol-ast",
+      "query": "validateRegexPattern",
+      "status": "observed",
+      "ms": 1.48,
+      "files": [
+        "src/validate.ts"
+      ],
+      "first_match": "export function validateRegexPattern(pattern: string): RegexValidation",
+      "expanded_terms": null
+    },
+    {
+      "id": "SY03",
+      "lane": "symbol-ast",
+      "query": "applyProximityRanking",
+      "status": "observed",
+      "ms": 1.31,
+      "files": [],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "SY04",
+      "lane": "symbol-ast",
+      "query": "trySpawnDaemon",
+      "status": "observed",
+      "ms": 1.16,
+      "files": [],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "SY05",
+      "lane": "symbol-ast",
+      "query": "searchSemanticIntent",
+      "status": "observed",
+      "ms": 1.38,
+      "files": [
+        "src/semantic.ts"
+      ],
+      "first_match": "export async function searchSemanticIntent(",
+      "expanded_terms": null
+    },
+    {
+      "id": "SY06",
+      "lane": "symbol-ast",
+      "query": "EngineHarness",
+      "status": "observed",
+      "ms": 1.39,
+      "files": [
+        "test/engine/harness.mjs"
+      ],
+      "first_match": "export class EngineHarness {",
+      "expanded_terms": null
+    },
+    {
+      "id": "SY07",
+      "lane": "symbol-ast",
+      "query": "Policy",
+      "status": "observed",
+      "ms": 1.46,
+      "files": [
+        "engine/src/coverage.rs"
+      ],
+      "first_match": "pub struct Policy {",
+      "expanded_terms": null
+    },
+    {
+      "id": "SY08",
+      "lane": "symbol-ast",
+      "query": "nearness",
+      "status": "observed",
+      "ms": 1.37,
+      "files": [
+        "engine/src/server.rs"
+      ],
+      "first_match": "fn nearness(near: &[u8], path: &[u8]) -> i32 {",
+      "expanded_terms": null
+    },
+    {
+      "id": "SY09",
+      "lane": "symbol-ast",
+      "query": "isPathSafe",
+      "status": "observed",
+      "ms": 1.36,
+      "files": [
+        "src/sanitize.ts"
+      ],
+      "first_match": "export function isPathSafe(filePath: string, allowedRoot?: string): bo",
+      "expanded_terms": null
+    },
+    {
+      "id": "SY10",
+      "lane": "symbol-ast",
+      "query": "kubernetesPodReconcilerV2",
+      "status": "observed",
+      "ms": 1.25,
+      "files": [],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "SY11",
+      "lane": "symbol-ast",
+      "query": "DeserializeWorktreeOverlayIndex",
+      "status": "observed",
+      "ms": 1.17,
+      "files": [],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "SY12",
+      "lane": "symbol-ast",
+      "query": "ultraThinMaterial",
+      "status": "observed",
+      "ms": 0.98,
+      "files": [],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "SE01",
+      "lane": "semantic-paraphrase",
+      "query": "search client options and default configuration values",
+      "status": "observed",
+      "ms": 7.89,
+      "files": [
+        ".corpus-meta.json",
+        ".github/workflows/ci.yml",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "NOTICE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "search",
+        "client",
+        "options",
+        "config",
+        "settings",
+        "env",
+        "constant",
+        "and"
+      ]
+    },
+    {
+      "id": "SE02",
+      "lane": "semantic-paraphrase",
+      "query": "how are tests mocking the daemon socket",
+      "status": "observed",
+      "ms": 7.45,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "docs/content-index-policy.md",
+        "docs/engine-rebrand.md",
+        "docs/wave1-engine-report.md",
+        "engine/README.md",
+        "engine/examples/fresh.rs"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "how",
+        "are",
+        "tests",
+        "test",
+        "spec",
+        "assert",
+        "mock",
+        "fixture"
+      ]
+    },
+    {
+      "id": "SE03",
+      "lane": "semantic-paraphrase",
+      "query": "where are api tokens and passwords masked before they reach the model",
+      "status": "observed",
+      "ms": 7.37,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "where",
+        "are",
+        "api",
+        "route",
+        "endpoint",
+        "controller",
+        "handler",
+        "request"
+      ]
+    },
+    {
+      "id": "SE04",
+      "lane": "semantic-paraphrase",
+      "query": "is there a cache with a ttl for the ignore rules",
+      "status": "observed",
+      "ms": 6.77,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "README.md",
+        "docs/wave1-engine-report.md",
+        "engine/BUILD.md",
+        "engine/examples/quality.py",
+        "engine/src/content.rs",
+        "engine/src/engine.rs",
+        "engine/src/git.rs",
+        "engine/src/live.rs"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "there",
+        "cache",
+        "redis",
+        "memoize",
+        "store",
+        "ttl",
+        "with",
+        "for"
+      ]
+    },
+    {
+      "id": "SE05",
+      "lane": "semantic-paraphrase",
+      "query": "where is the ipc request handler and response correlation id",
+      "status": "observed",
+      "ms": 7.34,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "where",
+        "the",
+        "ipc",
+        "request",
+        "route",
+        "endpoint",
+        "controller",
+        "handler"
+      ]
+    },
+    {
+      "id": "SE06",
+      "lane": "semantic-paraphrase",
+      "query": "what stops a runaway regular expression from reaching the daemon",
+      "status": "observed",
+      "ms": 6.78,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "NOTICE",
+        "README.md",
+        "ROADMAP.md",
+        "docs/content-index-policy.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "what",
+        "stops",
+        "runaway",
+        "regular",
+        "expression",
+        "from",
+        "reaching",
+        "the"
+      ]
+    },
+    {
+      "id": "SE07",
+      "lane": "semantic-paraphrase",
+      "query": "what happens when the daemon socket goes away in the middle of a session",
+      "status": "observed",
+      "ms": 7.29,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "NOTICE",
+        "README.md",
+        "ROADMAP.md",
+        "docs/content-index-policy.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "what",
+        "happens",
+        "when",
+        "the",
+        "daemon",
+        "socket",
+        "goes",
+        "away"
+      ]
+    },
+    {
+      "id": "SE08",
+      "lane": "semantic-paraphrase",
+      "query": "keep results inside the workspace even if a symlink points out of it",
+      "status": "observed",
+      "ms": 7.5,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "bin/cli.ts",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "keep",
+        "results",
+        "inside",
+        "the",
+        "workspace",
+        "even",
+        "symlink",
+        "points"
+      ]
+    },
+    {
+      "id": "SE09",
+      "lane": "semantic-paraphrase",
+      "query": "which files decide what gets ignored while searching a project",
+      "status": "observed",
+      "ms": 6.9,
+      "files": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "bin/cli.ts",
+        "docs/engine-changes.md",
+        "engine/rebrand.sh",
+        "engine/src/alloc.rs",
+        "engine/src/content.rs",
+        "engine/src/deny.rs",
+        "engine/src/engine.rs",
+        "engine/src/env.rs"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "which",
+        "files",
+        "decide",
+        "what",
+        "gets",
+        "ignored",
+        "while",
+        "searching"
+      ]
+    },
+    {
+      "id": "SE10",
+      "lane": "semantic-paraphrase",
+      "query": "why does a whole disk search return partial results",
+      "status": "observed",
+      "ms": 7.04,
+      "files": [
+        "OPTIMIZATIONS.md",
+        "docs/engine-changes.md",
+        "docs/wave1-engine-report.md",
+        "engine/src/coverage.rs",
+        "engine/src/engine.rs",
+        "engine/src/mcp.rs",
+        "engine/src/query.rs",
+        "engine/src/server.rs",
+        "test/engine/security.test.mjs",
+        "AUDIT-2026-10-14.md"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "why",
+        "does",
+        "whole",
+        "disk",
+        "search",
+        "return",
+        "partial",
+        "results"
+      ]
+    },
+    {
+      "id": "SE11",
+      "lane": "semantic-paraphrase",
+      "query": "database migration and schema",
+      "status": "observed",
+      "ms": 7.68,
+      "files": [
+        "engine/src/engine.rs",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "test/client.test.ts",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "engine/Cargo.lock",
+        "engine/src/content.rs",
+        "engine/src/server.rs"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "database",
+        "db",
+        "sql",
+        "prisma",
+        "query",
+        "connection",
+        "schema",
+        "model"
+      ]
+    },
+    {
+      "id": "SE12",
+      "lane": "semantic-paraphrase",
+      "query": "react component state management hook",
+      "status": "observed",
+      "ms": 5.58,
+      "files": [
+        "LICENSE",
+        "README.md",
+        "docs/engine-changes.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md",
+        "engine/examples/fresh.rs",
+        "engine/pgo.sh",
+        "engine/src/content.rs",
+        "engine/src/deny.rs",
+        "engine/src/engine.rs"
+      ],
+      "first_match": null,
+      "expanded_terms": [
+        "react",
+        "component",
+        "state",
+        "management",
+        "hook"
+      ]
+    },
+    {
+      "id": "RS01",
+      "lane": "ranking-signal",
+      "query": "src/client.ts",
+      "status": "observed",
+      "ms": 8.42,
+      "files": [
+        "src/client.ts"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS02",
+      "lane": "ranking-signal",
+      "query": "src/**/*.ts",
+      "status": "observed",
+      "ms": 2.27,
+      "files": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts",
+        "src/observer.ts",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "src/spawn.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts",
+        "src/validate.ts"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS03",
+      "lane": "ranking-signal",
+      "query": "client",
+      "status": "observed",
+      "ms": 1.13,
+      "files": [
+        "test/client.test.ts",
+        "test/client-features.test.ts",
+        "src/client.ts"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS04",
+      "lane": "ranking-signal",
+      "query": "client",
+      "status": "observed",
+      "ms": 0.5,
+      "files": [
+        "test/client-features.test.ts",
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS05",
+      "lane": "ranking-signal",
+      "query": "readme",
+      "status": "not_observed",
+      "ms": null,
+      "files": null,
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS06",
+      "lane": "ranking-signal",
+      "query": "client",
+      "status": "observed",
+      "ms": 0.42,
+      "files": [
+        "src/client.ts",
+        "test/client.test.ts",
+        "test/client-features.test.ts"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS07",
+      "lane": "ranking-signal",
+      "query": "client",
+      "status": "not_observed",
+      "ms": null,
+      "files": null,
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS08",
+      "lane": "ranking-signal",
+      "query": "client",
+      "status": "not_observed",
+      "ms": null,
+      "files": null,
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS09",
+      "lane": "ranking-signal",
+      "query": "format grep files",
+      "status": "observed",
+      "ms": 0.93,
+      "files": [],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "RS10",
+      "lane": "ranking-signal",
+      "query": "zodSchemaValidator",
+      "status": "observed",
+      "ms": 0.37,
+      "files": [],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "CR01",
+      "lane": "control",
+      "query": "package.json",
+      "status": "observed",
+      "ms": 0.39,
+      "files": [
+        "package.json"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "CR02",
+      "lane": "control",
+      "query": "ci.yml",
+      "status": "observed",
+      "ms": 0.37,
+      "files": [
+        ".github/workflows/ci.yml"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "CR03",
+      "lane": "control",
+      "query": "SYMBOL_REGEX",
+      "status": "observed",
+      "ms": 1.41,
+      "files": [
+        "src/formatter.ts"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    },
+    {
+      "id": "CR04",
+      "lane": "control",
+      "query": "class\\s+\\w+Client",
+      "status": "observed",
+      "ms": 2.28,
+      "files": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "first_match": null,
+      "expanded_terms": null
+    }
+  ],
+  "artifact_audit": {
+    "id": "F10",
+    "claim": "wave1-summary judgments rows are before/after measurements",
+    "finding": "bench/verification/after/judgments-baseline.json is byte-identical to bench/baseline/results/judgments-baseline.json",
+    "sha256": "ab4e4ac731fcc05f05feb3f3c3d8b5a90ad9f725f206fabdbe495415ab3d12c9",
+    "after_meta": {
+      "generated_at": "2026-10-14T20:38:50.603Z",
+      "branch": "wave1/baseline",
+      "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2",
+      "status": "provisional"
+    },
+    "comparison": "equivalence/tokens/zeroresult after-artifacts are genuine fresh runs at wave1/verify-final 3135e28; judgments is the only duplicated one",
+    "consequence": "the eleven judgments.* rows and judgments.acceptance_gates in bench/verification/wave1-summary.json carry status 'verified' but the after side was never measured on main. Treat them as 'needs re-run'."
+  },
+  "limits": [
+    "Not a gated measurement: no CI, no pair count, no power/load assertion. Behaviour (which files, which error) is robust; every ms is indicative.",
+    "The semantic lane was probed through searchSemanticIntent as the shipped path; the returned file order is the multiGrep order.",
+    "RF05 (frecency) was not probed (30s stateful precondition); RS07 (git filter) and RS08 (#42 tags) are not measurable until the corpus has .git and the feature ships.",
+    "The corpus contains the harness-written .corpus-meta.json inside the root; it appears in semantic results (SE01 rank 1) and should be excluded or written outside the root."
+  ]
+}

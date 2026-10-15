@@ -1,0 +1,209 @@
+{
+  "schema": "ultrasearch.bars/v1",
+  "version": 1,
+  "created": "2026-10-15",
+  "author": "wave2/advisor2",
+  "judgments": "bench/judgments/wave2-judgments.json",
+  "baseline_probe": {
+    "artifact": "bench/judgments/wave2-probes.json",
+    "kind": "advisor observation, single pass, no environment gate",
+    "status": "provisional - NOT a certified baseline; the verifier must publish a gated re-measurement before any claim",
+    "values": {
+      "symbol-ast": {
+        "measured": 12,
+        "scored": 12,
+        "must_hit": 9,
+        "negatives": 3,
+        "recall10": 0.778,
+        "success3": 0.778,
+        "mrr10": 0.778,
+        "ndcg10": 0.778,
+        "zero_result_rate": 0.222,
+        "fp_rate": 0,
+        "ms_p50": 1.37,
+        "ms_max": 11.63
+      },
+      "semantic-paraphrase": {
+        "measured": 12,
+        "scored": 12,
+        "must_hit": 10,
+        "negatives": 2,
+        "recall10": 0.175,
+        "success3": 0.1,
+        "mrr10": 0.05,
+        "ndcg10": 0.064,
+        "zero_result_rate": 0,
+        "fp_rate": 1,
+        "ms_p50": 7.34,
+        "ms_max": 7.89
+      },
+      "ranking-signal": {
+        "measured": 7,
+        "scored": 6,
+        "must_hit": 5,
+        "negatives": 1,
+        "recall10": 0.8,
+        "success3": 0.8,
+        "mrr10": 0.8,
+        "ndcg10": 0.723,
+        "zero_result_rate": 0.2,
+        "fp_rate": 0,
+        "ms_p50": 1.13,
+        "ms_max": 8.42
+      },
+      "control": {
+        "measured": 4,
+        "scored": 4,
+        "must_hit": 4,
+        "negatives": 0,
+        "recall10": 1,
+        "success3": 1,
+        "mrr10": 1,
+        "ndcg10": 1,
+        "zero_result_rate": 0,
+        "fp_rate": null,
+        "ms_p50": 1.41,
+        "ms_max": 2.28
+      },
+      "global": {
+        "must_hit": 28,
+        "zero_result_rate": 0.107,
+        "negatives": 6,
+        "fp_rate": 0.333
+      }
+    }
+  },
+  "tier_definitions": {
+    "Tier-L lane gate": "blocking for merge: zero_result_rate = 0.00 on declared-answerable must-hit; false_positive_rate = 0.00 on negatives; recall@10 not below the probe baseline; control lane perfect. Feature-gated rows (requires*) are reported but excluded.",
+    "Tier-C claim gate": "required to say 'improved': paired per-query delta with BCa bootstrap CI (10k) excluding 0, point delta >= +0.05 nDCG@10, no lane regressing > 0.02. Same machine state, one frozen index, one corpus hash.",
+    "Tier-S stretch": "not gating; used only to size remaining work."
+  },
+  "lanes": {
+    "symbol-ast": {
+      "floor": {
+        "zero_result_rate_max": 0,
+        "false_positive_rate_max": 0,
+        "recall10_min": 0.78,
+        "success3_min": 0.78,
+        "mrr10_min": 0.78,
+        "_note": "Tier-L tolerates the current mock-string hit (SY01 not_expected returned once); Tier-C requires it to disappear. The zero_result floor already forces the two access-modifier fixes."
+      },
+      "target": {
+        "recall10": 1,
+        "success3": 1,
+        "mrr10": 1,
+        "ndcg10_min": 0.95,
+        "declaration_rank1": 1,
+        "intra_file_order": "SY07 holds (struct before impl before fn)",
+        "not_expected_returned_max": 0
+      },
+      "latency_budget": {
+        "ms_p50_max": 5,
+        "ms_p95_max": 25,
+        "measured_probe": {
+          "p50": 1.37,
+          "max": 11.63
+        },
+        "scope": "97-file frozen corpus only"
+      },
+      "rationale": "Tier-L's zero-result floor alone forces both access-modifier fixes (SY03 public, SY04 private): they are real declarations returning 0 files today, so this is a hard tool failure, not a ranking miss. Tier-C is the #26 acceptance text ('symbol query returns the declaration before call sites') made countable: every declaration found, found first, in every supported language, and the mock-string literal no longer counted as a declaration. nDCG is secondary here because symbol mode returns declaration-only sets; recall and rank-1 are the honest metrics.",
+      "evidence_needed": [
+        "per-file incremental parse cost (ms/file, bytes/symbol) published",
+        "no grep-p95 regression on the wave-1 fixture/repo rows (paired, CI excludes >5% worsening)",
+        "SY01..SY09 rows with files and declaration line"
+      ]
+    },
+    "semantic-paraphrase": {
+      "floor": {
+        "zero_result_rate_max": 0,
+        "false_positive_rate_max": 0,
+        "recall10_min": 0.1,
+        "top3_doc_share_max": 0.67
+      },
+      "target": {
+        "mapped_success3_min": 0.6,
+        "paraphrase_success3_min": 0.4,
+        "ndcg10_min": 0.5,
+        "mrr10_min": 0.55
+      },
+      "stretch": {
+        "ndcg10": 0.7
+      },
+      "latency_budget": {
+        "ms_p50_max": 25,
+        "ms_p95_max": 75,
+        "measured_probe": {
+          "p50": 7.34,
+          "max": 7.89
+        },
+        "scope": "97-file frozen corpus; 8-term multi-grep cost scales with term count, not corpus size"
+      },
+      "rationale": "Baseline is 1/10 answers reachable, all six top slots occupied by docs, and both negatives return 10 junk files: the lane currently misleads more than it helps. Tier-L forbids the two failure modes an agent cannot detect (a silent 0 for an answerable paraphrase is not the failure; 10 confident wrong files is). Tier-C numbers are sized from mechanism, not hope: the answers are reachable lexically (sanitize<->masked, ignoreCache/IGNORE_TTL_MS<->ttl+ignore, mock-daemon.ts<->mock+daemon), so filename/identifier weighting + stopword removal + >=2 distinct-term co-occurrence is sufficient; no model is required. 0.60/0.40 are deliberately below perfect because only half the bucket map (auth/database/payment) has no target in this repo.",
+      "evidence_needed": [
+        "expanded term list and scores per query (why the file ranked)",
+        "per-query top-3 with doc share",
+        "the abstention/confidence rule stated and exercised on SE11/SE12"
+      ]
+    },
+    "ranking-signal": {
+      "floor": {
+        "exact_recall10": 1,
+        "glob_set_completeness": 1,
+        "false_positive_rate_max": 0,
+        "near_pair_order_differs": true,
+        "near_same_folder_peer_rank1": true
+      },
+      "target": {
+        "frecency_delta_rank_min": 1,
+        "boost_delta_ndcg_min": 0.05,
+        "near_primary_not_demoted": true,
+        "explain_tags_consistent": true
+      },
+      "latency_budget": {
+        "ms_p50_max": 3,
+        "ms_p95_max": 15,
+        "measured_probe": {
+          "p50": 1.13,
+          "max": 8.42
+        },
+        "scope": "97-file frozen corpus only; whole-disk latency stays under the wave-1 latency rows"
+      },
+      "rationale": "This lane exists to stop a ranking change from being certified by its own A/B script. Each signal has a discriminating pair (RS03/RS04 near; RS05 open/no-open; RS06 boost on/off) or an invariant (RS01 exact must not degrade to substring; RS02 glob must not truncate). The measured near behaviour is the cautionary case: the engine returns -20 when path == near (engine/src/server.rs:837), so the file a caller names is demoted to last - the signal is real but its sign is wrong for the primary use case.",
+      "evidence_needed": [
+        "paired per-round ranks for RS03/RS04 and RS05",
+        "boost A/B on a git-initialised corpus (the archive has no .git: both arms measured identical, a structurally degenerate test)",
+        "reason tags checked against order, not merely present"
+      ]
+    },
+    "control": {
+      "floor": {
+        "recall10": 1,
+        "zero_result_rate": 0,
+        "ndcg10_min": 0.9,
+        "mrr10_min": 0.9
+      },
+      "target": {
+        "ndcg10": 1
+      },
+      "latency_budget": {
+        "ms_p50_max": 5,
+        "ms_p95_max": 20,
+        "measured_probe": {
+          "p50": 1.41,
+          "max": 2.28
+        }
+      },
+      "rationale": "Four primitives (path, ci config, literal, regex) that every other lane depends on. One miss here is a blocker regardless of lane scores: it means the wave changed retrieval, not ranking. CR04 grades the mock-string hit 1 so the regex lane stays honest."
+    }
+  },
+  "whole_disk_rule": {
+    "policy": "The 97-file corpus cannot price an AST parse, a content index or a whole-disk scan. Any latency claim outside the corpus must be a paired comparison against the wave-1 rows (fixture-5k, repo, /Users/batra/Search) on the same branch, medians with bootstrap CI, gate passing. No new absolute p95 may be published from the corpus."
+  },
+  "forbidden_claims": [
+    "Any 'improvement' whose after-artifact is a copy of the baseline artifact (see ADVISOR-WAVE2.md F10: wave1/verify-final did exactly this for judgments).",
+    "Any latency number measured without the AC/load/cargo gate, or with a single pass.",
+    "Any boost/frecency/git claim measured on the archive corpus (no .git, uniform mtimes: the boost A/B is degenerate).",
+    "Any semantic claim that does not report FP on SE11/SE12 and top3_doc_share.",
+    "Any symbol claim that quotes an intra-file ordering result as file-level 'definitions first'."
+  ]
+}
