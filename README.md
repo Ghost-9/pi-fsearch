@@ -157,6 +157,91 @@ Node.js ≥ 22.18 through native TypeScript type-stripping.
 
 ---
 
+## Interop & ergonomics (v0.5.0)
+
+### Watch mode (#27)
+
+```bash
+ultrasearch watch "<query>" --in <dir> [--limit n] [--debounce ms] [--duration ms] [--once] [--json]
+```
+
+Streams the baseline matches, then one `add`/`remove` event per file as the directory changes. The watch loop does
+not duplicate the daemon's journal: `fs.watch` supplies the change signal, `status` is consulted first so an event is
+not answered while the index is behind, and the query itself reuses the normal socket path. `stop()` (or Ctrl-C)
+closes the watcher, removes signal handlers and closes the client, so no socket or inode is held after exit.
+`--once` prints the baseline and exits (used by the tests and by scripting).
+
+### Multi-root workspaces and worktree dedupe (#28)
+
+Extra roots are searched alongside the active worktree and merged by **realpath**: the same file is returned once,
+and the copy under the active worktree wins. Hits from another root are attributed with `[root: <path>]` in CLI and
+MCP output, and the number of collapsed duplicates is reported instead of silently dropped.
+
+```bash
+export ULTRASEARCH_ROOTS="/path/to/monorepo:/path/to/sibling-worktree"   # OS path delimiter
+export ULTRASEARCH_ROOTS_FILE=~/.config/ultrasearch/roots.json            # default when the env var is unset
+```
+
+`~/.config/ultrasearch/roots.json`:
+
+```json
+{ "roots": ["/path/to/monorepo", "/path/to/sibling-worktree"], "preferActiveWorktree": true }
+```
+
+With no configuration the module is inert: one root, one daemon round trip. A root that resolves (by realpath) to
+the active worktree is collapsed before any search. This is applied on the CLI and MCP surfaces; the Pi extension
+keeps resolving the active worktree alone, as before.
+
+### Code Mode declarations and recipes (#29)
+
+`src/tool-schema.ts` is the single source of truth for the tool surface. `src/codemode.ts` generates the
+`declare namespace tools` block from it, and `MCP_TOOLS` is derived from the same entries, so a parameter added in one
+place cannot go missing in the other. `npm run codemode:declarations` regenerates the golden file at
+`test/fixtures/codemode-declarations.txt`; `test/interop-surface.test.ts` fails the build when the generated text or
+the Pi tool parameters drift. Shipped recipes (`search -> grep -> read`, symbol-then-context) run through
+`runSearchGrepReadRecipe` and are executed end-to-end by the same test.
+
+### MCP surface configuration (#30)
+
+The default surface is exactly six `ultrasearch_*` tools. An operator can expose the same six definitions under an
+extra prefix for a client configured before the rename, without hand-maintaining a second schema:
+
+```bash
+ultrasearch-mcp --alias ultra            # adds ultra_query ... ultra_metrics (12 tools on tools/list)
+ultrasearch-mcp --prefix us              # renames the canonical prefix (6 tools)
+ULTRASEARCH_MCP_ALIASES=a,b              # env equivalent (the canonical six always stay)
+```
+
+`MCP_CLIENT_PROFILES` records the per-client matrix (Claude Desktop, VS Code, Antigravity, Cursor, T3 Code) and the
+smoke test initializes each profile's protocol version, asserts six tools, and calls its representative tool.
+
+### Query history and suggestions (#40)
+
+**Off by default.** Enable recording with `ULTRASEARCH_HISTORY=1`; disable a previously enabled setup with
+`ULTRASEARCH_HISTORY=0`. Queries are scrubbed with the same credential redactor as tool output before they are
+written to `~/.cache/ultrasearch/history.json` (mode `0600`, atomic temp+rename). Retention is capped at
+`ULTRASEARCH_HISTORY_MAX` entries (default 200, clamped to 10..5000) and enforced on write and load.
+
+```bash
+ultrasearch history                       # newest first
+ultrasearch history --suggest "grep ini"  # deterministic suggestions (prefix, token expansion, recency)
+ultrasearch history --clear               # delete the store
+```
+
+The TUI renders the same suggestions for the most recent query. `historyCorpus()` exposes a `query -> uses` map as
+a learner input.
+
+### Prefetch on edit (#41)
+
+`tool_execution_end` for `edit`/`write` calls warms the edited file after a 150 ms trailing debounce (rapid saves
+coalesce into one request, batches are capped at 16; a stopped controller warms nothing). The primary request is the
+daemon `prefetch` op; an engine without it falls back to a real content probe for the longest literal token in the
+file, which forces the daemon to read it. Best-effort: a failure is counted, never surfaced as a tool error. The
+edit→grep latency claim is **unmeasured** in this wave — the harness protocol (alternating order, cold-file control)
+is not in place, so no speedup is asserted.
+
+---
+
 ## Build & distribution
 
 ```bash
@@ -179,11 +264,20 @@ force it, and `type-stubs.d.ts` keeps `tsc` green without it. Pi Agent extension
 ## Testing & CI
 
 ```bash
-npm test            # unit + integration + MCP conformance (integration tests skip cleanly when the daemon is absent)
+npm test            # unit + integration + MCP conformance + interop suites (integration tests skip cleanly without the daemon)
 npm run test:gate   # hermetic mock-socket latency gate + live daemon gate (skips live if unavailable)
 npm run typecheck   # tsc --noEmit
 npm run build       # required before packaging; CI smokes the packed CLI
 ```
+
+`npm test` includes the interop suites: `test/interop-surface.test.ts` (declaration drift, MCP alias surface,
+recipes, per-client matrix), `test/roots.test.ts`, `test/history.test.ts`, `test/watch.test.ts`,
+`test/prefetch.test.ts` and `test/cli-interop.test.ts` (real CLI child processes against mock sockets).
+
+A note for a **fresh worktree**: the live latency gate greps the repository root, and a newly created checkout
+starts with a cold content index in the resident daemon; the first run can exceed the p95 threshold until the
+daemon has indexed that path. Warm it with a couple of grep calls (or re-run the gate) before treating a failing
+live gate as a regression.
 
 The CI workflow runs on a bare `macos-latest` runner with **no daemon installed**. It executes
 `typecheck → build → npm test → package smoke → test:gate`. The package smoke step runs `npm pack`,

@@ -3,11 +3,30 @@ import { UltraSearchClient } from "../src/client.ts";
 import { formatGrepFiles } from "../src/formatter.ts";
 import { formatAuditSummary, summarizeAudit, loadAudit } from "../src/telemetry.ts";
 import { LsmCompactor } from "../src/compactor.ts";
-import { formatRecursiveLearningReport, loadLearningMemory } from "../src/recursive-learning.ts";
+import { formatRecursiveLearningReport } from "../src/recursive-learning.ts";
 import { UltraSearchTui } from "../src/tui.ts";
+import { WatchSession, parseWatchArgs, formatWatchEvent } from "../src/watch.ts";
+import { appendHistory, clearHistory, formatSuggestions, loadHistory, resolveHistoryOptions, suggestQueries } from "../src/history.ts";
+import { loadRootConfig, multiRootSearch, multiRootGrep } from "../src/roots.ts";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
+
+/** Best-effort, opt-in query history (issue #40); a no-op unless enabled. */
+function recordQuery(tool: string, query: string, hits: number | undefined, root: string): void {
+  try {
+    appendHistory({ q: query, tool, ...(typeof hits === "number" ? { hits } : {}), root });
+  } catch {}
+}
+
+/** One or two past near-matches on stderr, so stdout stays machine-parseable. */
+function printSuggestions(query: string, options = resolveHistoryOptions()): void {
+  if (!options.enabled) return;
+  try {
+    const suggestions = suggestQueries(loadHistory(options), query, 2);
+    if (suggestions.length > 0) process.stderr.write(`💡 Related past queries:\n${formatSuggestions(suggestions)}\n`);
+  } catch {}
+}
 
 async function main() {
   const args = process.argv.slice(2);
@@ -30,14 +49,24 @@ async function main() {
           if (args[i] === "--in" && args[i + 1]) scope = path.resolve(args[i + 1]);
           if (args[i] === "--limit" && args[i + 1]) limit = parseInt(args[i + 1], 10);
         }
-        const res = await client.search(query, { in: scope, limit });
-        if (!res.ok || !res.hits) {
-          console.error(`Search error: ${res.error || "No hits"}`);
+        const rootConfig = loadRootConfig();
+        const result = await multiRootSearch(query, {
+          activeRoot: scope,
+          roots: rootConfig.roots,
+          preferActiveWorktree: rootConfig.preferActiveWorktree,
+          search: (q, root) => client.search(q, { in: root, limit }),
+        });
+        if (result.hits.length === 0 && result.errors.length > 0) {
+          for (const err of result.errors) console.error(`Search error (${err.root}): ${err.error}`);
           process.exit(1);
         }
-        for (const hit of res.hits) {
-          console.log(hit.path);
+        for (const hit of result.hits) {
+          console.log(result.multi && !hit.active ? `${hit.path} [root: ${hit.root}]` : hit.path);
         }
+        if (result.duplicates > 0) console.error(`# ${result.duplicates} duplicate path(s) collapsed across ${result.roots.length} roots`);
+        for (const err of result.errors) console.error(`! partial failure (${err.root}): ${err.error}`);
+        recordQuery("ultrasearch_query", query, result.hits.length, scope);
+        printSuggestions(query);
         break;
       }
 
@@ -51,13 +80,23 @@ async function main() {
         for (let i = 2; i < args.length; i++) {
           if (args[i] === "--in" && args[i + 1]) scope = path.resolve(args[i + 1]);
         }
-        const res = await client.grep(pattern, { in: scope });
-        if (!res.ok || !res.files) {
-          console.error(`Grep error: ${res.error || "No matches"}`);
+        const rootConfig = loadRootConfig();
+        const result = await multiRootGrep(pattern, {
+          activeRoot: scope,
+          roots: rootConfig.roots,
+          preferActiveWorktree: rootConfig.preferActiveWorktree,
+          grep: (p, root) => client.grep(p, { in: root }),
+        });
+        if (result.files.length === 0 && result.errors.length > 0) {
+          for (const err of result.errors) console.error(`Grep error (${err.root}): ${err.error}`);
           process.exit(1);
         }
-        const formatted = formatGrepFiles(res.files, { worktreeRoot: scope, compact: true });
+        const formatted = formatGrepFiles(result.files, { worktreeRoot: scope, compact: true });
         console.log(formatted.text);
+        if (result.duplicates > 0) console.error(`# ${result.duplicates} duplicate file(s) collapsed across ${result.roots.length} roots`);
+        for (const err of result.errors) console.error(`! partial failure (${err.root}): ${err.error}`);
+        recordQuery("ultrasearch_grep", pattern, result.files.length, scope);
+        printSuggestions(pattern);
         break;
       }
 
@@ -103,6 +142,7 @@ async function main() {
         for (const hit of hits) {
           console.log(hit.path);
         }
+        recordQuery("ultrasearch_recent", "(recent)", hits.length, scope);
         break;
       }
 
@@ -128,6 +168,69 @@ async function main() {
 
       case "learning": {
         console.log(formatRecursiveLearningReport());
+        break;
+      }
+
+      case "watch": {
+        let parsed;
+        try {
+          parsed = parseWatchArgs(args.slice(1));
+        } catch (err: any) {
+          console.error(err?.message ?? String(err));
+          process.exit(2);
+        }
+        const session = new WatchSession({
+          query: parsed.query,
+          dir: parsed.dir,
+          client,
+          limit: parsed.limit,
+          debounceMs: parsed.debounceMs,
+          ...(parsed.durationMs !== undefined ? { durationMs: parsed.durationMs } : {}),
+          once: parsed.once,
+          onEvent: (event) => console.log(formatWatchEvent(event, parsed.dir, parsed.json)),
+        });
+        // The shared client is closed by main's finally; the session must not
+        // close it early or hold the socket after stop().
+        const stats = await session.run();
+        process.stderr.write(`# watch stopped: ${stats.added} added, ${stats.removed} removed, ${stats.refreshes} refresh(es), ${stats.errors} error(s)\n`);
+        recordQuery("ultrasearch_watch", parsed.query, stats.baseline + stats.added, parsed.dir);
+        break;
+      }
+
+      case "history": {
+        const options = resolveHistoryOptions();
+        let suggestInput: string | null = null;
+        let limit = 10;
+        let doClear = false;
+        for (let i = 1; i < args.length; i++) {
+          if (args[i] === "--suggest" && args[i + 1]) suggestInput = args[++i] ?? "";
+          else if (args[i] === "--clear") doClear = true;
+          else if (args[i] === "--limit" && args[i + 1]) limit = Math.max(1, parseInt(args[++i] ?? "10", 10) || 10);
+        }
+        if (doClear) {
+          const cleared = clearHistory(options);
+          console.log(cleared ? `✅ Cleared query history at ${options.path}` : `No history file at ${options.path}`);
+          break;
+        }
+        const entries = loadHistory(options);
+        if (suggestInput !== null) {
+          const suggestions = suggestQueries(entries, suggestInput, limit);
+          if (suggestions.length === 0) console.log("No suggestions from stored history.");
+          else console.log(formatSuggestions(suggestions));
+          break;
+        }
+        if (!options.enabled) {
+          console.log("Query history is OFF (opt-in). Enable with ULTRASEARCH_HISTORY=1; retention cap default 200 (ULTRASEARCH_HISTORY_MAX).");
+        }
+        if (entries.length === 0) {
+          console.log(`No history entries at ${options.path}.`);
+          break;
+        }
+        for (const entry of [...entries].reverse().slice(0, limit)) {
+          const when = new Date(entry.ts).toISOString();
+          const hits = typeof entry.hits === "number" ? ` (${entry.hits} hits)` : "";
+          console.log(`${when}  ${entry.tool}  ${entry.q}${hits}`);
+        }
         break;
       }
 
@@ -292,6 +395,8 @@ Commands:
   ultrasearch multi-grep <p1> <p2>          Search multiple patterns in single IPC pass
   ultrasearch locate <filename>             Instant whole-disk filename locator
   ultrasearch recent [--in <dir>]           Recently modified & git-active files
+  ultrasearch watch <query> [--in <dir>]    Stream new matches as files change (Ctrl-C to stop)
+  ultrasearch history [--suggest <text>]    Opt-in local query history + suggestions
   ultrasearch compact                       Trigger automated LSM index compaction
   ultrasearch metrics                       Display latency, throughput, token savings
   ultrasearch learning                      Inspect recursive learning rules & mistakes

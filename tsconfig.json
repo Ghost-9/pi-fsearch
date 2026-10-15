@@ -24,6 +24,13 @@
     "src/mcp.ts",
     "src/telemetry.ts",
     "src/observer.ts",
+    "src/tool-schema.ts",
+    "src/roots.ts",
+    "src/history.ts",
+    "src/watch.ts",
+    "src/prefetch.ts",
+    "src/tui.ts",
+    "bin/cli.ts",
     "bin/mcp-server.ts",
     "type-stubs.d.ts"
   ]

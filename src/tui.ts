@@ -5,9 +5,9 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { UltraSearchClient } from "./client.ts";
 import { loadAudit, summarizeAudit } from "./telemetry.ts";
-import type { UltraSearchAuditRow } from "./telemetry.ts";
 import { LsmCompactor } from "./compactor.ts";
 import { loadLearningMemory, formatRecursiveLearningReport } from "./recursive-learning.ts";
+import { loadHistory, resolveHistoryOptions, suggestQueries } from "./history.ts";
 
 function getPackageVersion(): string {
   try {
@@ -163,6 +163,13 @@ export class UltraSearchTui {
     const learningState = loadLearningMemory();
     const logs = [...rows].reverse(); // Newest first
 
+    // Opt-in local history suggestions (issue #40). Off unless the operator
+    // enabled ULTRASEARCH_HISTORY; the TUI never records anything itself.
+    const historyOptions = resolveHistoryOptions();
+    const historyEntries = historyOptions.enabled ? loadHistory(historyOptions) : [];
+    const lastQuery = logs.length > 0 ? logs[0].query || logs[0].pattern || "" : "";
+    const suggestedQueries = historyEntries.length > 0 ? suggestQueries(historyEntries, lastQuery, 3) : [];
+
     // Cumulative token savings
     const totalTokensSaved = summary.totalTokensSaved;
 
@@ -228,6 +235,15 @@ export class UltraSearchTui {
       lines.push(` \x1B[33m•\x1B[0m Learned correction: "${topP.mistake}" -> ${topP.learnedRemedy}`);
     }
     lines.push("");
+
+    if (historyOptions.enabled && suggestedQueries.length > 0) {
+      lines.push("\x1B[1;36m--- 💡 SUGGESTED QUERIES (local history, opt-in) ---\x1B[0m");
+      for (const suggestion of suggestedQueries) {
+        const hits = suggestion.hits !== undefined ? ` \x1B[90m· ${suggestion.hits} hits\x1B[0m` : "";
+        lines.push(` \x1B[36m•\x1B[0m \x1B[37m${suggestion.query}\x1B[0m \x1B[90m(${suggestion.reason})\x1B[0m${hits}`);
+      }
+      lines.push("");
+    }
 
     if (this.statusMessage) {
       lines.push(`\x1B[1;33m${this.statusMessage}\x1B[0m\n`);
