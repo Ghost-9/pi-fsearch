@@ -10,6 +10,7 @@ import { summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "./src/observer.ts";
 import { searchSemanticIntent } from "./src/semantic.ts";
 import { recordMistake } from "./src/recursive-learning.ts";
+import { PrefetchController } from "./src/prefetch.ts";
 
 const worktreeCache = new Map<string, { root: string; timestamp: number }>();
 const CACHE_TTL_MS = 60_000;
@@ -80,6 +81,9 @@ function withheldHint(meta: any): string {
 
 export default function piUltraSearchExtension(pi: ExtensionAPI): void {
   const client = new UltraSearchClient();
+  // Issue #41: edited files are warmed after a debounce window, so the next
+  // grep does not hit a cold content segment. Best-effort, never user-visible.
+  const prefetcher = new PrefetchController({ client });
 
   // Helper to register tools cleanly across all Pi versions
   const register = (toolDef: any) => {
@@ -559,6 +563,15 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
         typeof filePath === "string"
       ) {
         client.open(filePath).catch(() => {});
+      }
+
+      // Prefetch on edit/write (#41): debounced warm-up of the file's
+      // trigrams. Reads do not change content, so they do not warm anything.
+      if (
+        (toolName === "edit" || toolName === "write" || toolName === "client_edit_file" || toolName === "client_create_file") &&
+        typeof filePath === "string"
+      ) {
+        prefetcher.touch(filePath);
       }
     });
   }

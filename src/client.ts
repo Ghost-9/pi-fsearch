@@ -1118,6 +1118,23 @@ export class UltraSearchClient {
     }
   }
 
+  /**
+   * Best-effort prefetch of edited files (#41): ask the daemon to warm these
+   * paths' content-index trigrams before the next grep. An engine without the
+   * `prefetch` op answers an error, which resolves `false` rather than
+   * rejecting, so callers fall back to a probe. Never recorded in the audit
+   * log: warm-up is not a user query.
+   */
+  public async prefetch(paths: string[]): Promise<boolean> {
+    if (!paths || paths.length === 0) return false;
+    try {
+      const res = await this.request<{ ok?: boolean }>({ op: "prefetch", paths });
+      return res?.ok === true;
+    } catch {
+      return false;
+    }
+  }
+
   public async recent(scopeDir: string, limit = 15): Promise<UltraSearchSearchResponse> {
     const start = performance.now();
     try {

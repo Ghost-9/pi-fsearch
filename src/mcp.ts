@@ -5,6 +5,9 @@ import { formatGrepFiles } from "./formatter.ts";
 import { searchSemanticIntent } from "./semantic.ts";
 import { summarizeAudit, formatAuditSummary } from "./telemetry.ts";
 import { diagnoseEmptyQuery } from "./observer.ts";
+import { TOOL_SCHEMAS, toolJsonSchema } from "./tool-schema.ts";
+import { multiRootSearch, multiRootGrep } from "./roots.ts";
+import { appendHistory } from "./history.ts";
 
 /**
  * Version reported in `initialize.serverInfo`. Keep in sync with package.json.
@@ -41,98 +44,114 @@ function err(id: unknown, code: number, message: string, data?: unknown) {
 }
 
 /**
- * The UltraSearch MCP tool surface. Exactly one prefix (`ultrasearch_`); the
- * historical `fsearch_*` aliases are deliberately gone, so `tools/list` is the
- * single source of truth for every client.
+ * The canonical UltraSearch MCP tool surface, generated from the single
+ * registry in `src/tool-schema.ts` (issue #29). Exactly one prefix
+ * (`ultrasearch_`) and six tools by default; the historical `fsearch_*`
+ * aliases are deliberately not part of this surface (issue #30).
  */
-export const MCP_TOOLS: McpToolDefinition[] = [
-  {
-    name: "ultrasearch_query",
-    description:
-      "Instant indexed whole-disk or workspace file search (<0.1ms). Strict zero typo tolerance. Supports globs, extension filters, and git filters.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        query: { type: "string", description: "Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified')" },
-        limit: { type: "number", description: "Max results (default: 30)" },
-        global: { type: "boolean", description: "Search whole disk instead of workspace" },
-        near: { type: "string", description: "Optional file path to re-rank results by folder proximity" },
-        budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
-      },
-      required: ["query"],
-      additionalProperties: false,
-    },
-  },
-  {
-    name: "ultrasearch_grep",
-    description: "Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        pattern: { type: "string", description: "Literal or identifier to search" },
-        path_filter: { type: "string", description: "Subdirectory or file filter" },
-        mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "Search mode (semantic = intent keyword expansion)" },
-        limit: { type: "number", description: "Max files to return" },
-        compact: { type: "boolean", description: "Compact one-line format (default: true)" },
-        max_tokens: { type: "number", description: "Optional token budget ceiling" },
-        context: { type: "number", description: "Lines of surrounding code context (0-5, default: 0)" },
-        tag_symbols: { type: "boolean", description: "Tag matches with AST definition types like [def:fn], [def:class]" },
-        budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
-      },
-      required: ["pattern"],
-      additionalProperties: false,
-    },
-  },
-  {
-    name: "ultrasearch_multi_grep",
-    description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        patterns: { type: "array", items: { type: "string" }, description: "Array of search patterns" },
-        path_filter: { type: "string", description: "Subdirectory filter" },
-        compact: { type: "boolean", description: "Compact one-line format (default: true)" },
-        max_tokens: { type: "number", description: "Optional token budget ceiling" },
-        budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
-      },
-      required: ["patterns"],
-      additionalProperties: false,
-    },
-  },
-  {
-    name: "ultrasearch_locate",
-    description: "Instant O(1) filename lookup (e.g. 'package.json', 'Cargo.toml') within current workspace.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        filename: { type: "string", description: "Exact filename to locate" },
-        global: { type: "boolean", description: "Search entire disk" },
-      },
-      required: ["filename"],
-      additionalProperties: false,
-    },
-  },
-  {
-    name: "ultrasearch_recent",
-    description: "Recently worked or edited files in current workspace (frecency ranked).",
-    inputSchema: {
-      type: "object",
-      properties: { limit: { type: "number", description: "Max recent files (default: 15)" } },
-      additionalProperties: false,
-    },
-  },
-  {
-    name: "ultrasearch_metrics",
-    description: "Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice. Defaults to organic (non-gate) rows.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        view: { type: "string", enum: ["real", "synthetic", "all"], description: "Audit provenance view (default: real = organic sessions only)" },
-        limit: { type: "number", description: "Number of audit rows to analyze (default 1000)" },
-      },
-      additionalProperties: false,
-    },
-  },
+export const MCP_TOOLS: McpToolDefinition[] = TOOL_SCHEMAS.map((tool) => ({
+  name: tool.name,
+  description: tool.description,
+  inputSchema: toolJsonSchema(tool),
+}));
+
+/** Default MCP name prefix; the canonical surface carries exactly this one. */
+export const DEFAULT_MCP_PREFIX = "ultrasearch";
+
+/** Environment variable selecting the default prefix (operator opt-in). */
+export const MCP_PREFIX_ENV = "ULTRASEARCH_MCP_PREFIX";
+/** Colon/comma-separated extra prefixes exposed as aliases (opt-in, default none). */
+export const MCP_ALIASES_ENV = "ULTRASEARCH_MCP_ALIASES";
+
+/**
+ * A configurable tool surface (issue #30). The default is one prefix and six
+ * tools; an alias prefix adds the same six tools under a second prefix for a
+ * client that was configured before the rename. Aliases are generated, never
+ * hand-maintained, so they cannot drift from the canonical schemas.
+ */
+export interface McpSurfaceConfig {
+  /** Canonical prefix (default `ultrasearch`). */
+  prefix?: string;
+  /** Extra prefixes to expose as aliases (default: none). */
+  aliases?: readonly string[];
+}
+
+/** Server options: the tool surface plus optional multi-root scope (#28). */
+export interface McpServerOptions extends McpSurfaceConfig {
+  /** Extra roots searched and merged with the active root (issue #28). */
+  roots?: readonly string[];
+  /** Record query history for tool calls (opt-in; `history.ts` gates on env). */
+  recordHistory?: boolean;
+}
+
+/** Parse `ULTRASEARCH_MCP_PREFIX` / `ULTRASEARCH_MCP_ALIASES` from an env map. */
+export function resolveMcpSurfaceConfig(env: NodeJS.ProcessEnv = process.env): McpSurfaceConfig {
+  const prefix = (env[MCP_PREFIX_ENV] ?? "").trim();
+  const aliases = (env[MCP_ALIASES_ENV] ?? "")
+    .split(/[,:]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return {
+    ...(prefix ? { prefix } : {}),
+    ...(aliases.length ? { aliases } : {}),
+  };
+}
+
+/** Map one exposed surface name onto its canonical `ultrasearch_*` name. */
+export function canonicalNameForName(name: string, config: McpSurfaceConfig = {}): string {
+  const prefix = (config.prefix ?? DEFAULT_MCP_PREFIX).trim() || DEFAULT_MCP_PREFIX;
+  let suffix: string | null = null;
+  if (name.startsWith(`${prefix}_`)) suffix = name.slice(prefix.length + 1);
+  if (suffix === null) {
+    for (const alias of config.aliases ?? []) {
+      const clean = alias.trim().replace(/_+$/, "");
+      if (clean && name.startsWith(`${clean}_`)) {
+        suffix = name.slice(clean.length + 1);
+        break;
+      }
+    }
+  }
+  if (suffix !== null && TOOL_SCHEMAS.some((t) => t.name === `${DEFAULT_MCP_PREFIX}_${suffix}`)) {
+    return `${DEFAULT_MCP_PREFIX}_${suffix}`;
+  }
+  return name;
+}
+
+/**
+ * Build the tool definitions exposed by one server instance. The canonical
+ * definitions are first and unchanged; each alias prefix contributes a copy
+ * with only the name replaced.
+ */
+export function buildToolSurface(config: McpSurfaceConfig = {}): McpToolDefinition[] {
+  const prefix = (config.prefix ?? DEFAULT_MCP_PREFIX).trim() || DEFAULT_MCP_PREFIX;
+  const rename = (p: string): McpToolDefinition[] =>
+    TOOL_SCHEMAS.map((tool) => ({
+      name: p === DEFAULT_MCP_PREFIX ? tool.name : tool.name.replace(`${DEFAULT_MCP_PREFIX}_`, `${p}_`),
+      description: tool.description,
+      inputSchema: toolJsonSchema(tool),
+    }));
+  const surface = rename(prefix);
+  for (const alias of config.aliases ?? []) {
+    const clean = alias.trim().replace(/_+$/, "");
+    if (!clean || clean === prefix || clean === DEFAULT_MCP_PREFIX) continue;
+    surface.push(...rename(clean));
+  }
+  return surface;
+}
+
+/** Per-client capability matrix (issue #30), asserted by the smoke tests. */
+export const MCP_CLIENT_PROFILES: ReadonlyArray<{
+  client: string;
+  protocolVersion: string;
+  aliases: readonly string[];
+  representativeTool: string;
+  note: string;
+}> = [
+  { client: "Claude Desktop", protocolVersion: "2024-11-05", aliases: [], representativeTool: "ultrasearch_query", note: "config file `claude_desktop_config.json`; stdio" },
+  { client: "VS Code", protocolVersion: "2024-11-05", aliases: [], representativeTool: "ultrasearch_grep", note: "`.vscode/mcp.json`; stdio" },
+  { client: "Antigravity", protocolVersion: "2025-03-26", aliases: [], representativeTool: "ultrasearch_query", note: "MCP settings; stdio" },
+  { client: "Cursor", protocolVersion: "2025-03-26", aliases: [], representativeTool: "ultrasearch_multi_grep", note: "`~/.cursor/mcp.json`; stdio" },
+  { client: "T3 Code", protocolVersion: "2025-06-18", aliases: [], representativeTool: "ultrasearch_metrics", note: "no generic user-level registry; Pi uses the native extension" },
 ];
 
 /**
@@ -148,10 +167,25 @@ export class UltraSearchMcpServer {
   private cwd: string;
   private initialized = false;
   private queue: Promise<void> = Promise.resolve();
+  /** Tool definitions this instance exposes (canonical plus configured aliases). */
+  private surface: McpToolDefinition[];
+  /** Exposed name -> canonical name, so `tools/call` accepts an alias. */
+  private surfaceNames = new Map<string, string>();
+  private roots: string[];
+  private recordHistory: boolean;
 
-  constructor(client?: UltraSearchClient, cwd = process.cwd()) {
+  constructor(client?: UltraSearchClient, cwd = process.cwd(), surface: McpServerOptions = {}) {
     this.client = client ?? new UltraSearchClient();
     this.cwd = cwd;
+    this.roots = [...(surface.roots ?? [])];
+    this.recordHistory = surface.recordHistory ?? true;
+    this.surface = buildToolSurface(surface);
+    for (const tool of this.surface) this.surfaceNames.set(tool.name, canonicalNameForName(tool.name, surface));
+  }
+
+  /** Names this instance exposes in `tools/list` (test and diagnostics surface). */
+  public toolNames(): string[] {
+    return this.surface.map((t) => t.name);
   }
 
   public get isInitialized(): boolean {
@@ -255,7 +289,7 @@ export class UltraSearchMcpServer {
     }
 
     if (method === "tools/list") {
-      return reply({ tools: MCP_TOOLS });
+      return reply({ tools: this.surface });
     }
 
     if (method === "tools/call") {
@@ -266,11 +300,12 @@ export class UltraSearchMcpServer {
       if (params?.arguments !== undefined && (params.arguments === null || typeof params.arguments !== "object" || Array.isArray(params.arguments))) {
         return fail(JSON_RPC_ERRORS.INVALID_PARAMS, "Invalid params: 'arguments' must be an object");
       }
-      if (!MCP_TOOLS.some((t) => t.name === rawName)) {
+      const canonical = this.surfaceNames.get(rawName);
+      if (!canonical) {
         return fail(JSON_RPC_ERRORS.INVALID_PARAMS, `Unknown tool: ${rawName}`);
       }
       try {
-        return reply(await this.callTool(rawName, params?.arguments ?? {}));
+        return reply(await this.callTool(canonical, params?.arguments ?? {}));
       } catch (toolErr: any) {
         // A tool that ran and failed is a result, not a protocol error.
         return reply({
@@ -286,8 +321,7 @@ export class UltraSearchMcpServer {
   private async callTool(
     name: string,
     args: any
-  ): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean; _meta?: Record<string, unknown> }> {
-    const activeRoot = typeof args.path === "string" ? path.resolve(this.cwd, args.path) : this.cwd;
+  ): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean; _meta?: Record<string, unknown> }> {    const activeRoot = typeof args.path === "string" ? path.resolve(this.cwd, args.path) : this.cwd;
     const text = (t: string, isError = false, meta?: Record<string, unknown>) => ({
       content: [{ type: "text" as const, text: t }],
       ...(isError ? { isError: true } : {}),
@@ -298,31 +332,61 @@ export class UltraSearchMcpServer {
       if (typeof args.query !== "string" || args.query.length === 0) {
         return text("Invalid params: 'query' must be a non-empty string", true);
       }
-      const searchScope = args.global ? undefined : activeRoot;
-      const res = await this.client.search(args.query, {
-        in: searchScope,
-        limit: args.limit ?? 30,
-        near: args.near,
-        budget_ms: args.budget_ms,
-      });
-      const hits = res.hits ?? [];
-      const meta = { ...(res.meta ?? { complete: false }), tool: "ultrasearch_query", hitCount: hits.length };
+      const limit = args.limit ?? 30;
+      let hits: any[];
+      let meta: Record<string, unknown>;
+      let rootNote = "";
+      if (!args.global && this.roots.length > 0) {
+        // Multi-root workspace (#28): fan out, dedupe by realpath, keep the
+        // active worktree's copy, and attribute extra-root hits.
+        const merged = await multiRootSearch(args.query, {
+          activeRoot,
+          roots: this.roots,
+          limit,
+          search: (q, root) => this.client.search(q, { in: root, root, limit, near: args.near, budget_ms: args.budget_ms }),
+        });
+        hits = merged.hits;
+        meta = { complete: true, tool: "ultrasearch_query", hitCount: hits.length, roots: merged.roots.length, duplicates: merged.duplicates };
+        rootNote = merged.duplicates > 0 ? `\n# ${merged.duplicates} duplicate(s) collapsed across ${merged.roots.length} roots` : "";
+      } else {
+        const res = await this.client.search(args.query, {
+          in: args.global ? undefined : activeRoot,
+          limit,
+          near: args.near,
+          budget_ms: args.budget_ms,
+        });
+        hits = res.hits ?? [];
+        meta = { ...(res.meta ?? { complete: false }), tool: "ultrasearch_query", hitCount: hits.length };
+      }
+      this.recordToolQuery("ultrasearch_query", args.query, hits.length, activeRoot);
       if (hits.length === 0) {
         const hint = await diagnoseEmptyQuery(args.query, activeRoot, this.client);
-        return text(`No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}`, false, meta);
+        return text(`No files matching "${args.query}" found.\n💡 Hint: ${hint ?? "Verify exact symbol casing."}${rootNote}`, false, meta);
       }
-      return text(hits.map((h) => `${h.path} (${h.kind}, score: ${h.score})`).join("\n"), false, meta);
+      const attributed = hits.map((h: any) => (rootNote && !h.active && h.root ? `${h.path} [root: ${h.root}] (${h.kind}, score: ${h.score})` : `${h.path} (${h.kind}, score: ${h.score})`));
+      return text(`${attributed.join("\n")}${rootNote}`, false, meta);
     }
 
     if (name === "ultrasearch_grep") {
       if (typeof args.pattern !== "string" || args.pattern.length === 0) {
         return text("Invalid params: 'pattern' must be a non-empty string", true);
       }
-      const searchScope = args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
+      const searchScope = args.global ? undefined : args.path_filter ? path.resolve(activeRoot, args.path_filter) : activeRoot;
       const ctxCount = typeof args.context === "number" ? args.context : 0;
       let files: any[] = [];
       let resultMeta: any = undefined;
-      if (args.mode === "semantic") {
+      let grepRootNote = "";
+      if (!args.global && !args.path_filter && this.roots.length > 0) {
+        // Multi-root grep (#28): merge by realpath, prefer the active worktree.
+        const merged = await multiRootGrep(args.pattern, {
+          activeRoot,
+          roots: this.roots,
+          grep: (p, root) => this.client.grep(p, { in: root, root, mode: args.mode ?? "literal", limit: args.limit ?? 30, context: ctxCount, budget_ms: args.budget_ms }),
+        });
+        files = merged.files;
+        resultMeta = { complete: true, roots: merged.roots.length, duplicates: merged.duplicates };
+        grepRootNote = merged.duplicates > 0 ? `\n# ${merged.duplicates} duplicate file(s) collapsed across ${merged.roots.length} roots` : "";
+      } else if (args.mode === "semantic") {
         const semantic = await searchSemanticIntent(this.client, args.pattern, { in: searchScope, limit: args.limit ?? 30, auditTool: "ultrasearch_grep" });
         files = semantic.files ?? [];
       } else {
@@ -344,6 +408,7 @@ export class UltraSearchMcpServer {
         files = res.files ?? [];
         resultMeta = res.meta;
       }
+      this.recordToolQuery("ultrasearch_grep", args.pattern, files.length, activeRoot);
       if (files.length === 0) {
         const hint = await diagnoseEmptyQuery(args.pattern, activeRoot, this.client);
         return text(`No occurrences of "${args.pattern}" found.\n💡 Hint: ${hint ?? "Strict exact zero-typo matching enforced."}`, false, {
@@ -361,7 +426,7 @@ export class UltraSearchMcpServer {
         tagSymbols: args.tag_symbols ?? (args.mode === "symbol"),
       });
       const warningText = resultMeta?.warning ? `\n[regex warning: ${resultMeta.warning}]` : "";
-      return text(`${formatted.text}${warningText}`, false, {
+      return text(`${formatted.text}${warningText}${grepRootNote}`, false, {
         ...(resultMeta ?? { complete: false }),
         tool: "ultrasearch_grep",
         fileCount: files.length,
@@ -429,5 +494,18 @@ export class UltraSearchMcpServer {
     }
 
     return text(`Unknown tool: ${name}`, true);
+  }
+
+  /**
+   * Opt-in query history (#40). `appendHistory` itself gates on
+   * `ULTRASEARCH_HISTORY`, so the default server records nothing.
+   */
+  private recordToolQuery(tool: string, query: string, hits: number, root: string): void {
+    if (!this.recordHistory) return;
+    try {
+      appendHistory({ q: query, tool, hits, root });
+    } catch {
+      // History is a convenience; it must never fail a tool call.
+    }
   }
 }
