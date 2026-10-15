@@ -13,6 +13,7 @@ mod fsevents;
 pub mod index;
 pub mod live;
 pub mod query;
+pub mod symbols;
 pub mod walk;
 
 pub use content::{Case, FileMatches, Grep, GrepResult, Hit};

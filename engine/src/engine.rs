@@ -56,8 +56,8 @@ pub struct Found {
     pub score: i32,
     /// The nearness component added to `score` by the server-side rerank
     /// (`server::nearness`). **The server owns proximity ranking**: the
-    /// scale is +12 in the `near` file's folder, -3 per folder between the
-    /// two, clamped at 0; the `near` file itself is -20. A daemon-backed
+    /// scale is +12 in the `near` file's folder, +10 for the file itself,
+    /// -3 per folder between the two, clamped at 0. A daemon-backed
     /// client must not re-rank on top of this.
     pub near: i32,
     /// The frecency component added to `score` (`"boost": true`): opens,

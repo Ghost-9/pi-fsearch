@@ -190,7 +190,9 @@ fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
                 .map(|f| Hit {
                     git: annotate.then(|| cx.git.status(f.path.as_os_str().as_bytes()).and_then(git::word)).flatten(),
                     boost: f.boost,
+                    def: 0,
                     kind: kind_name(f.kind),
+                    match_score: f.score - f.near - f.boost,
                     mtime: f.mtime,
                     near: f.near,
                     path: f.path.to_string_lossy(),
@@ -324,15 +326,24 @@ struct Hit<'a> {
     /// The final ordering score. **The server owns ranking**: a client must
     /// not re-rank daemon results on top of it (the components are below).
     score: i32,
+    /// The query's own match score, before the `near`/`boost` components
+    /// were added: `score == match + near + boost`. The client renders the
+    /// vector; it does not compute it.
+    #[serde(rename = "match")]
+    match_score: i32,
     /// The nearness component of `score` (`near:`), 0 when none applied.
-    /// Scale: +12 in the `near` file's folder, -3 per folder of distance,
-    /// clamped at 0; the `near` file itself is -20. See `nearness`.
+    /// Scale: +12 in the `near` file's folder, +10 for the file itself,
+    /// -3 per folder of distance, clamped at 0. See `nearness`.
     #[serde(skip_serializing_if = "is_zero")]
     near: i32,
     /// The frecency component of `score` (`"boost": true`), 0 when none
     /// applied: opens, commits and mtime as one more open (`frecency::boost`).
     #[serde(skip_serializing_if = "is_zero")]
     boost: i32,
+    /// The definition component (`mode: "symbol"` with `defs`): 8 when this
+    /// row declares the queried name, 0 otherwise. Engine-owned (#26).
+    #[serde(skip_serializing_if = "is_zero")]
+    def: i32,
     size: u64,
 }
 
@@ -821,12 +832,13 @@ fn rerank(cx: &Ctx, hits: &mut [Found], boost: bool, near: Option<&[u8]>) {
     hits[..n].sort_by_key(|f| std::cmp::Reverse(f.score));
 }
 
-/// How near `path` is to `near` (the file you're in): +12 in its folder,
-/// 3 less per folder between them; the file itself -20 (it isn't what you
-/// are looking for). Clamped at 0: a file many folders away gets no penalty
-/// beyond losing the lift. Replaying Linux history (`near`: another file of
-/// the commit), the file searched for ranks first for its name 84% -> 89%
-/// on top of frecency, and an unrelated `near` costs nothing measurable.
+/// How near `path` is to `near` (the file you're in): +12 in that file's
+/// folder, +10 for the file itself, 3 less per folder between them, clamped
+/// at 0 (a file many folders away gets no penalty beyond losing the lift).
+/// The file itself is not demoted: naming a file means "rank this place",
+/// and its folder's other files are the neighbourhood that follows it. The
+/// old scale gave the named file -20, which measured it last in both RS03
+/// and RS04 of the wave-2 ranking lane.
 ///
 /// **This is the one proximity ranker.** The value is returned in each hit's
 /// `near` field; `score` is the match score plus it. A client must not apply
@@ -836,7 +848,7 @@ fn rerank(cx: &Ctx, hits: &mut [Found], boost: bool, near: Option<&[u8]>) {
 /// daemon score exists.
 fn nearness(near: &[u8], path: &[u8]) -> i32 {
     if path == near {
-        return -20;
+        return 10;
     }
     fn dirs(p: &[u8]) -> std::slice::Split<'_, u8, impl FnMut(&u8) -> bool> {
         p[..p.iter().rposition(|&b| b == b'/').unwrap_or(0)].split(|&b| b == b'/')
@@ -1071,6 +1083,11 @@ fn grep(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Val
                 m
             });
             let mut j = json!({"path": String::from_utf8_lossy(&f.path), "matches": matches.collect::<Vec<_>>()});
+            if g.defs {
+                // The definition component, engine-computed: a file holding a
+                // declaration of the queried name scores 8, call sites 0.
+                j["def"] = if f.hits.iter().any(|h| h.def) { 8 } else { 0 }.into();
+            }
             if let Some(w) = x.annotate.then(|| cx.git.status(&f.path).and_then(git::word)).flatten() {
                 j["git"] = w.into();
             }
