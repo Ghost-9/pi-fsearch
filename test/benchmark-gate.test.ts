@@ -134,7 +134,10 @@ test("Hermetic CI Gate: client round-trip p95 search < 10ms (mock socket, no dae
   const latencies: number[] = [];
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
-    const res = await hermetic.search("package.json", { in: process.cwd(), limit: 10, respectIgnore: false });
+    // skipAudit: this gate measures the client/IPC path, not telemetry file
+    // I/O. A per-call audit append caused runner-tail spikes (CI macOS:
+    // p50 1.41 ms, p95 13.16 ms) that are unrelated to the claim under test.
+    const res = await hermetic.search("package.json", { in: process.cwd(), limit: 10, respectIgnore: false, skipAudit: true });
     latencies.push(performance.now() - start);
     assert.equal(res.ok, true);
   }
@@ -148,7 +151,7 @@ test("Hermetic CI Gate: client round-trip p95 grep < 5ms (mock socket, no daemon
   const latencies: number[] = [];
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
-    const res = await hermetic.grep("UltraSearchClient", { in: process.cwd(), limit: 10, respectIgnore: false });
+    const res = await hermetic.grep("UltraSearchClient", { in: process.cwd(), limit: 10, respectIgnore: false, skipAudit: true });
     latencies.push(performance.now() - start);
     assert.equal(res.ok, true);
     assert.ok((res.files?.length ?? 0) > 0);
@@ -235,7 +238,7 @@ async function measureLive(payload: Record<string, unknown>) {
   for (let i = 0; i < LIVE_N; i++) {
     // Warm the scheduler/pool once per round on the client leg.
     const t0 = performance.now();
-    const res: any = payload.op === "grep" ? await live.grep(String(payload.pattern), { in: process.cwd(), limit: 10 }) : await live.search(String(payload.q), { in: process.cwd(), limit: 10 });
+    const res: any = payload.op === "grep" ? await live.grep(String(payload.pattern), { in: process.cwd(), limit: 10, skipAudit: true }) : await live.search(String(payload.q), { in: process.cwd(), limit: 10, skipAudit: true });
     client.push(performance.now() - t0);
     assert.equal(res.ok, true);
     raw.push(await rawOnce(payload));
