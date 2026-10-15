@@ -399,3 +399,113 @@ Attribution matters: the semantic gain is **client-side** (the engine A/B moves 
 the symbol gain is **engine-side**. The published semantic number is honest as a wave total and must not be
 cited as an engine achievement. Known confound: the pre-relevance arm ran before corpus hygiene
 (`.corpus-meta.json` was still inside the wave-2 corpus root, 98 files vs 97).
+
+---
+
+## 2026-10-15 — Wave-3 relevance verification (rebased onto `2a1ecc4`; isolated daemons, verifier-owned scorer)
+
+**System under test.** `origin/main` `2a1ecc4`, worktree `wave1/verify-final`. Four engines, each on its own
+isolated daemon and index over the frozen corpora (`PI_ULTRASEARCH_SOCKET` + `ULTRASEARCH_DIR`/`HOME`/`SCAN_ROOT`);
+the live daemon was never touched or reinstalled. Scoring is the verifier's own re-implementation
+(`bench/verification/wave3/lib-verify.mjs`, independent PRNG, BCa + percentile bootstrap + exact sign test),
+never the author scorer. Full matrix: `bench/verification/wave3/matrix.json` (22/22 rows **verified**, 0 refuted,
+0 needs-re-run in `bench/verification/wave3-summary.json`).
+
+| label | sha256 (16) | role |
+|:--|:--|:--|
+| base (pre-#48) | `7029579839b3ca44` | BEFORE; reproduces committed `final-base` rows 30/30 |
+| rank (authored after) | `7b413d874fa2a824` | binary the committed `final-base`/`final-rank` were measured with (head `189673580`) |
+| main (`2a1ecc4`) | `16091e93cd9f2b40` | rebuilt by the verifier; AFTER — every claimed point value reproduces exactly |
+| installed (live app) | `c6a27787a347aad8` | UltraSearch.app; equals main on the frozen set 30/30 |
+
+### #47 — scorer clamp (Tier-L `glob_set_completeness`)
+
+| check | claimed | verified |
+|:--|:--|:--|
+| pre-fix formula value on RS02 | 0.714 | **0.7142857142857143**, re-derived from raw rows (cap = min(kMax,|retrieved|)/|expected|) |
+| all arms return all 14 files | 14/14 | **14/14 in all six arms** (baseline, pre-wave-2 engine, live wave-1 daemon, author fixed, verifier base/main re-runs) |
+| Tier-L bars | 17/18 → 18/18 | **17/18 → 18/18**, bar evaluator re-implemented from `wave2-bars.json` |
+| library = CLI = MCP | 14, `all_identical` | **14/14/14, all_identical true** (verifier re-run on main engine) |
+
+No engine code is involved: the pre-fix number came from rows that contained all 14 files. **#47 is ready to close.**
+
+### #48 — grep-page ranking
+
+| metric | claimed | verified (verifier re-run on main) |
+|:--|:--|:--|
+| reformulation overall | 0.1538 → 0.0385, BCa [−0.3462, −0.0385] | **0.1538 → 0.0385**, Δ −0.11538, BCa **[−0.34615, −0.03846]** excludes 0 |
+| `grep-literal` reformulation | 0.40 → 0.00 | **0.40 → 0.00** (n=5, point condition) |
+| `grep-regex` reformulation | 0.50 → 0.00 | **0.50 → 0.00** (n=2, point condition) |
+| nDCG@10 | +0.0492, CI excludes 0, **sub-threshold** | Δ **+0.04918**, BCa [0.01116, 0.13347] excludes 0; correctly not claimed (needs +0.05) |
+| recall@10 | 0.7833 → 0.7962, CI includes 0, **not claimed** | Δ **+0.01282**, BCa **[0, 0.03846]** includes 0; correctly not claimed |
+| moved rows | G1, G4, R2 | **exactly G1, G4, R2** (27/30 identical; both committed and verifier pairs) |
+| zero-result / FP | 0 → 0 | **0 → 0** (4 negatives) |
+
+**Caveat on the “CI excludes 0” rows.** The reformulation and nDCG wins rest on 3 moved rows of 26. BCa excludes 0
+as claimed, but the exact paired sign test gives **p = 0.25** and a percentile bootstrap CI includes 0. These are
+BCa statements, not robust “significant” results; cite them with the qualifier. The claim itself was made
+conservatively (nDCG declared sub-threshold, recall/success not claimed), so **#48 is ready to close** under that
+reporting condition.
+
+### Regressions and cost
+
+* Committed pair (`wave2-baseline` → `wave2-score-fixed`): **37/38 wave-2 rows identical**, only **SE09** moves
+  (set identical, `mcp.ts`/`sanitize.ts` swap at ranks 5–6; nDCG 0.388782 → 0.368962, semantic lane −0.001982,
+  inside the 0.02 tolerance).
+* On **current main**: **38/38 identical** to the pre-#48 baseline, semantic lane Δ 0.000000 — the blast radius of
+  the merged engine is zero on this set.
+* Work counters (daemon-reported `read`/`candidates`/result count, 5 rounds × 30 rows): **30/30 identical** in the
+  verifier re-run *and* in the committed pair; **no row reads more** in any round.
+
+### Recall-cap audit (W3-03)
+
+* The 16 remaining misses classify **3 absent-string / 6 path-lane-content / 7 symbol-lane-reference, 0 reachable** —
+  reproduced by the verifier's independent classifier.
+* The three absent-string claims are true by raw byte scan: `fsearch.sock` is in `CHANGELOG.md` and `src/client.ts`
+  only (not `README.md`); `codemode` is in six files (not `OPTIMIZATIONS.md`); casefold `readme` is in seven files
+  (not `CONTRIBUTING.md`).
+* Audited reachable recall@10: **0.9872 before → 1.0000 after**. Reported metric stays 0.7962; the two numbers must
+  travel together.
+* Recommendation verdict: **sound, conditional** — correct/remove the three objectively-wrong expectations;
+  **re-score** path/symbol expectations per lane rather than deleting them (they encode real product limits);
+  version any amendment of the frozen set and retain the original; never cite 1.0000 without 0.7962.
+
+### Suites (current main)
+
+`typecheck` ✓, `build` ✓, `test:engine` **42/42**, `test:gate` **8/8**, `cargo test --release` **47/47**,
+`npm test` **175/176**. The single failure is `test/client.test.ts:53` “grep with trigram index”: it queries the
+shared live daemon, whose content index does not cover this fresh worktree (`source: scan`, `read` 788–7948).
+Isolated daemons over a clean `git archive HEAD` show base **loses** `src/client.ts` (defect reproduced) and
+main/installed return it at **rank 1**; over the full worktree both return it too. Environmental, not a wave-3
+regression; no source fix attempted.
+
+### New findings (reported, not repaired)
+
+**F12 — the committed after-arm is not the merged engine.** `final-base.json`, `final-rank.json` and
+`wave2-score-fixed.json` all record `head_commit 189673580` and were measured with binary `7b413d87`, which
+predates `3cf356a` (the `doc_rank` prose tier) and `2a1ecc4`. Main's engine (`16091e93`) is a different build, so
+the artifacts were stale relative to the head under review. Re-measured here: **30/30 rows identical and every
+point value reproduces**, so the drift is benign — but the claim adjudication required a fresh run, and
+`docs/wave3/ops-promotion.md`/`W3-02` should record that their `after` binary is not main’s.
+
+**F13 — stale promotion record and leaked daemons.** The ops doc promotes the ops-tree build (`878e636c`,
+LC_UUID `6E008204`, tree `f05c63c`), which contains **neither** #48 engine fix (`content.rs` at that tree has no
+`page_key`; behaviourally it fills the page from prose exactly like `base`). A later install (app backups stamped
+`wave3fix`) is what is live: installed sha `c6a27787`, LC_UUID `C21E5CBE`, behaviourally identical to main on the
+frozen set (30/30 rows). The ops table and its LC_UUID no longer describe the installed binary. Additionally two
+daemons leaked from author measurement runs are still resident: pid 19261 (`/tmp/rf-bins/rank/ultrasearch serve`)
+and pid 31299 (stale `fsearch` baseline daemon). Housekeeping debt; not killed here.
+
+### Reproduce
+
+```bash
+git fetch && git rebase origin/main && npm install
+cargo build --release --manifest-path engine/Cargo.toml
+bash bench/verification/wave3/rerun-arm.sh base /tmp/rf-bins/base/ultrasearch \
+  "$HOME/.cache/ultrasearch/corpus/wave1-0a16e50" bench/judgments/wave1-judgments.json measure bench/verification/wave3/rerun
+bash bench/verification/wave3/rerun-arm.sh main "$PWD/engine/target/release/ultrasearch" \
+  "$HOME/.cache/ultrasearch/corpus/wave1-0a16e50" bench/judgments/wave1-judgments.json measure bench/verification/wave3/rerun
+node bench/verification/wave3/analyze.mjs && node bench/verification/wave3/summarize.mjs
+bash bench/verification/wave3/run-suites.sh
+CORPUS_ROOT=/tmp/w3v-clean-head bash bench/verification/wave3/check-trigram-test.sh
+```

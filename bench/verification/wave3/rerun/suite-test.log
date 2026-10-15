@@ -1,0 +1,229 @@
+
+> pi-ultrasearch@0.3.1 test
+> node --test test/client.test.ts test/sanitize.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/telemetry-logs.test.ts test/single-instance-client.test.ts test/e2e-regressions.test.ts test/interop-surface.test.ts test/roots.test.ts test/history.test.ts test/watch.test.ts test/prefetch.test.ts test/cli-interop.test.ts test/ranking-guard.test.ts
+
+✔ cli: `history --suggest` prints suggestions from the opt-in store (333.711833ms)
+✔ cli: `history` states that recording is off when history is not enabled (241.447459ms)
+✔ cli: a query records history only when enabled, and the store is capped (228.968958ms)
+✔ cli: with history off, a query writes no history file (199.481042ms)
+✔ cli: the TUI renders opt-in history suggestions (331.909375ms)
+✔ cli: `watch --once --json` streams the baseline and exits 0 with no socket held (181.2505ms)
+✔ cli: `watch` without a query exits 2 with the usage line (174.086625ms)
+✔ cli: a two-root query collapses the duplicate and attributes the extra root (563.86175ms)
+✔ grep: engine complete:false is preserved and mirrored into meta (26.418292ms)
+✔ search: a response without an explicit complete is treated as complete:false (3.194666ms)
+✔ search: explicit complete:true survives normalisation (4.130625ms)
+✔ grep: client-side deadline fires and returns a partial, not a hang (155.256167ms)
+✔ search: client-side deadline marks deadlineExceeded and returns ok with no hits (177.445417ms)
+✔ grep: ignore filtering runs before limit and reports filtered/truncated counts (5.721541ms)
+✔ search: ignore filtering runs before limit and reports counts (8.479917ms)
+✔ symlinked scope (/tmp -> /private/tmp) still applies ignore rules (58.348083ms)
+✔ metadata: every result carries tokenCount/truncatedCount/complete (4.0895ms)
+✔ regex validation: invalid and empty patterns never reach the socket (2.21325ms)
+✔ regex validator: direct unit checks (0.215583ms)
+✔ no `sort` is sent: the engine's protocol has no sort field (8.502834ms)
+✔ proximity: daemon-backed results are not re-ranked, fallback results are (13.069375ms)
+✔ ignore matcher: directory patterns cover dir and contents; negation re-includes (0.39375ms)
+✔ multiGrep: returns every match up to the requested limit (no default truncation) (13.198125ms)
+✔ grep: over-fetch is skipped once the scope's ignore density is high (9.158416ms)
+✔ UltraSearchClient ping (2.037875ms)
+✔ UltraSearchClient search: exact match succeeds (40.457459ms)
+✔ UltraSearchClient strict zero typo tolerance (no forgiveness) (1.113791ms)
+✖ UltraSearchClient grep with trigram index (28.46975ms)
+✔ UltraSearchClient multiGrep (234.914333ms)
+✔ UltraSearchClient proximity re-ranking (0.237125ms)
+✔ sanitize: scrubs secrets properly (1.003ms)
+✔ sanitize: identifies sensitive environment and credential files (0.340542ms)
+✔ sanitize: path boundary safety and traversal protection (0.161ms)
+✔ sanitize: ignore pattern matching (0.161208ms)
+✔ codemode: renders TypeScript declarations (0.184959ms)
+✔ codemode: sandbox tool definitions (0.088125ms)
+✔ mcp: exposes exactly one ultrasearch_* tool surface (no fsearch aliases) (34.896ms)
+✔ observability: telemetry logging and audit summary (31.866125ms)
+✔ observability: shadow detector detects CLI find and rg bypasses (2.715083ms)
+✔ observability: diagnostic analyzer generates zero-typo guidance (9.063875ms)
+✔ formatter: compact mode produces clean file:line output (0.964875ms)
+✔ formatter: masks sensitive .env and key files with DLP protection (0.081458ms)
+✔ formatter: token budget truncation triggers gracefully (0.101708ms)
+✔ formatter: symbol prioritization ranks declarations first (0.735ms)
+✔ formatter: renders rich surrounding context and symbol tags (2.913041ms)
+✔ compactor: manual and automated compaction supervisor (1257.293792ms)
+✔ recursive-learning: mistake recording, typo remapping, and memory reports (0.908375ms)
+[1;36m========================================================================================[0m
+[1;37m   ⚡ PI-ULTRASEARCH MISSION CONTROL & OBSERVABILITY TUI [0m  [90m(v0.3.1 AGPL-3.0)[0m
+[1;36m========================================================================================[0m
+ Daemon Socket: [32m● CONNECTED[0m | FDA: [32m✅ GRANTED[0m | Indexed: [1m7,041,827[0m files | Segments: [33m53[0m
+
+[1;33m--- LIVE OBSERVABILITY & EFFICIENCY METRICS ---[0m
+ [💰 Tokens Saved (est)]: [1;32m~0 tokens[0m    [⚡ Invocations]: [1;36m0[0m    [⏱️ P95 Latency]: [1;35m0.28 ms[0m
+ [🛡️ DLP Protected]: [1;32m0 Leaks (128 masked)[0m   [🧠 Learnings]: [1;33m7 patterns[0m   [📍 Last Used]: [90mNone[0m
+
+[1;32m--- 🔍 LIVE FINDINGS & CONTINUOUS LEARNING INSIGHTS ---[0m
+ [32m•[0m [37mToolchain running optimally. Sub-10ms CI gates maintained and zero CLI bypasses detected.[0m
+ [33m•[0m Learned correction: "pckage.json" -> Agent intended 'package.json'
+
+[1;34m--- INVOCATION AUDIT LOG (↑/↓: navigate, [Enter]/[Space]: EXPAND VIEW, [c]: Compact, [l]: Learning, [q]: Exit) ---[0m
+[1;32m▶ [0m[48;5;236m[90m6:15:58 PM[0m [36multrasearch_compact[0m [37mcompact (automated=false)       [0m [33m1256.38ms[0m [32m  0 hits[0m [90m(+0t saved)[0m[0m
+  [90m6:15:57 PM[0m [36mcli_bypass      [0m [37mrg -rn 'function' src/          [0m [33m 85.00ms[0m [32m  1 hits[0m [90m(+0t saved)[0m[0m
+  [90m6:15:57 PM[0m [36mcli_bypass      [0m [37mfind . -name '*.ts'             [0m [33m 35.00ms[0m [32m  1 hits[0m [90m(+0t saved)[0m[0m
+
+[90mControls: [↑/↓] Select Log | [Enter] Expand | [c] LSM Compact | [l] Learnings | [p] Grant FDA | [q] Exit[0m
+✔ tui: snapshot execution produces mission control dashboard (146.802042ms)
+✔ semantic: intent keyword expansion and hybrid retrieval (1506.476208ms)
+✔ frecency hook: tool_execution_end on read/edit forwards {op:open} with the file path (52.149625ms)
+✔ frecency hook: unrelated tools do not touch frecency (111.867042ms)
+✔ frecency ranking: an opened file outranks an untouched sibling (64.7895ms)
+✔ worktree scoping: two linked worktrees resolve independently and never leak across (362.542833ms)
+✔ ignore rules: declared .gitignore patterns filter results (hermetic) (6.752542ms)
+✔ ignore rules: live daemon results honour the scope's .gitignore (40.52925ms)
+✔ semantic mode: natural-language query expands to code tokens before dispatch (10.832708ms)
+✔ spawn: timeout kills the child and reports timedOut (197.093709ms)
+✔ spawn: AbortSignal cancels the child (66.504667ms)
+✔ spawn: already-aborted signal never spawns (0.208708ms)
+✔ spawn: missing binary reports notFound, non-zero exit keeps the code (254.879084ms)
+✔ fallback search: async spawn returns the same shape as the daemon path (40.328ms)
+✔ fallback grep: async spawn parses file:line:text into the daemon shape (21.455333ms)
+✔ fallback cancellation: aborted signal produces a cancelled result and no children (1.864167ms)
+✔ no execFileSync in the request path (issue #24 acceptance) (0.345792ms)
+✔ history: disabled by default and nothing is written (opt-in) (2.011125ms)
+✔ history: ULTRASEARCH_HISTORY enables, =0 is the explicit opt-out (0.251125ms)
+✔ history: ULTRASEARCH_HISTORY_FILE selects the store path (0.078458ms)
+✔ history: retention cap keeps the newest entries and holds on disk (14.531375ms)
+✔ history: writes are atomic and private, and no temp file is left behind (0.703375ms)
+✔ history: a corrupt store is empty, then healed by the next append (0.977083ms)
+✔ history: a query carrying a credential is scrubbed before it touches disk (0.632958ms)
+✔ history: clearHistory removes the store (0.51475ms)
+✔ history: blank queries are never stored (0.130625ms)
+✔ history: suggestions rank prefix matches ahead of recent queries (0.2825ms)
+✔ history: an expanded variant (all input tokens present) is suggested (0.13825ms)
+✔ history: no history means no suggestions; the exact query is never suggested (0.097ms)
+✔ history: suggestions are deterministic and capped (0.096208ms)
+✔ history: formatSuggestions renders one line per suggestion (0.067459ms)
+✔ history: historyCorpus gives the learner a query -> uses mapping (0.06ms)
+✔ declarations: generated text matches the committed golden (drift fails the build) (1.046208ms)
+✔ declarations: every registry tool appears exactly once, with no hand-written extra (0.625958ms)
+✔ mcp: MCP_TOOLS is generated from the registry, not hand-maintained (0.200667ms)
+✔ mcp: the Pi tool parameters match the registry parameter sets (surface drift guard) (20.432625ms)
+✔ recipes: search -> grep -> read executes end to end in the sandbox shim (1.064125ms)
+✔ recipes: a query with no matching file stops before grep/read and says why (0.25475ms)
+✔ recipes: the shipped recipe list and docs are non-empty and free of retired naming (0.127417ms)
+✔ surface: the default is exactly one prefix and six tools (0.387958ms)
+✔ surface: an alias prefix adds copies without touching the canonical six (0.311125ms)
+✔ surface: resolveMcpSurfaceConfig reads the environment (0.200625ms)
+✔ surface: a configured alias is listable and callable through tools/call (2.576959ms)
+✔ surface: an unconfigured alias prefix is unknown, not silently accepted (0.140958ms)
+✔ surface: every registered client profile lists six tools and can call its representative tool (28.658542ms)
+✔ surface: bin/mcp-server.ts exposes a configured alias prefix over real stdio (406.595875ms)
+✔ lanes: 3 concurrent greps fan out and complete in ~max(t), not sum(t) (163.778708ms)
+✔ lanes: 1 keeps the legacy single-socket path (no fan-out) (197.618875ms)
+✔ lanes: sequential calls reuse one connection (single-socket fast path) (19.785375ms)
+✔ lanes: a failing lane degrades to an already-open lane instead of failing the call (5.294125ms)
+✔ lanes: close() leaves no open connections behind (61.285917ms)
+✔ mcp: initialize negotiates the requested protocol version and reports serverInfo (1.870625ms)
+✔ mcp: initialize falls back to the newest supported protocol version (0.176334ms)
+✔ mcp: notifications/initialized produces no response (0.091875ms)
+✔ mcp: notifications are never answered, even when the method is unknown (0.162167ms)
+✔ mcp: a non-object frame is an invalid request answered with a null id (0.18075ms)
+✔ mcp: requests before initialize are rejected with -32002 and ping still works (0.1545ms)
+✔ mcp: tools/list returns the single ultrasearch_* surface with valid schemas (0.238708ms)
+✔ mcp: tools/list surface matches the Pi extension's registered tools (parity) (0.370541ms)
+✔ mcp: no fsearch alias is registered on any surface (source-level guard) (0.348125ms)
+✔ engine: the vendored daemon carries no upstream name (source-level guard) (10.610583ms)
+✔ mcp: codemode declarations match the MCP tool names (2.178125ms)
+✔ mcp: tools/call runs each tool through the client and returns text content (46.42125ms)
+✔ mcp: unknown tools and malformed params use JSON-RPC error codes (0.203125ms)
+✔ mcp: tool-level validation failures return isError results, not protocol errors (0.098458ms)
+✔ mcp: a throwing client becomes an isError result, never a transport crash (0.218208ms)
+✔ mcp: unknown method is -32601 and invalid request is -32600 (0.086875ms)
+✔ mcp: dispatch answers malformed JSON with -32700 and stays alive (0.186917ms)
+✔ mcp: stdio framing survives split writes, batched messages, CRLF and blank lines (365.174916ms)
+✔ prefetch: rapid edits coalesce into one warm-up (debounce prevents thrash) (151.323625ms)
+✔ prefetch: re-touching the same file inside the window coalesces it (72.824ms)
+✔ prefetch: maxBatch bounds a request and the remainder flushes afterwards (122.186375ms)
+✔ prefetch: stop() before the window fires warms nothing (61.913334ms)
+✔ prefetch: a failing warm is counted, never thrown (51.755375ms)
+✔ prefetch: the daemon prefetch op is used when the engine supports it (63.493209ms)
+✔ prefetch: an engine without the op falls back to a real content probe (66.500333ms)
+✔ prefetch: probeToken picks a trigram-sized literal and rejects short text (0.15375ms)
+✔ prefetch: tool_execution_end on edit/write sends a daemon prefetch request (170.133916ms)
+✔ prefetch: a read does not trigger a prefetch (frecency only) (29.454792ms)
+✔ guard: no client path sorts daemon rows (2.251334ms)
+✔ guard: formatGrepFiles preserves the engine's file order (1.532959ms)
+✔ guard: engine definition verdicts drive [def:*] tags, not client detection (1.0105ms)
+✔ guard: explainReasonTags renders the engine's vector truthfully (0.52275ms)
+✔ roots: no config is inert (single active root, no extra scope) (1.710291ms)
+✔ roots: ULTRASEARCH_ROOTS is parsed with the OS path delimiter (0.449708ms)
+✔ roots: config file is read and an unusable one falls back to none (0.837ms)
+✔ roots: ULTRASEARCH_ROOTS_FILE selects the config path (0.39775ms)
+✔ roots: normalizeRoots collapses a symlinked duplicate by realpath (0.38175ms)
+✔ roots: findGitRoot walks to the nearest .git entry (0.630333ms)
+✔ roots: nested roots return each file once, keeping the active worktree copy (0.977834ms)
+✔ roots: a symlinked extra root is realpath-collapsed before searching (0.512875ms)
+✔ roots: hits from an extra root are attributed to it, not the active root (0.636417ms)
+✔ roots: dedupeHits without a preferred active copy keeps the first occurrence (0.497292ms)
+✔ roots: grep files dedupe by realpath too (0.498291ms)
+✔ roots: multiRootSearch reports per-root failures instead of silently dropping them (0.55975ms)
+✔ roots: multiRootGrep merges and dedupes across roots (0.97525ms)
+✔ PEM: a whole multi-line block is redacted, body included (2.053209ms)
+✔ PEM: the EC and OpenSSH variants are redacted too (0.133916ms)
+✔ PEM: scrubbing line by line redacts the whole body (0.250166ms)
+✔ PEM: a body line whose header was not returned is still redacted (0.134583ms)
+✔ PEM: a stray BEGIN cannot blank an unbounded amount of output (0.51025ms)
+✔ DLP false positives: ordinary code is never scrubbed (0.18075ms)
+✔ DLP never over-redacts a path or an identifier (0.069333ms)
+✔ the credential families that were already covered still are (0.089542ms)
+✔ a sensitive filename is still recognised (0.308834ms)
+✔ query scopes: `in:` inside a query is checked like a tool parameter (0.5865ms)
+✔ query scopes: an escaping scope is refused, an in-root one is not (0.254625ms)
+✔ connect before spawn: an answering daemon stops the spawn (1564.50225ms)
+✔ connect before spawn: an absent daemon is spawned after the grace window (1104.235459ms)
+✔ status(): healthy single daemon reports no duplicate signal (130.26775ms)
+(node:47887) [ULTRASEARCH_DUPLICATE_DAEMON] Warning: ultrasearch: 1 duplicate/stale daemon signal(s): socket.lock pid 99999 != answering pid 47887
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ status(): a lock pid that disagrees with the answering pid is flagged (131.99375ms)
+✔ F7: two concurrent writers get distinct logs and neither truncates the other (632.266083ms)
+✔ telemetry views: real is the default and excludes synthetic rows (1.369417ms)
+✔ telemetry views: summarizeAuditViews splits all three provenance slices (0.180541ms)
+✔ telemetry views: explicit origin wins over the legacy query heuristic (0.095708ms)
+✔ telemetry: recordAudit stamps synthetic provenance inside PI_ULTRASEARCH_TEST (0.699209ms)
+✔ tokens-saved is labelled an estimate everywhere it is displayed (12.924708ms)
+✔ watch: baseline matches are emitted, then a file change streams the new match (467.769166ms)
+✔ watch: a repeated write does not re-emit an already-seen match (522.621583ms)
+✔ watch: a file that stops matching is emitted once as a removal (311.683666ms)
+✔ watch: stale index annotations ride along on the change event (106.335875ms)
+✔ watch: the default freshness probe consults daemon status (production path) (443.968958ms)
+✔ watch: polling fallback streams changes when fs.watch is silent (360.267833ms)
+✔ watch: a watcher error is surfaced and polling keeps the session alive (53.977375ms)
+✔ watch: stop() closes the watcher and every daemon socket, and no event follows (326.173667ms)
+✔ watch: --once emits the baseline, creates no watcher and exits cleanly (27.105833ms)
+✔ watch: a missing directory surfaces an error event instead of throwing (8.998667ms)
+✔ watch: parseWatchArgs accepts the documented flags and rejects a missing query (0.417375ms)
+✔ watch: formatWatchEvent renders human and JSON lines (0.343ms)
+ℹ tests 176
+ℹ suites 0
+ℹ pass 175
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3948.414708
+
+✖ failing tests:
+
+test at test/client.test.ts:53:1
+✖ UltraSearchClient grep with trigram index (28.46975ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(res.files.some((f) => f.path.includes("client.ts") || f.path.includes("client.test.ts")))
+  
+      at TestContext.<anonymous> (file:///Users/batra/ultrasearch-verify/test/client.test.ts:61:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

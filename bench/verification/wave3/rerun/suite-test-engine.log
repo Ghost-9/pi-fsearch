@@ -1,0 +1,56 @@
+
+> pi-ultrasearch@0.3.1 test:engine
+> node --test --test-concurrency=1 test/engine/*.test.mjs
+
+✔ coverage: the policy is reported in status and enforced (65.28875ms)
+✔ coverage: a malformed policy fails the daemon's start, not silently (3025.450625ms)
+✔ coverage: the environment overrides the file (220.197833ms)
+✔ coverage: without a policy nothing changes (the built-in rules apply) (244.239667ms)
+✔ grep ranks a page by definition, then match count, then source over prose (250.059584ms)
+✔ grep ranking does not touch symbol mode, whose plan already means 'defines it' (140.301459ms)
+✔ a fresh checkout's path order does not spend the page on prose (216.641209ms)
+✔ grep paging is unchanged: `cursor` still resumes in candidate order (219.278584ms)
+✔ budget: an ample budget is byte-for-byte the same answer as no budget (538.90225ms)
+✔ budget: an expired budget says so, and its hits are a subset of the full set (1357.544208ms)
+✔ budget: a candidate cap stops scoring and marks the answer partial (#35) (1415.398792ms)
+✔ grep reports the same scanned/considered vocabulary and a complete flag (330.987666ms)
+✔ frecency: an opened file outranks an identical one that was never opened (#22) (57.886542ms)
+✔ worktrees: two linked worktrees do not leak into each other (#22) (445.231291ms)
+[engine-test] scope=100 files load1m=8.07
+✔ the test's own numbers are recorded: scope size and machine load (105.421292ms)
+✔ deny-list: blocked paths never reach output, and the count is reported (95.26625ms)
+✔ deny-list: a denial does not have to hide the whole tree (90.202292ms)
+✔ deny-list: a malformed rule fails every result request closed (58.033834ms)
+✔ deny-list: an explicitly named but missing file fails closed (64.903083ms)
+✔ deny-list: a denied scope is refused, not silently narrowed (56.494791ms)
+✔ deny-list: no source configured denies nothing (upstream default) (56.785542ms)
+✔ root containment: an escaping scope is a security error for every tool (67.705875ms)
+✔ root containment: hits outside the root are dropped even when the scope is wider (66.985042ms)
+✔ root containment: an in-root scope still works normally (67.388291ms)
+✔ root containment: a grep `file:` outside the root is refused (67.98525ms)
+✔ status identity: pid, uptime, socket inode and the lock pid agree (#45) (76.516917ms)
+✔ a second daemon on the same index dir refuses and the first keeps serving (#45) (586.613041ms)
+✔ status: freshness and compaction fields are present, typed, and documented (485.567416ms)
+✔ status: a change on disk advances the index, and an edit is visible in a result (129.248333ms)
+✔ compaction: an explicit save exposes what it cost (262.263958ms)
+✔ compaction: a compaction never runs under a live query (#34) (9740.317125ms)
+✔ compaction: churn is counted, so a warning can be judged (#34) (388.946833ms)
+✔ symbol mode: declarations (including access modifiers), not string literals (237.64575ms)
+▶ engine top-k equivalence and #35 early-exit contract
+  ✔ an ample budget is byte-identical to no budget (1.312583ms)
+  ✔ early_exit with an out-of-reach run changes nothing (0.791291ms)
+  ✔ a low-score run is reported and returns only genuine matches (0.711792ms)
+  ✔ a modest run that is out of reach is exact (0.786333ms)
+  ✔ the candidate cap is reported as `candidates` (0.636208ms)
+  ✔ top-k is a prefix of a wider top-k (1.00075ms)
+  ✔ repeats are stable (no run-to-run ranking drift) (3.070333ms)
+✔ engine top-k equivalence and #35 early-exit contract (245.012709ms)
+✔ the #35 wire options are reachable through the client API (224.982417ms)
+ℹ tests 42
+ℹ suites 0
+ℹ pass 42
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22848.989958

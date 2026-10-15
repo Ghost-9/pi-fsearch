@@ -1,0 +1,22 @@
+
+> pi-ultrasearch@0.3.1 test:gate
+> node --test test/benchmark-gate.test.ts
+
+✔ Hermetic CI Gate: client round-trip p95 search < 10ms (mock socket, no daemon) (26.454292ms)
+✔ Hermetic CI Gate: client round-trip p95 grep < 5ms (mock socket, no daemon) (8.74425ms)
+[live gate] grep: pass | cold/stale window: p95 11.83ms vs hard cap 62.85ms (n=60 raw p50 3.38/p95 13.21 | client p50 6.37/p95 11.83 | ceil 27.42 (min 12) | load1 9.91 | pid 26819 uptime 1097435ms stale 4787 replaying true | end pid 26819 entries 7041978 event_id 5748276907)
+✔ Live CI Gate: grep p95 within the measured floor + client overhead (756.426458ms)
+[live gate] search: pass | p95 4.65ms vs derived ceiling 12.00ms (n=60 raw p50 1.68/p95 4.46 | client p50 1.51/p95 4.65 | ceil 12.00 (min 12) | load1 9.91 | pid 26819 uptime 1098192ms stale 0 replaying false | end pid 26819 entries 7041978 event_id 5748276907)
+✔ Live CI Gate: search p95 within the measured floor + client overhead (238.411458ms)
+✔ Gate decision: the derived ceiling follows the measured floor (0.459125ms)
+✔ Gate decision: a wave-1-style takeover fails even when the window is stale (0.297666ms)
+✔ Gate decision: a cold window is excused only under the hard cap (0.257875ms)
+✔ Gate decision: client overhead alone fails, stale or not (0.234125ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1279.8565
