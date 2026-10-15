@@ -306,4 +306,3 @@ crawling the whole disk. `test/engine/harness.mjs` does exactly that, and
 `node bench/engine-ab.mjs` compares two binaries over one fixture with
 alternating rounds, medians, bootstrap CIs and an output-equivalence check
 (raw samples in `bench/results/engine/`).
->>>>>>> d50249a (feat(index): configurable content coverage, warm-up, and the policy in status (#17))
