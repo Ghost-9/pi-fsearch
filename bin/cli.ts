@@ -8,6 +8,8 @@ import { UltraSearchTui } from "../src/tui.ts";
 import { WatchSession, parseWatchArgs, formatWatchEvent } from "../src/watch.ts";
 import { appendHistory, clearHistory, formatSuggestions, loadHistory, resolveHistoryOptions, suggestQueries } from "../src/history.ts";
 import { loadRootConfig, multiRootSearch, multiRootGrep } from "../src/roots.ts";
+import { planHarnessInit, applyPlan, renderInitReport, renderHarnessList } from "../src/harness-init.ts";
+import { HARNESSES } from "../src/harness-registry.ts";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
@@ -386,12 +388,93 @@ async function main() {
         break;
       }
 
+      case "init": {
+        const harnessIds: string[] = [];
+        const extraArgs: string[] = [];
+        let list = false;
+        let write = false;
+        let dryRun = false;
+        let remove = false;
+        let json = false;
+        let force = false;
+        let home = os.homedir();
+        let command: string | undefined;
+        for (let i = 1; i < args.length; i++) {
+          const arg = args[i] ?? "";
+          const value = args[i + 1];
+          if (arg === "--harness" && value) {
+            harnessIds.push(...value.split(",").map((s) => s.trim()).filter(Boolean));
+            i++;
+          } else if (arg.startsWith("--harness=")) {
+            harnessIds.push(...arg.slice("--harness=".length).split(",").map((s) => s.trim()).filter(Boolean));
+          } else if (arg === "--list") {
+            list = true;
+          } else if (arg === "--write") {
+            write = true;
+          } else if (arg === "--dry-run") {
+            dryRun = true;
+          } else if (arg === "--remove") {
+            remove = true;
+          } else if (arg === "--json") {
+            json = true;
+          } else if (arg === "--force") {
+            force = true;
+          } else if (arg === "--command" && value) {
+            command = value;
+            i++;
+          } else if (arg.startsWith("--command=")) {
+            command = arg.slice("--command=".length);
+          } else if (arg === "--arg" && value) {
+            extraArgs.push(value);
+            i++;
+          } else if (arg === "--home" && value) {
+            home = path.resolve(value);
+            i++;
+          } else {
+            console.error(`init: unknown option ${JSON.stringify(arg)}`);
+            console.error("Usage: ultrasearch init [--harness <id>[,<id>]] [--list] [--write] [--dry-run] [--remove] [--json] [--force] [--command <path>] [--arg <v>] [--home <dir>]");
+            process.exit(2);
+          }
+        }
+        if (write && dryRun) {
+          console.error("init: --write and --dry-run are mutually exclusive");
+          process.exit(2);
+        }
+        const unknown = harnessIds.filter((id) => !HARNESSES.some((h) => h.id === id));
+        if (unknown.length > 0) {
+          console.error(`init: unknown harness id(s): ${unknown.join(", ")}`);
+          console.error(`Known: ${HARNESSES.map((h) => h.id).join(", ")}`);
+          process.exit(2);
+        }
+        // `--list` reports registration state for every harness, so planning
+        // is asked not to short-circuit on detection; nothing is written.
+        const plans = planHarnessInit({
+          home,
+          harnessIds,
+          command,
+          args: extraArgs,
+          remove,
+          force: force || list,
+          repoRoot: path.resolve(path.dirname(process.argv[1] ?? ""), ".."),
+        });
+        if (list) {
+          console.log(renderHarnessList(plans, json));
+          break;
+        }
+        const applied = write ? applyPlan(plans) : plans;
+        console.log(renderInitReport(applied, { json, wrote: write }));
+        const failed = applied.some((p) => p.action === "refuse" || p.writeError);
+        if (failed) process.exit(1);
+        break;
+      }
+
       case "help":
       default: {
         console.log(`
 ⚡ PI-ULTRASEARCH: Sub-millisecond filesystem search & trigram code indexing
 
 Commands:
+  ultrasearch init [--harness <id>] [--write] Register the MCP server in harness configs
   ultrasearch query <text> [--in <dir>]     Search paths with zero-typo exactness
   ultrasearch grep <pattern> [--in <dir>]    Grep trigram index with DLP masking
   ultrasearch multi-grep <p1> <p2>          Search multiple patterns in single IPC pass
@@ -404,6 +487,7 @@ Commands:
   ultrasearch learning                      Inspect recursive learning rules & mistakes
   ultrasearch tui [--once]                  Launch interactive mission control TUI
   ultrasearch install                       Install symlinks into ~/.local/bin
+  ultrasearch init                          Detect harnesses and plan MCP registration
 `);
         break;
       }
