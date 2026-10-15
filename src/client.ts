@@ -116,14 +116,14 @@ const SPAWN_GRACE_ATTEMPTS = 4;
 const SPAWN_PROBE_MS = 250;
 const SPAWN_GRACE_PAUSE_MS = 150;
 
-/** Pids owning `socket`, via `lsof -t`. Empty when lsof is missing or fails. */
-function socketOwnerPids(socket: string): number[] {
-  try {
-    const out = child_process.execFileSync("lsof", ["-t", socket], { encoding: "utf-8", timeout: 750, stdio: ["ignore", "pipe", "ignore"] });
-    return [...new Set(out.split("\n").map((s) => Number(s.trim())).filter((n) => Number.isFinite(n) && n > 0))];
-  } catch {
-    return [];
-  }
+/** Pids owning `socket`, via `lsof -t` (async: the request path never blocks). */
+function socketOwnerPids(socket: string): Promise<number[]> {
+  return new Promise((resolve) => {
+    child_process.execFile("lsof", ["-t", socket], { timeout: 750 }, (err, stdout) => {
+      if (err) return resolve([]);
+      resolve([...new Set(String(stdout).split("\n").map((s) => Number(s.trim())).filter((n) => Number.isFinite(n) && n > 0))]);
+    });
+  });
 }
 
 /** The pre-rename legacy socket path, when it exists (macOS migration only). */
@@ -645,7 +645,7 @@ export class UltraSearchClient {
    */
   private async annotateDaemonHealth(res: UltraSearchStatusResponse): Promise<void> {
     const socket = res.socket ?? this.socketPath;
-    const owners = socketOwnerPids(socket);
+    const owners = await socketOwnerPids(socket);
     const duplicates: Array<{ path: string; pid?: number; reason: string }> = [];
     if (owners.length > 1) {
       duplicates.push({ path: socket, reason: `socket owned by ${owners.length} processes: ${owners.join(",")}` });
