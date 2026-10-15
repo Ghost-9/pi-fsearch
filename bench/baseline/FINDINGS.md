@@ -297,3 +297,9 @@ as a literal line of the published README (the `<<<<<<<`/`=======` halves are go
 text in the Content coverage / Running-an-isolated-instance section). Cosmetic, user-facing, and
 trivially greppable: `grep -n '^>>>>>>>' README.md`. No other conflict marker exists in the tree
 (`grep -rn '^<<<<<<<|^=======$|^>>>>>>>' --include='*.md' --include='*.ts' --include='*.mjs' --include='*.rs' .`).
+
+## 2026-10-15 — F10 correction (wave-2 advisor, verified by inspection)
+
+- `bench/verification/after/judgments-baseline.json` was byte-identical to the baseline artifact (sha256 `ab4e4ac731fcc05f…`): the 12 `judgments.*` summary rows compared a value with itself and must not be read as verified. They are now `needs-re-run`.
+- Live probe at `8d1419d`: catastrophic regex is rejected, so main negative FP is **0.25**, not the published 0.50. Treat 0.50 as stale.
+- F9 (README conflict marker) is fixed in `8d1419d`.

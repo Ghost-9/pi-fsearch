@@ -10,9 +10,11 @@
     "unverified": "measured, but not quotable as a before/after claim (scope mismatch, degraded gate, or an open recommendation)"
   },
   "counts": {
-    "verified": 49,
-    "failed": 1,
+    "verified": 37,
+    "failed": 0,
+    "fixed": 1,
     "unverified": 13,
+    "needs_re_run": 12,
     "total": 63
   },
   "rows": [
@@ -779,7 +781,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -792,7 +794,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -805,7 +807,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -818,7 +820,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -831,7 +833,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -844,7 +846,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -857,7 +859,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -870,7 +872,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -883,7 +885,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -896,7 +898,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -909,7 +911,7 @@
       "ci95": null,
       "n": 30,
       "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
-      "status": "verified",
+      "status": "needs-re-run",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
     {
@@ -1000,7 +1002,7 @@
       "ci95": null,
       "n": 30,
       "method": "advisor acceptance gates: recall@10 1.0, nDCG@10 >= 0.75, FP 0, semantic >= 0.60, zero-result 0, reformulation",
-      "status": "verified",
+      "status": "needs-re-run",
       "status_reason": "the gate outcomes are unchanged before/after; 6 of 7 gates fail on the frozen set both before and after Wave 1",
       "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
     },
@@ -1734,7 +1736,7 @@
       "ci95": null,
       "n": null,
       "method": "grep -n '^>>>>>>>' README.md",
-      "status": "failed",
+      "status": "fixed",
       "status_reason": "line 309 is a literal `>>>>>>> d50249a (...)` conflict marker from the wave1/engine rebase, published in the README; the only conflict marker left in the tree",
       "evidence": {
         "file": "README.md",
@@ -2001,6 +2003,15 @@
       "status": "unverified",
       "status_reason": "the failing leg measures 7.17 ms p50 / 7.65 ms p95 on the raw daemon socket with no client (bench/verification/after/checks-gate-floor.json): the threshold is below the machine floor, matching the Wave 1 blocker note. Not a Wave 1 regression, but the '4/4 pass' claim does not hold on this machine right now.",
       "artifact": "bench/verification/after/tests.json"
+    }
+  ],
+  "corrections": [
+    {
+      "id": "F10",
+      "found": "2026-10-15",
+      "by": "wave2 advisor",
+      "detail": "bench/verification/after/judgments-baseline.json was byte-identical to the baseline artifact (sha256 ab4e4ac731fcc05f...), so summarize.mjs compared a value with itself and marked the judgments rows verified.",
+      "action": "judgments rows set to needs-re-run; a gated after-judgments re-run plus a scorer guard (block verified when before/after artifact hashes match) is scheduled. Live probe also shows the negative FP rate on main is 0.25, not the published 0.50 — the published 0.50 is stale."
     }
   ]
 }
