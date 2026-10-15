@@ -80,7 +80,7 @@ function withheldHint(meta: any): string {
 }
 
 export default function piUltraSearchExtension(pi: ExtensionAPI): void {
-  const client = new UltraSearchClient();
+  const client = new UltraSearchClient({ harness: "pi" });
   // Issue #41: edited files are warmed after a debounce window, so the next
   // grep does not hit a cold content segment. Best-effort, never user-visible.
   const prefetcher = new PrefetchController({ client });

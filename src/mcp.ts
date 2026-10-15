@@ -175,7 +175,7 @@ export class UltraSearchMcpServer {
   private recordHistory: boolean;
 
   constructor(client?: UltraSearchClient, cwd = process.cwd(), surface: McpServerOptions = {}) {
-    this.client = client ?? new UltraSearchClient();
+    this.client = client ?? new UltraSearchClient({ harness: "mcp" });
     this.cwd = cwd;
     this.roots = [...(surface.roots ?? [])];
     this.recordHistory = surface.recordHistory ?? true;

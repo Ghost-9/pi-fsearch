@@ -40,7 +40,7 @@ export class UltraSearchTui {
   private version: string;
 
   constructor() {
-    this.client = new UltraSearchClient();
+    this.client = new UltraSearchClient({ harness: "cli" });
     this.compactor = new LsmCompactor(this.client);
     this.version = getPackageVersion();
   }

@@ -15,7 +15,7 @@ import type {
   SearchOptions,
   GrepOptions,
 } from "./types.ts";
-import { recordAudit } from "./telemetry.ts";
+import { recordAudit, type UltraSearchAuditRow } from "./telemetry.ts";
 import { loadIgnoreRules, matchesIgnorePattern } from "./sanitize.ts";
 import { killAllChildren, spawnCapture } from "./spawn.ts";
 import { validateRegexPattern } from "./validate.ts";
@@ -48,6 +48,11 @@ export interface UltraSearchClientOptions {
   deadlineSlackMs?: number;
   /** Upper bound on over-fetching for filter-then-limit ordering. Default 500. */
   maxOverscan?: number;
+  /**
+   * Harness stamped on audit rows this client writes (`pi`, `mcp`, `cli`).
+   * `ULTRASEARCH_HARNESS` still overrides it at write time (telemetry.resolveHarness).
+   */
+  harness?: string;
   /** Attempt to launch the daemon binary when the socket is unreachable. Default true. */
   autoSpawnDaemon?: boolean;
   /**
@@ -262,6 +267,7 @@ export class UltraSearchClient {
   private spawnAttempted = false;
   private autoSpawnDaemon: boolean;
   private daemonBinaries?: string[];
+  private auditHarness?: string;
   private activeFallbacks = new Set<AbortController>();
 
   constructor(options: UltraSearchClientOptions = {}) {
@@ -275,7 +281,17 @@ export class UltraSearchClient {
     this.maxOverscan = options.maxOverscan ?? DEFAULT_MAX_OVERSCAN;
     this.autoSpawnDaemon = (options.autoSpawnDaemon ?? true) && process.env.PI_ULTRASEARCH_NO_SPAWN !== "1";
     this.daemonBinaries = options.daemonBinaries;
+    this.auditHarness = options.harness;
     for (let i = 0; i < this.maxLanes; i++) this.lanes.push(this.createLane(i));
+  }
+
+  /**
+   * Writes one audit row, stamping the harness this client was created for.
+   * Telemetry must never affect the call path, so recordAudit itself swallows
+   * all failures; the row is built here only to keep one attachment point.
+   */
+  private audit(row: Omit<UltraSearchAuditRow, "harness">): void {
+    recordAudit({ ...row, harness: this.auditHarness });
   }
 
   private createLane(id: number): Lane {
@@ -860,7 +876,7 @@ export class UltraSearchClient {
 
       const elapsed = round2(performance.now() - start);
       if (!options.skipAudit) {
-        recordAudit({
+        this.audit({
           ts: Date.now(),
           tool: options.auditTool ?? "ultrasearch_query",
           query,
@@ -896,7 +912,7 @@ export class UltraSearchClient {
           deadlineExceeded: true,
       });
         if (!options.skipAudit) {
-          recordAudit({
+          this.audit({
             ts: Date.now(),
             tool: options.auditTool ?? "ultrasearch_query",
             query,
@@ -914,7 +930,7 @@ export class UltraSearchClient {
         const fallbackRes = await this.nativeFallbackSearch(query, options, budgetMs);
         const elapsed = round2(performance.now() - start);
         if (!options.skipAudit) {
-          recordAudit({
+          this.audit({
             ts: Date.now(),
             tool: options.auditTool ?? "ultrasearch_query",
             query,
@@ -1049,7 +1065,7 @@ export class UltraSearchClient {
       const elapsed = round2(performance.now() - start);
       if (!options.skipAudit) {
         const totalMatches = kept.reduce((acc, f) => acc + f.matches.length, 0);
-        recordAudit({
+        this.audit({
           ts: Date.now(),
           tool: options.auditTool ?? "ultrasearch_grep",
           pattern,
@@ -1086,7 +1102,7 @@ export class UltraSearchClient {
           warning,
       });
         if (!options.skipAudit) {
-          recordAudit({
+          this.audit({
             ts: Date.now(),
             tool: options.auditTool ?? "ultrasearch_grep",
             pattern,
@@ -1104,7 +1120,7 @@ export class UltraSearchClient {
         const fallbackRes = await this.nativeFallbackGrep(pattern, options, budgetMs);
         const elapsed = round2(performance.now() - start);
         if (!options.skipAudit) {
-          recordAudit({
+          this.audit({
             ts: Date.now(),
             tool: options.auditTool ?? "ultrasearch_grep",
             pattern,
@@ -1184,7 +1200,7 @@ export class UltraSearchClient {
       if (options.skipAudit) return;
       const elapsed = round2(performance.now() - start);
       const totalMatches = (result.files ?? []).reduce((acc, f) => acc + f.matches.length, 0);
-      recordAudit({
+      this.audit({
         ts: Date.now(),
         tool: options.auditTool ?? "ultrasearch_multi_grep",
         pattern: patterns.join(" | "),
@@ -1322,7 +1338,7 @@ export class UltraSearchClient {
         staleMs: res.stale_ms,
       });
       const elapsed = round2(performance.now() - start);
-      recordAudit({
+      this.audit({
         ts: Date.now(),
         tool: "ultrasearch_recent",
         query: `recent:${limit}`,

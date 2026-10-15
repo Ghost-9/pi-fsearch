@@ -12,6 +12,12 @@ export type AuditOrigin = "organic" | "synthetic";
 export interface UltraSearchAuditRow {
   ts: number;
   origin?: AuditOrigin;
+  /**
+   * Which harness produced the call: `pi`, `mcp`, `cli`, `test`, or an explicit
+   * `ULTRASEARCH_HARNESS` override. Stamped by {@link resolveHarness} at write
+   * time; rows written before this field existed group as `unknown`.
+   */
+  harness?: string;
   sessionId?: string;
   tool: "ultrasearch_query" | "ultrasearch_grep" | "ultrasearch_locate" | "ultrasearch_recent" | "ultrasearch_multi_grep" | "ultrasearch_compact" | "cli_bypass";
   query?: string;
@@ -27,6 +33,55 @@ export interface UltraSearchAuditRow {
 }
 
 export type AuditTool = UltraSearchAuditRow["tool"];
+
+/** Explicit per-process override for the harness stamped on audit rows. */
+export const HARNESS_ENV = "ULTRASEARCH_HARNESS";
+
+const HARNESS_MAX_LENGTH = 32;
+const UNKNOWN_HARNESS = "unknown";
+
+/**
+ * Normalizes a harness id for storage: lowercase, `[a-z0-9_.-]` only, no
+ * leading/trailing separators, capped at 32 chars. Returns null when nothing
+ * usable remains, so callers can fall through to the next source.
+ */
+export function sanitizeHarness(raw: string | undefined | null): string | null {
+  if (typeof raw !== "string") return null;
+  const cleaned = raw
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_.-]+/g, "-")
+    .replace(/^[-_.]+|[-_.]+$/g, "")
+    .slice(0, HARNESS_MAX_LENGTH)
+    .replace(/[-_.]+$/, "");
+  return cleaned.length > 0 ? cleaned : null;
+}
+
+/**
+ * Harness stamped on a row being written, in precedence order:
+ *
+ * 1. `ULTRASEARCH_HARNESS` (operator override; wins so an MCP server can be
+ *    relabelled per client without a code change);
+ * 2. the explicit per-surface default (`pi`, `mcp`, `cli`) passed by the caller;
+ * 3. `test` when `PI_ULTRASEARCH_TEST=1` (or the benchmark env) is set;
+ * 4. `unknown` — never an empty string.
+ *
+ * Only use this for *writing* rows. For grouping stored rows, read
+ * `row.harness` directly so a report run cannot relabel history by env.
+ */
+export function resolveHarness(explicit?: string): string {
+  return (
+    sanitizeHarness(process.env[HARNESS_ENV]) ??
+    sanitizeHarness(explicit) ??
+    (isSyntheticEnvironment() ? "test" : null) ??
+    UNKNOWN_HARNESS
+  );
+}
+
+/** The harness a stored row belongs to, without consulting the current env. */
+export function storedHarness(row: Pick<UltraSearchAuditRow, "harness">): string {
+  return sanitizeHarness(row.harness) ?? UNKNOWN_HARNESS;
+}
 
 /** The audit log directory (production and test logs). */
 function auditDir(): string {
@@ -125,6 +180,7 @@ export function recordAudit(row: UltraSearchAuditRow): void {
     if (row.origin === undefined) {
       row.origin = isSyntheticEnvironment() ? "synthetic" : "organic";
     }
+    row.harness = resolveHarness(row.harness);
 
     const auditFile = getAuditFilePath();
     mkdirSync(dirname(auditFile), { recursive: true });
@@ -233,6 +289,21 @@ export function classifyAuditOrigin(
   return "organic";
 }
 
+export interface HarnessStats {
+  harness: string;
+  calls: number;
+  p50Ms: number;
+  p95Ms: number;
+  fallbackCount: number;
+  /** Fallbacks as a percentage of all calls attributed to the harness. */
+  fallbackRate: number;
+  zeroHitCount: number;
+  /** Zero-hit calls as a percentage of ok calls that carried a query/pattern. */
+  zeroHitRate: number;
+  /** ESTIMATE (the documented formula), never a measurement. */
+  tokensSaved: number;
+}
+
 export interface UltraSearchSummary {
   totalCalls: number;
   totalTokensSaved: number;
@@ -271,6 +342,10 @@ export interface UltraSearchSummary {
   originCounts?: AuditOriginCounts;
   /** Rows excluded by the view filter. */
   filteredOutRows?: number;
+  /** Present when summarised with `by: "harness"`; grouped after the view filter. */
+  harnessStats?: HarnessStats[];
+  /** Which grouping the summary was asked for. */
+  by?: "tool" | "harness";
 }
 
 /**
@@ -301,6 +376,8 @@ export interface SummarizeAuditOptions {
   rows?: UltraSearchAuditRow[];
   /** Treat known pre-0.3.1 gate signature queries as synthetic. */
   legacySyntheticQueries?: boolean;
+  /** "harness" adds {@link UltraSearchSummary.harnessStats} grouped per harness. */
+  by?: "tool" | "harness";
 }
 
 export function summarizeAudit(limit = 1000, opts: SummarizeAuditOptions = {}): UltraSearchSummary {
@@ -388,6 +465,34 @@ export function summarizeAudit(limit = 1000, opts: SummarizeAuditOptions = {}): 
     });
   }
 
+  const harnessStats: HarnessStats[] = [];
+  if (opts.by === "harness") {
+    const byHarness = new Map<string, UltraSearchAuditRow[]>();
+    for (const r of rows) {
+      const h = storedHarness(r);
+      if (!byHarness.has(h)) byHarness.set(h, []);
+      byHarness.get(h)!.push(r);
+    }
+    for (const [harness, harnessRows] of [...byHarness.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))) {
+      const latencies = harnessRows.map((r) => r.ms);
+      const fallbackCount = harnessRows.filter((r) => r.source === "native_fallback").length;
+      const okWithQuery = harnessRows.filter((r) => r.ok && (r.query !== undefined || r.pattern !== undefined));
+      const zeroHitCount = okWithQuery.filter((r) => r.hitCount === 0).length;
+      const tokensSaved = harnessRows.reduce((acc, r) => acc + (r.tokensSaved ?? estimateTokensSaved(r.tool, r.hitCount)), 0);
+      harnessStats.push({
+        harness,
+        calls: harnessRows.length,
+        p50Ms: pct(latencies, 50),
+        p95Ms: pct(latencies, 95),
+        fallbackCount,
+        fallbackRate: harnessRows.length > 0 ? (fallbackCount / harnessRows.length) * 100 : 0,
+        zeroHitCount,
+        zeroHitRate: okWithQuery.length > 0 ? (zeroHitCount / okWithQuery.length) * 100 : 0,
+        tokensSaved,
+      });
+    }
+  }
+
   const advice: string[] = [];
 
   if (cliBypasses.length > 0) {
@@ -433,6 +538,7 @@ export function summarizeAudit(limit = 1000, opts: SummarizeAuditOptions = {}): 
     view,
     originCounts,
     filteredOutRows,
+    ...(opts.by === "harness" ? { harnessStats, by: "harness" as const } : {}),
   };
 }
 
@@ -479,6 +585,19 @@ export function formatAuditSummary(summary: UltraSearchSummary): string {
     );
   }
   parts.push("");
+
+  if (summary.harnessStats && summary.harnessStats.length > 0) {
+    parts.push("--- Per-Harness Attribution ---");
+    parts.push(
+      "Tokens saved (ESTIMATE ONLY — formula 150+75×hits, not measured; see bench/results/TOKENS.md)"
+    );
+    for (const h of summary.harnessStats) {
+      parts.push(
+        `• ${h.harness.padEnd(18)}: ${h.calls} call${h.calls === 1 ? "" : "s"} | p50: ${h.p50Ms.toFixed(2)}ms | p95: ${h.p95Ms.toFixed(2)}ms | Fallbacks: ${h.fallbackCount} (${h.fallbackRate.toFixed(1)}%) | 0-Hit: ${h.zeroHitCount} (${h.zeroHitRate.toFixed(1)}%) | Tokens saved (estimate): ${h.tokensSaved.toLocaleString()}`
+      );
+    }
+    parts.push("");
+  }
 
   if (summary.cliBypasses.length > 0) {
     parts.push(`--- Detected CLI Bypasses (${summary.cliBypasses.length} instances) ---`);
