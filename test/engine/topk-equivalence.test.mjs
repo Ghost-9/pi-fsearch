@@ -111,3 +111,26 @@ test("engine top-k equivalence and #35 early-exit contract", async (t) => {
     }
   });
 });
+
+test("the #35 wire options are reachable through the client API", async (t) => {
+  const { UltraSearchClient } = await import("../../src/client.ts");
+  const root = makeTree(path.join(tmpdir("us-topk-client-"), "tree"), 120, "deep");
+  const h = new EngineHarness({ root });
+  await h.start();
+  t.after(() => h.cleanup());
+  const client = new UltraSearchClient({ socketPath: h.socket, autoSpawnDaemon: false, lanes: 1 });
+  t.after(() => client.close());
+
+  const plain = await client.search("path:file file", { in: path.join(root, "d02"), limit: 10 });
+  assert.equal(plain.ok, true);
+  assert.equal(plain.hits.length, 10);
+
+  // Out of reach: identical to the plain answer.
+  const early = await client.search("path:file file", { in: path.join(root, "d02"), limit: 10, early_exit: true });
+  assert.deepEqual(early.hits.map(key), plain.hits.map(key));
+
+  // A tiny explicit run fires and is reported by the engine.
+  const partial = await client.search("path:file file", { in: path.join(root, "d02"), limit: 10, low_run: 4 });
+  assert.equal(partial.complete, false);
+  assert.equal(partial.stopped_by, "low_run");
+});

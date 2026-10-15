@@ -788,6 +788,8 @@ export class UltraSearchClient {
       // docs/engine-changes.md.
       if (options.root) payload.root = options.root;
       if (budgetMs !== undefined) payload.budget_ms = budgetMs;
+      if (options.early_exit !== undefined) payload.early_exit = options.early_exit;
+      if (options.low_run !== undefined) payload.low_run = options.low_run;
 
       let res: UltraSearchSearchResponse = await this.request<UltraSearchSearchResponse>(
         payload,

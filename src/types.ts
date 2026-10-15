@@ -212,6 +212,14 @@ export interface SearchOptions {
   respectIgnore?: boolean;
   /** Server-side deadline in milliseconds; partial results carry complete:false. */
   budget_ms?: number;
+  /**
+   * End the scan after a long run of considered entries that did not improve
+   * the k-th best (issue #35). The answer is then partial (`complete:false`,
+   * `stopped_by:"low_run"`). Off by default; see docs/engine-changes.md.
+   */
+  early_exit?: boolean;
+  /** Explicit low-score run length for `early_exit`; omit for the engine default. */
+  low_run?: number;
   /** Cancellation for fallback work (agent turn aborted). */
   signal?: AbortSignal;
 }
