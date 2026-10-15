@@ -2,8 +2,9 @@
   "schema": "ultrasearch/harness-smoke@1",
   "id": "claude-code",
   "label": "Claude Code",
-  "generatedAt": "2026-10-15T18:36:51.977Z",
-  "commit": "7d8237d0ed2034c5c0b8430bad89a6767893fb04",
+  "generatedAt": "2026-10-15T18:56:19.431Z",
+  "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+  "worktreeDirty": false,
   "serverVersion": "0.3.1",
   "supportedProtocolVersions": [
     "2025-06-18",
@@ -217,14 +218,14 @@
           "dir": "cli",
           "command": "claude mcp add --scope user ultrasearch -- node probe-server.mjs -- <server>",
           "code": 0,
-          "stdout": "Added stdio MCP server ultrasearch with command: /opt/homebrew/Cellar/node/26.11.1/bin/node /Users/batra/ultrasearch-waves5/init-smoke/bench/harness-smoke/probe-server.mjs --log /var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-smoke-claude-Wkn3Bu/client-frames.jsonl -- /Users/batra/.local/bin/ultrasearch-mcp to user config\nFile modified: /var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-smoke-claude-Wkn3Bu/home/.claude.json\n",
+          "stdout": "Added stdio MCP server ultrasearch with command: /opt/homebrew/Cellar/node/26.11.1/bin/node /Users/batra/ultrasearch-waves5/init-smoke/bench/harness-smoke/probe-server.mjs --log /var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-smoke-claude-GiCCiS/client-frames.jsonl -- /Users/batra/.local/bin/ultrasearch-mcp to user config\nFile modified: /var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-smoke-claude-GiCCiS/home/.claude.json\n",
           "stderr": ""
         },
         {
           "dir": "cli",
           "command": "claude mcp list",
           "code": 0,
-          "stdout": "Checking MCP server health…\n\nultrasearch: /opt/homebrew/Cellar/node/26.11.1/bin/node /Users/batra/ultrasearch-waves5/init-smoke/bench/harness-smoke/probe-server.mjs --log /var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-smoke-claude-Wkn3Bu/client-frames.jsonl -- /Users/batra/.local/bin/ultrasearch-mcp - ✔ Connected\n",
+          "stdout": "Checking MCP server health…\n\nultrasearch: /opt/homebrew/Cellar/node/26.11.1/bin/node /Users/batra/ultrasearch-waves5/init-smoke/bench/harness-smoke/probe-server.mjs --log /var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-smoke-claude-GiCCiS/client-frames.jsonl -- /Users/batra/.local/bin/ultrasearch-mcp - ✔ Connected\n",
           "stderr": ""
         }
       ],

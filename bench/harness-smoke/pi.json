@@ -2,8 +2,9 @@
   "schema": "ultrasearch/harness-smoke@1",
   "id": "pi",
   "label": "Pi Agent",
-  "generatedAt": "2026-10-15T18:36:50.973Z",
-  "commit": "7d8237d0ed2034c5c0b8430bad89a6767893fb04",
+  "generatedAt": "2026-10-15T18:56:18.361Z",
+  "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+  "worktreeDirty": false,
   "serverVersion": "0.3.1",
   "supportedProtocolVersions": [
     "2025-06-18",
@@ -203,12 +204,12 @@
         "testExitZero": true
       },
       "failures": [],
-      "durationMs": 548,
+      "durationMs": 527,
       "transcript": [
         {
           "dir": "cli",
           "code": 0,
-          "stdout": "✔ declarations: generated text matches the committed golden (drift fails the build) (1.199459ms)\n✔ declarations: every registry tool appears exactly once, with no hand-written extra (0.723667ms)\n✔ mcp: MCP_TOOLS is generated from the registry, not hand-maintained (0.227833ms)\n✔ mcp: the Pi tool parameters match the registry parameter sets (surface drift guard) (9.26225ms)\n✔ recipes: search -> grep…",
+          "stdout": "✔ declarations: generated text matches the committed golden (drift fails the build) (0.960042ms)\n✔ declarations: every registry tool appears exactly once, with no hand-written extra (0.602708ms)\n✔ mcp: MCP_TOOLS is generated from the registry, not hand-maintained (0.284792ms)\n✔ mcp: the Pi tool parameters match the registry parameter sets (surface drift guard) (13.288792ms)\n✔ recipes: search -> gr…",
           "stderr": ""
         }
       ]
