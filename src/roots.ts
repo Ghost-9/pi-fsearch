@@ -1,7 +1,6 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import type { UltraSearchClient } from "./client.ts";
 import type { UltraSearchGrepFile, UltraSearchHit } from "./types.ts";
 
 /**
@@ -309,16 +308,4 @@ export async function multiRootGrep(pattern: string, options: MultiRootGrepOptio
     preferActiveWorktree: options.preferActiveWorktree ?? true,
   });
   return { files, roots, duplicates, errors, multi: true };
-}
-
-/** Convenience wrapper: multi-root search directly against a client. */
-export async function clientMultiRootSearch(
-  client: Pick<UltraSearchClient, "search">,
-  query: string,
-  options: Omit<MultiRootSearchOptions, "search">
-): Promise<MultiRootSearchResult> {
-  return multiRootSearch(query, {
-    ...options,
-    search: async (q, scope) => client.search(q, { in: scope, root: scope, limit: options.limit }),
-  });
 }
