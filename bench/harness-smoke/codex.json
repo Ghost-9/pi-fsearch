@@ -2,8 +2,8 @@
   "schema": "ultrasearch/harness-smoke@1",
   "id": "codex",
   "label": "Codex CLI",
-  "generatedAt": "2026-10-15T20:41:18.127Z",
-  "commit": "219c0c5b9773a4a59e2bba7efa7a8532da40754a",
+  "generatedAt": "2026-10-15T20:52:47.665Z",
+  "commit": "630bc5b98be9dbb686b4cb112ba341bbab5c455a",
   "worktreeDirty": false,
   "serverVersion": "0.3.1",
   "supportedProtocolVersions": [
