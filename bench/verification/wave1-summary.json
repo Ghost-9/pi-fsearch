@@ -2,14 +2,14 @@
   "suite": "wave1-final-verification",
   "wave": "wave1/verify-final",
   "base_ref": "0a16e50 (BEFORE, isolated under HOME=/Users/batra/.cache/us-verify/before-home + upstream engine at ~/.cache/fsearch)",
-  "head_ref": "e3e9a1c3 (AFTER, main worktree + installed renamed daemon)",
-  "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+  "head_ref": "1fb85def (AFTER, main worktree + installed renamed daemon)",
+  "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
   "provenance": {
     "guard": "bench/verification/checks/identity-guard.mjs — G1 identical bytes, G2 stale after, G3 same ref on both sides, G4 missing artifact; any violation forces needs-re-run",
     "regression_test": "node --test bench/verification/checks/identity-guard.test.mjs (8 cases, including the F10 shape)",
     "gate_rule": "TIMING rows (lane `latency`, and any ms_* field) need a gate-clean after artifact (AC + load1 < 1.5 + no cargo). QUALITY rows (judgments, equivalence, zero-result, wave-2 quality lanes) are set comparisons: the artifact's gate is recorded and the value is accepted when two distinct runs of the two refs agree — load invariance is evidenced by the judgments aggregates being identical at load1 1.43 (before) and 7.83 (after)."
   },
-  "generated_at": "2026-10-15T06:59:20.693Z",
+  "generated_at": "2026-10-15T07:00:03.873Z",
   "status_legend": {
     "verified": "independently re-measured; numbers agree with the artifact and the method is sound",
     "failed": "independently re-measured and the claim does not hold",
@@ -96,7 +96,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -173,7 +173,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -250,7 +250,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -327,7 +327,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -404,7 +404,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -481,7 +481,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -558,7 +558,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -635,7 +635,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -712,7 +712,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -789,7 +789,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -854,7 +854,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -919,7 +919,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -975,7 +975,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1031,7 +1031,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1087,7 +1087,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1125,8 +1125,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1163,8 +1163,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1201,8 +1201,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1239,8 +1239,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1277,8 +1277,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1315,8 +1315,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1353,8 +1353,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1391,8 +1391,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1429,8 +1429,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1467,8 +1467,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1505,8 +1505,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1620,8 +1620,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
@@ -1666,7 +1666,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1711,7 +1711,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1756,7 +1756,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1830,7 +1830,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1864,7 +1864,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1898,7 +1898,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -1957,7 +1957,7 @@
             "commit": "3135e282785e0ee97f771db99ae20f25f3817191"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": false,
         "identical_artifacts": false
       }
@@ -2677,7 +2677,7 @@
             "commit": null
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
         "after_ref_matches_head": null,
         "identical_artifacts": false
       }
@@ -2823,8 +2823,8 @@
             "commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd"
           }
         ],
-        "head_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
-        "after_ref_matches_head": true,
+        "head_commit": "1fb85def9afa0e1f7a2c6ed274a25459d64ff47d",
+        "after_ref_matches_head": false,
         "identical_artifacts": false
       }
     },
