@@ -1,0 +1,205 @@
+{
+  "schema": "ultrasearch/harness-smoke@1",
+  "id": "windsurf",
+  "label": "Windsurf",
+  "generatedAt": "2026-10-15T18:56:21.595Z",
+  "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+  "worktreeDirty": false,
+  "serverVersion": "0.3.1",
+  "supportedProtocolVersions": [
+    "2025-06-18",
+    "2025-03-26",
+    "2024-11-05",
+    "2024-10-07"
+  ],
+  "harness": {
+    "surface": "mcp-stdio",
+    "configPath": "/Users/batra/.codeium/windsurf/mcp_config.json",
+    "configPresent": true,
+    "installed": true,
+    "installEvidence": [
+      "/Users/batra/.codeium/windsurf"
+    ],
+    "entryShapeSource": "machine-observed",
+    "declaredProtocolVersion": "2025-06-18",
+    "declaredProtocolVersionSource": "assumed",
+    "declaredProtocolSupported": true,
+    "note": "user-level `~/.codeium/windsurf/mcp_config.json` with `mcpServers`",
+    "directive": ".windsurfrules / AGENTS.md"
+  },
+  "arms": {
+    "protocol": {
+      "status": "pass",
+      "launch": {
+        "command": "/Users/batra/.local/bin/ultrasearch-mcp",
+        "args": [],
+        "source": "installed",
+        "configPath": "/Users/batra/.codeium/windsurf/mcp_config.json"
+      },
+      "client": {
+        "name": "ultrasearch-smoke",
+        "version": "1.0.0"
+      },
+      "requestedProtocolVersion": "2025-06-18",
+      "negotiatedProtocolVersion": "2025-06-18",
+      "serverInfo": {
+        "name": "pi-ultrasearch",
+        "version": "0.3.1"
+      },
+      "toolCount": 6,
+      "toolNames": [
+        "ultrasearch_query",
+        "ultrasearch_grep",
+        "ultrasearch_multi_grep",
+        "ultrasearch_locate",
+        "ultrasearch_recent",
+        "ultrasearch_metrics"
+      ],
+      "toolCall": {
+        "name": "ultrasearch_locate",
+        "arguments": {
+          "filename": "package.json"
+        },
+        "isError": false,
+        "textSample": "/Users/batra/ultrasearch-waves5/init-smoke/package.json",
+        "meta": {
+          "complete": false,
+          "truncated": false,
+          "truncatedCount": 0,
+          "engineCapped": false,
+          "filteredCount": 0,
+          "tokenCount": 14,
+          "charCount": 56,
+          "source": "index",
+          "deadlineExceeded": false,
+          "rawCount": 1,
+          "tool": "ultrasearch_locate",
+          "hitCount": 1
+        }
+      },
+      "checks": {
+        "initialize": true,
+        "protocolSupported": true,
+        "toolCount6": true,
+        "canonicalNames": true,
+        "toolCallResult": true,
+        "toolCallHit": true
+      },
+      "failures": [],
+      "daemon": "mock",
+      "transcript": [
+        {
+          "dir": "in",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+              "protocolVersion": "2025-06-18",
+              "capabilities": {},
+              "clientInfo": {
+                "name": "ultrasearch-smoke",
+                "version": "1.0.0"
+              }
+            }
+          }
+        },
+        {
+          "dir": "out",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {
+              "protocolVersion": "2025-06-18",
+              "serverInfo": {
+                "name": "pi-ultrasearch",
+                "version": "0.3.1"
+              },
+              "capabilities": {
+                "tools": {
+                  "listChanged": false
+                }
+              }
+            }
+          }
+        },
+        {
+          "dir": "in",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/list",
+            "params": {}
+          }
+        },
+        {
+          "dir": "out",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "result": {
+              "tools": [
+                "ultrasearch_query",
+                "ultrasearch_grep",
+                "ultrasearch_multi_grep",
+                "ultrasearch_locate",
+                "ultrasearch_recent",
+                "ultrasearch_metrics"
+              ]
+            }
+          }
+        },
+        {
+          "dir": "in",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/call",
+            "params": {
+              "name": "ultrasearch_locate",
+              "arguments": {
+                "filename": "package.json"
+              }
+            }
+          }
+        },
+        {
+          "dir": "out",
+          "frame": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "/Users/batra/ultrasearch-waves5/init-smoke/package.json"
+                }
+              ],
+              "_meta": {
+                "complete": false,
+                "truncated": false,
+                "truncatedCount": 0,
+                "engineCapped": false,
+                "filteredCount": 0,
+                "tokenCount": 14,
+                "charCount": 56,
+                "source": "index",
+                "deadlineExceeded": false,
+                "rawCount": 1,
+                "tool": "ultrasearch_locate",
+                "hitCount": 1
+              }
+            }
+          }
+        }
+      ],
+      "negotiatedDown": false
+    },
+    "native": {
+      "status": "skipped",
+      "mode": "none",
+      "reason": "skipped:no-non-interactive-mcp-cli"
+    }
+  },
+  "status": "partial"
+}

@@ -48,6 +48,12 @@ jobs:
           node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help > "$RUNNER_TEMP/help.txt"
           grep -q "PI-ULTRASEARCH" "$RUNNER_TEMP/help.txt"
 
+      - name: Harness smoke matrix (protocol arms; native arms only where installed)
+        run: npm run smoke:harness
+
+      - name: Harness matrix check (fresh artifacts from this commit)
+        run: npm run matrix:harness -- --check --require-fresh
+
       - name: Engine unit tests (cargo test --release)
         run: cargo test --release --manifest-path engine/Cargo.toml
 
@@ -101,6 +107,12 @@ jobs:
 
       - name: Benchmark gate (hermetic mock; live part skipped without a daemon)
         run: npm run test:gate
+
+      - name: Harness smoke matrix (protocol arms; native arms skip without the harness)
+        run: npm run smoke:harness
+
+      - name: Harness matrix check (fresh artifacts from this commit)
+        run: npm run matrix:harness -- --check --require-fresh
 
       - name: "Chain smoke test (no daemon: the CLI must fail with a clear message)"
         run: |
