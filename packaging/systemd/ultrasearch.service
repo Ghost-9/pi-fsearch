@@ -1,0 +1,59 @@
+# UltraSearch daemon — systemd user unit template (issue #32).
+#
+# Install (user service, no root):
+#   install -Dm0644 packaging/systemd/ultrasearch.service \
+#     ~/.config/systemd/user/ultrasearch.service
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now ultrasearch
+#   systemctl --user status ultrasearch
+#
+# The daemon currently builds on macOS only; see docs/linux-daemon-blockers.md
+# for the port checklist. This unit is what a Linux build will run once that
+# list is empty.
+#
+# One daemon per index directory is enforced by the engine's flock on
+# <index dir>/socket.lock; the client probes before spawning
+# (docs/daemon-single-instance.md). Restart=on-failure is safe: a second
+# instance exits immediately with "another ultrasearch daemon is running".
+
+[Unit]
+Description=UltraSearch resident search daemon
+Documentation=https://github.com/Ghost-9/pi-ultrasearch
+After=local-fs.target
+
+[Service]
+Type=simple
+# %t is the user runtime dir ($XDG_RUNTIME_DIR): the socket lives there and is
+# removed on logout.
+Environment=ULTRASEARCH_DIR=%t/ultrasearch
+Environment=ULTRASEARCH_HOME=%h
+ExecStart=%h/.local/bin/ultrasearch-daemon serve
+Restart=on-failure
+RestartSec=2
+# The daemon is CPU- and IO-heavy while indexing; keep it polite.
+Nice=5
+IOSchedulingClass=idle
+IOSchedulingPriority=7
+
+# The daemon reads the filesystem and writes only its index directory.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=%t/ultrasearch
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+
+# One process, one index directory. With PrivateTmp the socket path stays
+# per-user even if ULTRASEARCH_DIR were overridden.
+RuntimeDirectory=ultrasearch
+RuntimeDirectoryMode=0700
+
+[Install]
+WantedBy=default.target

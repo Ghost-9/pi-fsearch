@@ -273,7 +273,7 @@ export class UltraSearchClient {
     this.fallbackTimeoutMs = options.fallbackTimeoutMs ?? DEFAULT_FALLBACK_TIMEOUT_MS;
     this.deadlineSlackMs = options.deadlineSlackMs ?? DEFAULT_DEADLINE_SLACK_MS;
     this.maxOverscan = options.maxOverscan ?? DEFAULT_MAX_OVERSCAN;
-    this.autoSpawnDaemon = options.autoSpawnDaemon ?? true;
+    this.autoSpawnDaemon = (options.autoSpawnDaemon ?? true) && process.env.PI_ULTRASEARCH_NO_SPAWN !== "1";
     this.daemonBinaries = options.daemonBinaries;
     for (let i = 0; i < this.maxLanes; i++) this.lanes.push(this.createLane(i));
   }

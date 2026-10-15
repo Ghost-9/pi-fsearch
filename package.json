@@ -34,7 +34,8 @@
     "AUDIT-2026-10-14.md",
     "CONTRIBUTING.md",
     "NOTICE",
-    "LICENSE"
+    "LICENSE",
+    "packaging"
   ],
   "pi": {
     "extensions": [

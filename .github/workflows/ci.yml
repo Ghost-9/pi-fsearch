@@ -7,7 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  # macOS is the reference platform: the real daemon, the engine crate and the
+  # live benchmark gate all run here.
+  test-macos:
     runs-on: macos-latest
     steps:
       - name: Checkout Code
@@ -18,8 +20,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Typecheck
         run: npm run typecheck
@@ -41,5 +46,96 @@ jobs:
           tar -xzf "$TARBALL" -C "$RUNNER_TEMP/packed"
           node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help | grep -q "PI-ULTRASEARCH"
 
-      - name: Benchmark Regression Gate
-        run: node --test test/benchmark-gate.test.ts
+      - name: Engine unit tests (cargo test --release)
+        run: cargo test --release --manifest-path engine/Cargo.toml
+
+      - name: Build engine daemon (release)
+        run: cargo build --release --manifest-path engine/Cargo.toml
+
+      - name: Engine integration tests (real isolated daemon)
+        run: npm run test:engine
+
+      - name: Benchmark gate (hermetic strict + live floor-derived)
+        run: npm run test:gate
+
+  # Linux runs the client surface: typecheck, unit tests (integration skips
+  # cleanly), the package smoke test and the hermetic gate. The daemon does
+  # not build on Linux yet (see docs/linux-daemon-blockers.md), so no live gate
+  # and no engine tests here.
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build distribution (dist/)
+        run: npm run build
+
+      - name: Run Unit Tests (integration skips without a daemon)
+        run: npm test
+
+      - name: Package smoke test (npm pack + built CLI)
+        run: |
+          set -euo pipefail
+          npm pack --pack-destination "$RUNNER_TEMP"
+          TARBALL="$(ls "$RUNNER_TEMP"/pi-ultrasearch-*.tgz)"
+          tar -tzf "$TARBALL" | grep -q 'package/dist/bin/cli.js'
+          mkdir -p "$RUNNER_TEMP/packed"
+          tar -xzf "$TARBALL" -C "$RUNNER_TEMP/packed"
+          node "$RUNNER_TEMP/packed/package/dist/bin/cli.js" --help | grep -q "PI-ULTRASEARCH"
+
+      - name: Benchmark gate (hermetic mock; live part skipped without a daemon)
+        run: npm run test:gate
+
+      - name: "Chain smoke test (no daemon: the CLI must fail with a clear message)"
+        run: |
+          set +e
+          OUT="$(PI_ULTRASEARCH_SOCKET="$RUNNER_TEMP/missing.sock" PI_ULTRASEARCH_NO_SPAWN=1 node dist/bin/cli.js compact 2>&1)"
+          RC=$?
+          set -e
+          test "$RC" -ne 0
+          printf '%s\n' "$OUT"
+
+  # Documents the Linux daemon port blocker instead of leaving it implicit.
+  # Expected to fail until docs/linux-daemon-blockers.md is emptied; the job is
+  # visible (not gating) and uploads the compiler output as an artifact.
+  linux-daemon-blockers:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Attempt the daemon build (captured as evidence)
+        run: |
+          set +e
+          cargo check --locked --manifest-path engine/Cargo.toml > "$RUNNER_TEMP/linux-daemon-check.log" 2>&1
+          RC=$?
+          set -e
+          echo "cargo check exit: $RC"
+          grep -c '^error' "$RUNNER_TEMP/linux-daemon-check.log" || true
+          tail -40 "$RUNNER_TEMP/linux-daemon-check.log"
+          # The check must fail with the documented blockers, not pass silently.
+          test "$RC" -ne 0
+
+      - name: Upload compiler output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-daemon-check
+          path: ${{ runner.temp }}/linux-daemon-check.log
+          if-no-files-found: warn

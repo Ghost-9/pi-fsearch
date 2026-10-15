@@ -84,6 +84,9 @@ c.close();
 lsof -t "$HOME/Library/Application Support/UltraSearch/ultrasearch.sock"
 ```
 
+`PI_ULTRASEARCH_NO_SPAWN=1` disables the client-side spawn entirely (a
+measurement or CI process that must never start a daemon).
+
 The benchmark environment gate (`bench/lib/env-gate.mjs`) records the socket owner
 pid in every artifact and warns when more than one daemon matches; it refuses a
 measurement window where the daemon block moves. Keep the daemon frozen across a
