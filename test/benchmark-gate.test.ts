@@ -206,7 +206,7 @@ function rawOnce(payload: Record<string, unknown>, timeoutMs = 10_000): Promise<
 }
 
 /** The daemon's own state (#19/#45), read on a bare socket. */
-async function liveState(): Promise<{ staleness_ms?: number; replay_in_progress?: boolean; uptime_ms?: number; pid?: number; entries?: number }> {
+async function liveState(): Promise<{ staleness_ms?: number; replay_in_progress?: boolean; uptime_ms?: number; pid?: number; entries?: number; event_id?: number }> {
   return await new Promise((resolve, reject) => {
     const sock = net.connect(resolveDefaultSocketPath());
     let buf = "";
@@ -240,7 +240,10 @@ async function measureLive(payload: Record<string, unknown>) {
     assert.equal(res.ok, true);
     raw.push(await rawOnce(payload));
   }
-  return { raw: p95Of(raw), client: p95Of(client), state };
+  // The daemon block at the end of the window (pid, entries, event_id): a
+  // mid-run restart or index swap invalidates the comparison.
+  const stateEnd = await liveState().catch(() => ({} as any));
+  return { raw: p95Of(raw), client: p95Of(client), state, stateEnd };
 }
 
 function evaluateLive(label: string, measured: Awaited<ReturnType<typeof measureLive>>, minimumMs: number) {
@@ -258,14 +261,15 @@ function evaluateLive(label: string, measured: Awaited<ReturnType<typeof measure
 export function gateDecision(input: {
   raw: { p50: number; p95: number };
   client: { p50: number; p95: number };
-  state: { staleness_ms?: number; replay_in_progress?: boolean; uptime_ms?: number; pid?: number };
+  state: { staleness_ms?: number; replay_in_progress?: boolean; uptime_ms?: number; pid?: number; entries?: number; event_id?: number };
+  stateEnd?: { pid?: number; entries?: number; event_id?: number };
   minimumMs: number;
 }) {
-  const { raw, client, state } = input;
+  const { raw, client, state, stateEnd } = input;
   const ceiling = Math.max(input.minimumMs, raw.p95 * 2 + 1);
   const hardCap = raw.p95 * HARD_BLOWUP + 10;
   const overhead = client.p50 - raw.p50;
-  const env = `n=${LIVE_N} raw p50 ${raw.p50.toFixed(2)}/p95 ${raw.p95.toFixed(2)} | client p50 ${client.p50.toFixed(2)}/p95 ${client.p95.toFixed(2)} | ceil ${ceiling.toFixed(2)} (min ${input.minimumMs}) | load1 ${os.loadavg()[0].toFixed(2)} | pid ${state.pid} uptime ${state.uptime_ms}ms stale ${state.staleness_ms} replaying ${state.replay_in_progress}`;
+  const env = `n=${LIVE_N} raw p50 ${raw.p50.toFixed(2)}/p95 ${raw.p95.toFixed(2)} | client p50 ${client.p50.toFixed(2)}/p95 ${client.p95.toFixed(2)} | ceil ${ceiling.toFixed(2)} (min ${input.minimumMs}) | load1 ${os.loadavg()[0].toFixed(2)} | pid ${state.pid} uptime ${state.uptime_ms}ms stale ${state.staleness_ms} replaying ${state.replay_in_progress} | end pid ${stateEnd?.pid} entries ${stateEnd?.entries} event_id ${stateEnd?.event_id}`;
   if (!(overhead < CLIENT_OVERHEAD_MS)) {
     return { ok: false, ceiling, hardCap, overhead, reason: `client overhead ${overhead.toFixed(2)}ms >= ${CLIENT_OVERHEAD_MS}ms (${env})` };
   }
