@@ -110,3 +110,14 @@ data migration is reversed. If FDA is ever lost, re-grant Full Disk Access to
   relevance/boost claim can be made.
 * The engine-ab baseline `f84ce92` build lives in a temp dir; a future wave should pin it
   or rebuild it.
+
+---
+
+## Correction (2026-10-15, after the wave-3 relevance merge)
+
+This document originally described the promotion of engine `7b413d87…` (built from `c64c62b`). That build predates the
+grep page-ranking change. The live daemon was re-promoted after the merge to the engine built from `2a1ecc4`
+(installed app binary `c6a27787a347aad8…`, pid 26819), with the same procedure and the same constraints; the index was
+again reused (7,041,195 entries) and FDA survived. The independent verifier confirmed the **installed** app matches
+`main` 30/30 rows on the frozen judgment set (F13). Keep this in mind when reading the engine identity/LC_UUID below:
+those values describe the first promotion, not the current deployment.
