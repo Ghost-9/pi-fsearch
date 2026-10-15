@@ -76,7 +76,7 @@ Rules that keep it generic:
 
 ### Phase 3 — policy injection (S)
 - Generate the right directive per harness so agents stop falling back to `grep -rn`: `AGENTS.md` (Pi, Codex), `CLAUDE.md` (Claude Code), `.cursor/rules`, workspace instructions (VS Code), Antigravity rules.
-- Directive text carries the measured reason (path search 6.9×–21× vs `find`; the real bottleneck is subprocess spawn, not raw grep).
+- Directive text carries the measured reason (path search **9.4×–29.5×** vs `rg --files`/`find`, cited to `bench/verification/wave1-summary.json`; the real bottleneck is subprocess spawn, not raw grep).
 - Acceptance: a fresh session in each harness issues its first search through UltraSearch without a human reminder (recorded transcript).
 
 ### Phase 4 — per-harness telemetry (M)
