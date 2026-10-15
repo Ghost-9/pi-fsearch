@@ -306,6 +306,18 @@ for (const lane of laneNames) {
   const gated = mustHit.filter((r) => !r.excluded_from_tier_l);
   const negatives = all.filter((r) => r.negative);
   const m = (fn) => mean(gated.map(fn).filter((v) => v !== null && v !== undefined));
+  /** One metric block over an arbitrary row set (used for both the gated and the full must-hit basis). */
+  const metricBlock = (rows) => ({
+    n: rows.length,
+    recall10: mean(rows.map((r) => r.score.recall_at_10).filter((v) => v !== null)),
+    recall3: mean(rows.map((r) => r.score.recall_at_3).filter((v) => v !== null)),
+    success3: mean(rows.map((r) => r.score.recall_at_3).filter((v) => v !== null)),
+    mrr10: mean(rows.map((r) => r.score.mrr_at_10)),
+    ndcg10: mean(rows.map((r) => r.score.ndcg_at_10).filter((v) => v !== null)),
+    zero_result_rate: rows.length ? rows.filter((r) => r.zero_result).length / rows.length : null,
+    ms_p50: pct(rows.map((r) => r.ms), 50),
+    ms_max: Math.max(...rows.map((r) => r.ms), 0),
+  });
   const top3DocShare = mean(
     gated
       .filter((r) => r.retrieved.length > 0)
@@ -321,6 +333,10 @@ for (const lane of laneNames) {
     must_hit_gated: gated.length,
     must_hit_excluded: mustHit.length - gated.length,
     negatives: negatives.length,
+    /** Author-claim basis: every must-hit row, known_fail and feature-gated included. */
+    all: metricBlock(mustHit),
+    /** Tier-L basis: declared-answerable, non-known_fail rows only. */
+    gated: metricBlock(gated),
     recall10: m((r) => r.score.recall_at_10),
     recall3: m((r) => r.score.recall_at_3),
     success3: m((r) => r.score.recall_at_3),
@@ -419,7 +435,7 @@ const gate = GATE_FILE && fs.existsSync(GATE_FILE)
       return { status: onAc && l1 < 1.5 && competing.length === 0 ? "final" : "provisional", gate_pass: onAc && l1 < 1.5 && competing.length === 0, custom: true, on_ac: onAc, load1: Number(l1.toFixed(2)), competing_processes: competing };
     })();
 
-const SOCKET = path.join(os.homedir(), "Library", "Application Support", "UltraSearch", "ultrasearch.sock");
+const SOCKET = process.env.PI_ULTRASEARCH_SOCKET ?? path.join(os.homedir(), "Library", "Application Support", "UltraSearch", "ultrasearch.sock");
 const owners = tryExec("lsof", ["-t", SOCKET]).split("\n").filter(Boolean);
 const servers = tryExec("pgrep", ["-f", "UltraSearch.*serve"]).split("\n").filter(Boolean);
 const st = status ?? {};

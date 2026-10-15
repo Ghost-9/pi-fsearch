@@ -506,6 +506,44 @@ for (const t of tests.results) {
   });
 }
 
+const WAVE2_CLAIMS = path.join(A, "wave2-claims.json");
+if (exists(WAVE2_CLAIMS)) {
+  const wc = read(WAVE2_CLAIMS);
+  for (const c of wc.claims ?? []) {
+    row({
+      id: `wave2claim.${c.id}`,
+      lane: "wave2-baseline",
+      scope: c.claim,
+      before: null,
+      after: c.observed,
+      delta: c.observed?.mean_delta ?? null,
+      ci95: c.observed?.ci95_bca ?? null,
+      n: c.observed?.n ?? null,
+      method:
+        "independent paired A/B: same scorer + same client, arm A = installed wave-1 daemon, arm B = isolated daemon built from this tree (BCa bootstrap, 10000 resamples, seeded)",
+      // No identity guard: this A/B deliberately shares the client commit and differs in the daemon.
+      status: c.verdict === "reproduced" ? "verified" : c.verdict === "refuted" ? "failed" : "unverified",
+      status_reason: c.note ?? null,
+      artifact: "bench/verification/after/wave2-claims.json",
+    });
+  }
+  const iso = wc.meta?.after_artifact?.daemon ?? null;
+  row({
+    id: "wave2.isolated_daemon_provenance",
+    lane: "wave2-baseline",
+    scope: "system under test for the wave-2 arms",
+    before: { arm: "installed wave-1 daemon", daemon: wc.meta?.before_artifact?.meta ?? null, status: wc.meta?.before_artifact?.status ?? null },
+    after: { arm: "isolated daemon from this tree", pid: iso?.socket_owner_pid ?? null, entries: iso?.entries ?? null, single_owner: iso?.single_socket_owner ?? null, socket: iso?.socket ?? null },
+    delta: null,
+    ci95: null,
+    n: null,
+    method: "isolated-daemon.mjs: ULTRASEARCH_DIR/ULTRASEARCH_HOME/ULTRASEARCH_SCAN_ROOT + PI_ULTRASEARCH_SOCKET; the live daemon is never touched or reinstalled",
+    status: iso?.single_socket_owner === true ? "verified" : "unverified",
+    status_reason: iso?.single_socket_owner === true ? "exactly one owner on the isolated socket" : "isolated provenance recorded without a verified single owner",
+    artifact: "bench/verification/after/wave2-claims.json",
+  });
+}
+
 // ---------------------------------------------------------------- F10 repair + wave-2 baseline
 row({
   id: "check.f10_identity_guard",

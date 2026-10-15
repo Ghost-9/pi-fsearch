@@ -28,7 +28,7 @@ const opt = (name, dflt = null) => {
   return i >= 0 ? argv[i + 1] : dflt;
 };
 
-const SOCKET = path.join(os.homedir(), "Library", "Application Support", "UltraSearch", "ultrasearch.sock");
+const SOCKET = process.env.PI_ULTRASEARCH_SOCKET ?? path.join(os.homedir(), "Library", "Application Support", "UltraSearch", "ultrasearch.sock");
 
 function tryExec(cmd, args) {
   try {
@@ -67,15 +67,23 @@ function rawStatus() {
 }
 
 const owners = tryExec("lsof", ["-t", SOCKET]).split("\n").map((s) => s.trim()).filter(Boolean);
-const servers = tryExec("pgrep", ["-f", "UltraSearch.*serve"]).split("\n").map((s) => s.trim()).filter(Boolean);
+const ownerArgs = owners.length ? tryExec("ps", ["-p", owners[0], "-o", "args="]) : "";
+// Which processes look like a daemon serving this verification: the engine basename
+// (`ultrasearch` built from the tree, or the installed `UltraSearch` app binary).
+const serveLike = tryExec("ps", ["-Ao", "pid=,args="]).split("\n").filter((l) => /(?:^|[\s/])(ultrasearch|UltraSearch)(?:\s|$)/.test(l) && /serve/.test(l));
+const ownerIsEngine = /(?:^|[\s/])(ultrasearch|UltraSearch)(?:\s|$)/.test(ownerArgs);
 const status = await rawStatus().catch((e) => ({ error: String(e?.message ?? e) }));
 
 const block = {
   socket: SOCKET,
   socket_owner_pid: owners.length ? Number(owners[0]) : null,
   socket_owner_count: owners.length,
-  serve_process_count: servers.length,
-  single_socket_owner: owners.length === 1 && servers.length === 1,
+  socket_owner_args: ownerArgs || null,
+  socket_owner_is_engine: ownerIsEngine,
+  serve_like_process_count: serveLike.length,
+  serve_like_pids: serveLike.map((l) => Number(l.trim().split(/\s+/)[0])),
+  // Isolation precondition: exactly one process owns THIS socket and it is an engine daemon.
+  single_socket_owner: owners.length === 1 && ownerIsEngine,
   entries: status.entries ?? null,
   event_id: status.event_id ?? null,
   last_event_id: status.last_event_id ?? null,
