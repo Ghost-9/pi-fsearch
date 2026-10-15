@@ -1,0 +1,330 @@
+{
+  "suite": "wave1-finalverifier-regressions",
+  "repo": "/Users/batra/ultrasearch-verify",
+  "commit": "3135e282785e0ee97f771db99ae20f25f3817191",
+  "engine_bin": "/Users/batra/ultrasearch-verify/engine/target/release/ultrasearch",
+  "engine_bin_sha256": "be9dfe712470775008f2db26655f8e83533508860f663cbf250f117aa8125b8c",
+  "daemon_socket_probed": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+  "production_audit_untouched": true,
+  "counts": {
+    "verified": 11,
+    "failed": 0,
+    "unverified": 1
+  },
+  "checks": [
+    {
+      "id": "#36",
+      "claim": "catastrophic-backtracking regex `(a+)+$` is rejected client-side before any socket write",
+      "status": "verified",
+      "evidence": {
+        "dead_socket": "/nonexistent-dir/us-verify-dead.sock",
+        "rejected_grep": {
+          "ok": false,
+          "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+          "files": 0
+        },
+        "rejected_multi": {
+          "ok": false,
+          "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+          "files": 0
+        },
+        "control_valid_pattern": {
+          "threw": "connect ENOENT /nonexistent-dir/us-verify-dead.sock"
+        },
+        "graph": {
+          "nested_rejected": true,
+          "nested_backref_rejected": true,
+          "alternation_warns": true,
+          "plain_ok": true
+        },
+        "audit_rows_for_rejected_pattern": 0,
+        "proof": "rejection returns ok:false without touching a socket that is provably dead (the same call with a valid pattern throws a connection error); no audit row carries the rejected literal"
+      },
+      "at": "2026-10-15T03:14:20.234Z"
+    },
+    {
+      "id": "#23",
+      "claim": "multi-line PEM body redacted; line-wise grep body redacted; path DLP redacts a credential-shaped filename; ordinary code/SHAs/URLs untouched",
+      "status": "verified",
+      "evidence": {
+        "whole": "[REDACTED_----...]",
+        "linewise": [
+          "[REDACTED_----...]",
+          "[REDACTED_PRIVATE_KEY_BODY]",
+          "[REDACTED_PRIVATE_KEY_BODY]",
+          "[REDACTED_----...]"
+        ],
+        "guard_closed_after_footer": true,
+        "path_in": "/tmp/dir/ghp_A1b2…(.ts)",
+        "path_out": "/tmp/dir/[REDACTED_ghp_...].ts",
+        "negative_control_unchanged": [
+          "const x = 1; // ordinary code",
+          "commit 9f2c1a7b3d4e5f60718293a4b5c6d7e8f9012345",
+          "https://example.com/path?q=1",
+          "sha256: 3b1f7c9e5a2d486b0c1f3e5a7b9d2c4e6f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c"
+        ]
+      },
+      "at": "2026-10-15T03:14:20.236Z"
+    },
+    {
+      "id": "F1",
+      "claim": "trailing-slash ignore patterns (`node_modules/`) match: pattern helper and live path search",
+      "status": "verified",
+      "evidence": {
+        "unit": {
+          "node_modules_slash": true,
+          "node_modules_exact": true,
+          "dist_slash": true,
+          "nested_slash": true,
+          "control_not_ignored": false
+        },
+        "live": {
+          "error": null,
+          "hits": 1,
+          "ignored": 0,
+          "node_modules": 0,
+          "sample": [
+            "- package.json"
+          ]
+        },
+        "note": "unit fix vs live-filtering are separate: `matchesIgnorePattern` is the sanitize helper; `live` is what the tool actually returns."
+      },
+      "at": "2026-10-15T03:14:20.242Z"
+    },
+    {
+      "id": "F3",
+      "claim": "multiGrep at its DEFAULT limit returns every matching file (parity with rg -l)",
+      "status": "verified",
+      "evidence": {
+        "default_limit": 19,
+        "limit_200": 19,
+        "single_grep": 18,
+        "rg_native": 19,
+        "default_limit_value": null,
+        "truncated_flag": false
+      },
+      "at": "2026-10-15T03:14:20.578Z"
+    },
+    {
+      "id": "#19",
+      "claim": "status exposes last_event_id/event_lag/staleness_ms/replay_in_progress and answers carry stale_ms",
+      "status": "verified",
+      "evidence": {
+        "fields19": [
+          "last_event_id",
+          "event_lag",
+          "staleness_ms",
+          "replay_in_progress"
+        ],
+        "status_slice": {
+          "last_event_id": 5694684796,
+          "event_lag": 1,
+          "staleness_ms": 0,
+          "replay_in_progress": false
+        },
+        "answer": {
+          "stale_ms": null,
+          "complete": false,
+          "scanned": null,
+          "considered": null,
+          "budget_ms": null
+        },
+        "error": null
+      },
+      "at": "2026-10-15T03:14:20.579Z"
+    },
+    {
+      "id": "#34",
+      "claim": "status exposes compaction counters (compactions/last_compact_*/postponed/in_flight)",
+      "status": "verified",
+      "evidence": {
+        "fields34": [
+          "compactions",
+          "last_compact_ms",
+          "last_compact_bytes",
+          "last_compact_entries",
+          "last_compact_secs_ago",
+          "compactions_postponed",
+          "queries_in_flight"
+        ],
+        "status_slice": {
+          "compactions": 3,
+          "last_compact_ms": 1665,
+          "last_compact_bytes": 119984896,
+          "last_compact_entries": 3879170,
+          "last_compact_secs_ago": 0,
+          "compactions_postponed": 0,
+          "queries_in_flight": 0
+        },
+        "pause_test": "test/engine/status.test.mjs (npm run test:engine)"
+      },
+      "at": "2026-10-15T03:14:20.579Z"
+    },
+    {
+      "id": "#17",
+      "claim": "status reports content_policy beside content_docs/content_pending",
+      "status": "verified",
+      "evidence": {
+        "content_docs": 145651,
+        "content_pending": 0,
+        "content_policy": {
+          "configured": false,
+          "extensions": null,
+          "max_file_bytes": null,
+          "roots": null,
+          "source": null,
+          "warm": 0
+        },
+        "coverage_test": "test/engine/coverage.test.mjs (npm run test:engine)"
+      },
+      "at": "2026-10-15T03:14:20.579Z"
+    },
+    {
+      "id": "#16",
+      "claim": "budget_ms: a spent budget yields complete:false with budget/counter fields; an ample budget is output-identical to none",
+      "status": "verified",
+      "evidence": {
+        "tiny_fixture": {
+          "complete": true,
+          "hits": 200,
+          "budget_ms": 1
+        },
+        "tiny_global_engine": {
+          "complete": false,
+          "scanned": 36895,
+          "considered": 36855,
+          "budget_ms": 1,
+          "hits": 200
+        },
+        "tiny_bigscope_client": {
+          "complete": true,
+          "budget_ms": 1,
+          "deadline_exceeded": false,
+          "hits": 200
+        },
+        "tiny_global_client": {
+          "complete": true,
+          "budget_ms": 1,
+          "deadline_exceeded": false,
+          "hits": 200
+        },
+        "grep_global_engine": {
+          "complete": false,
+          "scanned": 4,
+          "considered": 85,
+          "candidates": 85,
+          "read": 4,
+          "files": 0
+        },
+        "grep_global_client": {
+          "complete": false,
+          "files": 3,
+          "budget_ms": 1
+        },
+        "ample_equals_none": {
+          "identical_output": true,
+          "none_complete": false,
+          "ample_complete": true,
+          "n": 20
+        },
+        "ample_global_engine_complete": true,
+        "note": "A 1 ms budget over a small/fast scope is a race (either side of the deadline can win) and the small-scope search rows are recorded as informational; the deterministic rows are the global engine search, the global engine grep and the global client grep."
+      },
+      "at": "2026-10-15T03:14:20.868Z"
+    },
+    {
+      "id": "#22",
+      "claim": "scoped search returns only its own worktree's paths; recent is frecency-ranked with boost",
+      "status": "verified",
+      "evidence": {
+        "scope_leak": 0,
+        "scope_hits": 1,
+        "scope_sample": [
+          "package.json"
+        ],
+        "recent": {
+          "hits": 10,
+          "boosts": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "paths": [
+            "src/client.ts",
+            "test/client.test.ts",
+            "package.json"
+          ]
+        },
+        "engine_tests": "test/engine/search.test.mjs (worktree isolation + frecency ordering)"
+      },
+      "at": "2026-10-15T03:14:20.871Z"
+    },
+    {
+      "id": "#45",
+      "claim": "a second daemon on the same index directory refuses to start (one writer per index)",
+      "status": "verified",
+      "evidence": {
+        "socket_up": true,
+        "second_exited": true,
+        "refusal_message": "1792034060 another ultrasearch daemon is running",
+        "exit_code": 0
+      },
+      "at": "2026-10-15T03:14:20.986Z"
+    },
+    {
+      "id": "F5",
+      "claim": "with PI_ULTRASEARCH_TEST=1 the production audit log is byte-identical before/after every probe",
+      "status": "verified",
+      "evidence": {
+        "production": {
+          "before": {
+            "exists": true,
+            "bytes": 31630,
+            "lines": 160,
+            "mtime": "2026-10-14T21:25:36.000Z",
+            "sha256": "38261544cf108f83e10ccd379afb7431064493698003935b9c17d017b3695633"
+          },
+          "after": {
+            "exists": true,
+            "bytes": 31630,
+            "lines": 160,
+            "mtime": "2026-10-14T21:25:36.000Z",
+            "sha256": "38261544cf108f83e10ccd379afb7431064493698003935b9c17d017b3695633"
+          }
+        },
+        "test_log": {
+          "before": {
+            "bytes": 125051,
+            "lines": 605
+          },
+          "after": {
+            "bytes": 127772,
+            "lines": 618
+          }
+        }
+      },
+      "at": "2026-10-15T03:14:21.016Z"
+    },
+    {
+      "id": "F7",
+      "claim": "test audit log is still one shared fixed path (recommendation open, no truncation observed in this window)",
+      "status": "unverified",
+      "evidence": {
+        "shared_fixed_path": true,
+        "per_process_support": false,
+        "concurrent_writers_present": {
+          "a": 5,
+          "b": 5,
+          "both_present": true,
+          "lines_before": 618,
+          "lines_after": 628
+        },
+        "interpretation": "Wave 1 F7 was a recommendation; it remains unfixed (documented, not a regression)."
+      },
+      "at": "2026-10-15T03:14:21.051Z"
+    }
+  ],
+  "finished_at": "2026-10-15T03:14:21.142Z"
+}

@@ -1,0 +1,488 @@
+{
+  "meta": {
+    "suite": "latency-rename-neutral",
+    "wave": "wave1/verify-final",
+    "generated_at": "2026-10-15T04:24:13.856Z",
+    "status": "provisional",
+    "repo_root": "/Users/batra/ultrasearch-verify",
+    "commit": "3135e282785e0ee97f771db99ae20f25f3817191",
+    "patterns": {
+      "rows": [
+        "resolveDefaultSocketPath",
+        "export class"
+      ],
+      "multi": [
+        "resolveDefaultSocketPath",
+        "recordAudit"
+      ]
+    },
+    "note": "Variant of bench/baseline/latency.mjs with rename-neutral repo patterns; same method (alternating A/B, n=30, seeded bootstrap CI).",
+    "machine": {
+      "chip": "Apple M1 Pro",
+      "model": "MacBookPro18,1",
+      "macos": "27.0.1",
+      "kernel": "27.0.0",
+      "node": "v26.11.1",
+      "v8": "14.6.202.34-node.37",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "arch": "arm64",
+      "platform": "darwin",
+      "cpuCount": 10,
+      "totalMemBytes": 17179869184,
+      "loadavg_at_start": [
+        20.9033203125,
+        15.25830078125,
+        9.2470703125
+      ]
+    },
+    "daemon": {
+      "compactions": 3,
+      "compactions_postponed": 0,
+      "content_bytes": 169854336,
+      "content_docs": 145651,
+      "content_pending": 0,
+      "content_policy": {
+        "configured": false,
+        "extensions": null,
+        "max_file_bytes": null,
+        "roots": null,
+        "source": null,
+        "warm": 0
+      },
+      "content_segments": 43,
+      "deny_configured": false,
+      "deny_rules": 0,
+      "dirs": 630183,
+      "entries": 3879170,
+      "event_id": 5695246736,
+      "event_lag": 1,
+      "full_disk_access": true,
+      "id": 1,
+      "index_bytes": 119984896,
+      "last_compact_bytes": 119984896,
+      "last_compact_entries": 3879170,
+      "last_compact_ms": 1665,
+      "last_compact_secs_ago": 0,
+      "last_event_id": 5695246737,
+      "ok": true,
+      "overlay": 8335,
+      "owner": true,
+      "queries_in_flight": 0,
+      "removed": 1184,
+      "replay_in_progress": false,
+      "staleness_ms": 0
+    },
+    "environment": {
+      "status": "provisional",
+      "gate_pass": false,
+      "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "gate_load1_max": 1.5,
+      "checks": {
+        "ac_power": true,
+        "load1_lt_gate": false,
+        "no_cargo_rustc": true
+      },
+      "power": {
+        "on_ac": true,
+        "percent": 100,
+        "discharging": false,
+        "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+      },
+      "loadavg": [
+        20.9033203125,
+        15.25830078125,
+        9.2470703125
+      ],
+      "competing_processes": [],
+      "daemon_processes": [
+        "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+      ],
+      "daemon_pid": "8887",
+      "daemon_status": {
+        "ok": true,
+        "entries": 3879170,
+        "content_docs": 145651,
+        "content_pending": 0,
+        "index_bytes": 119984896,
+        "content_bytes": 169854336,
+        "full_disk_access": true
+      },
+      "checked_at": "2026-10-15T04:24:13.751Z",
+      "pre_run": {
+        "status": "provisional",
+        "gate_pass": false,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": true,
+          "load1_lt_gate": false,
+          "no_cargo_rustc": true
+        },
+        "power": {
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+        },
+        "loadavg": [
+          20.9033203125,
+          15.25830078125,
+          9.2470703125
+        ],
+        "competing_processes": [],
+        "daemon_processes": [
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "8887",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3879170,
+          "content_docs": 145651,
+          "content_pending": 0,
+          "index_bytes": 119984896,
+          "content_bytes": 169854336,
+          "full_disk_access": true
+        },
+        "checked_at": "2026-10-15T04:24:13.751Z"
+      },
+      "end_of_run": {
+        "status": "provisional",
+        "gate_pass": false,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": true,
+          "load1_lt_gate": false,
+          "no_cargo_rustc": true
+        },
+        "power": {
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+        },
+        "loadavg": [
+          20.9033203125,
+          15.25830078125,
+          9.2470703125
+        ],
+        "competing_processes": [],
+        "daemon_processes": [
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "8887",
+        "daemon_status": null,
+        "checked_at": "2026-10-15T04:24:13.856Z"
+      },
+      "degraded_during_run": false
+    },
+    "loadavg_end": [
+      20.9033203125,
+      15.25830078125,
+      9.2470703125
+    ],
+    "pi_ultrasearch_test": "1"
+  },
+  "results": {
+    "repo__grep_neutral_symbol": {
+      "label": "repo__grep_neutral_symbol",
+      "paired_alternation": true,
+      "n": 30,
+      "warmup": 2,
+      "us": {
+        "n": 30,
+        "min": 69.29112499999997,
+        "max": 76.00958400000013,
+        "mean": 71.07179873333338,
+        "median": 70.93258350000019,
+        "p50": 70.93258350000019,
+        "p95": 72.91081059999996,
+        "median_ci95": [
+          70.5267715,
+          71.20506199999988
+        ],
+        "samples": [
+          71.34816700000005,
+          71.684125,
+          71.15308299999992,
+          70.58958400000006,
+          71.13649999999996,
+          70.66475000000003,
+          71.43316700000003,
+          70.882833,
+          71.93325000000004,
+          76.00958400000013,
+          70.18287499999997,
+          72.69587499999989,
+          71.22704099999987,
+          70.00962500000014,
+          71.1830829999999,
+          71.3347920000001,
+          70.15137499999992,
+          70.46395899999993,
+          73.08666700000003,
+          69.29112499999997,
+          70.34737500000028,
+          70.35249999999996,
+          70.89029200000004,
+          70.82075000000032,
+          69.8130000000001,
+          69.48458399999981,
+          70.97487500000034,
+          70.32741699999997,
+          71.64829200000031,
+          71.0334170000001
+        ]
+      },
+      "native": {
+        "n": 30,
+        "min": 8.928667000000132,
+        "max": 16.35566700000004,
+        "mean": 12.754261033333318,
+        "median": 12.848459000000048,
+        "p50": 12.848459000000048,
+        "p95": 14.842028800000014,
+        "median_ci95": [
+          12.402583500000105,
+          13.104686999999899
+        ],
+        "samples": [
+          9.593624999999975,
+          13.08216600000003,
+          12.128332999999998,
+          16.35566700000004,
+          12.737583000000086,
+          13.085665999999947,
+          12.529084000000012,
+          14.358165999999983,
+          12.934708,
+          12.745666999999912,
+          14.727125000000115,
+          10.522875000000113,
+          11.442457999999988,
+          12.536417000000029,
+          12.872084000000086,
+          14.936040999999932,
+          13.123707999999851,
+          11.631374999999935,
+          12.82483400000001,
+          13.496707999999899,
+          8.928667000000132,
+          11.689374999999927,
+          13.330500000000029,
+          12.040457999999944,
+          12.996707999999671,
+          11.634958000000097,
+          13.704457999999704,
+          12.276083000000199,
+          13.645375000000058,
+          14.71695899999986
+        ]
+      },
+      "us_errors": [],
+      "us_hits_last": 9,
+      "native_hits_last": 9,
+      "native_cmd": "rg -l --no-messages --color never 'resolveDefaultSocketPath' /Users/batra/ultrasearch-verify"
+    },
+    "repo__grep_neutral_class": {
+      "label": "repo__grep_neutral_class",
+      "paired_alternation": true,
+      "n": 30,
+      "warmup": 2,
+      "us": {
+        "n": 30,
+        "min": 67.0712080000003,
+        "max": 158.38416700000016,
+        "mean": 76.24564863333337,
+        "median": 70.56895850000024,
+        "p50": 70.56895850000024,
+        "p95": 117.37339620000026,
+        "median_ci95": [
+          70.08779200000004,
+          70.98281249999991
+        ],
+        "samples": [
+          73.10325000000012,
+          69.50883299999987,
+          68.85687499999995,
+          70.40404200000012,
+          70.0890000000004,
+          70.52541700000029,
+          69.90525000000025,
+          70.49479199999996,
+          71.39024999999992,
+          70.67212500000005,
+          71.5205420000002,
+          67.0712080000003,
+          158.38416700000016,
+          71.65837499999998,
+          152.99295900000016,
+          69.71070799999961,
+          71.02558299999964,
+          70.61250000000018,
+          70.94004200000018,
+          73.83837500000027,
+          71.09441700000025,
+          70.69041600000037,
+          72.43883300000016,
+          69.53570799999943,
+          70.03637499999968,
+          70.2903750000005,
+          69.55825000000004,
+          70.04774999999972,
+          70.08658399999968,
+          70.88645799999995
+        ]
+      },
+      "native": {
+        "n": 30,
+        "min": 8.756083999999646,
+        "max": 18.656208000000333,
+        "mean": 13.133802666666709,
+        "median": 13.175666500000261,
+        "p50": 13.175666500000261,
+        "p95": 16.836477049999758,
+        "median_ci95": [
+          12.692562500000122,
+          14.007186999999703
+        ],
+        "samples": [
+          13.63604099999975,
+          14.703290999999808,
+          14.527082999999948,
+          12.719625000000178,
+          12.90783300000021,
+          14.646041999999852,
+          14.383041999999932,
+          13.275625000000218,
+          11.894333000000188,
+          8.863374999999905,
+          12.730332999999519,
+          17.01233299999967,
+          14.378332999999657,
+          18.656208000000333,
+          13.42595799999981,
+          8.756083999999646,
+          16.621541999999863,
+          13.204500000000735,
+          12.882499999999709,
+          8.97412500000064,
+          9.861791999999696,
+          12.564457999999831,
+          12.337709000000359,
+          13.146832999999788,
+          12.665500000000065,
+          11.45116599999983,
+          14.962750000000597,
+          15.150833000000603,
+          13.383583000000726,
+          10.291250000000218
+        ]
+      },
+      "us_errors": [],
+      "us_hits_last": 5,
+      "native_hits_last": 13,
+      "native_cmd": "rg -l --no-messages --color never 'export class' /Users/batra/ultrasearch-verify"
+    },
+    "repo__multi_grep_neutral": {
+      "label": "repo__multi_grep_neutral",
+      "paired_alternation": true,
+      "n": 30,
+      "warmup": 2,
+      "us": {
+        "n": 30,
+        "min": 138.4659160000001,
+        "max": 145.24270799999977,
+        "mean": 142.09626946666657,
+        "median": 141.8070630000002,
+        "p50": 141.8070630000002,
+        "p95": 145.1559769000005,
+        "median_ci95": [
+          141.32658300000003,
+          142.6633750000001
+        ],
+        "samples": [
+          138.4659160000001,
+          141.24437500000022,
+          142.91883300000063,
+          143.42833299999984,
+          141.40879099999984,
+          144.7340839999997,
+          141.6552499999998,
+          140.2099589999998,
+          140.42933400000038,
+          140.47237499999937,
+          139.87579199999982,
+          141.8305419999997,
+          142.44845899999927,
+          141.1579160000001,
+          141.96470799999952,
+          142.6860830000005,
+          145.2425830000011,
+          140.21987499999886,
+          145.24270799999977,
+          141.7835840000007,
+          141.56683300000077,
+          144.4839579999989,
+          140.2014589999999,
+          140.74654200000077,
+          142.3416249999991,
+          142.64066699999967,
+          143.51645800000006,
+          141.46879199999967,
+          143.4521249999998,
+          145.05012499999975
+        ]
+      },
+      "native": {
+        "n": 30,
+        "min": 9.055000000000291,
+        "max": 14.606041999999434,
+        "mean": 12.0059374999998,
+        "median": 12.245312500000182,
+        "p50": 12.245312500000182,
+        "p95": 14.505866699999297,
+        "median_ci95": [
+          11.276229000000058,
+          12.968999999999141
+        ],
+        "samples": [
+          12.105290999999852,
+          14.606041999999434,
+          11.030958999999712,
+          12.946874999999636,
+          11.386582999999519,
+          11.219624999999724,
+          13.762124999999287,
+          12.948040999999648,
+          12.159332999999606,
+          13.035041000000092,
+          9.221540999998979,
+          12.938207999999577,
+          12.968999999999141,
+          9.72674999999981,
+          13.101542000000336,
+          10.156750000000102,
+          13.054374999999709,
+          9.055000000000291,
+          9.878917000000001,
+          10.789542000000438,
+          11.5797079999993,
+          13.02874999999949,
+          14.592416999999841,
+          9.742167000000336,
+          12.90845900000022,
+          13.567542000000685,
+          10.60333399999945,
+          11.332833000000392,
+          12.331292000000758,
+          14.40008299999863
+        ]
+      },
+      "us_errors": [],
+      "us_hits_last": 27,
+      "native_hits_last": 27,
+      "native_cmd": "rg -l --no-messages -e resolveDefaultSocketPath -e recordAudit /Users/batra/ultrasearch-verify"
+    }
+  }
+}

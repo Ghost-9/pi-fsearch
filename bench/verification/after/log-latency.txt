@@ -1,0 +1,30 @@
+[bench] latency baseline starting — n=30
+[bench] client module loaded from /Users/batra/ultrasearch-verify/src/client.ts
+[bench] environment gate: provisional (ac=true, load1<1.5=false, no-cargo=true)
+[bench] scope repo: 834 files at /Users/batra/ultrasearch-verify
+[bench] scope fixture: 5005 files at /Users/batra/.cache/pi-ultrasearch-bench/fixture-5k
+[bench] scope search: 526 files at /Users/batra/Search
+[bench] done repo: path/grep/multi
+[bench] done fixture: path/grep/multi
+[bench] done search: path/grep/multi
+[bench] done global locate
+[bench] done recent
+[bench] done ping
+[bench] done CLI e2e supplement
+
+=== LATENCY BASELINE (median ms [95% CI], p95) ===
+run                                     n    US median      US CI95       US p95native median  native CI95   native p95
+repo__path_search                      30        0.766[0.743,0.844]        1.163        7.193[6.942,7.290]        8.508
+repo__grep                             30        1.827[1.815,1.885]        2.073        8.816[7.884,9.255]        9.931
+repo__multi_grep                       30        15.35[15.25,15.48]        16.09        8.414[8.301,9.619]        10.85
+fixture__path_search                   30        0.598[0.585,0.625]        0.687        17.66[17.45,17.87]        20.00
+fixture__grep                          30        37.67[37.52,37.94]        40.57        46.96[46.32,47.48]        55.94
+fixture__multi_grep                    30        74.29[74.07,75.56]        78.34        49.86[49.26,50.09]        51.34
+search__path_search                    30        0.626[0.601,0.659]        0.812        6.928[6.234,7.005]        7.522
+search__grep                           30        0.454[0.430,0.469]        0.549        8.770[7.692,8.900]        9.136
+search__multi_grep                     30        0.704[0.674,0.719]        0.765        8.823[8.692,8.956]        9.152
+global__locate                         30        0.741[0.734,0.761]        0.857        44.53[44.05,45.16]        46.40
+repo__recent                           30        0.235[0.214,0.301]        0.562            —            —            —
+global__ping                           30        0.021[0.021,0.026]        0.036            —            —            —
+
+raw JSON: /Users/batra/ultrasearch-verify/bench/baseline/results/latency-2026-10-15.json

@@ -1,0 +1,18 @@
+{
+  "mode": "before",
+  "worktree": "/Users/batra/.cache/us-verify/before",
+  "home": "/Users/batra/.cache/us-verify/before-home",
+  "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2",
+  "branch": "",
+  "started_at": "2026-10-14T23:30:02Z",
+  "steps": [
+    {"step": "make-fixture", "exit": 0, "seconds": 0}    ,
+    {"step": "latency", "exit": 0, "seconds": 18}    ,
+    {"step": "equivalence", "exit": 0, "seconds": 4}    ,
+    {"step": "tokens", "exit": 0, "seconds": 0}    ,
+    {"step": "zeroresult", "exit": 0, "seconds": 3}    ,
+    {"step": "make-corpus", "exit": 0, "seconds": 0}    ,
+    {"step": "judgments", "exit": 0, "seconds": 33}
+  ],
+  "finished_at": "2026-10-14T23:31:01Z"
+}

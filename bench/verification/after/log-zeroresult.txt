@@ -1,0 +1,25 @@
+[bench] environment gate: final
+[bench] a1 path absent zero_hit_rate=5/5
+[bench] a2 path absent zero_hit_rate=5/5
+[bench] a3 path absent zero_hit_rate=5/5
+[bench] a4 grep absent zero_hit_rate=5/5
+[bench] a5 grep absent zero_hit_rate=5/5
+[bench] a6 grep absent zero_hit_rate=5/5
+[bench] b1 path present zero_hit_rate=0/5
+[bench] b2 path present zero_hit_rate=0/5
+[bench] b3 path present zero_hit_rate=0/5
+[bench] b4 grep present zero_hit_rate=0/5
+[bench] b5 grep present zero_hit_rate=0/5
+[bench] b6 grep present zero_hit_rate=0/5
+
+=== ZERO-RESULT / FALLBACK BASELINE ===
+absent  zero-hit rate: 1.000 (expect 1.0)
+present miss rate:     0.000 (expect 0.0)
+my audit rows:         60
+source counts:         {"index":40,"scan":20}
+native fallback rate:  0
+audit rows by others:  0 (shared file)
+
+raw JSON: /Users/batra/ultrasearch-verify/bench/baseline/results/zeroresult-baseline.json
+
+DAEMON before/after: true/true · loadavg 4.65,3.19,3.34

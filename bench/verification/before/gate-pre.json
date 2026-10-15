@@ -1,0 +1,17 @@
+{
+ "status": "final",
+ "gate_pass": true,
+ "checks": {
+  "ac_power": true,
+  "load1_lt_gate": true,
+  "no_cargo_rustc": true
+ },
+ "ac_power": true,
+ "battery_percent": 100,
+ "discharging": false,
+ "load1": 1.46,
+ "competing_processes": [],
+ "daemon_pid": "8887",
+ "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+ "checked_at": "2026-10-14T23:30:03.053Z"
+}

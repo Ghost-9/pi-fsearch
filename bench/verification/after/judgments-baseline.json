@@ -1,0 +1,2117 @@
+{
+  "meta": {
+    "suite": "judgments",
+    "wave": "wave1/baseline",
+    "generated_at": "2026-10-14T20:38:50.603Z",
+    "date_short": "2026-10-14",
+    "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2",
+    "branch": "wave1/baseline",
+    "machine": {
+      "chip": "Apple M1 Pro",
+      "model": "MacBookPro18,1",
+      "macos": "27.0.1",
+      "kernel": "27.0.0",
+      "node": "v26.11.1",
+      "v8": "14.6.202.34-node.37",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "arch": "arm64",
+      "platform": "darwin",
+      "cpuCount": 10,
+      "totalMemBytes": 17179869184,
+      "loadavg_at_start": [
+        7.83251953125,
+        5.5908203125,
+        5.005859375
+      ]
+    },
+    "daemon": {
+      "content_bytes": 142315072,
+      "content_docs": 129704,
+      "content_pending": 0,
+      "content_segments": 38,
+      "dirs": 630228,
+      "entries": 3924305,
+      "event_id": 5678118891,
+      "full_disk_access": true,
+      "id": 1,
+      "index_bytes": 125001088,
+      "ok": true,
+      "overlay": 301,
+      "owner": true,
+      "removed": 122
+    },
+    "judgments": {
+      "path": "/Users/batra/.pi/agent/extensions/pi-ultrasearch/bench/judgments/wave1-judgments.json",
+      "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+      "schema": "ultrasearch.judgments/v1",
+      "version": 1,
+      "author": "wave1/advisor",
+      "query_count": 30,
+      "negatives": 4,
+      "must_hit": 26
+    },
+    "corpus": {
+      "id": "ultrasearch-repo@0a16e50",
+      "root": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-0a16e50",
+      "source": "clean-archive",
+      "clean_archive": {
+        "files": 33,
+        "tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "generated_at": "2026-10-14T20:38:41.530Z"
+      },
+      "files_found": 33,
+      "files_declared": 33,
+      "files_match_declared": true,
+      "commit": "0a16e50",
+      "dirty": false,
+      "spoiler_note": null
+    },
+    "metric_definitions": {
+      "recall_at_k": "rel = expected grade>=1; |rel in top-k| / |rel|",
+      "success_recall_at_10": "rel = expected grade>=2",
+      "mrr_at_10_rel2": "1/rank of first grade>=2 result, else 0 (rel1 variant also recorded)",
+      "ndcg_at_10": "gain=2^grade-1, discount=1/log2(rank+1), IDCG over all expected grades (linear variant recorded)",
+      "reformulation_signal": "top-1 grade < 2",
+      "zero_result_rate": "must_hit queries with 0 retrieved / must_hit queries",
+      "false_positive_rate": "negative queries with retrieved>0 (or, for R3, no actionable error) / negative queries"
+    },
+    "audit_note": "PI_ULTRASEARCH_TEST=1; R3 audit-row detection uses the isolated test audit log window.",
+    "frecency_precondition": {
+      "open_result": true,
+      "wait_ms": 30000
+    },
+    "status": "provisional",
+    "environment": {
+      "status": "provisional",
+      "gate_pass": false,
+      "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "gate_load1_max": 1.5,
+      "checks": {
+        "ac_power": false,
+        "load1_lt_gate": false,
+        "no_cargo_rustc": false
+      },
+      "power": {
+        "on_ac": false,
+        "percent": 19,
+        "discharging": true,
+        "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t19%; discharging; 0:36 remaining present: true"
+      },
+      "loadavg": [
+        7.83251953125,
+        5.5908203125,
+        5.005859375
+      ],
+      "competing_processes": [
+        "22412 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+        "22414 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        "23431 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        "23433 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        "23435 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc"
+      ],
+      "daemon_processes": [
+        "19684 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+      ],
+      "daemon_pid": "19684",
+      "daemon_status": {
+        "ok": true,
+        "entries": 3924305,
+        "content_docs": 129704,
+        "content_pending": 0,
+        "index_bytes": 125001088,
+        "content_bytes": 142315072,
+        "full_disk_access": true
+      },
+      "checked_at": "2026-10-14T20:38:50.601Z",
+      "pre_run": {
+        "status": "provisional",
+        "gate_pass": false,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": false,
+          "load1_lt_gate": false,
+          "no_cargo_rustc": false
+        },
+        "power": {
+          "on_ac": false,
+          "percent": 19,
+          "discharging": true,
+          "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t19%; discharging; 0:36 remaining present: true"
+        },
+        "loadavg": [
+          7.83251953125,
+          5.5908203125,
+          5.005859375
+        ],
+        "competing_processes": [
+          "22412 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+          "22414 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+          "23431 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+          "23433 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+          "23435 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc"
+        ],
+        "daemon_processes": [
+          "19684 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "19684",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3924305,
+          "content_docs": 129704,
+          "content_pending": 0,
+          "index_bytes": 125001088,
+          "content_bytes": 142315072,
+          "full_disk_access": true
+        },
+        "checked_at": "2026-10-14T20:38:50.601Z"
+      },
+      "end_of_run": {
+        "status": "provisional",
+        "gate_pass": false,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": false,
+          "load1_lt_gate": false,
+          "no_cargo_rustc": true
+        },
+        "power": {
+          "on_ac": false,
+          "percent": 19,
+          "discharging": true,
+          "raw": "Now drawing from 'Battery Power' |  -InternalBattery-0 (id=23003235)\t19%; discharging; 0:36 remaining present: true"
+        },
+        "loadavg": [
+          5.69140625,
+          5.27880859375,
+          4.91162109375
+        ],
+        "competing_processes": [],
+        "daemon_processes": [
+          "19684 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "19684",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3924305,
+          "content_docs": 129704,
+          "content_pending": 0,
+          "index_bytes": 125001088,
+          "content_bytes": 142315072,
+          "full_disk_access": true
+        },
+        "checked_at": "2026-10-14T20:39:22.877Z"
+      },
+      "degraded_during_run": true
+    }
+  },
+  "aggregates": {
+    "must_hit_queries": 26,
+    "negatives": 4,
+    "recall_at_1": 0.4881410256410257,
+    "recall_at_3": 0.5987179487179487,
+    "recall_at_5": 0.6240384615384615,
+    "recall_at_10": 0.6737179487179487,
+    "success_recall_at_10": 0.75,
+    "mrr_at_10_rel1": 0.9134615384615384,
+    "mrr_at_10_rel2": 0.7099358974358976,
+    "ndcg_at_10": 0.7049628673114833,
+    "ndcg_at_10_linear": 0.6991242618971595,
+    "zero_result_rate": 0.038461538461538464,
+    "false_positive_rate": 0.5,
+    "reformulation_signal": 0.34615384615384615,
+    "reformulation_by_lane": {
+      "path": 0,
+      "grep-literal": 0.4,
+      "grep-regex": 0.5,
+      "symbol": 0.25,
+      "semantic": 1,
+      "ranking-frecency": 0,
+      "ranking-proximity": 0,
+      "ranking-boost-ab": 0,
+      "ranking-symbol-intrafile": 0
+    },
+    "ndcg_by_lane": {
+      "path": 0.9174054120491127,
+      "grep-literal": 0.8577147704812331,
+      "grep-regex": 0.6690609917958155,
+      "symbol": 0.636622777806004,
+      "semantic": 0.19358514107060285,
+      "ranking-frecency": 0.9173194127129571,
+      "ranking-proximity": 0.8609101556836468,
+      "ranking-boost-ab": 0.9052598568324595,
+      "ranking-symbol-intrafile": 1
+    },
+    "semantic_ndcg_at_10": 0.19358514107060285,
+    "acceptance_gates": {
+      "recall@10 == 1.00 on all must_hit queries": {
+        "observed": 0.6737179487179487,
+        "pass": false
+      },
+      "zero_result_rate == 0.00 on must_hit queries": {
+        "observed": 0.038461538461538464,
+        "pass": false
+      },
+      "false_positive_rate == 0.00 on the 4 negative queries (spec text says 5)": {
+        "observed": 0.5,
+        "pass": false
+      },
+      "nDCG@10 >= 0.75 overall": {
+        "observed": 0.7049628673114833,
+        "pass": false
+      },
+      "nDCG@10 >= 0.60 semantic lane": {
+        "observed": 0.19358514107060285,
+        "pass": false
+      },
+      "reformulation_signal <= 0.20 overall": {
+        "observed": 0.34615384615384615,
+        "pass": false
+      },
+      "reformulation_signal <= 0.35 per lane": {
+        "observed": {
+          "path": 0,
+          "grep-literal": 0.4,
+          "grep-regex": 0.5,
+          "symbol": 0.25,
+          "semantic": 1,
+          "ranking-frecency": 0,
+          "ranking-proximity": 0,
+          "ranking-boost-ab": 0,
+          "ranking-symbol-intrafile": 0
+        },
+        "pass": false
+      }
+    },
+    "acceptance_all_pass": false,
+    "acceptance_source": [
+      "recall@10 == 1.00 on all must_hit queries",
+      "zero_result_rate == 0.00 on must_hit queries",
+      "false_positive_rate == 0.00 on the 5 negative queries",
+      "nDCG@10 >= 0.75 overall and >= 0.60 for the semantic lane (the lane with the weakest ranking evidence)",
+      "reformulation_signal <= 0.20 overall",
+      "ranking-claim deltas reported as paired per-query nDCG/MRR with CI; a claim ships only if the CI excludes 0 and the point delta is >= +0.05 nDCG@10"
+    ]
+  },
+  "queries": [
+    {
+      "id": "P1",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "package.json",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"package.json\", in=<root>, limit=10)",
+      "ms": 9.172999999998865,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "package.json"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "package.json",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P2",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "ci.yml",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"ci.yml\", in=<root>, limit=10)",
+      "ms": 3.643707999999606,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        ".github/workflows/ci.yml"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": ".github/workflows/ci.yml",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P3",
+      "lane": "path",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "client.ts",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"client.ts\", in=<root>, limit=10)",
+      "ms": 2.458542000000307,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.7871546029909718,
+        "ndcg_at_10_linear": 0.7039180890341347,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P5",
+      "lane": "path",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "bench",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"bench\", in=<root>, limit=10)",
+      "ms": 2.511624999999185,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts",
+        "test/deep-bench.ts"
+      ],
+      "retrieved_count": 3,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "test/bench.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 3
+          },
+          {
+            "rank": 3,
+            "path": "test/deep-bench.ts",
+            "grade": 2
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P6",
+      "lane": "path",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "codemode",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"codemode\", in=<root>, limit=10)",
+      "ms": 2.6365829999995185,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/codemode.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/codemode.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "ndcg_at_10_linear": 0.7262287617954056,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P7",
+      "lane": "path",
+      "difficulty": "tail",
+      "must_hit": true,
+      "negative": false,
+      "query": "src/**/*.ts",
+      "params": {
+        "limit": 30
+      },
+      "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
+      "ms": 1.7759580000019923,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts",
+        "src/observer.ts",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts"
+      ],
+      "retrieved_count": 12,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "src/codemode.ts",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "src/compactor.ts",
+            "grade": 2
+          },
+          {
+            "rank": 4,
+            "path": "src/formatter.ts",
+            "grade": 3
+          },
+          {
+            "rank": 5,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "src/observer.ts",
+            "grade": 2
+          },
+          {
+            "rank": 7,
+            "path": "src/recursive-learning.ts",
+            "grade": 2
+          },
+          {
+            "rank": 8,
+            "path": "src/sanitize.ts",
+            "grade": 2
+          },
+          {
+            "rank": 9,
+            "path": "src/semantic.ts",
+            "grade": 2
+          },
+          {
+            "rank": 10,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.125,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.375,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8563677136200579,
+        "ndcg_at_10_linear": 0.8738213125071915,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "P8",
+      "lane": "path",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "kubectl_helm_chart_values",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
+      "ms": 2.1205840000002354,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [],
+      "retrieved_count": 0,
+      "control": null,
+      "extra": null,
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "G1",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "estimateTokensSaved",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
+      "ms": 3.3892500000001746,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "src/telemetry.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 2,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 0.5,
+        "ndcg_at_10": 0.7098097413968655,
+        "ndcg_at_10_linear": 0.7967075809905066,
+        "top1_grade": 1,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G2",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "enforceExactQuery",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
+      "ms": 1.8493749999979627,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G3",
+      "lane": "grep-literal",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "SYMBOL_REGEX",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
+      "ms": 1.2559590000018943,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/formatter.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/formatter.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G4",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "fsearch.sock",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
+      "ms": 1.0032500000015716,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "CHANGELOG.md",
+        "src/client.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "src/client.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 0.5,
+        "mrr_at_10_rel2": 0.5,
+        "ndcg_at_10": 0.5787641110093001,
+        "ndcg_at_10_linear": 0.52129602861432,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G5",
+      "lane": "grep-literal",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "150 + hitCount",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
+      "ms": 1.5253750000010768,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/telemetry.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/telemetry.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "G6",
+      "lane": "grep-literal",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+      "params": {
+        "limit": 10
+      },
+      "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
+      "ms": 1.3082909999975527,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [],
+      "retrieved_count": 0,
+      "control": null,
+      "extra": null,
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "R1",
+      "lane": "grep-regex",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "class\\s+\\w+Client",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
+      "ms": 2.735625000001164,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "R2",
+      "lane": "grep-regex",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
+      "ms": 1.2422919999989972,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "index.ts",
+        "src/client.ts",
+        "src/compactor.ts",
+        "src/observer.ts",
+        "src/recursive-learning.ts"
+      ],
+      "retrieved_count": 10,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 2,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 4,
+            "path": "README.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "src/client.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "src/compactor.ts",
+            "grade": 3
+          },
+          {
+            "rank": 9,
+            "path": "src/observer.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "src/recursive-learning.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.16666666666666666,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 0.125,
+        "ndcg_at_10": 0.338121983591631,
+        "ndcg_at_10_linear": 0.4143435360898708,
+        "top1_grade": 1,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "R3",
+      "lane": "grep-regex",
+      "difficulty": "adversarial",
+      "must_hit": false,
+      "negative": true,
+      "query": "(a+)+$",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
+      "ms": 1.489041000000725,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "zero_result": false,
+      "error_class": "no_error",
+      "false_positive": true,
+      "audit_row_present": true,
+      "reached_socket_or_recorder": true
+    },
+    {
+      "id": "S1",
+      "lane": "symbol",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+      "ms": 1.5709999999999127,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.2,
+        "recall_at_3": 0.2,
+        "recall_at_5": 0.2,
+        "recall_at_10": 0.2,
+        "success_recall_at_10": 0.5,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.6855809555403688,
+        "ndcg_at_10_linear": 0.5376932973453407,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "S2",
+      "lane": "symbol",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "detectSymbolTag",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
+      "ms": 2.085291999999754,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/formatter.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/formatter.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "S3",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "applyProximityRanking",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
+      "ms": 1.3304580000003625,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [],
+      "retrieved_count": 0,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [],
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 0,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0,
+        "ndcg_at_10_linear": 0,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": true,
+      "false_positive": null
+    },
+    {
+      "id": "S4",
+      "lane": "symbol",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "resolveWorktreeRoot",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
+      "ms": 1.247457999998005,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "index.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "index.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "ndcg_at_10_linear": 0.7262287617954056,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M1",
+      "lane": "semantic",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "where are credentials scrubbed before results reach the model",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
+      "ms": 7.242041999998037,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md",
+        "src/observer.ts",
+        "test/client.test.ts",
+        "CONTRIBUTING.md",
+        "README.md",
+        "bin/cli.ts",
+        "index.ts",
+        "package.json",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/tui.ts",
+        "test/empirical-10-tests.ts",
+        "src/formatter.ts",
+        "src/compactor.ts",
+        "src/types.ts",
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/mcp.ts",
+        "src/semantic.ts",
+        ".corpus-meta.json"
+      ],
+      "retrieved_count": 24,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "where",
+          "are",
+          "credentials",
+          "scrubbed",
+          "before",
+          "results",
+          "reach",
+          "the"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 2,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "src/observer.ts",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "test/client.test.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "README.md",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "bin/cli.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.25,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.25,
+        "recall_at_10": 0.25,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.1017970661726598,
+        "ndcg_at_10_linear": 0.1925841221785221,
+        "top1_grade": 1,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M2",
+      "lane": "semantic",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "how is the token savings number computed",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
+      "ms": 5.2994999999973516,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "index.ts",
+        "src/formatter.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "test/client.test.ts",
+        ".corpus-meta.json",
+        "CONTRIBUTING.md",
+        "README.md",
+        "ROADMAP.md",
+        "bin/cli.ts",
+        "src/client.ts",
+        "src/codemode.ts",
+        "package.json",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "test/empirical-10-tests.ts",
+        "src/telemetry.ts"
+      ],
+      "retrieved_count": 21,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "how",
+          "the",
+          "token",
+          "auth",
+          "login",
+          "jwt",
+          "password",
+          "session"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 0
+          },
+          {
+            "rank": 2,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 5,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "src/formatter.ts",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "src/mcp.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "src/tui.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "test/client.test.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": ".corpus-meta.json",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 0.25,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.045851828048001766,
+        "ndcg_at_10_linear": 0.09044293671986055,
+        "top1_grade": 0,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M3",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "what happens when the daemon socket dies mid-session",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
+      "ms": 4.799917000000278,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "README.md",
+        "ROADMAP.md",
+        "CONTRIBUTING.md",
+        "OPTIMIZATIONS.md",
+        "index.ts",
+        "src/formatter.ts",
+        "src/telemetry.ts",
+        ".corpus-meta.json",
+        "CHANGELOG.md",
+        "bin/cli.ts",
+        "package.json",
+        "src/client.ts",
+        "src/recursive-learning.ts",
+        "src/tui.ts",
+        "test/bench.ts"
+      ],
+      "retrieved_count": 17,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "what",
+          "happens",
+          "when",
+          "the",
+          "daemon",
+          "socket",
+          "dies",
+          "mid"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 2,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "README.md",
+            "grade": 1
+          },
+          {
+            "rank": 4,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": "index.ts",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "src/formatter.ts",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "src/telemetry.ts",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": ".corpus-meta.json",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.6666666666666666,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.18448074764649575,
+        "ndcg_at_10_linear": 0.3631143808977028,
+        "top1_grade": 1,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M4",
+      "lane": "semantic",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "what does CI run on every push",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
+      "ms": 3.8841670000001614,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "README.md",
+        "ROADMAP.md",
+        "src/compactor.ts",
+        ".github/workflows/ci.yml",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "OPTIMIZATIONS.md",
+        "bin/cli.ts",
+        "bin/tui.ts",
+        "index.ts",
+        "src/client.ts",
+        "test/empirical-10-tests.ts",
+        "src/formatter.ts",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "test/bench.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 21,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "what",
+          "does",
+          "run",
+          "every",
+          "push"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 2,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "README.md",
+            "grade": 2
+          },
+          {
+            "rank": 4,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 5,
+            "path": "src/compactor.ts",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": ".github/workflows/ci.yml",
+            "grade": 3
+          },
+          {
+            "rank": 7,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "bin/cli.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.6666666666666666,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 0.3333333333333333,
+        "ndcg_at_10": 0.531625928268338,
+        "ndcg_at_10_linear": 0.6444166520916993,
+        "top1_grade": 1,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M5",
+      "lane": "semantic",
+      "difficulty": "tail",
+      "must_hit": true,
+      "negative": false,
+      "query": "keep search results inside the repository boundary",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
+      "ms": 4.686375000001135,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "bin/cli.ts",
+        ".corpus-meta.json",
+        "CONTRIBUTING.md",
+        "ROADMAP.md",
+        "bin/mcp-server.ts",
+        "index.ts",
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/mcp.ts",
+        "package.json",
+        "src/sanitize.ts",
+        "test/client.test.ts",
+        "test/empirical-10-tests.ts"
+      ],
+      "retrieved_count": 18,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "keep",
+          "search",
+          "results",
+          "inside",
+          "the",
+          "repository",
+          "boundary"
+        ],
+        "confidence": 1
+      },
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "AUDIT-2026-10-14.md",
+            "grade": 1
+          },
+          {
+            "rank": 2,
+            "path": "CHANGELOG.md",
+            "grade": 0
+          },
+          {
+            "rank": 3,
+            "path": "LICENSE",
+            "grade": 0
+          },
+          {
+            "rank": 4,
+            "path": "OPTIMIZATIONS.md",
+            "grade": 1
+          },
+          {
+            "rank": 5,
+            "path": "README.md",
+            "grade": 0
+          },
+          {
+            "rank": 6,
+            "path": "bin/cli.ts",
+            "grade": 0
+          },
+          {
+            "rank": 7,
+            "path": ".corpus-meta.json",
+            "grade": 0
+          },
+          {
+            "rank": 8,
+            "path": "CONTRIBUTING.md",
+            "grade": 0
+          },
+          {
+            "rank": 9,
+            "path": "ROADMAP.md",
+            "grade": 0
+          },
+          {
+            "rank": 10,
+            "path": "bin/mcp-server.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 0.2,
+        "recall_at_3": 0.2,
+        "recall_at_5": 0.4,
+        "recall_at_10": 0.4,
+        "success_recall_at_10": 0,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 0,
+        "ndcg_at_10": 0.10417013521751892,
+        "ndcg_at_10_linear": 0.21320545831092064,
+        "top1_grade": 1,
+        "reformulation_signal": true
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "M6",
+      "lane": "semantic",
+      "difficulty": "negative",
+      "must_hit": false,
+      "negative": true,
+      "query": "kubernetes helm chart values for a redis cluster",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
+      "ms": 4.004875000002357,
+      "us_source": "semantic_intent",
+      "us_error": null,
+      "retrieved": [
+        "README.md",
+        "src/client.ts",
+        "src/recursive-learning.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "ROADMAP.md",
+        "bin/cli.ts",
+        "index.ts",
+        "package.json",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        ".corpus-meta.json"
+      ],
+      "retrieved_count": 17,
+      "control": null,
+      "extra": {
+        "expanded_terms": [
+          "kubernetes",
+          "helm",
+          "chart",
+          "values",
+          "for",
+          "redis",
+          "cache",
+          "memoize"
+        ],
+        "confidence": 1
+      },
+      "zero_result": false,
+      "false_positive": true
+    },
+    {
+      "id": "K1",
+      "lane": "ranking-frecency",
+      "difficulty": "head",
+      "must_hit": true,
+      "negative": false,
+      "query": "readme",
+      "params": {
+        "limit": 10
+      },
+      "call": "search(\"readme\", in=<root>, limit=10)",
+      "ms": 2.297374999998283,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "README.md"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "README.md",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.5,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9173194127129571,
+        "ndcg_at_10_linear": 0.8262346571285599,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "K2",
+      "lane": "ranking-proximity",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "sanitize",
+      "params": {
+        "near": "src/formatter.ts",
+        "limit": 10
+      },
+      "call": "search(\"sanitize\", in=<root>, limit=10, near=/Users/batra/.cache/pi-ultrasearch-bench/corpus-0a16e50/src/formatter.ts)",
+      "ms": 3.2630000000026484,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/sanitize.ts"
+      ],
+      "retrieved_count": 1,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/sanitize.ts",
+            "grade": 3
+          }
+        ],
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.8609101556836468,
+        "ndcg_at_10_linear": 0.7262287617954056,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    },
+    {
+      "id": "K3",
+      "lane": "ranking-boost-ab",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "boost": true
+      },
+      "call": "search(\"client\", in=<root>, limit=10, boost=true)",
+      "ms": 2.2283339999994496,
+      "us_source": null,
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": {
+        "params": {
+          "boost": false
+        },
+        "call": "boost=false",
+        "ms": 2.023332999997365,
+        "retrieved": [
+          "src/client.ts",
+          "test/client.test.ts"
+        ],
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/client.test.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_1": 0.25,
+          "recall_at_3": 0.5,
+          "recall_at_5": 0.5,
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10_rel1": 1,
+          "mrr_at_10_rel2": 1,
+          "ndcg_at_10": 0.9052598568324595,
+          "ndcg_at_10_linear": 0.8207664720313073,
+          "top1_grade": 3,
+          "reformulation_signal": false
+        }
+      },
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/client.test.ts",
+            "grade": 2
+          }
+        ],
+        "recall_at_1": 0.25,
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 0.9052598568324595,
+        "ndcg_at_10_linear": 0.8207664720313073,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null,
+      "boost_delta_ndcg10": 0
+    },
+    {
+      "id": "K4",
+      "lane": "ranking-symbol-intrafile",
+      "difficulty": "torso",
+      "must_hit": true,
+      "negative": false,
+      "query": "FSearchClient",
+      "params": {
+        "mode": "symbol",
+        "path_filter": "src/client.ts",
+        "limit": 10
+      },
+      "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+      "ms": 1.8802910000013071,
+      "us_source": "scan",
+      "us_error": null,
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "retrieved_count": 2,
+      "control": null,
+      "extra": null,
+      "score": {
+        "top10": [
+          {
+            "rank": 1,
+            "path": "src/client.ts",
+            "grade": 3
+          },
+          {
+            "rank": 2,
+            "path": "test/benchmark-gate.test.ts",
+            "grade": 0
+          }
+        ],
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_10": 1,
+        "mrr_at_10_rel1": 1,
+        "mrr_at_10_rel2": 1,
+        "ndcg_at_10": 1,
+        "ndcg_at_10_linear": 1,
+        "top1_grade": 3,
+        "reformulation_signal": false
+      },
+      "zero_result": false,
+      "false_positive": null
+    }
+  ]
+}

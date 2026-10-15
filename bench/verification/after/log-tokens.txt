@@ -1,0 +1,27 @@
+[bench] environment gate: final
+[bench] t01 ultrasearch_query hits=1 chars=58 est_tokens=15
+[bench] t02 ultrasearch_query hits=1 chars=67 est_tokens=17
+[bench] t03 ultrasearch_query hits=0 chars=82 est_tokens=21
+[bench] t04 ultrasearch_grep hits=30 chars=9625 est_tokens=2407
+[bench] t05 ultrasearch_grep hits=1 chars=127 est_tokens=32
+[bench] t06 ultrasearch_grep hits=0 chars=48 est_tokens=12
+[bench] t07 ultrasearch_multi_grep hits=30 chars=8870 est_tokens=2218
+[bench] t08 ultrasearch_multi_grep hits=19 chars=1415 est_tokens=354
+[bench] t09 ultrasearch_locate hits=10 chars=543 est_tokens=136
+[bench] t10 ultrasearch_recent hits=15 chars=237 est_tokens=60
+
+=== TOKEN BASELINE ===
+t01 ultrasearch_query    hits=   1 chars=    58 est_tokens=   15
+t02 ultrasearch_query    hits=   1 chars=    67 est_tokens=   17
+t03 ultrasearch_query    hits=   0 chars=    82 est_tokens=   21
+t04 ultrasearch_grep     hits=  30 chars=  9625 est_tokens= 2407
+t05 ultrasearch_grep     hits=   1 chars=   127 est_tokens=   32
+t06 ultrasearch_grep     hits=   0 chars=    48 est_tokens=   12
+t07 ultrasearch_multi_grep hits=  30 chars=  8870 est_tokens= 2218
+t08 ultrasearch_multi_grep hits=  19 chars=  1415 est_tokens=  354
+t09 ultrasearch_locate   hits=  10 chars=   543 est_tokens=  136
+t10 ultrasearch_recent   hits=  15 chars=   237 est_tokens=   60
+total: 21072 chars ~ 5272 tokens
+
+raw JSON: /Users/batra/ultrasearch-verify/bench/baseline/results/tokens-baseline.json
+TOKENS.md: /Users/batra/ultrasearch-verify/bench/baseline/TOKENS.md

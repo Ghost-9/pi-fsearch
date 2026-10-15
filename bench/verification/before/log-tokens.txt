@@ -1,0 +1,29 @@
+[bench] environment gate: final
+error: rustup could not choose a version of rustc to run, because one wasn't specified explicitly, and no default is configured.
+help: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.
+[bench] t01 fsearch_query hits=4 chars=267 est_tokens=67
+[bench] t02 fsearch_query hits=1 chars=67 est_tokens=17
+[bench] t03 fsearch_query hits=0 chars=82 est_tokens=21
+[bench] t04 fsearch_grep hits=30 chars=8173 est_tokens=2044
+[bench] t05 fsearch_grep hits=1 chars=128 est_tokens=32
+[bench] t06 fsearch_grep hits=0 chars=48 est_tokens=12
+[bench] t07 fsearch_multi_grep hits=20 chars=5424 est_tokens=1356
+[bench] t08 fsearch_multi_grep hits=16 chars=1199 est_tokens=300
+[bench] t09 fsearch_locate hits=10 chars=507 est_tokens=127
+[bench] t10 fsearch_recent hits=0 chars=47 est_tokens=12
+
+=== TOKEN BASELINE ===
+t01 fsearch_query        hits=   4 chars=   267 est_tokens=   67
+t02 fsearch_query        hits=   1 chars=    67 est_tokens=   17
+t03 fsearch_query        hits=   0 chars=    82 est_tokens=   21
+t04 fsearch_grep         hits=  30 chars=  8173 est_tokens= 2044
+t05 fsearch_grep         hits=   1 chars=   128 est_tokens=   32
+t06 fsearch_grep         hits=   0 chars=    48 est_tokens=   12
+t07 fsearch_multi_grep   hits=  20 chars=  5424 est_tokens= 1356
+t08 fsearch_multi_grep   hits=  16 chars=  1199 est_tokens=  300
+t09 fsearch_locate       hits=  10 chars=   507 est_tokens=  127
+t10 fsearch_recent       hits=   0 chars=    47 est_tokens=   12
+total: 15942 chars ~ 3988 tokens
+
+raw JSON: /Users/batra/.cache/us-verify/before/bench/baseline/results/tokens-baseline.json
+TOKENS.md: /Users/batra/.cache/us-verify/before/bench/baseline/TOKENS.md

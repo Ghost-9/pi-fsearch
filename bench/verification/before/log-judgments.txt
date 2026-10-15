@@ -1,0 +1,49 @@
+[bench] environment gate: final
+error: rustup could not choose a version of rustc to run, because one wasn't specified explicitly, and no default is configured.
+help: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.
+[bench] K1 precondition: open(README.md) -> true; waiting 30s
+[bench] P1 path ret=1 r@10=1.00 ndcg=1.000 top1=3
+[bench] P2 path ret=1 r@10=1.00 ndcg=1.000 top1=3
+[bench] P3 path ret=1 r@10=0.50 ndcg=0.787 top1=3
+[bench] P5 path ret=3 r@10=1.00 ndcg=1.000 top1=3
+[bench] P6 path ret=1 r@10=0.33 ndcg=0.861 top1=3
+[bench] P7 path ret=12 r@10=1.00 ndcg=0.856 top1=3
+[bench] P8 path ret=0 fp=false
+[bench] G1 grep-literal ret=2 r@10=1.00 ndcg=0.710 top1=1
+[bench] G2 grep-literal ret=1 r@10=1.00 ndcg=1.000 top1=3
+[bench] G3 grep-literal ret=1 r@10=1.00 ndcg=1.000 top1=3
+[bench] G4 grep-literal ret=2 r@10=0.50 ndcg=0.579 top1=0
+[bench] G5 grep-literal ret=1 r@10=1.00 ndcg=1.000 top1=3
+[bench] G6 grep-literal ret=0 fp=false
+[bench] R1 grep-regex ret=2 r@10=1.00 ndcg=1.000 top1=3
+[bench] R2 grep-regex ret=10 r@10=0.67 ndcg=0.338 top1=1
+[bench] R3 grep-regex ret=2 fp=true
+[bench] S1 symbol ret=2 r@10=0.20 ndcg=0.686 top1=3
+[bench] S2 symbol ret=1 r@10=1.00 ndcg=1.000 top1=3
+[bench] S3 symbol ret=0 r@10=0.00 ndcg=0.000 top1=0
+[bench] S4 symbol ret=1 r@10=0.33 ndcg=0.861 top1=3
+[bench] M1 semantic ret=24 r@10=0.25 ndcg=0.102 top1=1
+[bench] M2 semantic ret=21 r@10=0.33 ndcg=0.046 top1=0
+[bench] M3 semantic ret=17 r@10=0.67 ndcg=0.184 top1=1
+[bench] M4 semantic ret=21 r@10=1.00 ndcg=0.532 top1=1
+[bench] M5 semantic ret=18 r@10=0.40 ndcg=0.104 top1=1
+[bench] M6 semantic ret=16 fp=true
+[bench] K1 ranking-frecency ret=1 r@10=0.50 ndcg=0.917 top1=3
+[bench] K2 ranking-proximity ret=1 r@10=0.33 ndcg=0.861 top1=3
+[bench] K3 ranking-boost-ab ret=2 r@10=0.50 ndcg=0.905 top1=3
+[bench] K4 ranking-symbol-intrafile ret=2 r@10=1.00 ndcg=1.000 top1=3
+
+=== JUDGMENT SCORING ===
+FAIL  recall@10 == 1.00 on all must_hit queries -> 0.6737179487179487
+FAIL  zero_result_rate == 0.00 on must_hit queries -> 0.038461538461538464
+FAIL  false_positive_rate == 0.00 on the 4 negative queries (spec text says 5) -> 0.5
+FAIL  nDCG@10 >= 0.75 overall -> 0.7049628673114833
+FAIL  nDCG@10 >= 0.60 semantic lane -> 0.19358514107060285
+FAIL  reformulation_signal <= 0.20 overall -> 0.34615384615384615
+FAIL  reformulation_signal <= 0.35 per lane -> {"path":0,"grep-literal":0.4,"grep-regex":0.5,"symbol":0.25,"semantic":1,"ranking-frecency":0,"ranking-proximity":0,"ranking-boost-ab":0,"ranking-symbol-intrafile":0}
+
+overall: GATES FAIL  status=final
+recall@1/3/5/10 = 0.488 / 0.599 / 0.624 / 0.674
+MRR@10(rel2)=0.710  nDCG@10=0.705  zero=0.038461538461538464  fp=0.5
+
+raw JSON: /Users/batra/.cache/us-verify/before/bench/baseline/results/judgments-baseline.json

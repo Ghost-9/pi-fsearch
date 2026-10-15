@@ -243,3 +243,48 @@ PI_ULTRASEARCH_TEST=1 node bench/baseline/judgments.mjs   # meta.corpus.source =
   load 3.6–12, engine-wave `cargo build --release` active), so every JSON is marked
   `"status": "provisional"`. Re-run `bench/baseline/run-all.sh` on AC with load < 1.5 and no
   cargo/rustc to produce `"final"` numbers.
+
+---
+
+## Wave 1 final verification (wave1/verify-final, HEAD 3135e28) — current status
+
+Re-measured independently by the final verifier on 2026-10-15. Evidence:
+`bench/verification/after/checks-regressions.json`, `bench/verification/after/checks-gate-floor.json`,
+`bench/verification/wave1-summary.json`. Method: the probe suite imports only the product
+surface (`src/client.ts`, `src/sanitize.ts`, `src/validate.ts`) and the vendored
+`engine/target/release/ultrasearch`; the production audit log is hash-checked before and after.
+
+| Finding | Status under main | Evidence |
+| --- | --- | --- |
+| **F1** trailing-slash `.gitignore` (`node_modules/`) | **fixed** | `matchesIgnorePattern("node_modules/@types/node/package.json", ["node_modules/"])` → `true`; `dist/` and nested `packages/a/node_modules/x.js` also match; `src/client.ts` → `false`. Live path search in the repo returns no `git:ignored` rows. |
+| **F2** negative-control self-contamination | **verified (held)** | Not re-created: the probe uses runtime-generated literals (`ULTRAMARKER_*` in the fixture, a runtime token for #23). |
+| **F3** `multiGrep` default-limit truncation | **fixed** | Fixture (5 000 files, patterns `ULTRAMARKER_1232` \| `ULTRAMARKER_7`): default limit, `limit: 200`, single `grep` and `rg -l` all return **19** files. |
+| **F4** global locate has no native comparator | **unchanged (limitation)** | `mdfind -name package.json` still returns 0 rows; the locate row stays self-relative. |
+| **F5** production audit rows from an unisolated probe | **guarded, holds** | Production `audit.jsonl` is byte-identical (sha256 + mtime + line count) before and after the whole probe suite with `PI_ULTRASEARCH_TEST=1`. |
+| **F6** judgment acceptance text says 5 negatives, file has 4 | **unchanged** | The scorer still records the spec text and evaluates the real count. |
+| **F7** shared test audit log (single fixed path) | **open (recommendation)** | `src/telemetry.ts` still resolves one shared `test_audit.jsonl`; no per-process path or `PI_ULTRASEARCH_TEST_LOG`. No truncation occurred during this verification window (concurrent writers' rows from two clients are all present). |
+| **F8** judgment corpus must be a clean archive | **verified (held)** | The clean archive is used (`tree_sha256 98e299a6…`); the corpus created under an isolated `$HOME` in this verification reproduced the same `tree_sha256`, and the judged numbers reproduce the frozen ones (recall@10 0.674, nDCG@10 0.705). |
+
+Issue-level re-verification (the Wave 1 engine/security report's own claims):
+
+| Issue | Claim | Status | Evidence |
+| --- | --- | --- | --- |
+| #36 | `(a+)+$` rejected before the socket | **verified** | With a provably dead socket (a valid pattern on the same client throws a connection error), the rejected pattern returns `ok:false` with `rejected regex pattern …` and no audit row exists for the literal. `(\w*)*` also rejected; `(a|aa)+` warns; `^export class` passes. |
+| #23 | multi-line PEM redaction + line-wise body + DLP on paths | **verified** | Whole-block scrub removes the body; `SecretGuard.line()` redacts header/body/footer lines and closes after the footer; a `ghp_…` shaped filename is redacted; ordinary code, git SHAs, checksums and URLs are unchanged. |
+| #19 | staleness fields | **verified** | `status` carries `last_event_id`, `event_lag`, `staleness_ms`, `replay_in_progress`; an answer carries `stale_ms` (0 when caught up, as documented). |
+| #16 | `budget_ms` partial answers | **verified** | Engine, global search `budget_ms:1` → `complete:false, scanned=24610…40990, considered≈scanned`; global grep `budget_ms:1` → `complete:false` with `candidates`/`read`; ample budget (5 s) → `complete:true` over 3 879 988 scanned; ample ≡ none output-identical. A 1 ms budget over a small/fast scope is a race and is recorded as informational only. |
+| #34 | compaction counters + pause | **verified** | `status` carries `compactions`, `last_compact_ms`, `last_compact_bytes`, `last_compact_entries`, `last_compact_secs_ago`, `compactions_postponed`, `queries_in_flight` (live: `compactions:3`). Pause semantics asserted by `test/engine/status.test.mjs` (26/26 engine tests pass). |
+| #17 | coverage policy in status + configurable | **verified** | `status.content_policy` present beside `content_docs`/`content_pending` (`configured:false` by default); `test/engine/coverage.test.mjs` passes. |
+| #22 | worktree isolation + frecency | **verified** | A scoped search returns 0 paths from the sibling worktree; `recent` returns frecency-ranked rows with `boost`; `test/engine/search.test.mjs` passes. |
+| #45 | one daemon per index dir | **verified** | A second `ultrasearch serve` on the same `ULTRASEARCH_DIR` exits with "another … daemon is running"; the live socket has exactly one owner. |
+
+Additional independent check — the `npm run test:gate` blocker:
+
+| Claim | Status | Evidence |
+| --- | --- | --- |
+| "the live 5 ms grep gate measures the machine floor, not a client regression" | **verified** | Raw daemon socket (no client), same call as the gate: p50 **7.17 ms**, p95 **7.65 ms** (n=60); client leg p50 7.88 ms, p95 8.59 ms. The gate's 5 ms threshold is below the machine's own floor; `test:gate` is 3 pass / 1 fail on this machine and that failure is environmental. |
+
+Findings **F1** and **F3** are now fixed; **F7** is still open as a recommendation; **F4**/ **F6**
+are unchanged limitations. No Wave 1 claim failed verification.
+
+---

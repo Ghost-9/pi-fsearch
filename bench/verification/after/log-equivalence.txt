@@ -1,0 +1,65 @@
+[bench] environment gate: final
+[bench] p01 path/repo us=1 native=1 recall=1
+[bench] p02 path/repo us=1 native=1 recall=1
+[bench] p03 path/repo us=1 native=1 recall=1
+[bench] p04 path/repo us=1 native=1 recall=1
+[bench] p05 path/repo us=2 native=2 recall=1
+[bench] p06 path/repo us=1 native=1 recall=1
+[bench] p07 path/fixture us=1 native=1 recall=1
+[bench] p08 path/fixture us=1 native=1 recall=1
+[bench] p09 path/fixture us=1 native=1 recall=1
+[bench] p10 path/fixture us=3 native=3 recall=1
+[bench] p11 path/search us=1 native=1 recall=1
+[bench] p12 path/search us=1 native=1 recall=1
+[bench] p13 path/search us=1 native=1 recall=1
+[bench] g01 grep/repo us=37 native=37 recall=1
+[bench] g02 grep/repo us=47 native=47 recall=1
+[bench] g03 grep/repo us=7 native=7 recall=1
+[bench] g04 grep/repo us=24 native=24 recall=1
+[bench] g05 grep/repo us=24 native=24 recall=1
+[bench] g06 grep/repo us=15 native=15 recall=1
+[bench] g07 grep/repo us=18 native=18 recall=1
+[bench] g08 grep/fixture us=1 native=1 recall=1
+[bench] g09 grep/fixture us=18 native=18 recall=1
+[bench] g10 grep/fixture us=386 native=386 recall=1
+[bench] g11 grep/search us=1 native=1 recall=1
+[bench] g12 grep/search us=4 native=4 recall=1
+[bench] m01 multi/repo us=30 native=32 recall=0.9375
+[bench] m02 multi/fixture us=19 native=19 recall=1
+[bench] n01 path/repo us=0 native=0 recall=1
+[bench] n02 path/fixture us=0 native=0 recall=1
+[bench] n03 grep/fixture us=0 native=0 recall=1
+
+=== EQUIVALENCE GOLDEN (files, effective vs native) ===
+p01 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p02 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p03 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p04 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p05 path   repo     us=   2 ignored=  0 native=   2 recall_eff=1.000 recall_raw=1.000
+p06 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p07 path   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p08 path   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p09 path   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p10 path   fixture  us=   3 ignored=  0 native=   3 recall_eff=1.000 recall_raw=1.000
+p11 path   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p12 path   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p13 path   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+g01 grep   repo     us=  37 ignored=  0 native=  37 recall_eff=1.000 recall_raw=1.000
+g02 grep   repo     us=  47 ignored=  0 native=  47 recall_eff=1.000 recall_raw=1.000
+g03 grep   repo     us=   7 ignored=  0 native=   7 recall_eff=1.000 recall_raw=1.000
+g04 grep   repo     us=  24 ignored=  0 native=  24 recall_eff=1.000 recall_raw=1.000
+g05 grep   repo     us=  24 ignored=  0 native=  24 recall_eff=1.000 recall_raw=1.000
+g06 grep   repo     us=  15 ignored=  0 native=  15 recall_eff=1.000 recall_raw=1.000
+g07 grep   repo     us=  18 ignored=  0 native=  18 recall_eff=1.000 recall_raw=1.000
+g08 grep   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+g09 grep   fixture  us=  18 ignored=  0 native=  18 recall_eff=1.000 recall_raw=1.000
+g10 grep   fixture  us= 386 ignored=  0 native= 386 recall_eff=1.000 recall_raw=1.000
+g11 grep   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+g12 grep   search   us=   4 ignored=  0 native=   4 recall_eff=1.000 recall_raw=1.000
+m01 multi  repo     us=  30 ignored=  0 native=  32 recall_eff=0.938 recall_raw=0.938
+m02 multi  fixture  us=  19 ignored=  0 native=  19 recall_eff=1.000 recall_raw=1.000
+n01 path   repo     us=   0 ignored=  0 native=   0 recall_eff=1.000 recall_raw=1.000
+n02 path   fixture  us=   0 ignored=  0 native=   0 recall_eff=1.000 recall_raw=1.000
+n03 grep   fixture  us=   0 ignored=  0 native=   0 recall_eff=1.000 recall_raw=1.000
+
+raw JSON: /Users/batra/ultrasearch-verify/bench/baseline/results/equivalence-golden.json

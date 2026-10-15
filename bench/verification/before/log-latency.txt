@@ -1,0 +1,32 @@
+[bench] latency baseline starting — n=30
+[bench] client module loaded from /Users/batra/.cache/us-verify/before/src/client.ts
+error: rustup could not choose a version of rustc to run, because one wasn't specified explicitly, and no default is configured.
+help: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.
+[bench] environment gate: final (ac=true, load1<1.5=true, no-cargo=true)
+[bench] scope repo: 303 files at /Users/batra/.cache/us-verify/before
+[bench] scope fixture: 5005 files at /Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k
+[bench] scope search: 526 files at /Users/batra/Search
+[bench] done repo: path/grep/multi
+[bench] done fixture: path/grep/multi
+[bench] done search: path/grep/multi
+[bench] done global locate
+[bench] done recent
+[bench] done ping
+[bench] done CLI e2e supplement
+
+=== LATENCY BASELINE (median ms [95% CI], p95) ===
+run                                     n    US median      US CI95       US p95native median  native CI95   native p95
+repo__path_search                      30        0.622[0.599,0.651]        0.835        6.319[6.283,6.387]        7.217
+repo__grep                             30        2.963[2.934,2.992]        3.173        6.886[6.732,8.130]        8.290
+repo__multi_grep                       30        6.514[6.440,6.622]        6.945        7.131[6.851,8.214]        8.612
+fixture__path_search                   30        0.696[0.678,0.735]        0.816        9.965[9.634,10.42]        11.70
+fixture__grep                          30        50.21[50.10,50.24]        50.49        59.93[59.41,60.04]        61.24
+fixture__multi_grep                    30        80.17[79.87,80.52]        84.66        59.28[58.86,59.77]        60.83
+search__path_search                    30        0.507[0.494,0.527]        0.574        6.261[6.217,6.325]        6.571
+search__grep                           30        4.399[4.374,4.536]        4.916        8.872[8.837,8.949]        9.342
+search__multi_grep                     30        8.842[8.684,9.265]        15.08        9.053[8.736,9.114]        9.598
+global__locate                         30        0.848[0.836,0.876]        0.986        49.33[48.46,51.53]        60.48
+repo__recent                           30        0.075[0.069,0.080]        0.112            —            —            —
+global__ping                           30        0.016[0.016,0.018]        0.029            —            —            —
+
+raw JSON: /Users/batra/.cache/us-verify/before/bench/baseline/results/latency-2026-10-14.json

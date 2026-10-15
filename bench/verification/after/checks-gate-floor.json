@@ -1,0 +1,40 @@
+{
+  "suite": "gate-floor",
+  "wave": "wave1/verify-final",
+  "generated_at": "2026-10-15T03:13:55.941Z",
+  "status": "final",
+  "query": "UltraSearchClient",
+  "scope": "/Users/batra/ultrasearch-verify",
+  "limit": 10,
+  "n": 60,
+  "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+  "note": "Same call as test/benchmark-gate.test.ts:152. Warmups excluded (3 rounds); the raw leg opens a fresh connection each sample, so its number is if anything conservative.",
+  "raw_daemon_only": {
+    "p50": 7.16508300000001,
+    "p95": 7.64769374999995,
+    "min": 6.328834000000029,
+    "max": 8.754500000000007
+  },
+  "client": {
+    "p50": 7.880000499999994,
+    "p95": 8.594941650000003,
+    "min": 6.606667000000016,
+    "max": 14.313167000000021
+  },
+  "gate_threshold_ms": 5,
+  "raw_p95_below_threshold": false,
+  "verdict": "the raw daemon alone exceeds the 5 ms gate on this machine: the gate measures the machine floor, not a client regression",
+  "files_matched": 10,
+  "daemon": {
+    "entries": 3879170,
+    "content_docs": 145652,
+    "full_disk_access": true,
+    "staleness_ms": 0
+  },
+  "errors": [],
+  "loadavg": [
+    3.26220703125,
+    3.9072265625,
+    4.1103515625
+  ]
+}

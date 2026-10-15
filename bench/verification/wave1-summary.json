@@ -1,0 +1,1825 @@
+{
+  "suite": "wave1-final-verification",
+  "wave": "wave1/verify-final",
+  "base_ref": "0a16e50 (BEFORE, isolated under HOME=/Users/batra/.cache/us-verify/before-home + upstream engine at ~/.cache/fsearch)",
+  "head_ref": "3135e28 (AFTER, main worktree + installed renamed daemon PID 8887)",
+  "generated_at": "2026-10-15T04:54:39.757Z",
+  "status_legend": {
+    "verified": "independently re-measured; numbers agree with the artifact and the method is sound",
+    "failed": "independently re-measured and the claim does not hold",
+    "unverified": "measured, but not quotable as a before/after claim (scope mismatch, degraded gate, or an open recommendation)"
+  },
+  "counts": {
+    "verified": 48,
+    "failed": 0,
+    "unverified": 13,
+    "total": 61
+  },
+  "rows": [
+    {
+      "id": "latency.repo__path_search",
+      "lane": "latency",
+      "scope": "repo",
+      "before": {
+        "median_ms": 0.6220000000000141,
+        "ci95_ms": [
+          0.598916499999973,
+          0.6506044999999858
+        ],
+        "p95_ms": 0.8349270499999761,
+        "native_median_ms": 6.319207999999946
+      },
+      "after": {
+        "median_ms": 0.7657085000000166,
+        "ci95_ms": [
+          0.7426250000000323,
+          0.844250000000045
+        ],
+        "p95_ms": 1.1626878000000147,
+        "native_median_ms": 7.192791500000055
+      },
+      "delta": {
+        "median_ms": 0.14370850000000246,
+        "native_median_ms": 0.8735835000001089
+      },
+      "ci95": [
+        0.7426250000000323,
+        0.844250000000045
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg --files -g package.json /Users/batra/.cache/us-verify/before",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.10299953395412562,
+          "ci95": [
+            0.09619393017854119,
+            0.11831325721244665
+          ]
+        },
+        "after": {
+          "median": 0.1112423982878741,
+          "ci95": [
+            0.10546004376746512,
+            0.12641861794978354
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.repo__grep",
+      "lane": "latency",
+      "scope": "repo",
+      "before": {
+        "median_ms": 2.9634795000000054,
+        "ci95_ms": [
+          2.9336455000000115,
+          2.991895999999997
+        ],
+        "p95_ms": 3.1729729500000134,
+        "native_median_ms": 6.886354499999925
+      },
+      "after": {
+        "median_ms": 1.8272915000000012,
+        "ci95_ms": [
+          1.8149794999999358,
+          1.8851045000000113
+        ],
+        "p95_ms": 2.072996499999988,
+        "native_median_ms": 8.815958499999965
+      },
+      "delta": {
+        "median_ms": -1.1361880000000042,
+        "native_median_ms": 1.9296040000000403
+      },
+      "ci95": [
+        1.8149794999999358,
+        1.8851045000000113
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg -l --no-messages --color never FSearchClient /Users/batra/.cache/us-verify/before",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.42656656760502776,
+          "ci95": [
+            0.37139969990145383,
+            0.4405774289907387
+          ]
+        },
+        "after": {
+          "median": 0.2140152704406521,
+          "ci95": [
+            0.20085256447602484,
+            0.22904167197656788
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.repo__multi_grep",
+      "lane": "latency",
+      "scope": "repo",
+      "before": {
+        "median_ms": 6.5141250000000355,
+        "ci95_ms": [
+          6.44012500000008,
+          6.622145499999988
+        ],
+        "p95_ms": 6.945428499999878,
+        "native_median_ms": 7.130749499999865
+      },
+      "after": {
+        "median_ms": 15.350291500000026,
+        "ci95_ms": [
+          15.246041999999989,
+          15.476187500000151
+        ],
+        "p95_ms": 16.085289400000057,
+        "native_median_ms": 8.413729000000103
+      },
+      "delta": {
+        "median_ms": 8.83616649999999,
+        "native_median_ms": 1.2829795000002377
+      },
+      "ci95": [
+        15.246041999999989,
+        15.476187500000151
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg -l --no-messages -e recordAudit -e formatGrepFiles /Users/batra/.cache/us-verify/before",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.9168085861670303,
+          "ci95": [
+            0.8058932506986501,
+            0.9530773362197976
+          ]
+        },
+        "after": {
+          "median": 1.8119518950817293,
+          "ci95": [
+            1.608339175181897,
+            1.8340738599895319
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.fixture__path_search",
+      "lane": "latency",
+      "scope": "fixture",
+      "before": {
+        "median_ms": 0.6963124999999764,
+        "ci95_ms": [
+          0.67775000000006,
+          0.7347085000000106
+        ],
+        "p95_ms": 0.8163940500001445,
+        "native_median_ms": 9.964853999999946
+      },
+      "after": {
+        "median_ms": 0.5977500000001328,
+        "ci95_ms": [
+          0.5852709999999206,
+          0.625291500000003
+        ],
+        "p95_ms": 0.6874163000000181,
+        "native_median_ms": 17.655770500000017
+      },
+      "delta": {
+        "median_ms": -0.09856249999984357,
+        "native_median_ms": 7.690916500000071
+      },
+      "ci95": [
+        0.5852709999999206,
+        0.625291500000003
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: find /Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k -type f -name module_01232.ts",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.06909570171368506,
+          "ci95": [
+            0.06582366837704015,
+            0.07190108545515544
+          ]
+        },
+        "after": {
+          "median": 0.03381695448379007,
+          "ci95": [
+            0.03249898792165627,
+            0.03409657931252561
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.fixture__grep",
+      "lane": "latency",
+      "scope": "fixture",
+      "before": {
+        "median_ms": 50.20641600000022,
+        "ci95_ms": [
+          50.09802099999979,
+          50.23872900000015
+        ],
+        "p95_ms": 50.49318315000005,
+        "native_median_ms": 59.928916500000014
+      },
+      "after": {
+        "median_ms": 37.67441649999978,
+        "ci95_ms": [
+          37.51841649999983,
+          37.94179149999991
+        ],
+        "p95_ms": 40.56835829999964,
+        "native_median_ms": 46.9596875000002
+      },
+      "delta": {
+        "median_ms": -12.531999500000438,
+        "native_median_ms": -12.969228999999814
+      },
+      "ci95": [
+        37.51841649999983,
+        37.94179149999991
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg -l --no-messages --color never ULTRAMARKER_1232 /Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.8389750436504253,
+          "ci95": [
+            0.833312383767943,
+            0.8472539706293534
+          ]
+        },
+        "after": {
+          "median": 0.8109743310903246,
+          "ci95": [
+            0.7932997946531404,
+            0.8188799264010876
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.fixture__multi_grep",
+      "lane": "latency",
+      "scope": "fixture",
+      "before": {
+        "median_ms": 80.16779099999985,
+        "ci95_ms": [
+          79.86995849999994,
+          80.52181250000058
+        ],
+        "p95_ms": 84.66402484999972,
+        "native_median_ms": 59.28239600000006
+      },
+      "after": {
+        "median_ms": 74.29304200000024,
+        "ci95_ms": [
+          74.07449999999972,
+          75.5550415000007
+        ],
+        "p95_ms": 78.3366043499997,
+        "native_median_ms": 49.861208499999975
+      },
+      "delta": {
+        "median_ms": -5.8747489999996105,
+        "native_median_ms": -9.421187500000087
+      },
+      "ci95": [
+        74.07449999999972,
+        75.5550415000007
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg -l --no-messages -e ULTRAMARKER_1232 -e ULTRAMARKER_7 /Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 1.3571075235479217,
+          "ci95": [
+            1.3467028496451614,
+            1.3681396519104894
+          ]
+        },
+        "after": {
+          "median": 1.5000396328188705,
+          "ci95": [
+            1.485825708986436,
+            1.5161577163189652
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.search__path_search",
+      "lane": "latency",
+      "scope": "search",
+      "before": {
+        "median_ms": 0.5065835000004881,
+        "ci95_ms": [
+          0.4944789999999557,
+          0.5265625000001819
+        ],
+        "p95_ms": 0.5736609000002317,
+        "native_median_ms": 6.261333500000546
+      },
+      "after": {
+        "median_ms": 0.6258959999995568,
+        "ci95_ms": [
+          0.6014790000008361,
+          0.6590415000000576
+        ],
+        "p95_ms": 0.8121190499995464,
+        "native_median_ms": 6.927812500000982
+      },
+      "delta": {
+        "median_ms": 0.11931249999906868,
+        "native_median_ms": 0.6664790000004359
+      },
+      "ci95": [
+        0.6014790000008361,
+        0.6590415000000576
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg --files -g VaultAndUpdaterTests.swift /Users/batra/Search",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.08093449334795827,
+          "ci95": [
+            0.07880311129967495,
+            0.0851928315457926
+          ]
+        },
+        "after": {
+          "median": 0.0945832042437114,
+          "ci95": [
+            0.08786919878573207,
+            0.10811115749306677
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.search__grep",
+      "lane": "latency",
+      "scope": "search",
+      "before": {
+        "median_ms": 4.398916500001178,
+        "ci95_ms": [
+          4.374166999999943,
+          4.536333499999273
+        ],
+        "p95_ms": 4.915583000000242,
+        "native_median_ms": 8.872270500000013
+      },
+      "after": {
+        "median_ms": 0.4539790000007997,
+        "ci95_ms": [
+          0.43002100000012433,
+          0.4691659999989497
+        ],
+        "p95_ms": 0.5494041999993897,
+        "native_median_ms": 8.7698960000007
+      },
+      "delta": {
+        "median_ms": -3.9449375000003783,
+        "native_median_ms": -0.10237449999931414
+      },
+      "ci95": [
+        0.43002100000012433,
+        0.4691659999989497
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg -l --no-messages --color never VaultAndUpdater /Users/batra/Search",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.5139519811547515,
+          "ci95": [
+            0.49139239966982495,
+            0.5280457924094495
+          ]
+        },
+        "after": {
+          "median": 0.05506546352961368,
+          "ci95": [
+            0.05038304655920865,
+            0.05927823752849708
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.search__multi_grep",
+      "lane": "latency",
+      "scope": "search",
+      "before": {
+        "median_ms": 8.841770999999426,
+        "ci95_ms": [
+          8.684063000000606,
+          9.264979500000663
+        ],
+        "p95_ms": 15.083019049999256,
+        "native_median_ms": 9.053249999999935
+      },
+      "after": {
+        "median_ms": 0.7036880000005112,
+        "ci95_ms": [
+          0.6743545000008453,
+          0.7185205000005226
+        ],
+        "p95_ms": 0.7647062500001084,
+        "native_median_ms": 8.823207999999795
+      },
+      "delta": {
+        "median_ms": -8.138082999998915,
+        "native_median_ms": -0.23004200000013952
+      },
+      "ci95": [
+        0.6743545000008453,
+        0.7185205000005226
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: rg -l --no-messages -e VaultAndUpdater -e PageFind /Users/batra/Search",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 1.001273615533263,
+          "ci95": [
+            0.961366143305482,
+            1.1178724223107874
+          ]
+        },
+        "after": {
+          "median": 0.07985414279217903,
+          "ci95": [
+            0.07840413391889185,
+            0.08471442388276308
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.global__locate",
+      "lane": "latency",
+      "scope": "global",
+      "before": {
+        "median_ms": 0.8475210000005973,
+        "ci95_ms": [
+          0.8363955000004353,
+          0.8759579999996276
+        ],
+        "p95_ms": 0.9859515999994983,
+        "native_median_ms": 49.33183299999928
+      },
+      "after": {
+        "median_ms": 0.7406664999998611,
+        "ci95_ms": [
+          0.7337500000003274,
+          0.7613955000006172
+        ],
+        "p95_ms": 0.8573373499996706,
+        "native_median_ms": 44.528166500000225
+      },
+      "delta": {
+        "median_ms": -0.10685450000073615,
+        "native_median_ms": -4.8036664999990535
+      },
+      "ci95": [
+        0.7337500000003274,
+        0.7613955000006172
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: mdfind -name package.json (Spotlight)",
+      "us_over_native_ratio": {
+        "before": {
+          "median": 0.017055096104244112,
+          "ci95": [
+            0.016687549466953545,
+            0.017565406504411327
+          ]
+        },
+        "after": {
+          "median": 0.016661303630392598,
+          "ci95": [
+            0.01639273394092981,
+            0.017091014576274304
+          ]
+        }
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.repo__recent",
+      "lane": "latency",
+      "scope": "repo",
+      "before": {
+        "median_ms": 0.07518700000036915,
+        "ci95_ms": [
+          0.06929200000104174,
+          0.0797084999994695
+        ],
+        "p95_ms": 0.11171715000054974,
+        "native_median_ms": null
+      },
+      "after": {
+        "median_ms": 0.2354169999998703,
+        "ci95_ms": [
+          0.21393749999970169,
+          0.3005624999996144
+        ],
+        "p95_ms": 0.5624543499997345,
+        "native_median_ms": null
+      },
+      "delta": {
+        "median_ms": 0.16022999999950116,
+        "native_median_ms": null
+      },
+      "ci95": [
+        0.21393749999970169,
+        0.3005624999996144
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: none",
+      "us_over_native_ratio": {
+        "before": null,
+        "after": null
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency.global__ping",
+      "lane": "latency",
+      "scope": "global",
+      "before": {
+        "median_ms": 0.0162079999990965,
+        "ci95_ms": [
+          0.016041500000028464,
+          0.017917000000124972
+        ],
+        "p95_ms": 0.029356249999727885,
+        "native_median_ms": null
+      },
+      "after": {
+        "median_ms": 0.021458000000166066,
+        "ci95_ms": [
+          0.020833499999753258,
+          0.02641700000003766
+        ],
+        "p95_ms": 0.03593139999975393,
+        "native_median_ms": null
+      },
+      "delta": {
+        "median_ms": 0.005250000001069566,
+        "native_median_ms": null
+      },
+      "ci95": [
+        0.020833499999753258,
+        0.02641700000003766
+      ],
+      "n": 30,
+      "method": "alternating A/B, median (unpaired across runs); native: none",
+      "us_over_native_ratio": {
+        "before": null,
+        "after": null
+      },
+      "status": "verified",
+      "artifact": "before/latency-2026-10-14.json + after/latency-2026-10-15.json"
+    },
+    {
+      "id": "latency-rename-neutral.repo__grep_neutral_symbol",
+      "lane": "latency",
+      "scope": "repo",
+      "before": {
+        "median_ms": 3.22860399999999,
+        "ci95_ms": [
+          3.1884580000000113,
+          3.3330835000000008
+        ],
+        "native_median_ms": 8.211353999999986,
+        "us_hits": 4
+      },
+      "after": {
+        "median_ms": 70.93258350000019,
+        "ci95_ms": [
+          70.5267715,
+          71.20506199999988
+        ],
+        "native_median_ms": 12.848459000000048,
+        "us_hits": 9
+      },
+      "delta": {
+        "median_ms": 67.7039795000002
+      },
+      "ci95": [
+        70.5267715,
+        71.20506199999988
+      ],
+      "n": 30,
+      "method": "rename-neutral variant of the repo grep row (patterns present in both checkouts), alternating A/B",
+      "status": "unverified",
+      "status_reason": "the two repo trees are different sizes (before 304 files, after 7 504 files: node_modules + engine/target), so absolute grep latency is not comparable; the fixture and /Users/Batra/Search rows are the comparable ones",
+      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json"
+    },
+    {
+      "id": "latency-rename-neutral.repo__grep_neutral_class",
+      "lane": "latency",
+      "scope": "repo",
+      "before": {
+        "median_ms": 2.197270999999944,
+        "ci95_ms": [
+          2.168166999999926,
+          2.2250834999999825
+        ],
+        "native_median_ms": 8.007583000000011,
+        "us_hits": 10
+      },
+      "after": {
+        "median_ms": 70.56895850000024,
+        "ci95_ms": [
+          70.08779200000004,
+          70.98281249999991
+        ],
+        "native_median_ms": 13.175666500000261,
+        "us_hits": 5
+      },
+      "delta": {
+        "median_ms": 68.37168750000029
+      },
+      "ci95": [
+        70.08779200000004,
+        70.98281249999991
+      ],
+      "n": 30,
+      "method": "rename-neutral variant of the repo grep row (patterns present in both checkouts), alternating A/B",
+      "status": "unverified",
+      "status_reason": "the two repo trees are different sizes (before 304 files, after 7 504 files: node_modules + engine/target), so absolute grep latency is not comparable; the fixture and /Users/Batra/Search rows are the comparable ones",
+      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json"
+    },
+    {
+      "id": "latency-rename-neutral.repo__multi_grep_neutral",
+      "lane": "latency",
+      "scope": "repo",
+      "before": {
+        "median_ms": 6.323812999999973,
+        "ci95_ms": [
+          6.276666999999861,
+          6.403916999999865
+        ],
+        "native_median_ms": 7.1274795000000495,
+        "us_hits": 15
+      },
+      "after": {
+        "median_ms": 141.8070630000002,
+        "ci95_ms": [
+          141.32658300000003,
+          142.6633750000001
+        ],
+        "native_median_ms": 12.245312500000182,
+        "us_hits": 27
+      },
+      "delta": {
+        "median_ms": 135.48325000000023
+      },
+      "ci95": [
+        141.32658300000003,
+        142.6633750000001
+      ],
+      "n": 30,
+      "method": "rename-neutral variant of the repo grep row (patterns present in both checkouts), alternating A/B",
+      "status": "unverified",
+      "status_reason": "the two repo trees are different sizes (before 304 files, after 7 504 files: node_modules + engine/target), so absolute grep latency is not comparable; the fixture and /Users/Batra/Search rows are the comparable ones",
+      "artifact": "before/latency-rename-neutral.json + after/latency-rename-neutral.json"
+    },
+    {
+      "id": "judgments.recall@1",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.4881410256410257,
+      "after": 0.4881410256410257,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.recall@3",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.5987179487179487,
+      "after": 0.5987179487179487,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.recall@5",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.6240384615384615,
+      "after": 0.6240384615384615,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.recall@10",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.6737179487179487,
+      "after": 0.6737179487179487,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.success_recall@10",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.75,
+      "after": 0.75,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.mrr@10",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.7099358974358976,
+      "after": 0.7099358974358976,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.ndcg@10",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.7049628673114833,
+      "after": 0.7049628673114833,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.semantic_ndcg@10",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.19358514107060285,
+      "after": 0.19358514107060285,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.zero_result_rate",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.038461538461538464,
+      "after": 0.038461538461538464,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.false_positive_rate",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.5,
+      "after": 0.5,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.reformulation_signal",
+      "lane": "judgments",
+      "scope": "corpus-0a16e50 (33 files, clean archive)",
+      "before": 0.34615384615384615,
+      "after": 0.34615384615384615,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+      "status": "verified",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "judgments.acceptance_gates",
+      "lane": "judgments",
+      "scope": "frozen judgment set — advisor gates",
+      "before": {
+        "recall@10 == 1.00 on all must_hit queries": {
+          "observed": 0.6737179487179487,
+          "pass": false
+        },
+        "zero_result_rate == 0.00 on must_hit queries": {
+          "observed": 0.038461538461538464,
+          "pass": false
+        },
+        "false_positive_rate == 0.00 on the 4 negative queries (spec text says 5)": {
+          "observed": 0.5,
+          "pass": false
+        },
+        "nDCG@10 >= 0.75 overall": {
+          "observed": 0.7049628673114833,
+          "pass": false
+        },
+        "nDCG@10 >= 0.60 semantic lane": {
+          "observed": 0.19358514107060285,
+          "pass": false
+        },
+        "reformulation_signal <= 0.20 overall": {
+          "observed": 0.34615384615384615,
+          "pass": false
+        },
+        "reformulation_signal <= 0.35 per lane": {
+          "observed": {
+            "path": 0,
+            "grep-literal": 0.4,
+            "grep-regex": 0.5,
+            "symbol": 0.25,
+            "semantic": 1,
+            "ranking-frecency": 0,
+            "ranking-proximity": 0,
+            "ranking-boost-ab": 0,
+            "ranking-symbol-intrafile": 0
+          },
+          "pass": false
+        }
+      },
+      "after": {
+        "recall@10 == 1.00 on all must_hit queries": {
+          "observed": 0.6737179487179487,
+          "pass": false
+        },
+        "zero_result_rate == 0.00 on must_hit queries": {
+          "observed": 0.038461538461538464,
+          "pass": false
+        },
+        "false_positive_rate == 0.00 on the 4 negative queries (spec text says 5)": {
+          "observed": 0.5,
+          "pass": false
+        },
+        "nDCG@10 >= 0.75 overall": {
+          "observed": 0.7049628673114833,
+          "pass": false
+        },
+        "nDCG@10 >= 0.60 semantic lane": {
+          "observed": 0.19358514107060285,
+          "pass": false
+        },
+        "reformulation_signal <= 0.20 overall": {
+          "observed": 0.34615384615384615,
+          "pass": false
+        },
+        "reformulation_signal <= 0.35 per lane": {
+          "observed": {
+            "path": 0,
+            "grep-literal": 0.4,
+            "grep-regex": 0.5,
+            "symbol": 0.25,
+            "semantic": 1,
+            "ranking-frecency": 0,
+            "ranking-proximity": 0,
+            "ranking-boost-ab": 0,
+            "ranking-symbol-intrafile": 0
+          },
+          "pass": false
+        }
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 30,
+      "method": "advisor acceptance gates: recall@10 1.0, nDCG@10 >= 0.75, FP 0, semantic >= 0.60, zero-result 0, reformulation",
+      "status": "verified",
+      "status_reason": "the gate outcomes are unchanged before/after; 6 of 7 gates fail on the frozen set both before and after Wave 1",
+      "artifact": "before/judgments-baseline.json + after/judgments-baseline.json"
+    },
+    {
+      "id": "tokens.total_estimated_prompt_tokens",
+      "lane": "tokens",
+      "scope": "10 tool tasks (repo + fixture)",
+      "before": {
+        "tokens": 3988,
+        "chars": 15942,
+        "median_task_tokens": 67
+      },
+      "after": {
+        "tokens": 5272,
+        "chars": 21072,
+        "median_task_tokens": 60
+      },
+      "delta": {
+        "tokens": 1284,
+        "pct": 32.19658976930793
+      },
+      "ci95": null,
+      "n": 10,
+      "method": "sum of sanitised tool-output text / 4 over 10 fixed tasks (ESTIMATE, see TOKENS.md)",
+      "status": "unverified",
+      "status_reason": "6 of 10 tasks target the repo scope, whose tree differs between checkouts (304 vs 7 504 files); the +32 % total is dominated by t04/t07/t08/t10 seeing a bigger repo, not by a formatter regression",
+      "artifact": "before/tokens-baseline.json + after/tokens-baseline.json"
+    },
+    {
+      "id": "equivalence.multi_grep_recall_vs_native (m02)",
+      "lane": "equivalence",
+      "scope": "fixture (5 000 files)",
+      "before": {
+        "us": 16,
+        "native": 19,
+        "recall": 0.8421052631578947
+      },
+      "after": {
+        "us": 19,
+        "native": 19,
+        "recall": 1
+      },
+      "delta": {
+        "recall": 0.1578947368421053
+      },
+      "ci95": null,
+      "n": 1,
+      "method": "set comparison against `rg -l -e p1 -e p2` (limit 1000 so the client is not the limiter)",
+      "status": "verified",
+      "status_reason": "F3 fixed: the 3 files the default limit dropped are returned now",
+      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json"
+    },
+    {
+      "id": "equivalence.multi_grep_recall_vs_native (m01)",
+      "lane": "equivalence",
+      "scope": "repo",
+      "before": {
+        "us": 20,
+        "native": 20,
+        "recall": 1
+      },
+      "after": {
+        "us": 30,
+        "native": 32,
+        "recall": 0.9375
+      },
+      "delta": {
+        "recall": -0.0625
+      },
+      "ci95": null,
+      "n": 1,
+      "method": "set comparison against `rg -l -e p1 -e p2` (limit 1000)",
+      "status": "verified",
+      "status_reason": "the harness run read a repo being modified concurrently (30 vs 32 at 06:00); a controlled re-measure with no writers returns 37 files on both sides — exact parity",
+      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json + after/union-recheck"
+    },
+    {
+      "id": "equivalence.aggregate_sets",
+      "lane": "equivalence",
+      "scope": "all 30 queries (repo + fixture + /Users/batra/Search)",
+      "before": {
+        "total_queries": 30,
+        "path_queries": 15,
+        "grep_queries": 13,
+        "multi_queries": 2,
+        "negative_queries": 3,
+        "us_total_files": 568,
+        "native_total_files": 565,
+        "queries_with_us_ignored": [
+          "p01",
+          "p05"
+        ],
+        "queries_with_us_error": [],
+        "queries_recall_below_1_raw": [
+          "m02"
+        ],
+        "queries_recall_below_1_effective": [
+          "m02"
+        ],
+        "negative_queries_with_us_hits": [],
+        "negative_queries_with_native_hits": []
+      },
+      "after": {
+        "total_queries": 30,
+        "path_queries": 15,
+        "grep_queries": 13,
+        "multi_queries": 2,
+        "negative_queries": 3,
+        "us_total_files": 647,
+        "native_total_files": 649,
+        "queries_with_us_ignored": [],
+        "queries_with_us_error": [],
+        "queries_recall_below_1_raw": [
+          "m01"
+        ],
+        "queries_recall_below_1_effective": [
+          "m01"
+        ],
+        "negative_queries_with_us_hits": [],
+        "negative_queries_with_native_hits": []
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 30,
+      "method": "raw and effective (ignore-filtered) set comparison; negative queries must return nothing",
+      "status": "verified",
+      "status_reason": "negative queries return no hits on either side; scope differences explain the aggregate totals",
+      "artifact": "before/equivalence-golden.json + after/equivalence-golden.json"
+    },
+    {
+      "id": "zeroresult.absent_zero_hit_rate",
+      "lane": "zero-result",
+      "scope": "fixture (absent token, 6 queries x 5 calls)",
+      "before": 1,
+      "after": 1,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "runtime-generated absent token in the fixture; a false positive is a hit",
+      "status": "verified",
+      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json"
+    },
+    {
+      "id": "zeroresult.present_miss_rate",
+      "lane": "zero-result",
+      "scope": "fixture (present token, 6 queries x 5 calls)",
+      "before": 0,
+      "after": 0,
+      "delta": 0,
+      "ci95": null,
+      "n": 30,
+      "method": "present-token control: a miss is a failure",
+      "status": "verified",
+      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json"
+    },
+    {
+      "id": "fallback.native_fallback_rate",
+      "lane": "fallback",
+      "scope": "60 measured calls (index + scan sources)",
+      "before": {
+        "my_audit_rows": 60,
+        "source_counts": {
+          "index": 30,
+          "scan": 30
+        },
+        "native_fallback_rows": 0,
+        "native_fallback_rate": 0,
+        "scan_rows": 30,
+        "index_rows": 30,
+        "fallback_examples": []
+      },
+      "after": {
+        "my_audit_rows": 60,
+        "source_counts": {
+          "index": 40,
+          "scan": 20
+        },
+        "native_fallback_rows": 0,
+        "native_fallback_rate": 0,
+        "scan_rows": 20,
+        "index_rows": 40,
+        "fallback_examples": []
+      },
+      "delta": {
+        "native_fallback_rows": 0
+      },
+      "ci95": null,
+      "n": 60,
+      "method": "audit rows written in the window, by source",
+      "status": "verified",
+      "status_reason": "0 native-fallback rows on both sides; the index/scan mix shifts 30/30 -> 40/20",
+      "artifact": "before/zeroresult-baseline.json + after/zeroresult-baseline.json"
+    },
+    {
+      "id": "check.#36",
+      "lane": "regression",
+      "scope": "catastrophic-backtracking regex `(a+)+$` is rejected client-side before any socket write",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) catastrophic-backtracking regex `(a+)+$` is rejected client-side before any socket write",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "dead_socket": "/nonexistent-dir/us-verify-dead.sock",
+        "rejected_grep": {
+          "ok": false,
+          "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+          "files": 0
+        },
+        "rejected_multi": {
+          "ok": false,
+          "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+          "files": 0
+        },
+        "control_valid_pattern": {
+          "threw": "connect ENOENT /nonexistent-dir/us-verify-dead.sock"
+        },
+        "graph": {
+          "nested_rejected": true,
+          "nested_backref_rejected": true,
+          "alternation_warns": true,
+          "plain_ok": true
+        },
+        "audit_rows_for_rejected_pattern": 0,
+        "proof": "rejection returns ok:false without touching a socket that is provably dead (the same call with a valid pattern throws a connection error); no audit row carries the rejected literal"
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.#23",
+      "lane": "regression",
+      "scope": "multi-line PEM body redacted; line-wise grep body redacted; path DLP redacts a credential-shaped filename; ordinary code/SHAs/URLs untouched",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) multi-line PEM body redacted; line-wise grep body redacted; path DLP redacts a credential-shaped filename; ordinary code/SHAs/URLs untouched",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "whole": "[REDACTED_----...]",
+        "linewise": [
+          "[REDACTED_----...]",
+          "[REDACTED_PRIVATE_KEY_BODY]",
+          "[REDACTED_PRIVATE_KEY_BODY]",
+          "[REDACTED_----...]"
+        ],
+        "guard_closed_after_footer": true,
+        "path_in": "/tmp/dir/ghp_A1b2…(.ts)",
+        "path_out": "/tmp/dir/[REDACTED_ghp_...].ts",
+        "negative_control_unchanged": [
+          "const x = 1; // ordinary code",
+          "commit 9f2c1a7b3d4e5f60718293a4b5c6d7e8f9012345",
+          "https://example.com/path?q=1",
+          "sha256: 3b1f7c9e5a2d486b0c1f3e5a7b9d2c4e6f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c"
+        ]
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.F1",
+      "lane": "regression",
+      "scope": "trailing-slash ignore patterns (`node_modules/`) match: pattern helper and live path search",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) trailing-slash ignore patterns (`node_modules/`) match: pattern helper and live path search",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "unit": {
+          "node_modules_slash": true,
+          "node_modules_exact": true,
+          "dist_slash": true,
+          "nested_slash": true,
+          "control_not_ignored": false
+        },
+        "live": {
+          "error": null,
+          "hits": 1,
+          "ignored": 0,
+          "node_modules": 0,
+          "sample": [
+            "- package.json"
+          ]
+        },
+        "note": "unit fix vs live-filtering are separate: `matchesIgnorePattern` is the sanitize helper; `live` is what the tool actually returns."
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.F3",
+      "lane": "regression",
+      "scope": "multiGrep at its DEFAULT limit returns every matching file (parity with rg -l)",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) multiGrep at its DEFAULT limit returns every matching file (parity with rg -l)",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "default_limit": 19,
+        "limit_200": 19,
+        "single_grep": 18,
+        "rg_native": 19,
+        "default_limit_value": null,
+        "truncated_flag": false
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.#19",
+      "lane": "regression",
+      "scope": "status exposes last_event_id/event_lag/staleness_ms/replay_in_progress and answers carry stale_ms",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) status exposes last_event_id/event_lag/staleness_ms/replay_in_progress and answers carry stale_ms",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "fields19": [
+          "last_event_id",
+          "event_lag",
+          "staleness_ms",
+          "replay_in_progress"
+        ],
+        "status_slice": {
+          "last_event_id": 5694684796,
+          "event_lag": 1,
+          "staleness_ms": 0,
+          "replay_in_progress": false
+        },
+        "answer": {
+          "stale_ms": null,
+          "complete": false,
+          "scanned": null,
+          "considered": null,
+          "budget_ms": null
+        },
+        "error": null
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.#34",
+      "lane": "regression",
+      "scope": "status exposes compaction counters (compactions/last_compact_*/postponed/in_flight)",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) status exposes compaction counters (compactions/last_compact_*/postponed/in_flight)",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "fields34": [
+          "compactions",
+          "last_compact_ms",
+          "last_compact_bytes",
+          "last_compact_entries",
+          "last_compact_secs_ago",
+          "compactions_postponed",
+          "queries_in_flight"
+        ],
+        "status_slice": {
+          "compactions": 3,
+          "last_compact_ms": 1665,
+          "last_compact_bytes": 119984896,
+          "last_compact_entries": 3879170,
+          "last_compact_secs_ago": 0,
+          "compactions_postponed": 0,
+          "queries_in_flight": 0
+        },
+        "pause_test": "test/engine/status.test.mjs (npm run test:engine)"
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.#17",
+      "lane": "regression",
+      "scope": "status reports content_policy beside content_docs/content_pending",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) status reports content_policy beside content_docs/content_pending",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "content_docs": 145651,
+        "content_pending": 0,
+        "content_policy": {
+          "configured": false,
+          "extensions": null,
+          "max_file_bytes": null,
+          "roots": null,
+          "source": null,
+          "warm": 0
+        },
+        "coverage_test": "test/engine/coverage.test.mjs (npm run test:engine)"
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.#16",
+      "lane": "regression",
+      "scope": "budget_ms: a spent budget yields complete:false with budget/counter fields; an ample budget is output-identical to none",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) budget_ms: a spent budget yields complete:false with budget/counter fields; an ample budget is output-identical to none",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "tiny_fixture": {
+          "complete": true,
+          "hits": 200,
+          "budget_ms": 1
+        },
+        "tiny_global_engine": {
+          "complete": false,
+          "scanned": 36895,
+          "considered": 36855,
+          "budget_ms": 1,
+          "hits": 200
+        },
+        "tiny_bigscope_client": {
+          "complete": true,
+          "budget_ms": 1,
+          "deadline_exceeded": false,
+          "hits": 200
+        },
+        "tiny_global_client": {
+          "complete": true,
+          "budget_ms": 1,
+          "deadline_exceeded": false,
+          "hits": 200
+        },
+        "grep_global_engine": {
+          "complete": false,
+          "scanned": 4,
+          "considered": 85,
+          "candidates": 85,
+          "read": 4,
+          "files": 0
+        },
+        "grep_global_client": {
+          "complete": false,
+          "files": 3,
+          "budget_ms": 1
+        },
+        "ample_equals_none": {
+          "identical_output": true,
+          "none_complete": false,
+          "ample_complete": true,
+          "n": 20
+        },
+        "ample_global_engine_complete": true,
+        "note": "A 1 ms budget over a small/fast scope is a race (either side of the deadline can win) and the small-scope search rows are recorded as informational; the deterministic rows are the global engine search, the global engine grep and the global client grep."
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.#22",
+      "lane": "regression",
+      "scope": "scoped search returns only its own worktree's paths; recent is frecency-ranked with boost",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) scoped search returns only its own worktree's paths; recent is frecency-ranked with boost",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "scope_leak": 0,
+        "scope_hits": 1,
+        "scope_sample": [
+          "package.json"
+        ],
+        "recent": {
+          "hits": 10,
+          "boosts": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "paths": [
+            "src/client.ts",
+            "test/client.test.ts",
+            "package.json"
+          ]
+        },
+        "engine_tests": "test/engine/search.test.mjs (worktree isolation + frecency ordering)"
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.#45",
+      "lane": "regression",
+      "scope": "a second daemon on the same index directory refuses to start (one writer per index)",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) a second daemon on the same index directory refuses to start (one writer per index)",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "socket_up": true,
+        "second_exited": true,
+        "refusal_message": "1792034060 another ultrasearch daemon is running",
+        "exit_code": 0
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.F5",
+      "lane": "regression",
+      "scope": "with PI_ULTRASEARCH_TEST=1 the production audit log is byte-identical before/after every probe",
+      "before": null,
+      "after": "verified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) with PI_ULTRASEARCH_TEST=1 the production audit log is byte-identical before/after every probe",
+      "status": "verified",
+      "status_reason": null,
+      "evidence": {
+        "production": {
+          "before": {
+            "exists": true,
+            "bytes": 31630,
+            "lines": 160,
+            "mtime": "2026-10-14T21:25:36.000Z",
+            "sha256": "38261544cf108f83e10ccd379afb7431064493698003935b9c17d017b3695633"
+          },
+          "after": {
+            "exists": true,
+            "bytes": 31630,
+            "lines": 160,
+            "mtime": "2026-10-14T21:25:36.000Z",
+            "sha256": "38261544cf108f83e10ccd379afb7431064493698003935b9c17d017b3695633"
+          }
+        },
+        "test_log": {
+          "before": {
+            "bytes": 125051,
+            "lines": 605
+          },
+          "after": {
+            "bytes": 127772,
+            "lines": 618
+          }
+        }
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.F7",
+      "lane": "regression",
+      "scope": "test audit log is still one shared fixed path (recommendation open, no truncation observed in this window)",
+      "before": null,
+      "after": "unverified",
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/verification/checks/regressions.mjs (independent probe of) test audit log is still one shared fixed path (recommendation open, no truncation observed in this window)",
+      "status": "unverified",
+      "status_reason": "F7 is a Wave 1 recommendation that remains unfixed (documented, not a regression)",
+      "evidence": {
+        "shared_fixed_path": true,
+        "per_process_support": false,
+        "concurrent_writers_present": {
+          "a": 5,
+          "b": 5,
+          "both_present": true,
+          "lines_before": 618,
+          "lines_after": 628
+        },
+        "interpretation": "Wave 1 F7 was a recommendation; it remains unfixed (documented, not a regression)."
+      },
+      "artifact": "bench/verification/after/checks-regressions.json"
+    },
+    {
+      "id": "check.gate_floor",
+      "lane": "regression",
+      "scope": "test/benchmark-gate.test.ts live grep gate (< 5 ms p95)",
+      "before": null,
+      "after": {
+        "raw_daemon_p50": 7.16508300000001,
+        "raw_daemon_p95": 7.64769374999995,
+        "client_p50": 7.880000499999994,
+        "client_p95": 8.594941650000003
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 60,
+      "method": "raw unix-socket grep vs client grep, same query/scope/limit as the gate",
+      "status": "verified",
+      "status_reason": "the raw daemon alone exceeds the 5 ms gate on this machine: the gate measures the machine floor, not a client regression",
+      "artifact": "bench/verification/after/checks-gate-floor.json"
+    },
+    {
+      "id": "author.boost-degraded",
+      "lane": "author-bench",
+      "scope": "repo bench harness (author-owned)",
+      "before": null,
+      "after": {
+        "file": "boost-2026-10-15-degraded.json",
+        "gate_ok": null,
+        "quotable": null
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "npm run bench:* / metrics:nightly (author harness)",
+      "status": "unverified",
+      "status_reason": "the author benches refuse to write a final result when the 1-min load is >= 1.5 (or mark `quotable:false`); the run is recorded as degraded and is not quotable",
+      "artifact": "bench/verification/after/author/boost-2026-10-15-degraded.json"
+    },
+    {
+      "id": "author.engineT04-23-28-967Z",
+      "lane": "author-bench",
+      "scope": "repo bench harness (author-owned)",
+      "before": null,
+      "after": {
+        "file": "engine-2026-10-15T04-23-28-967Z.json",
+        "gate_ok": null,
+        "quotable": false
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 20,
+      "method": "npm run bench:* / metrics:nightly (author harness)",
+      "status": "unverified",
+      "status_reason": "the author benches refuse to write a final result when the 1-min load is >= 1.5 (or mark `quotable:false`); the run is recorded as degraded and is not quotable",
+      "artifact": "bench/verification/after/author/engine-2026-10-15T04-23-28-967Z.json"
+    },
+    {
+      "id": "author.fallback-degraded",
+      "lane": "author-bench",
+      "scope": "repo bench harness (author-owned)",
+      "before": null,
+      "after": {
+        "file": "fallback-2026-10-15-degraded.json",
+        "gate_ok": null,
+        "quotable": null
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 200,
+      "method": "npm run bench:* / metrics:nightly (author harness)",
+      "status": "unverified",
+      "status_reason": "the author benches refuse to write a final result when the 1-min load is >= 1.5 (or mark `quotable:false`); the run is recorded as degraded and is not quotable",
+      "artifact": "bench/verification/after/author/fallback-2026-10-15-degraded.json"
+    },
+    {
+      "id": "author.lanes-degraded",
+      "lane": "author-bench",
+      "scope": "repo bench harness (author-owned)",
+      "before": null,
+      "after": {
+        "file": "lanes-2026-10-15-degraded.json",
+        "gate_ok": null,
+        "quotable": null
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "npm run bench:* / metrics:nightly (author harness)",
+      "status": "unverified",
+      "status_reason": "the author benches refuse to write a final result when the 1-min load is >= 1.5 (or mark `quotable:false`); the run is recorded as degraded and is not quotable",
+      "artifact": "bench/verification/after/author/lanes-2026-10-15-degraded.json"
+    },
+    {
+      "id": "author.nightly",
+      "lane": "author-bench",
+      "scope": "repo bench harness (author-owned)",
+      "before": null,
+      "after": {
+        "file": "nightly-2026-10-15.json",
+        "gate_ok": null,
+        "quotable": null
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "npm run bench:* / metrics:nightly (author harness)",
+      "status": "unverified",
+      "status_reason": "the author benches refuse to write a final result when the 1-min load is >= 1.5 (or mark `quotable:false`); the run is recorded as degraded and is not quotable",
+      "artifact": "bench/verification/after/author/nightly-2026-10-15.json"
+    },
+    {
+      "id": "author.scopes-degraded",
+      "lane": "author-bench",
+      "scope": "repo bench harness (author-owned)",
+      "before": null,
+      "after": {
+        "file": "scopes-2026-10-15-degraded.json",
+        "gate_ok": null,
+        "quotable": null
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "npm run bench:* / metrics:nightly (author harness)",
+      "status": "unverified",
+      "status_reason": "the author benches refuse to write a final result when the 1-min load is >= 1.5 (or mark `quotable:false`); the run is recorded as degraded and is not quotable",
+      "artifact": "bench/verification/after/author/scopes-2026-10-15-degraded.json"
+    },
+    {
+      "id": "author.tokens-degraded",
+      "lane": "author-bench",
+      "scope": "repo bench harness (author-owned)",
+      "before": null,
+      "after": {
+        "file": "tokens-2026-10-15-degraded.json",
+        "gate_ok": null,
+        "quotable": null
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "npm run bench:* / metrics:nightly (author harness)",
+      "status": "unverified",
+      "status_reason": "the author benches refuse to write a final result when the 1-min load is >= 1.5 (or mark `quotable:false`); the run is recorded as degraded and is not quotable",
+      "artifact": "bench/verification/after/author/tokens-2026-10-15-degraded.json"
+    },
+    {
+      "id": "environment.gate",
+      "lane": "environment",
+      "scope": "measurement gate (AC + load1 < 1.5 + no cargo/rustc)",
+      "before": {
+        "status": "final",
+        "gate_pass": true,
+        "load1": 1.46,
+        "ac_power": true
+      },
+      "after": {
+        "status": "provisional",
+        "gate_pass": false,
+        "load1": 4.867,
+        "ac_power": true
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "bench/baseline/gate-check.mjs",
+      "status": "verified",
+      "status_reason": "the BEFORE suite produced status=final JSON in per-script gate windows; the AFTER latency/judgments JSONs stayed provisional because corespotlightd/mediaanalysisd kept the 1-min load above the gate (4.9 in the latency window)",
+      "artifact": "bench/verification/before/gate-pre.json + bench/verification/after/gate-pre.json"
+    },
+    {
+      "id": "tests.npm_test",
+      "lane": "tests",
+      "scope": "npm test",
+      "before": "95 pass, 0 fail",
+      "after": {
+        "tests": 95,
+        "pass": 95,
+        "fail": 0
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 95,
+      "method": "commands run by the verifier on HEAD 3135e28",
+      "status": "verified",
+      "status_reason": null,
+      "artifact": "bench/verification/after/tests.json"
+    },
+    {
+      "id": "tests.test_engine",
+      "lane": "tests",
+      "scope": "npm run test:engine",
+      "before": "26 pass, 0 fail",
+      "after": {
+        "tests": 26,
+        "pass": 26,
+        "fail": 0
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 26,
+      "method": "commands run by the verifier on HEAD 3135e28",
+      "status": "verified",
+      "status_reason": "real daemon per test, in-repo engine binary",
+      "artifact": "bench/verification/after/tests.json"
+    },
+    {
+      "id": "tests.cargo_test",
+      "lane": "tests",
+      "scope": "cargo test --release (engine/)",
+      "before": "39 pass, 0 fail (30 lib + 9 bin)",
+      "after": {
+        "tests": 39,
+        "pass": 39,
+        "fail": 0
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 39,
+      "method": "commands run by the verifier on HEAD 3135e28",
+      "status": "verified",
+      "status_reason": null,
+      "artifact": "bench/verification/after/tests.json"
+    },
+    {
+      "id": "tests.typecheck",
+      "lane": "tests",
+      "scope": "npm run typecheck",
+      "before": "pass",
+      "after": {
+        "exit": 0
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "commands run by the verifier on HEAD 3135e28",
+      "status": "verified",
+      "status_reason": null,
+      "artifact": "bench/verification/after/tests.json"
+    },
+    {
+      "id": "tests.build",
+      "lane": "tests",
+      "scope": "npm run build",
+      "before": "pass (dist emitted)",
+      "after": {
+        "exit": 0
+      },
+      "delta": null,
+      "ci95": null,
+      "n": null,
+      "method": "commands run by the verifier on HEAD 3135e28",
+      "status": "verified",
+      "status_reason": null,
+      "artifact": "bench/verification/after/tests.json"
+    },
+    {
+      "id": "tests.test_gate",
+      "lane": "tests",
+      "scope": "npm run test:gate",
+      "before": "4/4 pass (with the note that the live 5 ms grep gate is load-sensitive)",
+      "after": {
+        "tests": 4,
+        "pass": 3,
+        "fail": 1,
+        "failing": "Live CI Gate: daemon-backed p95 trigram grep < 5ms",
+        "observed_ms": {
+          "p50": 7.47,
+          "p95": 9.04
+        }
+      },
+      "delta": null,
+      "ci95": null,
+      "n": 4,
+      "method": "commands run by the verifier on HEAD 3135e28",
+      "status": "unverified",
+      "status_reason": "the failing leg measures 7.17 ms p50 / 7.65 ms p95 on the raw daemon socket with no client (bench/verification/after/checks-gate-floor.json): the threshold is below the machine floor, matching the Wave 1 blocker note. Not a Wave 1 regression, but the '4/4 pass' claim does not hold on this machine right now.",
+      "artifact": "bench/verification/after/tests.json"
+    }
+  ]
+}
