@@ -9,20 +9,27 @@ thing under test: every verdict is a fresh run, a fresh derivation, or a mutatio
 
 ---
 
-## F15 — smoke-matrix artifacts are stale relative to HEAD (#52, blocking for the acceptance line)
+## F15 — smoke-matrix artifacts are still not fresh at HEAD (#52, open)
 
-**Observed:** all ten `bench/harness-smoke/*.json` record `"commit": "397edb87…"` while HEAD is
-`97beeb140d…`. `--check --require-fresh` exits 1 with ten `stale:<id>` problems.
+**Status: open at `0ad4919`.** The artifacts were regenerated (commit `0ad4919` touches all ten),
+but they were generated *before* that commit landed: every artifact names `cc37a9a0` — the parent
+— and carries `"worktreeDirty": true`, i.e. the tested tree included uncommitted changes (the
+`index.ts` fix). Verified at HEAD `0ad4919`:
 
-**Reproduction:**
 ```bash
-cd <worktree> && PI_ULTRASEARCH_TEST=1 node bench/harness-matrix.mjs --check --require-fresh; echo $?
-# harness-matrix: 10 problem(s)  … stale:pi … stale:antigravity …   exit 1
+PI_ULTRASEARCH_TEST=1 node bench/harness-matrix.mjs --check --require-fresh; echo $?
+# 10 problem(s): stale:pi … stale:antigravity   → exit 1
+python3 -c "import json;d=json.load(open('bench/harness-smoke/pi.json'));print(d['commit'][:7], d['worktreeDirty'])"
+# cc37a9a True
 ```
-**Impact:** the issue's acceptance ("every claimed harness has a current smoke artifact") is unmet
-at HEAD. Not repaired here (the rule is no fixes).
 
----
+**Mechanism (not a defect in the checker):** `--require-fresh` compares `artifact.commit` with
+`git rev-parse HEAD`, and `worktreeDirty` is sampled before the smoke writes anything. Once the
+artifact-bearing commit moves HEAD, committed artifacts can never be fresh again — the acceptance is
+only satisfiable in the regenerate-then-check window (the CI form: clean checkout at HEAD, regenerate,
+check, do not commit). The MCP surface itself is correct: the verifier's own live `initialize` →
+`tools/list` handshake from the checkout returns the canonical six tools at `2025-06-18`, agreeing
+with every stored artifact.
 
 ## F16 — nightly real-session summary is not wired to any scheduler (#31, acceptance unmet)
 
@@ -49,22 +56,21 @@ so nothing false is stated — the measurement is simply absent.
 
 ---
 
-## F18 — `execFileSync` is still on the request path in `index.ts` (#24, acceptance line unmet)
+## F18 — `execFileSync` on the request path — **RESOLVED at `0ad4919`** (#24)
 
-**Observed:** `src/client.ts` is clean, but `index.ts::resolveWorktreeRoot()` falls back to
-`execFileSync("git", ["rev-parse", "--show-toplevel"])` when no `.git` entry is found walking up
-from the cwd. Probed through the real Pi harness from a non-git cwd with a stubbed `git` that sleeps
-400 ms: **one synchronous invocation, max event-loop gap 773 ms**. The shipped guard test only
-scans `src/client.ts`.
+**Was:** `index.ts::resolveWorktreeRoot()` fell back to `execFileSync("git", ["rev-parse",
+"--show-toplevel"])` when no `.git` was found walking up; measured through the real Pi harness from
+a non-git cwd with a stubbed `git`: 1 synchronous invocation, max event-loop gap **773 ms**.
 
-**Reproduction:** `node bench/verification/backlog/checks/f24-fallback.mjs`; raw JSON in
-`results/f24-fallback.json` (`index_request_path_probe`).
+**Now (re-measured on `0ad4919`):** the fallback is gone. Same probe: **0 git invocations, max gap
+11.81 ms**. Async fallback still responsive (max gap 11.32 ms while a stubbed `rg` slept 400 ms;
+`source=native_fallback`, 1 hit), cancellation still stops the child (1 tracked mid-flight → 0 after
+abort), and the `src/spawn.ts → execFileSync` removal control still blocks (477 ms), so the probe is
+sensitive.
 
-**Scope:** for a cwd inside any git repository the walk-up finds `.git` and git is never spawned, so
-this is the non-repo case (and it is cached per startDir for 60 s). It is still a synchronous child
-process on the tool-call path.
-
----
+**Guard non-vacuity:** re-adding the pre-fix call to `index.ts` in a scratch copy makes the widened
+guard (`test/fallback.test.ts`, now scanning `src/client.ts` **and** `index.ts`) fail, while the old
+`client.ts`-only scope still passes — the widening is load-bearing.
 
 ## F19 — `ultrasearch init --remove --write` does not byte-restore a pre-existing config (#51, fidelity nit)
 

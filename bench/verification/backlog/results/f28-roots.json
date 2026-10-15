@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T20:18:50.610Z",
+  "generated_at": "2026-10-15T20:34:43.867Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 4.76513671875,
+    "load1": 3.515625,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
@@ -12,30 +12,30 @@
     "count": 3,
     "duplicates": 1,
     "roots": [
-      "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active",
-      "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other"
+      "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active",
+      "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/other"
     ],
     "multi": true,
     "hits": [
       {
-        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active/active-only.ts",
-        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active",
+        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active/active-only.ts",
+        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active",
         "active": true
       },
       {
-        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active/shared.ts",
-        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other",
+        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active/shared.ts",
+        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/other",
         "active": false
       },
       {
-        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other/other-only.ts",
-        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other",
+        "path": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/other/other-only.ts",
+        "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/other",
         "active": false
       }
     ]
   },
   "attribution": {
-    "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active",
+    "root": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-yyQyqK/effort/active",
     "active": true
   },
   "defects": []

@@ -9,8 +9,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/removal-matrix.json",
     "evidence_hashes": {
-      "artifact": "28c38625fb82778276fcd1c50fe45ff1f47df3796c834c2f4d50b48533fb1e7d",
-      "probe": "9b1508f542942948335e61a0c1b5fc4783747e714c94f9980557ef7f423f9408"
+      "artifact": "ed2f1b5992751383288e6628242994f0894bac7013ad06869528dc225a213b3c",
+      "probe": "feb6a2876be356d2b36f3e3f824af38c2a1094a266ce4984d62a4a2fea616f47"
     },
     "notes": "all guards are live"
   }

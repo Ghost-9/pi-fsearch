@@ -9,8 +9,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f31-telemetry.json",
     "evidence_hashes": {
-      "artifact": "d1b00fd590a8d772a339ff947c9c3b6bc88200500488100dab942c5a0e36bfe3",
-      "probe": "4ff114f7e9515c5832bc7351c40632ad94b21c941999a91a562056f394dec5f4"
+      "artifact": "284f6eef9511618719751e748da31c0a6b63a12894b65fa44d9608e97768b53f",
+      "probe": "3677a623ed947a11c036468e14ab4911e502d87e259fb0e614aee936b1fa4458"
     },
     "notes": "nightly summary is not wired into CI or cron: acceptance says it is produced without manual steps"
   },
@@ -24,8 +24,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f38-prompt-tax.json",
     "evidence_hashes": {
-      "artifact": "156422adbc8907e98eafa4a01cf7bf9df89f34b998ee9d7f6f95a5974d87efcf",
-      "probe": "78fe21cdf1a715d794282c6ac92c6a66106231efc6fbdf5c68bb9003a5b5e8d2"
+      "artifact": "74d9c78961fe80422f75096427107cb2e95a203167717463a638bebc00aa1fac",
+      "probe": "4b759168a2a437cd25ad9f4c95ad43b66749ae982463204c39f5bd11554267c2"
     },
     "notes": "every published number reproduced exactly with the verifier's own serializer"
   }

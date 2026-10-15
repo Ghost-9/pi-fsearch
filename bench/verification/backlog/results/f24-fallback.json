@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T20:18:16.082Z",
+  "generated_at": "2026-10-15T20:34:09.546Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 5.47998046875,
+    "load1": 5.33203125,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
@@ -12,8 +12,6 @@
     "src/spawn.ts:6: * Replaces `execFileSync` in the native-fallback request path (issue #24):",
     "src/tui.ts:105:          execSync(\"open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'\");",
     "src/tui.ts:106:          execSync(\"open -R ~/Applications/UltraSearch.app || open -R ~/.local/bin/ultrasearch-daemon\");",
-    "index.ts:3:import { execFileSync } from \"node:child_process\";",
-    "index.ts:45:    const root = execFileSync(\"git\", [\"rev-parse\", \"--show-toplevel\"], {",
     "bin/cli.ts:353:          execSync(\"open 'x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'\");",
     "bin/cli.ts:357:          execSync(`open -R \"${target}\"`);",
     "bin/cli.ts:384:                execSync(\"launchctl kickstart -k gui/$(id -u)/com.pi.ultrasearch\");",
@@ -22,10 +20,10 @@
     "bin/cli.ts:475:          execSync(`launchctl bootstrap gui/$(id -u) \"${plistPath}\" 2>/dev/null || launchctl kickstart -k gui/$(id -u)/com.pi.ultrasearch 2>/dev/null || true`);"
   ],
   "async_probe": {
-    "elapsed_ms": 803,
-    "max_gap_ms": 16.42,
-    "ticks": 90,
-    "expected_ticks": 100,
+    "elapsed_ms": 594,
+    "max_gap_ms": 14.35,
+    "ticks": 72,
+    "expected_ticks": 79,
     "source": "native_fallback",
     "hits": 1,
     "error": null,
@@ -34,9 +32,9 @@
   "removal_control": {
     "mutation_error": null,
     "sync_probe": {
-      "elapsed_ms": 481,
-      "max_gap_ms": 480.96,
-      "ticks": 19,
+      "elapsed_ms": 478,
+      "max_gap_ms": 478.31,
+      "ticks": 20,
       "expected_ticks": 68,
       "source": "native_fallback",
       "hits": 1,
@@ -44,10 +42,16 @@
       "active_children_after": 0
     }
   },
+  "guard_non_vacuity": {
+    "ran": true,
+    "widened_guard_failed": true,
+    "widened_guard_tail": "ernal/test_runner/test:1262:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: true,\n    expected: false,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n",
+    "old_client_only_guard_passed": true
+  },
   "index_request_path_probe": {
-    "elapsed_ms": 2087,
-    "max_gap_ms": 744.13,
-    "git_invocations": 1,
+    "elapsed_ms": 1340,
+    "max_gap_ms": 12.99,
+    "git_invocations": 0,
     "error": null
   },
   "cancellation_probe": {
@@ -59,10 +63,8 @@
   "verdicts": {
     "responsive": true,
     "control_blocks": true,
-    "index_blocks": true,
+    "index_blocks": false,
     "cancelled": true
   },
-  "defects": [
-    "execFileSync still in the request path: index.ts::resolveWorktreeRoot shells out to git for a non-git cwd (blocked 744.13ms, 1 invocation(s))"
-  ]
+  "defects": []
 }

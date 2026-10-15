@@ -253,6 +253,7 @@ export async function check() {
   const matrixCheck = await run("node", [path.join(REPO, "bench", "harness-matrix.mjs"), "--check", "--require-fresh", "--print"], { cwd: REPO, env, timeoutMs: 180000 });
 
   // re-derive two stored artifacts from a real protocol run
+  const head = (await run("git", ["rev-parse", "HEAD"], { cwd: REPO, timeoutMs: 30000 })).stdout.trim();
   const artifacts = ["pi", "codex", "claude-code", "zed"].map((id) => path.join(REPO, "bench", "harness-smoke", `${id}.json`));
   const stored = {};
   for (const a of artifacts) {
@@ -262,9 +263,12 @@ export async function check() {
       const arm = arms.find((x) => x?.arm === "protocol") ?? arms[0] ?? {};
       stored[path.basename(a, ".json")] = {
         commit: j.commit ?? j.head ?? null,
+        worktreeDirty: j.worktreeDirty ?? null,
+        fresh: (j.commit ?? null) === head,
         tools: arm?.toolCount ?? arm?.tools?.length ?? arm?.toolNames?.length ?? null,
         negotiated: arm?.negotiatedProtocolVersion ?? arm?.protocolVersion ?? null,
         status: arm?.status ?? j.status ?? null,
+        launchSource: arm?.launch?.source ?? null,
       };
     }
   }
@@ -286,6 +290,8 @@ export async function check() {
   for (const [id, v] of rechecked) {
     if (v.tools !== liveTools.length) f52Defects.push(`${id} artifact records ${v.tools} tools, a live run reports ${liveTools.length}`);
     if (v.negotiated && liveProtocol && v.negotiated !== liveProtocol) f52Defects.push(`${id} artifact negotiated ${v.negotiated}, live run ${liveProtocol}`);
+    if (v.worktreeDirty === true) f52Defects.push(`${id} artifact declares worktreeDirty=true: it names a tree that was not the tested one`);
+    if (v.fresh === false) f52Defects.push(`${id} artifact commit ${String(v.commit).slice(0, 7)} != HEAD ${head.slice(0, 7)}`);
   }
 
   const f52Artifact = {
@@ -293,7 +299,8 @@ export async function check() {
     gate: g,
     matrix_check: { exit: matrixCheck.code, stdout_tail: matrixCheck.stdout.slice(-1200) },
     stored_artifacts: stored,
-    live_protocol_run: { tools: liveTools, negotiated: liveProtocol },
+    live_protocol_run: { tools: liveTools, negotiated: liveProtocol, head },
+    head_commit: head,
     defects: f52Defects,
   };
   const f52Written = writeArtifact("bench/verification/backlog/results/f52-smoke.json", f52Artifact);
@@ -302,7 +309,7 @@ export async function check() {
     claim: "capability matrix + smoke per harness: every claimed harness has a current artifact, unsupported harnesses are explicit, --check --require-fresh passes, and stored artifacts agree with a real protocol run",
     verdict: f52Defects.length ? "needs-work" : "verified",
     evidence:
-      `bench/harness-matrix.mjs --check --require-fresh exit=${matrixCheck.code}; stored artifacts read: ${JSON.stringify(stored)}; ` +
+      `bench/harness-matrix.mjs --check --require-fresh exit=${matrixCheck.code}; HEAD=${head.slice(0, 7)}; stored artifacts read: ${JSON.stringify(stored)}; ` +
       `verifier's own live protocol run: ${liveTools.length} tools, negotiated ${liveProtocol}`,
     method: "the shipped matrix checker run by the verifier, plus an independent MCP initialize/tools-list handshake compared against the stored artifacts",
     n: 5,

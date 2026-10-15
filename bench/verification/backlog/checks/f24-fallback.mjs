@@ -214,6 +214,41 @@ export async function check() {
     mutationError = String(e);
   }
 
+  // guard non-vacuity: re-introduce the pre-fix synchronous call in a scratch copy
+  // and require the *widened* guard to fail — while the old client.ts-only guard
+  // would still pass, which is exactly why the widening was needed.
+  let guardControl = { ran: false };
+  try {
+    const guardScratch = scratchCopy("f24-guard");
+    mutate(
+      path.join(guardScratch, "index.ts"),
+      `    // The upward .git walk above covers every real repository, including linked
+    // worktrees (a .git *file*) and submodules. When no .git exists anywhere up
+    // the tree, \`git rev-parse\` could only fail too, so it is not spawned: the
+    // previous synchronous call cost 773 ms on a non-git cwd (issue #24).`,
+      `    // MUTATION (guard non-vacuity): the pre-fix synchronous fallback.
+    const root = execFileSync("git", ["rev-parse", "--show-toplevel"], { cwd: startDir, encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    if (root) { worktreeCache.set(startDir, { root, timestamp: now }); return root; }`
+    );
+    mutate(path.join(guardScratch, "index.ts"), 'import { Type } from "typebox";', 'import { Type } from "typebox";\nimport { execFileSync } from "node:child_process";');
+    const widened = await run("node", ["--test", "--test-name-pattern", "no execFileSync in the request path", path.join(guardScratch, "test", "fallback.test.ts")], {
+      cwd: guardScratch,
+      env: { PI_ULTRASEARCH_TEST: "1" },
+      timeoutMs: 180000,
+    });
+    // the pre-fix guard scope (client.ts only) on the same mutated tree
+    const clientSrc = fs.readFileSync(path.join(guardScratch, "src", "client.ts"), "utf-8");
+    const oldOk = !/execFileSync/.test(clientSrc) && !/execSync\s*\(/.test(clientSrc);
+    guardControl = {
+      ran: true,
+      widened_guard_failed: /^[ℹ#] fail [1-9]/m.test(widened.stdout),
+      widened_guard_tail: widened.stdout.slice(-260),
+      old_client_only_guard_passed: oldOk,
+    };
+  } catch (e) {
+    guardControl = { ran: false, error: String(e).slice(0, 300) };
+  }
+
   const idxProbe = await runProbe(INDEX_PROBE, { env: { PROBE_REPO: REPO } });
   const cancelProbe = await runProbe(CANCEL_PROBE);
 
@@ -230,6 +265,8 @@ export async function check() {
   if (!responsive) defects.push(`async probe max event-loop gap ${asyncProbe.max_gap_ms}ms (ticks ${asyncProbe.ticks}/${asyncProbe.expected_ticks})`);
   if (!controlBlocks) defects.push(`removal control did not block: max_gap_ms=${syncProbe?.max_gap_ms} (${mutationError ?? "no mutation error"})`);
   if (!cancelled) defects.push(`cancellation/leak check: ${JSON.stringify(cancelProbe)}`);
+  if (!(guardControl.ran && guardControl.widened_guard_failed === true && guardControl.old_client_only_guard_passed === true))
+    defects.push(`guard non-vacuity failed: ${JSON.stringify(guardControl).slice(0, 200)}`);
   if (indexBlocks)
     defects.push(
       `execFileSync still in the request path: index.ts::resolveWorktreeRoot shells out to git for a non-git cwd (blocked ${idxProbe.max_gap_ms}ms, ${idxProbe.git_invocations} invocation(s))`
@@ -241,6 +278,7 @@ export async function check() {
     lexical_scan: lexical.stdout.trim().split("\n"),
     async_probe: asyncProbe,
     removal_control: { mutation_error: mutationError, sync_probe: syncProbe },
+    guard_non_vacuity: guardControl,
     index_request_path_probe: idxProbe,
     cancellation_probe: cancelProbe,
     verdicts: { responsive, control_blocks: controlBlocks, index_blocks: indexBlocks, cancelled },
@@ -259,10 +297,11 @@ export async function check() {
         `(${asyncProbe.expected_ticks} expected) for a ${asyncProbe.elapsed_ms}ms call, source=${asyncProbe.source}, hits=${asyncProbe.hits}; ` +
         `removal control (src/spawn.ts -> execFileSync in a scratch copy): max gap ${syncProbe?.max_gap_ms}ms; ` +
         `cancellation: ${cancelProbe.children_during} child tracked mid-flight, ${cancelProbe.children_after} after abort (${JSON.stringify(cancelProbe.error)}); ` +
-        `index.ts::resolveWorktreeRoot from a non-git cwd: ${idxProbe.git_invocations} sync git invocation(s), max gap ${idxProbe.max_gap_ms}ms`,
+        `index.ts::resolveWorktreeRoot from a non-git cwd: ${idxProbe.git_invocations} sync git invocation(s), max gap ${idxProbe.max_gap_ms}ms; ` +
+        `guard non-vacuity: re-adding the pre-fix call makes the widened guard fail=${guardControl.widened_guard_failed} while the old client.ts-only scope still passes=${guardControl.old_client_only_guard_passed}`,
       method:
         "verifier probe: HOME=temp so the consent-gated fallback trigger fires; stubbed `rg` sleeps 400ms; 10ms event-loop sampler around client.search(); removal control mutates src/spawn.ts in a scratch copy of HEAD; index.ts probed through the real Pi harness with a stubbed `git` from a non-git cwd",
-      n: 3,
+      n: 5,
       gate: g.status,
       artifact: "bench/verification/backlog/results/f24-fallback.json",
       evidence_hashes: {

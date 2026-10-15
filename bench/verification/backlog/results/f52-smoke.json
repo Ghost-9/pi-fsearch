@@ -1,41 +1,53 @@
 {
-  "generated_at": "2026-10-15T20:20:03.515Z",
+  "generated_at": "2026-10-15T20:35:57.637Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 6.87060546875,
+    "load1": 2.55810546875,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
   "matrix_check": {
     "exit": 1,
-    "stdout_tail": "ecuted against a temp HOME/`CODEX_HOME`, so no live config is touched. Claude Code is pointed at a recording proxy (`bench/harness-smoke/probe-server.mjs`) so the artifact carries the harness's *measured* `protocolVersion` and `clientInfo`.\n- **CI** runs the protocol arm plus the matrix check; native arms run where the harness is installed and otherwise record `skipped:<reason>`.\n- The **Artifact** column is the commit the smoke ran against; `(dirty tree)` marks evidence produced with uncommitted changes present, and `--require-fresh` rejects artifacts from any commit other than HEAD.\n\n### Problems\n\n- stale:pi: artifact is from 397edb8, HEAD is 97beeb1\n- stale:t3code: artifact is from 397edb8, HEAD is 97beeb1\n- stale:codex: artifact is from 397edb8, HEAD is 97beeb1\n- stale:claude-code: artifact is from 397edb8, HEAD is 97beeb1\n- stale:claude-desktop: artifact is from 397edb8, HEAD is 97beeb1\n- stale:cursor: artifact is from 397edb8, HEAD is 97beeb1\n- stale:windsurf: artifact is from 397edb8, HEAD is 97beeb1\n- stale:zed: artifact is from 397edb8, HEAD is 97beeb1\n- stale:vscode: artifact is from 397edb8, HEAD is 97beeb1\n- stale:antigravity: artifact is from 397edb8, HEAD is 97beeb1\n\n"
+    "stdout_tail": "ecuted against a temp HOME/`CODEX_HOME`, so no live config is touched. Claude Code is pointed at a recording proxy (`bench/harness-smoke/probe-server.mjs`) so the artifact carries the harness's *measured* `protocolVersion` and `clientInfo`.\n- **CI** runs the protocol arm plus the matrix check; native arms run where the harness is installed and otherwise record `skipped:<reason>`.\n- The **Artifact** column is the commit the smoke ran against; `(dirty tree)` marks evidence produced with uncommitted changes present, and `--require-fresh` rejects artifacts from any commit other than HEAD.\n\n### Problems\n\n- stale:pi: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:t3code: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:codex: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:claude-code: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:claude-desktop: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:cursor: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:windsurf: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:zed: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:vscode: artifact is from cc37a9a, HEAD is 0ad4919\n- stale:antigravity: artifact is from cc37a9a, HEAD is 0ad4919\n\n"
   },
   "stored_artifacts": {
     "pi": {
-      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "commit": "cc37a9a0b6bd6caa870a06df8d733083a9ac4112",
+      "worktreeDirty": true,
+      "fresh": false,
       "tools": 6,
       "negotiated": "2025-06-18",
-      "status": "pass"
+      "status": "pass",
+      "launchSource": "installed"
     },
     "codex": {
-      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "commit": "cc37a9a0b6bd6caa870a06df8d733083a9ac4112",
+      "worktreeDirty": true,
+      "fresh": false,
       "tools": 6,
       "negotiated": "2025-06-18",
-      "status": "pass"
+      "status": "pass",
+      "launchSource": "installed"
     },
     "claude-code": {
-      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "commit": "cc37a9a0b6bd6caa870a06df8d733083a9ac4112",
+      "worktreeDirty": true,
+      "fresh": false,
       "tools": 6,
       "negotiated": "2025-06-18",
-      "status": "pass"
+      "status": "pass",
+      "launchSource": "installed"
     },
     "zed": {
-      "commit": "397edb87f808079300223603b38727f1d5d3bf37",
+      "commit": "cc37a9a0b6bd6caa870a06df8d733083a9ac4112",
+      "worktreeDirty": true,
+      "fresh": false,
       "tools": 6,
       "negotiated": "2025-06-18",
-      "status": "pass"
+      "status": "pass",
+      "launchSource": "installed"
     }
   },
   "live_protocol_run": {
@@ -47,9 +59,19 @@
       "ultrasearch_recent",
       "ultrasearch_metrics"
     ],
-    "negotiated": "2025-06-18"
+    "negotiated": "2025-06-18",
+    "head": "0ad49195180fa6af3c9d64fd5e5f098f2c6280ea"
   },
+  "head_commit": "0ad49195180fa6af3c9d64fd5e5f098f2c6280ea",
   "defects": [
-    "harness-matrix --check --require-fresh exited 1"
+    "harness-matrix --check --require-fresh exited 1",
+    "pi artifact declares worktreeDirty=true: it names a tree that was not the tested one",
+    "pi artifact commit cc37a9a != HEAD 0ad4919",
+    "codex artifact declares worktreeDirty=true: it names a tree that was not the tested one",
+    "codex artifact commit cc37a9a != HEAD 0ad4919",
+    "claude-code artifact declares worktreeDirty=true: it names a tree that was not the tested one",
+    "claude-code artifact commit cc37a9a != HEAD 0ad4919",
+    "zed artifact declares worktreeDirty=true: it names a tree that was not the tested one",
+    "zed artifact commit cc37a9a != HEAD 0ad4919"
   ]
 }
