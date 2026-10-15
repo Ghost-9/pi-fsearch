@@ -1,0 +1,5451 @@
+{
+  "suite": "wave4-independent-verification-raw",
+  "generated_at": "2026-10-15T15:04:33.841Z",
+  "label": "w4v-c",
+  "head_commit": "b0401ace5ef8874e15597a94c4b6dd984e6c377f",
+  "head_ref": "wave1/verify-final",
+  "corpus": {
+    "root": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+    "tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+    "meta_tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+    "files": 33,
+    "match": true
+  },
+  "daemon": {
+    "pid": 30866,
+    "socket": "/Users/batra/.cache/us-w4verify-w4v-c/ultrasearch.sock",
+    "dir": "/Users/batra/.cache/us-w4verify-w4v-c",
+    "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+    "engine": "/Users/batra/ultrasearch-verify/engine/target/release/ultrasearch",
+    "engine_sha256": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf",
+    "entries": 40,
+    "content_docs": 34,
+    "content_pending": 0,
+    "isolated": true
+  },
+  "gates": {
+    "v1": {
+      "gates": {
+        "1": {
+          "id": "g1_recall10",
+          "claim": "recall@10 == 1.00 on all must-hit rows",
+          "value": 0.796154,
+          "threshold": "== 1.00",
+          "pass": false,
+          "n": 26,
+          "failing_rows": [
+            "P3",
+            "P6",
+            "G4",
+            "S1",
+            "S3",
+            "S4",
+            "K1",
+            "K2",
+            "K3"
+          ]
+        },
+        "2": {
+          "id": "g2_ndcg10_overall",
+          "claim": "nDCG@10 >= 0.75 overall",
+          "value": 0.91207,
+          "threshold": ">= 0.75",
+          "pass": true,
+          "n": 26
+        },
+        "3": {
+          "id": "g3_ndcg10_semantic",
+          "claim": "nDCG@10 >= 0.60 semantic lane",
+          "value": 0.831344,
+          "threshold": ">= 0.60",
+          "pass": true,
+          "n": 5,
+          "rows": [
+            "M1:0.925345",
+            "M2:0.883934",
+            "M3:0.961456",
+            "M4:0.422374",
+            "M5:0.963613"
+          ]
+        },
+        "4": {
+          "id": "g4_zero_result_rate",
+          "claim": "zero-result rate == 0.00 on must-hit rows",
+          "value": 0,
+          "threshold": "== 0.00",
+          "pass": true,
+          "n": 26,
+          "failing_rows": []
+        },
+        "5": {
+          "id": "g5_false_positive_rate",
+          "claim": "false-positive rate == 0.00 on negative rows",
+          "value": 0,
+          "threshold": "== 0.00",
+          "pass": true,
+          "n": 4,
+          "failing_rows": []
+        },
+        "6": {
+          "id": "g6_reformulation_overall",
+          "claim": "reformulation_signal <= 0.20 overall",
+          "value": 0.038462,
+          "threshold": "<= 0.20",
+          "pass": true,
+          "n": 26,
+          "failing_rows": [
+            "M4"
+          ]
+        },
+        "7": {
+          "id": "g7_reformulation_per_lane",
+          "claim": "reformulation_signal <= 0.35 per lane",
+          "value": {
+            "path": 0,
+            "grep-literal": 0,
+            "grep-regex": 0,
+            "symbol": 0,
+            "semantic": 0.2,
+            "ranking-frecency": 0,
+            "ranking-proximity": 0,
+            "ranking-boost-ab": 0,
+            "ranking-symbol-intrafile": 0
+          },
+          "threshold": "<= 0.35 per lane",
+          "pass": true,
+          "n": 26,
+          "lanes": {
+            "path": {
+              "n": 6,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "grep-literal": {
+              "n": 5,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "grep-regex": {
+              "n": 2,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "symbol": {
+              "n": 4,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "semantic": {
+              "n": 5,
+              "observed": 0.2,
+              "pass": true,
+              "failing": [
+                "M4"
+              ]
+            },
+            "ranking-frecency": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-proximity": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-boost-ab": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-symbol-intrafile": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            }
+          }
+        }
+      },
+      "all_green": false,
+      "green_count": 6
+    },
+    "v1_replay": {
+      "gates": {
+        "1": {
+          "id": "g1_recall10",
+          "claim": "recall@10 == 1.00 on all must-hit rows",
+          "value": 0.796154,
+          "threshold": "== 1.00",
+          "pass": false,
+          "n": 26,
+          "failing_rows": [
+            "P3",
+            "P6",
+            "G4",
+            "S1",
+            "S3",
+            "S4",
+            "K1",
+            "K2",
+            "K3"
+          ]
+        },
+        "2": {
+          "id": "g2_ndcg10_overall",
+          "claim": "nDCG@10 >= 0.75 overall",
+          "value": 0.91207,
+          "threshold": ">= 0.75",
+          "pass": true,
+          "n": 26
+        },
+        "3": {
+          "id": "g3_ndcg10_semantic",
+          "claim": "nDCG@10 >= 0.60 semantic lane",
+          "value": 0.831344,
+          "threshold": ">= 0.60",
+          "pass": true,
+          "n": 5,
+          "rows": [
+            "M1:0.925345",
+            "M2:0.883934",
+            "M3:0.961456",
+            "M4:0.422374",
+            "M5:0.963613"
+          ]
+        },
+        "4": {
+          "id": "g4_zero_result_rate",
+          "claim": "zero-result rate == 0.00 on must-hit rows",
+          "value": 0,
+          "threshold": "== 0.00",
+          "pass": true,
+          "n": 26,
+          "failing_rows": []
+        },
+        "5": {
+          "id": "g5_false_positive_rate",
+          "claim": "false-positive rate == 0.00 on negative rows",
+          "value": 0,
+          "threshold": "== 0.00",
+          "pass": true,
+          "n": 4,
+          "failing_rows": []
+        },
+        "6": {
+          "id": "g6_reformulation_overall",
+          "claim": "reformulation_signal <= 0.20 overall",
+          "value": 0.038462,
+          "threshold": "<= 0.20",
+          "pass": true,
+          "n": 26,
+          "failing_rows": [
+            "M4"
+          ]
+        },
+        "7": {
+          "id": "g7_reformulation_per_lane",
+          "claim": "reformulation_signal <= 0.35 per lane",
+          "value": {
+            "path": 0,
+            "grep-literal": 0,
+            "grep-regex": 0,
+            "symbol": 0,
+            "semantic": 0.2,
+            "ranking-frecency": 0,
+            "ranking-proximity": 0,
+            "ranking-boost-ab": 0,
+            "ranking-symbol-intrafile": 0
+          },
+          "threshold": "<= 0.35 per lane",
+          "pass": true,
+          "n": 26,
+          "lanes": {
+            "path": {
+              "n": 6,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "grep-literal": {
+              "n": 5,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "grep-regex": {
+              "n": 2,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "symbol": {
+              "n": 4,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "semantic": {
+              "n": 5,
+              "observed": 0.2,
+              "pass": true,
+              "failing": [
+                "M4"
+              ]
+            },
+            "ranking-frecency": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-proximity": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-boost-ab": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-symbol-intrafile": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            }
+          }
+        }
+      },
+      "all_green": false,
+      "green_count": 6
+    },
+    "v2": {
+      "gates": {
+        "1": {
+          "id": "g1_recall10",
+          "claim": "recall@10 == 1.00 on all must-hit rows",
+          "value": 1,
+          "threshold": "== 1.00",
+          "pass": true,
+          "n": 33,
+          "failing_rows": []
+        },
+        "2": {
+          "id": "g2_ndcg10_overall",
+          "claim": "nDCG@10 >= 0.75 overall",
+          "value": 0.925772,
+          "threshold": ">= 0.75",
+          "pass": true,
+          "n": 33
+        },
+        "3": {
+          "id": "g3_ndcg10_semantic",
+          "claim": "nDCG@10 >= 0.60 semantic lane",
+          "value": 0.831344,
+          "threshold": ">= 0.60",
+          "pass": true,
+          "n": 5,
+          "rows": [
+            "M1:0.925345",
+            "M2:0.883934",
+            "M3:0.961456",
+            "M4:0.422374",
+            "M5:0.963613"
+          ]
+        },
+        "4": {
+          "id": "g4_zero_result_rate",
+          "claim": "zero-result rate == 0.00 on must-hit rows",
+          "value": 0,
+          "threshold": "== 0.00",
+          "pass": true,
+          "n": 33,
+          "failing_rows": []
+        },
+        "5": {
+          "id": "g5_false_positive_rate",
+          "claim": "false-positive rate == 0.00 on negative rows",
+          "value": 0,
+          "threshold": "== 0.00",
+          "pass": true,
+          "n": 4,
+          "failing_rows": []
+        },
+        "6": {
+          "id": "g6_reformulation_overall",
+          "claim": "reformulation_signal <= 0.20 overall",
+          "value": 0.121212,
+          "threshold": "<= 0.20",
+          "pass": true,
+          "n": 33,
+          "failing_rows": [
+            "P6c",
+            "M4",
+            "K2c",
+            "K3c"
+          ]
+        },
+        "7": {
+          "id": "g7_reformulation_per_lane",
+          "claim": "reformulation_signal <= 0.35 per lane",
+          "value": {
+            "path": 0,
+            "grep-literal": 0.25,
+            "grep-regex": 0,
+            "symbol": 0,
+            "semantic": 0.2,
+            "ranking-frecency": 0,
+            "ranking-proximity": 0,
+            "ranking-boost-ab": 0,
+            "ranking-symbol-intrafile": 0
+          },
+          "threshold": "<= 0.35 per lane",
+          "pass": true,
+          "n": 33,
+          "lanes": {
+            "path": {
+              "n": 6,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "grep-literal": {
+              "n": 12,
+              "observed": 0.25,
+              "pass": true,
+              "failing": [
+                "P6c",
+                "K2c",
+                "K3c"
+              ]
+            },
+            "grep-regex": {
+              "n": 2,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "symbol": {
+              "n": 4,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "semantic": {
+              "n": 5,
+              "observed": 0.2,
+              "pass": true,
+              "failing": [
+                "M4"
+              ]
+            },
+            "ranking-frecency": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-proximity": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-boost-ab": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            },
+            "ranking-symbol-intrafile": {
+              "n": 1,
+              "observed": 0,
+              "pass": true,
+              "failing": []
+            }
+          }
+        }
+      },
+      "all_green": true,
+      "green_count": 7
+    }
+  },
+  "scorer_crosscheck": {
+    "v1": {
+      "max_abs_delta": 0,
+      "disagreements": []
+    },
+    "v2": {
+      "max_abs_delta": 0,
+      "disagreements": []
+    }
+  },
+  "author_agreement": {
+    "v1": {
+      "path": "bench/wave4/results/v1.json",
+      "exists": true,
+      "sha256": "e694e08dfb727b024656888c09701ccb10f8097739dbd8d1e7cd5262a8782c8b",
+      "compared": 30,
+      "diffs": [],
+      "diff_count": 0,
+      "identical": true
+    },
+    "v2": {
+      "path": "bench/wave4/results/v2.json",
+      "exists": true,
+      "sha256": "4e303d689b2d0587eb3f75a77581fcf5682a8e02b80f568e1256020cb71543f4",
+      "compared": 37,
+      "diffs": [],
+      "diff_count": 0,
+      "identical": true
+    },
+    "v1_replay": {
+      "path": "bench/wave4/results/v1.json",
+      "exists": true,
+      "sha256": "e694e08dfb727b024656888c09701ccb10f8097739dbd8d1e7cd5262a8782c8b",
+      "compared": 30,
+      "diffs": [],
+      "diff_count": 0,
+      "identical": true
+    }
+  },
+  "amendment_neutrality": {
+    "shared_rows": 30,
+    "retrieved_identical": true,
+    "calls_identical": true,
+    "sources_identical": true,
+    "changed_rows": [],
+    "v1_replay_identical": true,
+    "controls_identical": true,
+    "unchanged_rows": {
+      "n": 17,
+      "n_expected_identical_all_rows": 21,
+      "delta_max_abs": 0,
+      "all_exactly_zero": true,
+      "ids": [
+        "P1",
+        "P2",
+        "P5",
+        "P7",
+        "G1",
+        "G2",
+        "G3",
+        "G5",
+        "R1",
+        "R2",
+        "S2",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "K4"
+      ],
+      "negative_rows": [
+        "P8",
+        "G6",
+        "R3",
+        "M6"
+      ]
+    }
+  },
+  "strict_alternative": {
+    "restored": [
+      {
+        "row": "K3c",
+        "restored": [
+          "README.md:1"
+        ],
+        "recall_at_10": 0.5,
+        "missing": [
+          "README.md:1"
+        ]
+      }
+    ],
+    "recall10": 0.984848,
+    "gate1_passes": false,
+    "n": 33
+  },
+  "v1_audited": {
+    "missing_total": 16,
+    "missing_satisfiable": 0,
+    "missing_unsatisfiable": 16,
+    "rows_affected": 9,
+    "reported_recall_at_10": 0.796154,
+    "audited_recall_at_10": 1,
+    "expectations": [
+      {
+        "id": "P3",
+        "lane": "path",
+        "path": "test/client.test.ts",
+        "grade": 2,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      },
+      {
+        "id": "P6",
+        "lane": "path",
+        "path": "OPTIMIZATIONS.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      },
+      {
+        "id": "P6",
+        "lane": "path",
+        "path": "AUDIT-2026-10-14.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      },
+      {
+        "id": "G4",
+        "lane": "grep-literal",
+        "path": "README.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "content",
+        "why": "no literal match in content"
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "path": "test/client.test.ts",
+        "grade": 2,
+        "satisfiable": false,
+        "kind": "declaration",
+        "why": "reference without declaration"
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "path": "src/mcp.ts",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "declaration",
+        "why": "reference without declaration"
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "path": "src/tui.ts",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "declaration",
+        "why": "reference without declaration"
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "path": "index.ts",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "declaration",
+        "why": "reference without declaration"
+      },
+      {
+        "id": "S3",
+        "lane": "symbol",
+        "path": "AUDIT-2026-10-14.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "declaration",
+        "why": "reference without declaration"
+      },
+      {
+        "id": "S4",
+        "lane": "symbol",
+        "path": "CHANGELOG.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "declaration",
+        "why": "reference without declaration"
+      },
+      {
+        "id": "S4",
+        "lane": "symbol",
+        "path": "AUDIT-2026-10-14.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "declaration",
+        "why": "reference without declaration"
+      },
+      {
+        "id": "K1",
+        "lane": "ranking-frecency",
+        "path": "CONTRIBUTING.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      },
+      {
+        "id": "K2",
+        "lane": "ranking-proximity",
+        "path": "OPTIMIZATIONS.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      },
+      {
+        "id": "K2",
+        "lane": "ranking-proximity",
+        "path": "AUDIT-2026-10-14.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      },
+      {
+        "id": "K3",
+        "lane": "ranking-boost-ab",
+        "path": "src/mcp.ts",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      },
+      {
+        "id": "K3",
+        "lane": "ranking-boost-ab",
+        "path": "README.md",
+        "grade": 1,
+        "satisfiable": false,
+        "kind": "path",
+        "why": "path does not match the query"
+      }
+    ],
+    "author_audit": {
+      "path": "bench/wave4/results/v1-expectation-audit.json",
+      "sha256": "a91da4f6c4205e63a7d8e98d2e5120c3fd75835fd7c79d809a55c28c95fea4ce",
+      "author_misses": 16,
+      "mine_unsatisfiable": 16,
+      "same_expectation_set": true,
+      "author_classes": {
+        "path-lane-content": 6,
+        "absent-string": 3,
+        "symbol-lane-reference": 7
+      },
+      "mine_kinds": {
+        "path": 8,
+        "content": 1,
+        "declaration": 7
+      }
+    }
+  },
+  "k3": {
+    "grep_literal": {
+      "match_count_limit50": 23,
+      "readme_rank_limit50": 18,
+      "readme_in_top10": false,
+      "readme_rank_limit10": null,
+      "source_limit50": "index",
+      "order_limit50": [
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/empirical-10-tests.ts",
+        "test/benchmark-gate.test.ts",
+        "src/codemode.ts",
+        "test/client.test.ts",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "ROADMAP.md",
+        "src/observer.ts",
+        "src/semantic.ts",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "src/client.ts",
+        "CONTRIBUTING.md",
+        "src/sanitize.ts",
+        "package.json",
+        "tsconfig.json"
+      ]
+    },
+    "semantic": {
+      "match_count_limit50": 23,
+      "readme_rank_limit50": 12,
+      "order_limit50": [
+        "src/client.ts",
+        "test/client.test.ts",
+        "src/mcp.ts",
+        "src/compactor.ts",
+        "src/codemode.ts",
+        "src/tui.ts",
+        "src/semantic.ts",
+        "src/observer.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "src/sanitize.ts",
+        "README.md",
+        "ROADMAP.md",
+        "test/benchmark-gate.test.ts",
+        "OPTIMIZATIONS.md",
+        "CHANGELOG.md",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "AUDIT-2026-10-14.md",
+        "CONTRIBUTING.md",
+        "test/empirical-10-tests.ts",
+        "tsconfig.json",
+        "package.json"
+      ]
+    },
+    "readme_occurrences": {
+      "case_sensitive": 6,
+      "case_insensitive": 7
+    },
+    "k3_row": {
+      "lane": "ranking-boost-ab",
+      "query": "client",
+      "expected": [
+        {
+          "path": "src/client.ts",
+          "grade": 3
+        },
+        {
+          "path": "test/client.test.ts",
+          "grade": 2
+        }
+      ],
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "top1_grade": 3
+    },
+    "k3c_row": {
+      "lane": "grep-literal",
+      "query": "client",
+      "expected": [
+        {
+          "path": "src/mcp.ts",
+          "grade": 1
+        }
+      ],
+      "retrieved": [
+        "src/compactor.ts",
+        "src/mcp.ts",
+        "src/tui.ts",
+        "bin/cli.ts",
+        "index.ts",
+        "test/bench.ts",
+        "test/deep-bench.ts",
+        "test/benchmark-gate.test.ts",
+        "src/codemode.ts",
+        "test/client.test.ts"
+      ],
+      "readme_rank": null
+    },
+    "companion_probe_claim": {
+      "rank_limit10_claimed": 18,
+      "rank_limit50_claimed": 18,
+      "match_count_claimed": 23,
+      "semantic_claimed": "12 of 15"
+    },
+    "readme_is_grade1_adjacent": {
+      "v1_k3_expected_readme_grade": 1,
+      "k3c_expected": [
+        {
+          "path": "src/mcp.ts",
+          "grade": 1
+        }
+      ]
+    }
+  },
+  "engine_provenance": {
+    "working_tree_engine_sha256": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf",
+    "engine_source_tree_sha256_at_head": "625b2e9143d021ac3361f23e0c7fdcd5ec9cf9ea2237d5769d80ce1b33790377",
+    "engine_source_tree_sha256_pre_wave4": "625b2e9143d021ac3361f23e0c7fdcd5ec9cf9ea2237d5769d80ce1b33790377",
+    "engine_source_unchanged": true,
+    "src_unchanged": true,
+    "wave4_engine_src_diff": "",
+    "author_artifact_engine_sha256": "5a784b0e1126433a49a45cbbcc4cce5db480b43a75dc6bd408009321de16faf1",
+    "note": "the author artifact records the engine built in the wave-4 checkout; this verifier rebuilt the same engine source in its own worktree, so the binary hash differs (build paths) while the source tree is identical — behavioural equivalence is checked by the retrieved-list agreement below"
+  },
+  "evidence_hashes": {
+    "v1_judgments": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+    "v1_judgments_matches_recorded": true,
+    "v2_judgments": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+    "gates_v2": "f481c3a39097c63228dbeebf92d93f6e9e7b4bb96e1d1ed3d341f39cffae5ac2",
+    "mapping": "ed02c9f3078b29c68f3d87eca82532413ab7e3a8e9c7cf4bce3970fae5a868cc",
+    "validator": "0f4eb834beaeb4fabadb424008c42f0c1817aa267f7b13e90fca2bdf605b9fd1"
+  },
+  "rows": {
+    "v1": [
+      {
+        "id": "P1",
+        "lane": "path",
+        "query": "package.json",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"package.json\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "package.json"
+        ],
+        "control": null,
+        "ms": 2.7738749999998618,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "package.json",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P2",
+        "lane": "path",
+        "query": "ci.yml",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"ci.yml\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          ".github/workflows/ci.yml"
+        ],
+        "control": null,
+        "ms": 0.8495829999999387,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": ".github/workflows/ci.yml",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P3",
+        "lane": "path",
+        "query": "client.ts",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"client.ts\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 0.58462499999996,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 0.5,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.7871546029909718,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "P5",
+        "lane": "path",
+        "query": "bench",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"bench\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "test/bench.ts",
+          "test/benchmark-gate.test.ts",
+          "test/deep-bench.ts"
+        ],
+        "control": null,
+        "ms": 0.5054999999999836,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "test/bench.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "test/deep-bench.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P6",
+        "lane": "path",
+        "query": "codemode",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"codemode\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/codemode.ts"
+        ],
+        "control": null,
+        "ms": 0.5612080000000788,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/codemode.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.3333333333333333,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8609101556836468,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.3333333333333333
+        }
+      },
+      {
+        "id": "P7",
+        "lane": "path",
+        "query": "src/**/*.ts",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "src/codemode.ts",
+          "src/compactor.ts",
+          "src/formatter.ts",
+          "src/mcp.ts",
+          "src/observer.ts",
+          "src/recursive-learning.ts",
+          "src/sanitize.ts",
+          "src/semantic.ts",
+          "src/telemetry.ts",
+          "src/tui.ts",
+          "src/types.ts"
+        ],
+        "control": null,
+        "ms": 0.9700840000000426,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/compactor.ts",
+              "grade": 2
+            },
+            {
+              "rank": 4,
+              "path": "src/formatter.ts",
+              "grade": 3
+            },
+            {
+              "rank": 5,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/observer.ts",
+              "grade": 2
+            },
+            {
+              "rank": 7,
+              "path": "src/recursive-learning.ts",
+              "grade": 2
+            },
+            {
+              "rank": 8,
+              "path": "src/sanitize.ts",
+              "grade": 2
+            },
+            {
+              "rank": 9,
+              "path": "src/semantic.ts",
+              "grade": 2
+            },
+            {
+              "rank": 10,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8563677136200579,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P8",
+        "lane": "path",
+        "query": "kubectl_helm_chart_values",
+        "must_hit": false,
+        "negative": true,
+        "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 0.552167000000054,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "G1",
+        "lane": "grep-literal",
+        "query": "estimateTokensSaved",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts",
+          "AUDIT-2026-10-14.md"
+        ],
+        "control": null,
+        "ms": 1.3816249999999854,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G2",
+        "lane": "grep-literal",
+        "query": "enforceExactQuery",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 0.34674999999992906,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G3",
+        "lane": "grep-literal",
+        "query": "SYMBOL_REGEX",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/formatter.ts"
+        ],
+        "control": null,
+        "ms": 0.2961250000000746,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/formatter.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G4",
+        "lane": "grep-literal",
+        "query": "fsearch.sock",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "CHANGELOG.md"
+        ],
+        "control": null,
+        "ms": 0.34662500000013097,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9173194127129571,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "G5",
+        "lane": "grep-literal",
+        "query": "150 + hitCount",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts"
+        ],
+        "control": null,
+        "ms": 0.5157079999999041,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G6",
+        "lane": "grep-literal",
+        "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+        "must_hit": false,
+        "negative": true,
+        "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 0.27491699999995944,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "R1",
+        "lane": "grep-regex",
+        "query": "class\\s+\\w+Client",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/benchmark-gate.test.ts"
+        ],
+        "control": null,
+        "ms": 1.2354159999999865,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "R2",
+        "lane": "grep-regex",
+        "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/recursive-learning.ts",
+          "src/compactor.ts",
+          "src/sanitize.ts",
+          "AUDIT-2026-10-14.md",
+          "src/observer.ts",
+          "test/client.test.ts",
+          "OPTIMIZATIONS.md",
+          "index.ts",
+          "src/client.ts",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 1.1154579999999896,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/recursive-learning.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/compactor.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 4,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 5,
+              "path": "src/observer.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "test/client.test.ts",
+              "grade": 2
+            },
+            {
+              "rank": 7,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 8,
+              "path": "index.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "src/client.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9880566884310259,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "R3",
+        "lane": "grep-regex",
+        "query": "(a+)+$",
+        "must_hit": false,
+        "negative": true,
+        "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
+        "source": null,
+        "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+        "retrieved": [],
+        "control": null,
+        "ms": 0.025958000000173342,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "query": "FSearchClient",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 4.505792000000156,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.2,
+          "success_recall_at_10": 0.5,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.6855809555403688,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.2
+        }
+      },
+      {
+        "id": "S2",
+        "lane": "symbol",
+        "query": "detectSymbolTag",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/formatter.ts"
+        ],
+        "control": null,
+        "ms": 1.103749999999991,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/formatter.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S3",
+        "lane": "symbol",
+        "query": "applyProximityRanking",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.333750000000009,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9173194127129571,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "S4",
+        "lane": "symbol",
+        "query": "resolveWorktreeRoot",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "index.ts"
+        ],
+        "control": null,
+        "ms": 2.0978750000001583,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "index.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.3333333333333333,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8609101556836468,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.3333333333333333
+        }
+      },
+      {
+        "id": "M1",
+        "lane": "semantic",
+        "query": "where are credentials scrubbed before results reach the model",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/sanitize.ts",
+          "src/mcp.ts",
+          "src/formatter.ts",
+          "CHANGELOG.md",
+          "src/semantic.ts",
+          "src/recursive-learning.ts",
+          "OPTIMIZATIONS.md",
+          "test/client.test.ts",
+          "test/empirical-10-tests.ts",
+          "AUDIT-2026-10-14.md"
+        ],
+        "control": null,
+        "ms": 40.7467079999999,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/formatter.ts",
+              "grade": 2
+            },
+            {
+              "rank": 4,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/semantic.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/recursive-learning.ts",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "test/client.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "test/empirical-10-tests.ts",
+              "grade": 1
+            },
+            {
+              "rank": 10,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9253449841090406,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M2",
+        "lane": "semantic",
+        "query": "how is the token savings number computed",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts",
+          "src/codemode.ts",
+          "src/tui.ts",
+          "src/recursive-learning.ts",
+          "test/deep-bench.ts",
+          "OPTIMIZATIONS.md",
+          "src/mcp.ts",
+          "README.md",
+          "AUDIT-2026-10-14.md",
+          "src/semantic.ts"
+        ],
+        "control": null,
+        "ms": 15.288000000000011,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/recursive-learning.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "test/deep-bench.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "README.md",
+              "grade": 2
+            },
+            {
+              "rank": 9,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "src/semantic.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8839335778767115,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M3",
+        "lane": "semantic",
+        "query": "what happens when the daemon socket dies mid-session",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "src/telemetry.ts",
+          "src/tui.ts",
+          "AUDIT-2026-10-14.md",
+          "README.md",
+          "OPTIMIZATIONS.md",
+          "ROADMAP.md",
+          "CHANGELOG.md",
+          "test/benchmark-gate.test.ts",
+          "bin/cli.ts"
+        ],
+        "control": null,
+        "ms": 13.877707999999984,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/telemetry.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 5,
+              "path": "README.md",
+              "grade": 1
+            },
+            {
+              "rank": 6,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "ROADMAP.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "bin/cli.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9614557747069621,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M4",
+        "lane": "semantic",
+        "query": "what does CI run on every push",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/compactor.ts",
+          "src/tui.ts",
+          "src/telemetry.ts",
+          "src/client.ts",
+          ".github/workflows/ci.yml",
+          "AUDIT-2026-10-14.md",
+          "src/formatter.ts",
+          "test/benchmark-gate.test.ts",
+          "README.md",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 9.914125000000013,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/compactor.ts",
+              "grade": 0
+            },
+            {
+              "rank": 2,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/telemetry.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/client.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": ".github/workflows/ci.yml",
+              "grade": 3
+            },
+            {
+              "rank": 6,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "src/formatter.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "README.md",
+              "grade": 2
+            },
+            {
+              "rank": 10,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 0.2,
+          "ndcg_at_10": 0.42237366501290213,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M5",
+        "lane": "semantic",
+        "query": "keep search results inside the repository boundary",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "index.ts",
+          "src/sanitize.ts",
+          "src/mcp.ts",
+          "src/types.ts",
+          "src/client.ts",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "README.md",
+          "OPTIMIZATIONS.md",
+          "bin/cli.ts"
+        ],
+        "control": null,
+        "ms": 13.59699999999998,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "index.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/types.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/client.ts",
+              "grade": 2
+            },
+            {
+              "rank": 6,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "README.md",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 10,
+              "path": "bin/cli.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9636134854206578,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M6",
+        "lane": "semantic",
+        "query": "kubernetes helm chart values for a redis cluster",
+        "must_hit": false,
+        "negative": true,
+        "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 3.5514999999998054,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "K1",
+        "lane": "ranking-frecency",
+        "query": "readme",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"readme\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "README.md"
+        ],
+        "control": null,
+        "ms": 0.5207909999999174,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "README.md",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9173194127129571,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "K2",
+        "lane": "ranking-proximity",
+        "query": "sanitize",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"sanitize\", in=<root>, limit=10, near=src/formatter.ts)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/sanitize.ts"
+        ],
+        "control": null,
+        "ms": 0.456916000000092,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.3333333333333333,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8609101556836468,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.3333333333333333
+        }
+      },
+      {
+        "id": "K3",
+        "lane": "ranking-boost-ab",
+        "query": "client",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"client\", in=<root>, limit=10, boost=true)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/client.test.ts"
+        ],
+        "control": {
+          "boost": false,
+          "retrieved": [
+            "src/client.ts",
+            "test/client.test.ts"
+          ]
+        },
+        "ms": 0.9133340000000771,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/client.test.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9052598568324595,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "K4",
+        "lane": "ranking-symbol-intrafile",
+        "query": "FSearchClient",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.3756670000000213,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      }
+    ],
+    "v2": [
+      {
+        "id": "P1",
+        "lane": "path",
+        "query": "package.json",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"package.json\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "package.json"
+        ],
+        "control": null,
+        "ms": 0.4947500000000673,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "package.json",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P2",
+        "lane": "path",
+        "query": "ci.yml",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"ci.yml\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          ".github/workflows/ci.yml"
+        ],
+        "control": null,
+        "ms": 0.32933299999990595,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": ".github/workflows/ci.yml",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P3",
+        "lane": "path",
+        "query": "client.ts",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"client.ts\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 0.2998339999999189,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P3c",
+        "lane": "grep-literal",
+        "query": "client.ts",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"client.ts\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "test/client.test.ts",
+          "test/benchmark-gate.test.ts",
+          "bin/cli.ts",
+          "index.ts",
+          "src/codemode.ts",
+          "src/compactor.ts",
+          "src/mcp.ts",
+          "src/observer.ts",
+          "src/semantic.ts",
+          "src/tui.ts"
+        ],
+        "control": null,
+        "ms": 0.7895000000000891,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "test/client.test.ts",
+              "grade": 2
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "bin/cli.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "index.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/compactor.ts",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "src/observer.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "src/semantic.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "src/tui.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 2,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P5",
+        "lane": "path",
+        "query": "bench",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"bench\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "test/bench.ts",
+          "test/benchmark-gate.test.ts",
+          "test/deep-bench.ts"
+        ],
+        "control": null,
+        "ms": 0.40866699999992306,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "test/bench.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "test/deep-bench.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P6",
+        "lane": "path",
+        "query": "codemode",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"codemode\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/codemode.ts"
+        ],
+        "control": null,
+        "ms": 0.3595829999999296,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/codemode.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P6c",
+        "lane": "grep-literal",
+        "query": "codemode",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"codemode\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "test/client.test.ts",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "package.json",
+          "src/codemode.ts",
+          "tsconfig.json",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 0.493541999999934,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "test/client.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 2,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 3,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "package.json",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/codemode.ts",
+              "grade": 3
+            },
+            {
+              "rank": 6,
+              "path": "tsconfig.json",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 0.5,
+          "ndcg_at_10": 0.4375481772257914,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P7",
+        "lane": "path",
+        "query": "src/**/*.ts",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "src/codemode.ts",
+          "src/compactor.ts",
+          "src/formatter.ts",
+          "src/mcp.ts",
+          "src/observer.ts",
+          "src/recursive-learning.ts",
+          "src/sanitize.ts",
+          "src/semantic.ts",
+          "src/telemetry.ts",
+          "src/tui.ts",
+          "src/types.ts"
+        ],
+        "control": null,
+        "ms": 0.574292000000014,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/compactor.ts",
+              "grade": 2
+            },
+            {
+              "rank": 4,
+              "path": "src/formatter.ts",
+              "grade": 3
+            },
+            {
+              "rank": 5,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/observer.ts",
+              "grade": 2
+            },
+            {
+              "rank": 7,
+              "path": "src/recursive-learning.ts",
+              "grade": 2
+            },
+            {
+              "rank": 8,
+              "path": "src/sanitize.ts",
+              "grade": 2
+            },
+            {
+              "rank": 9,
+              "path": "src/semantic.ts",
+              "grade": 2
+            },
+            {
+              "rank": 10,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8563677136200579,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P8",
+        "lane": "path",
+        "query": "kubectl_helm_chart_values",
+        "must_hit": false,
+        "negative": true,
+        "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 0.4323340000000826,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "G1",
+        "lane": "grep-literal",
+        "query": "estimateTokensSaved",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts",
+          "AUDIT-2026-10-14.md"
+        ],
+        "control": null,
+        "ms": 0.5289169999998649,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G2",
+        "lane": "grep-literal",
+        "query": "enforceExactQuery",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 0.3840410000000247,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G3",
+        "lane": "grep-literal",
+        "query": "SYMBOL_REGEX",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/formatter.ts"
+        ],
+        "control": null,
+        "ms": 0.33762499999988904,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/formatter.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G4",
+        "lane": "grep-literal",
+        "query": "fsearch.sock",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "CHANGELOG.md"
+        ],
+        "control": null,
+        "ms": 0.33845899999982976,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G5",
+        "lane": "grep-literal",
+        "query": "150 + hitCount",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts"
+        ],
+        "control": null,
+        "ms": 0.25233400000001893,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G6",
+        "lane": "grep-literal",
+        "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+        "must_hit": false,
+        "negative": true,
+        "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 0.22737500000016553,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "R1",
+        "lane": "grep-regex",
+        "query": "class\\s+\\w+Client",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/benchmark-gate.test.ts"
+        ],
+        "control": null,
+        "ms": 1.021792000000005,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "R2",
+        "lane": "grep-regex",
+        "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/recursive-learning.ts",
+          "src/compactor.ts",
+          "src/sanitize.ts",
+          "AUDIT-2026-10-14.md",
+          "src/observer.ts",
+          "test/client.test.ts",
+          "OPTIMIZATIONS.md",
+          "index.ts",
+          "src/client.ts",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 0.7993750000000546,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/recursive-learning.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/compactor.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 4,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 5,
+              "path": "src/observer.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "test/client.test.ts",
+              "grade": 2
+            },
+            {
+              "rank": 7,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 8,
+              "path": "index.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "src/client.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9880566884310259,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "R3",
+        "lane": "grep-regex",
+        "query": "(a+)+$",
+        "must_hit": false,
+        "negative": true,
+        "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
+        "source": null,
+        "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+        "retrieved": [],
+        "control": null,
+        "ms": 0.0284999999998945,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "query": "FSearchClient",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.1759170000000267,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S1c",
+        "lane": "grep-literal",
+        "query": "FSearchClient",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"FSearchClient\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/benchmark-gate.test.ts",
+          "test/client.test.ts",
+          "AUDIT-2026-10-14.md",
+          "src/compactor.ts",
+          "src/mcp.ts",
+          "src/codemode.ts",
+          "src/tui.ts",
+          "bin/cli.ts",
+          "index.ts"
+        ],
+        "control": null,
+        "ms": 0.7470829999999751,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "test/client.test.ts",
+              "grade": 2
+            },
+            {
+              "rank": 4,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/compactor.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/mcp.ts",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "src/tui.ts",
+              "grade": 1
+            },
+            {
+              "rank": 9,
+              "path": "bin/cli.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "index.ts",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9265858624724733,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S2",
+        "lane": "symbol",
+        "query": "detectSymbolTag",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/formatter.ts"
+        ],
+        "control": null,
+        "ms": 0.9582499999999072,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/formatter.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S3",
+        "lane": "symbol",
+        "query": "applyProximityRanking",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.159832999999935,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S3c",
+        "lane": "grep-literal",
+        "query": "applyProximityRanking",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"applyProximityRanking\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/client.test.ts",
+          "AUDIT-2026-10-14.md"
+        ],
+        "control": null,
+        "ms": 0.53125,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/client.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9828422279067397,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S4",
+        "lane": "symbol",
+        "query": "resolveWorktreeRoot",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "index.ts"
+        ],
+        "control": null,
+        "ms": 2.030542000000196,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "index.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S4c",
+        "lane": "grep-literal",
+        "query": "resolveWorktreeRoot",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "index.ts",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md"
+        ],
+        "control": null,
+        "ms": 0.4347089999998843,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "index.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 3,
+              "path": "CHANGELOG.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M1",
+        "lane": "semantic",
+        "query": "where are credentials scrubbed before results reach the model",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/sanitize.ts",
+          "src/mcp.ts",
+          "src/formatter.ts",
+          "CHANGELOG.md",
+          "src/semantic.ts",
+          "src/recursive-learning.ts",
+          "OPTIMIZATIONS.md",
+          "test/client.test.ts",
+          "test/empirical-10-tests.ts",
+          "AUDIT-2026-10-14.md"
+        ],
+        "control": null,
+        "ms": 9.14320900000007,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/formatter.ts",
+              "grade": 2
+            },
+            {
+              "rank": 4,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/semantic.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/recursive-learning.ts",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "test/client.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "test/empirical-10-tests.ts",
+              "grade": 1
+            },
+            {
+              "rank": 10,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9253449841090406,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M2",
+        "lane": "semantic",
+        "query": "how is the token savings number computed",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts",
+          "src/codemode.ts",
+          "src/tui.ts",
+          "src/recursive-learning.ts",
+          "test/deep-bench.ts",
+          "OPTIMIZATIONS.md",
+          "src/mcp.ts",
+          "README.md",
+          "AUDIT-2026-10-14.md",
+          "src/semantic.ts"
+        ],
+        "control": null,
+        "ms": 10.543541999999889,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/recursive-learning.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "test/deep-bench.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "README.md",
+              "grade": 2
+            },
+            {
+              "rank": 9,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "src/semantic.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8839335778767115,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M3",
+        "lane": "semantic",
+        "query": "what happens when the daemon socket dies mid-session",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "src/telemetry.ts",
+          "src/tui.ts",
+          "AUDIT-2026-10-14.md",
+          "README.md",
+          "OPTIMIZATIONS.md",
+          "ROADMAP.md",
+          "CHANGELOG.md",
+          "test/benchmark-gate.test.ts",
+          "bin/cli.ts"
+        ],
+        "control": null,
+        "ms": 13.979874999999993,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/telemetry.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 5,
+              "path": "README.md",
+              "grade": 1
+            },
+            {
+              "rank": 6,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "ROADMAP.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "bin/cli.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9614557747069621,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M4",
+        "lane": "semantic",
+        "query": "what does CI run on every push",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/compactor.ts",
+          "src/tui.ts",
+          "src/telemetry.ts",
+          "src/client.ts",
+          ".github/workflows/ci.yml",
+          "AUDIT-2026-10-14.md",
+          "src/formatter.ts",
+          "test/benchmark-gate.test.ts",
+          "README.md",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 9.397292000000107,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/compactor.ts",
+              "grade": 0
+            },
+            {
+              "rank": 2,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/telemetry.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/client.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": ".github/workflows/ci.yml",
+              "grade": 3
+            },
+            {
+              "rank": 6,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "src/formatter.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "README.md",
+              "grade": 2
+            },
+            {
+              "rank": 10,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 0.2,
+          "ndcg_at_10": 0.42237366501290213,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M5",
+        "lane": "semantic",
+        "query": "keep search results inside the repository boundary",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "index.ts",
+          "src/sanitize.ts",
+          "src/mcp.ts",
+          "src/types.ts",
+          "src/client.ts",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "README.md",
+          "OPTIMIZATIONS.md",
+          "bin/cli.ts"
+        ],
+        "control": null,
+        "ms": 13.149917000000187,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "index.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/types.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/client.ts",
+              "grade": 2
+            },
+            {
+              "rank": 6,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "README.md",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 10,
+              "path": "bin/cli.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9636134854206578,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M6",
+        "lane": "semantic",
+        "query": "kubernetes helm chart values for a redis cluster",
+        "must_hit": false,
+        "negative": true,
+        "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 3.6369159999999283,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "K1",
+        "lane": "ranking-frecency",
+        "query": "readme",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"readme\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "README.md"
+        ],
+        "control": null,
+        "ms": 0.6603750000003856,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "README.md",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "K2",
+        "lane": "ranking-proximity",
+        "query": "sanitize",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"sanitize\", in=<root>, limit=10, near=src/formatter.ts)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/sanitize.ts"
+        ],
+        "control": null,
+        "ms": 0.46433299999989686,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "K2c",
+        "lane": "grep-literal",
+        "query": "sanitize",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"sanitize\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "test/client.test.ts",
+          "AUDIT-2026-10-14.md",
+          "index.ts",
+          "src/client.ts",
+          "src/formatter.ts",
+          "test/empirical-10-tests.ts",
+          "tsconfig.json",
+          "CHANGELOG.md",
+          "OPTIMIZATIONS.md",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 0.5410419999998339,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "test/client.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 2,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 3,
+              "path": "index.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/client.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/formatter.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "test/empirical-10-tests.ts",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "tsconfig.json",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 10,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0.5,
+          "ndcg_at_10": 0.5714285040141098,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "K3",
+        "lane": "ranking-boost-ab",
+        "query": "client",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"client\", in=<root>, limit=10, boost=true)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/client.test.ts"
+        ],
+        "control": {
+          "boost": false,
+          "retrieved": [
+            "src/client.ts",
+            "test/client.test.ts"
+          ]
+        },
+        "ms": 0.7354159999999865,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/client.test.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "K3c",
+        "lane": "grep-literal",
+        "query": "client",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"client\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/compactor.ts",
+          "src/mcp.ts",
+          "src/tui.ts",
+          "bin/cli.ts",
+          "index.ts",
+          "test/bench.ts",
+          "test/deep-bench.ts",
+          "test/benchmark-gate.test.ts",
+          "src/codemode.ts",
+          "test/client.test.ts"
+        ],
+        "control": null,
+        "ms": 0.9636250000003201,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/compactor.ts",
+              "grade": 0
+            },
+            {
+              "rank": 2,
+              "path": "src/mcp.ts",
+              "grade": 1
+            },
+            {
+              "rank": 3,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "bin/cli.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "index.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "test/bench.ts",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "test/deep-bench.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "test/client.test.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0.5,
+          "ndcg_at_10": 0.6309297535714575,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "K4",
+        "lane": "ranking-symbol-intrafile",
+        "query": "FSearchClient",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.5437910000000556,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      }
+    ],
+    "v1_replay": [
+      {
+        "id": "P1",
+        "lane": "path",
+        "query": "package.json",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"package.json\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "package.json"
+        ],
+        "control": null,
+        "ms": 0.5663329999997586,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "package.json",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P2",
+        "lane": "path",
+        "query": "ci.yml",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"ci.yml\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          ".github/workflows/ci.yml"
+        ],
+        "control": null,
+        "ms": 0.3530829999999696,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": ".github/workflows/ci.yml",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P3",
+        "lane": "path",
+        "query": "client.ts",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"client.ts\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 0.32825000000002547,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 0.5,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.7871546029909718,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "P5",
+        "lane": "path",
+        "query": "bench",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"bench\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "test/bench.ts",
+          "test/benchmark-gate.test.ts",
+          "test/deep-bench.ts"
+        ],
+        "control": null,
+        "ms": 0.3658330000002934,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "test/bench.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "test/deep-bench.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P6",
+        "lane": "path",
+        "query": "codemode",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"codemode\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/codemode.ts"
+        ],
+        "control": null,
+        "ms": 0.30820900000026086,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/codemode.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.3333333333333333,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8609101556836468,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.3333333333333333
+        }
+      },
+      {
+        "id": "P7",
+        "lane": "path",
+        "query": "src/**/*.ts",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"src/**/*.ts\", in=<root>, limit=30)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "src/codemode.ts",
+          "src/compactor.ts",
+          "src/formatter.ts",
+          "src/mcp.ts",
+          "src/observer.ts",
+          "src/recursive-learning.ts",
+          "src/sanitize.ts",
+          "src/semantic.ts",
+          "src/telemetry.ts",
+          "src/tui.ts",
+          "src/types.ts"
+        ],
+        "control": null,
+        "ms": 0.4482499999999163,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/compactor.ts",
+              "grade": 2
+            },
+            {
+              "rank": 4,
+              "path": "src/formatter.ts",
+              "grade": 3
+            },
+            {
+              "rank": 5,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/observer.ts",
+              "grade": 2
+            },
+            {
+              "rank": 7,
+              "path": "src/recursive-learning.ts",
+              "grade": 2
+            },
+            {
+              "rank": 8,
+              "path": "src/sanitize.ts",
+              "grade": 2
+            },
+            {
+              "rank": 9,
+              "path": "src/semantic.ts",
+              "grade": 2
+            },
+            {
+              "rank": 10,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8563677136200579,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "P8",
+        "lane": "path",
+        "query": "kubectl_helm_chart_values",
+        "must_hit": false,
+        "negative": true,
+        "call": "search(\"kubectl_helm_chart_values\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 0.3354159999998956,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "G1",
+        "lane": "grep-literal",
+        "query": "estimateTokensSaved",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"estimateTokensSaved\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts",
+          "AUDIT-2026-10-14.md"
+        ],
+        "control": null,
+        "ms": 0.3674999999998363,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G2",
+        "lane": "grep-literal",
+        "query": "enforceExactQuery",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"enforceExactQuery\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 0.28150000000005093,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G3",
+        "lane": "grep-literal",
+        "query": "SYMBOL_REGEX",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"SYMBOL_REGEX\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/formatter.ts"
+        ],
+        "control": null,
+        "ms": 0.24104099999976825,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/formatter.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G4",
+        "lane": "grep-literal",
+        "query": "fsearch.sock",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"fsearch.sock\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "CHANGELOG.md"
+        ],
+        "control": null,
+        "ms": 0.2539590000001226,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9173194127129571,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "G5",
+        "lane": "grep-literal",
+        "query": "150 + hitCount",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"150 + hitCount\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts"
+        ],
+        "control": null,
+        "ms": 0.21604200000001583,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "G6",
+        "lane": "grep-literal",
+        "query": "SUPERCALIFRAGILISTIC_TOKEN_ZZZ",
+        "must_hit": false,
+        "negative": true,
+        "call": "grep(\"SUPERCALIFRAGILISTIC_TOKEN_ZZZ\", in=<root>, mode=literal, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 0.2082500000001346,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "R1",
+        "lane": "grep-regex",
+        "query": "class\\s+\\w+Client",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"class\\\\s+\\\\w+Client\", in=<root>, mode=regex, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/benchmark-gate.test.ts"
+        ],
+        "control": null,
+        "ms": 0.9752080000002934,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "R2",
+        "lane": "grep-regex",
+        "query": "(startAutoCompaction|recordMistake|loadIgnoreRules)",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"(startAutoCompaction|recordMistake|loadIgnoreRules)\", in=<root>, mode=regex, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/recursive-learning.ts",
+          "src/compactor.ts",
+          "src/sanitize.ts",
+          "AUDIT-2026-10-14.md",
+          "src/observer.ts",
+          "test/client.test.ts",
+          "OPTIMIZATIONS.md",
+          "index.ts",
+          "src/client.ts",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 0.9602499999996326,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/recursive-learning.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/compactor.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 4,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 5,
+              "path": "src/observer.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "test/client.test.ts",
+              "grade": 2
+            },
+            {
+              "rank": 7,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 8,
+              "path": "index.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "src/client.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9880566884310259,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "R3",
+        "lane": "grep-regex",
+        "query": "(a+)+$",
+        "must_hit": false,
+        "negative": true,
+        "call": "grep(\"(a+)+$\", in=<root>, mode=regex, limit=10)",
+        "source": null,
+        "error": "rejected regex pattern: a quantified group contains an inner quantifier (e.g. \"(a+)+$\"), which can backtrack exponentially on long inputs. Narrow the pattern or use mode: \"literal\".",
+        "retrieved": [],
+        "control": null,
+        "ms": 0.017374999999901775,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "S1",
+        "lane": "symbol",
+        "query": "FSearchClient",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.300709000000097,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.2,
+          "success_recall_at_10": 0.5,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.6855809555403688,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.2
+        }
+      },
+      {
+        "id": "S2",
+        "lane": "symbol",
+        "query": "detectSymbolTag",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"detectSymbolTag\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/formatter.ts"
+        ],
+        "control": null,
+        "ms": 0.9539169999998194,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/formatter.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "S3",
+        "lane": "symbol",
+        "query": "applyProximityRanking",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"applyProximityRanking\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.158665999999812,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9173194127129571,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "S4",
+        "lane": "symbol",
+        "query": "resolveWorktreeRoot",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"resolveWorktreeRoot\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "index.ts"
+        ],
+        "control": null,
+        "ms": 2.0382909999998446,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "index.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.3333333333333333,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8609101556836468,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.3333333333333333
+        }
+      },
+      {
+        "id": "M1",
+        "lane": "semantic",
+        "query": "where are credentials scrubbed before results reach the model",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"where are credentials scrubbed before results reach the model\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/sanitize.ts",
+          "src/mcp.ts",
+          "src/formatter.ts",
+          "CHANGELOG.md",
+          "src/semantic.ts",
+          "src/recursive-learning.ts",
+          "OPTIMIZATIONS.md",
+          "test/client.test.ts",
+          "test/empirical-10-tests.ts",
+          "AUDIT-2026-10-14.md"
+        ],
+        "control": null,
+        "ms": 8.602707999999893,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/formatter.ts",
+              "grade": 2
+            },
+            {
+              "rank": 4,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/semantic.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "src/recursive-learning.ts",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "test/client.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "test/empirical-10-tests.ts",
+              "grade": 1
+            },
+            {
+              "rank": 10,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9253449841090406,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M2",
+        "lane": "semantic",
+        "query": "how is the token savings number computed",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"how is the token savings number computed\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/telemetry.ts",
+          "src/codemode.ts",
+          "src/tui.ts",
+          "src/recursive-learning.ts",
+          "test/deep-bench.ts",
+          "OPTIMIZATIONS.md",
+          "src/mcp.ts",
+          "README.md",
+          "AUDIT-2026-10-14.md",
+          "src/semantic.ts"
+        ],
+        "control": null,
+        "ms": 9.721125000000029,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/telemetry.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/codemode.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/recursive-learning.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "test/deep-bench.ts",
+              "grade": 0
+            },
+            {
+              "rank": 6,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "README.md",
+              "grade": 2
+            },
+            {
+              "rank": 9,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "src/semantic.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8839335778767115,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M3",
+        "lane": "semantic",
+        "query": "what happens when the daemon socket dies mid-session",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"what happens when the daemon socket dies mid-session\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "src/telemetry.ts",
+          "src/tui.ts",
+          "AUDIT-2026-10-14.md",
+          "README.md",
+          "OPTIMIZATIONS.md",
+          "ROADMAP.md",
+          "CHANGELOG.md",
+          "test/benchmark-gate.test.ts",
+          "bin/cli.ts"
+        ],
+        "control": null,
+        "ms": 12.920209000000341,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/telemetry.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 5,
+              "path": "README.md",
+              "grade": 1
+            },
+            {
+              "rank": 6,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 0
+            },
+            {
+              "rank": 7,
+              "path": "ROADMAP.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 10,
+              "path": "bin/cli.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9614557747069621,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M4",
+        "lane": "semantic",
+        "query": "what does CI run on every push",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"what does CI run on every push\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "src/compactor.ts",
+          "src/tui.ts",
+          "src/telemetry.ts",
+          "src/client.ts",
+          ".github/workflows/ci.yml",
+          "AUDIT-2026-10-14.md",
+          "src/formatter.ts",
+          "test/benchmark-gate.test.ts",
+          "README.md",
+          "ROADMAP.md"
+        ],
+        "control": null,
+        "ms": 9.071332999999868,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/compactor.ts",
+              "grade": 0
+            },
+            {
+              "rank": 2,
+              "path": "src/tui.ts",
+              "grade": 0
+            },
+            {
+              "rank": 3,
+              "path": "src/telemetry.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/client.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": ".github/workflows/ci.yml",
+              "grade": 3
+            },
+            {
+              "rank": 6,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "src/formatter.ts",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "test/benchmark-gate.test.ts",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "README.md",
+              "grade": 2
+            },
+            {
+              "rank": 10,
+              "path": "ROADMAP.md",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 0.2,
+          "ndcg_at_10": 0.42237366501290213,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M5",
+        "lane": "semantic",
+        "query": "keep search results inside the repository boundary",
+        "must_hit": true,
+        "negative": false,
+        "call": "searchSemanticIntent(\"keep search results inside the repository boundary\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [
+          "index.ts",
+          "src/sanitize.ts",
+          "src/mcp.ts",
+          "src/types.ts",
+          "src/client.ts",
+          "AUDIT-2026-10-14.md",
+          "CHANGELOG.md",
+          "README.md",
+          "OPTIMIZATIONS.md",
+          "bin/cli.ts"
+        ],
+        "control": null,
+        "ms": 13.017707999999857,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "index.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            },
+            {
+              "rank": 3,
+              "path": "src/mcp.ts",
+              "grade": 0
+            },
+            {
+              "rank": 4,
+              "path": "src/types.ts",
+              "grade": 0
+            },
+            {
+              "rank": 5,
+              "path": "src/client.ts",
+              "grade": 2
+            },
+            {
+              "rank": 6,
+              "path": "AUDIT-2026-10-14.md",
+              "grade": 1
+            },
+            {
+              "rank": 7,
+              "path": "CHANGELOG.md",
+              "grade": 0
+            },
+            {
+              "rank": 8,
+              "path": "README.md",
+              "grade": 0
+            },
+            {
+              "rank": 9,
+              "path": "OPTIMIZATIONS.md",
+              "grade": 1
+            },
+            {
+              "rank": 10,
+              "path": "bin/cli.ts",
+              "grade": 0
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9636134854206578,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      },
+      {
+        "id": "M6",
+        "lane": "semantic",
+        "query": "kubernetes helm chart values for a redis cluster",
+        "must_hit": false,
+        "negative": true,
+        "call": "searchSemanticIntent(\"kubernetes helm chart values for a redis cluster\", in=<root>, limit=10)",
+        "source": "semantic_intent",
+        "error": null,
+        "retrieved": [],
+        "control": null,
+        "ms": 3.5506249999998545,
+        "score": {
+          "top10": [],
+          "recall_at_10": null,
+          "success_recall_at_10": null,
+          "mrr_at_10": 0,
+          "ndcg_at_10": null,
+          "top1_grade": 0,
+          "reformulation_signal": true,
+          "zero_result": true,
+          "recall_at_limit": null
+        }
+      },
+      {
+        "id": "K1",
+        "lane": "ranking-frecency",
+        "query": "readme",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"readme\", in=<root>, limit=10)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "README.md"
+        ],
+        "control": null,
+        "ms": 0.6264999999998508,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "README.md",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9173194127129571,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "K2",
+        "lane": "ranking-proximity",
+        "query": "sanitize",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"sanitize\", in=<root>, limit=10, near=src/formatter.ts)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/sanitize.ts"
+        ],
+        "control": null,
+        "ms": 0.44037500000013097,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/sanitize.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 0.3333333333333333,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.8609101556836468,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.3333333333333333
+        }
+      },
+      {
+        "id": "K3",
+        "lane": "ranking-boost-ab",
+        "query": "client",
+        "must_hit": true,
+        "negative": false,
+        "call": "search(\"client\", in=<root>, limit=10, boost=true)",
+        "source": null,
+        "error": null,
+        "retrieved": [
+          "src/client.ts",
+          "test/client.test.ts"
+        ],
+        "control": {
+          "boost": false,
+          "retrieved": [
+            "src/client.ts",
+            "test/client.test.ts"
+          ]
+        },
+        "ms": 0.6804160000001502,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "path": "test/client.test.ts",
+              "grade": 2
+            }
+          ],
+          "recall_at_10": 0.5,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 0.9052598568324595,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 0.5
+        }
+      },
+      {
+        "id": "K4",
+        "lane": "ranking-symbol-intrafile",
+        "query": "FSearchClient",
+        "must_hit": true,
+        "negative": false,
+        "call": "grep(\"FSearchClient\", in=<root>, mode=symbol, limit=10)",
+        "source": "index",
+        "error": null,
+        "retrieved": [
+          "src/client.ts"
+        ],
+        "control": null,
+        "ms": 3.156082999999853,
+        "score": {
+          "top10": [
+            {
+              "rank": 1,
+              "path": "src/client.ts",
+              "grade": 3
+            }
+          ],
+          "recall_at_10": 1,
+          "success_recall_at_10": 1,
+          "mrr_at_10": 1,
+          "ndcg_at_10": 1,
+          "top1_grade": 3,
+          "reformulation_signal": false,
+          "zero_result": false,
+          "recall_at_limit": 1
+        }
+      }
+    ]
+  }
+}

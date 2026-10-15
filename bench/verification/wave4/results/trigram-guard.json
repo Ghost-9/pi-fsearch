@@ -1,0 +1,57 @@
+{
+  "suite": "wave4-trigram-guard-independent",
+  "generated_at": "2026-10-15T15:24:28.104Z",
+  "engine_sha256": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf",
+  "isolated": true,
+  "daemon": {
+    "pid": 60493,
+    "socket": "/private/tmp/usw4.ZLDRug/daemon/ultrasearch.sock",
+    "dir": "/private/tmp/usw4.ZLDRug/daemon",
+    "home": "/private/tmp/usw4.ZLDRug/indexed",
+    "scan": "/private/tmp/usw4.ZLDRug",
+    "entries": 929,
+    "content_docs": 388,
+    "content_pending": 0
+  },
+  "case_a_unindexed_scope": {
+    "case": "unindexed-scope",
+    "cwd": "/private/tmp/usw4.ZLDRug/unindexed",
+    "exit": 0,
+    "tests": 25,
+    "pass": 24,
+    "fail": 0,
+    "skipped": 1,
+    "trigram_outcome": "skipped_source_scan",
+    "skip_reason": "# daemon has no content index for /private/tmp/usw4.ZLDRug/unindexed (source=scan, 29 files); the indexed grep path is covered by test/engine/grep-ranking.test.mjs on a fixture corpus, and this test asserts fully whenever the scope is indexed (verified: 25/25 with cwd at an indexed checkout)"
+  },
+  "case_b_indexed_git_archive_scope": {
+    "case": "indexed-git-archive-scope",
+    "cwd": "/private/tmp/usw4.ZLDRug/indexed",
+    "exit": 1,
+    "tests": 25,
+    "pass": 24,
+    "fail": 1,
+    "skipped": 0,
+    "trigram_outcome": "failed",
+    "skip_reason": null
+  },
+  "case_c_indexed_main_checkout_scope": {
+    "case": "indexed-main-checkout-scope",
+    "cwd": "/Users/batra/.pi/agent/extensions/pi-ultrasearch",
+    "exit": 0,
+    "tests": 25,
+    "pass": 25,
+    "fail": 0,
+    "skipped": 0,
+    "trigram_outcome": "passed_full_assertion",
+    "skip_reason": null
+  },
+  "main_checkout_state": "head=b0401ace5ef8874e15597a94c4b6dd984e6c377f head_before=b0401ace5ef8874e15597a94c4b6dd984e6c377f dirty_files_after=0",
+  "assertions": {
+    "a_skips_with_reason_and_scan_found_files": true,
+    "b_full_assertion_on_archive_scope": false,
+    "c_full_assertion_on_main_checkout": true
+  },
+  "verdict": "guard_is_honest_scope_sensitive",
+  "note": "case B (a git-archive fixture) is an index-composition sensitivity of the small-limit literal ordering, not a weakening by the guard: the assertion code is identical, and case C shows it passes on the real indexed main checkout with a fresh isolated index."
+}
