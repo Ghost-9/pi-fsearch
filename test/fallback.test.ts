@@ -124,7 +124,14 @@ test("fallback cancellation: aborted signal produces a cancelled result and no c
 });
 
 test("no execFileSync in the request path (issue #24 acceptance)", () => {
-  const source = fs.readFileSync(path.join(process.cwd(), "src", "client.ts"), "utf-8");
-  assert.equal(/execFileSync/.test(source), false, "client.ts must not block the event loop with execFileSync");
-  assert.equal(/execSync\s*\(/.test(source), false, "client.ts must not use execSync");
+  const files = [
+    path.join(process.cwd(), "src", "client.ts"),
+    path.join(process.cwd(), "index.ts"),
+  ];
+  for (const file of files) {
+    const source = fs.readFileSync(file, "utf-8");
+    const label = path.relative(process.cwd(), file);
+    assert.equal(/execFileSync/.test(source), false, `${label} must not block the event loop with execFileSync`);
+    assert.equal(/execSync\s*\(/.test(source), false, `${label} must not use execSync`);
+  }
 });

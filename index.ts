@@ -1,6 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
-import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { UltraSearchClient } from "./src/client.ts";
@@ -42,15 +41,10 @@ export function resolveWorktreeRoot(startDir = process.cwd()): string {
       curr = path.dirname(curr);
     }
 
-    const root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-      cwd: startDir,
-      encoding: "utf-8",
-      stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
-    if (root) {
-      worktreeCache.set(startDir, { root, timestamp: now });
-      return root;
-    }
+    // The upward .git walk above covers every real repository, including linked
+    // worktrees (a .git *file*) and submodules. When no .git exists anywhere up
+    // the tree, `git rev-parse` could only fail too, so it is not spawned: the
+    // previous synchronous call cost 773 ms on a non-git cwd (issue #24).
   } catch {
     // Not a git repo or git unavailable
   }

@@ -2,9 +2,9 @@
   "schema": "ultrasearch/harness-smoke@1",
   "id": "zed",
   "label": "Zed",
-  "generatedAt": "2026-10-15T18:56:21.725Z",
-  "commit": "397edb87f808079300223603b38727f1d5d3bf37",
-  "worktreeDirty": false,
+  "generatedAt": "2026-10-15T20:29:45.568Z",
+  "commit": "cc37a9a0b6bd6caa870a06df8d733083a9ac4112",
+  "worktreeDirty": true,
   "serverVersion": "0.3.1",
   "supportedProtocolVersions": [
     "2025-06-18",
@@ -62,15 +62,15 @@
           "filename": "package.json"
         },
         "isError": false,
-        "textSample": "/Users/batra/ultrasearch-waves5/init-smoke/package.json",
+        "textSample": "/Users/batra/.pi/agent/extensions/pi-ultrasearch/package.json",
         "meta": {
           "complete": false,
           "truncated": false,
           "truncatedCount": 0,
           "engineCapped": false,
           "filteredCount": 0,
-          "tokenCount": 14,
-          "charCount": 56,
+          "tokenCount": 16,
+          "charCount": 62,
           "source": "index",
           "deadlineExceeded": false,
           "rawCount": 1,
@@ -173,7 +173,7 @@
               "content": [
                 {
                   "type": "text",
-                  "text": "/Users/batra/ultrasearch-waves5/init-smoke/package.json"
+                  "text": "/Users/batra/.pi/agent/extensions/pi-ultrasearch/package.json"
                 }
               ],
               "_meta": {
@@ -182,8 +182,8 @@
                 "truncatedCount": 0,
                 "engineCapped": false,
                 "filteredCount": 0,
-                "tokenCount": 14,
-                "charCount": 56,
+                "tokenCount": 16,
+                "charCount": 62,
                 "source": "index",
                 "deadlineExceeded": false,
                 "rawCount": 1,
