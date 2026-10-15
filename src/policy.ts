@@ -150,7 +150,8 @@ export function locatePolicyBlock(text: string): { start: number; end: number } 
   const endMarker = text.indexOf(POLICY_END, start + POLICY_BEGIN.length);
   if (endMarker === -1) throw new PolicyError(`found ${POLICY_BEGIN} without ${POLICY_END}`);
   let end = endMarker + POLICY_END.length;
-  if (text[end] === "\n") end++;
+  if (text.slice(end, end + 2) === "\r\n") end += 2;
+  else if (text[end] === "\n") end++;
   return { start, end };
 }
 
@@ -161,8 +162,8 @@ export function locatePolicyBlock(text: string): { start: number; end: number } 
 export function stripPolicyBlock(text: string): string {
   const found = locatePolicyBlock(text);
   if (!found) return text;
-  const before = text.slice(0, found.start).replace(/\n+$/, "");
-  const after = text.slice(found.end).replace(/^\n+/, "\n");
+  const before = text.slice(0, found.start).replace(/\r?\n+$/, "");
+  const after = text.slice(found.end).replace(/^(\r?\n)+/, "\n");
   if (!before && !after) return "";
   const joined = before + (after.startsWith("\n") || !after ? after : `\n${after}`);
   return `${joined.replace(/\s+$/, "")}\n`;

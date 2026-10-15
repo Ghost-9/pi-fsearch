@@ -146,9 +146,8 @@ narrows the search scope to the folder its leading literal part names.
 
 Hit components are engine-owned and must not be re-computed by a client:
 `score == match + near + boost + def` (`near`/`boost`/`def` are omitted when
-zero). `git` is present only when `git:true` was requested. `next` is present
-only for a paged (`glob`, `offset`/`cursor`) request and is the offset of the
-next page.
+zero). `git` is present only when `git:true` was requested. `next`, when
+present, is the offset a paged client should request to continue.
 
 ### 6.2 Grep
 
