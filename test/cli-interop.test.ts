@@ -216,3 +216,33 @@ test("cli: a two-root query collapses the duplicate and attributes the extra roo
     await daemon.close();
   }
 });
+
+// ---------------------------------------------------------------------------
+// Phase 4: `ultrasearch report --by harness`
+// ---------------------------------------------------------------------------
+
+test("cli: `report --by harness` prints one block per harness and keeps the view filter", async () => {
+  const log = path.join(tmp, "harness-audit.jsonl");
+  const fixture = [
+    { ts: 1, tool: "ultrasearch_query", query: "pi-q", ms: 2, ok: true, hitCount: 1, source: "index", origin: "organic", harness: "pi" },
+    { ts: 2, tool: "ultrasearch_query", query: "mcp-q", ms: 3, ok: true, hitCount: 2, source: "index", origin: "organic", harness: "mcp" },
+  ];
+  fs.writeFileSync(log, fixture.map((r) => JSON.stringify(r)).join("\n") + "\n");
+
+  const all = await runCli(["report", "--by", "harness", "--view", "all"], { PI_ULTRASEARCH_TEST_LOG: log });
+  assert.equal(all.code, 0, all.stderr);
+  assert.match(all.stdout, /Per-Harness Attribution/);
+  assert.match(all.stdout, /• pi\s*: 1 call/);
+  assert.match(all.stdout, /• mcp\s*: 1 call/);
+  assert.match(all.stdout, /ESTIMATE ONLY/);
+
+  // Test-file rows are forced synthetic, so the real view must exclude both.
+  const real = await runCli(["report", "--by", "harness"], { PI_ULTRASEARCH_TEST_LOG: log });
+  assert.equal(real.code, 0, real.stderr);
+  assert.match(real.stdout, /Total Monitored Calls: 0/);
+  assert.doesNotMatch(real.stdout, /Per-Harness Attribution/);
+
+  const bad = await runCli(["report", "--by", "week"], { PI_ULTRASEARCH_TEST_LOG: log });
+  assert.equal(bad.code, 2);
+  assert.match(bad.stderr, /--by harness\|tool/);
+});

@@ -57,7 +57,16 @@ jobs:
           npm pack --pack-destination "$RUNNER_TEMP"
           TARBALL="$(ls "$RUNNER_TEMP"/pi-ultrasearch-*.tgz)"
           tar -tzf "$TARBALL" | grep -q 'package/dist/bin/cli.js'
+          tar -tzf "$TARBALL" | grep -q 'package/scripts/install.sh'
           cp "$TARBALL" "$RUNNER_TEMP/pi-ultrasearch-$TAG.tgz"
+
+      # The installer ships both inside the tarball and as a standalone asset,
+      # so a machine without npm can `curl | bash` the exact tagged revision.
+      - name: Stage install script
+        run: |
+          set -euo pipefail
+          install -m 0755 scripts/install.sh "$RUNNER_TEMP/ultrasearch-install-$TAG.sh"
+          shasum -a 256 "$RUNNER_TEMP/ultrasearch-install-$TAG.sh"
 
       - name: Write release artifact
         run: node bench/release-artifact.mjs --tag "$TAG" --checks-json "$RUNNER_TEMP/checks.json"
@@ -70,5 +79,6 @@ jobs:
           gh release view "$TAG" > /dev/null 2>&1 || gh release create "$TAG" --generate-notes
           gh release upload "$TAG" --clobber \
             "bench/results/release-$TAG.json" \
-            "$RUNNER_TEMP/pi-ultrasearch-$TAG.tgz"
+            "$RUNNER_TEMP/pi-ultrasearch-$TAG.tgz" \
+            "$RUNNER_TEMP/ultrasearch-install-$TAG.sh"
           gh release view "$TAG" --json assets --jq '.assets[].name'

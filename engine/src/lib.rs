@@ -12,6 +12,7 @@ mod engine;
 mod fsevents;
 pub mod index;
 pub mod live;
+pub mod qos;
 pub mod query;
 pub mod symbols;
 pub mod walk;

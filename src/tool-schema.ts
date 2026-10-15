@@ -38,14 +38,14 @@ export interface UltraSearchToolSchema {
 const QUERY: UltraSearchToolSchema = {
   name: "ultrasearch_query",
   description:
-    "Instant indexed whole-disk or workspace file search (<0.1ms). Strict deterministic matching (zero typo tolerance) for exact symbol, glob, and path resolution. Supports globs (src/**/*.{ts,tsx}), extension filters (*.rs), git status filters (git:modified, git:staged, git:untracked), and proximity re-ranking (near: <path>). Scoped strictly to the active worktree root.",
+    "Exact indexed path search (<0.1ms, no typo tolerance). Accepts a name, glob (src/**/*.{ts,tsx}), extension filter (*.rs), or git status filter (git:modified, git:staged, git:untracked). `near` re-ranks by folder proximity. Scoped to the worktree unless global=true.",
   params: {
-    query: { type: "string", description: "Search query, glob, or filter (e.g. 'Omnibox *.swift', 'git:modified')" },
-    limit: { type: "number", description: "Max results (default: 30)" },
-    global: { type: "boolean", description: "Search whole disk instead of workspace" },
-    near: { type: "string", description: "Optional file path to re-rank results by folder proximity" },
-    budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
-    explain: { type: "boolean", description: "Append engine reason tags ([exact] [glob] [git:modified] [proximity] [frecency] [symbol]) to each result. Default true." },
+    query: { type: "string", description: "Name, glob, or filter (e.g. 'git:modified', 'src/**/*.{ts,tsx} !test/')" },
+    limit: { type: "number", description: "Max results (default 30)" },
+    global: { type: "boolean", description: "Whole disk instead of the worktree" },
+    near: { type: "string", description: "Re-rank by folder proximity to this path" },
+    budget_ms: { type: "number", description: "Deadline (ms); partial results set complete:false" },
+    explain: { type: "boolean", description: "Append match-reason tags (default true)" },
   },
   required: ["query"],
   returns: "search",
@@ -53,18 +53,19 @@ const QUERY: UltraSearchToolSchema = {
 
 const GREP: UltraSearchToolSchema = {
   name: "ultrasearch_grep",
-  description: "Indexed trigram text search inside files (<1ms). Clean compact output with enterprise DLP credential masking.",
+  description:
+    "Indexed content search (<1ms) with compact 'file:line: match' output; credentials are DLP-scrubbed.",
   params: {
-    pattern: { type: "string", description: "Literal or identifier to search" },
-    path_filter: { type: "string", description: "Subdirectory or file filter" },
-    global: { type: "boolean", description: "Search whole disk instead of restricting to the current scope" },
-    mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "Search mode (semantic = intent keyword expansion)" },
-    limit: { type: "number", description: "Max files to return" },
-    compact: { type: "boolean", description: "Compact one-line format (default: true)" },
-    max_tokens: { type: "number", description: "Optional token budget ceiling" },
-    context: { type: "number", description: "Lines of surrounding code context (0-5, default: 0)" },
-    tag_symbols: { type: "boolean", description: "Tag matches with AST definition types like [def:fn], [def:class]" },
-    budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
+    pattern: { type: "string", description: "Text or identifier to search" },
+    path_filter: { type: "string", description: "Subfolder or file filter (e.g. 'src/')" },
+    global: { type: "boolean", description: "Whole disk instead of the current scope" },
+    mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "literal (default) | regex | symbol (defs first) | semantic (intent)" },
+    limit: { type: "number", description: "Max files (default 30)" },
+    compact: { type: "boolean", description: "One-line 'file:line: match' (default true)" },
+    max_tokens: { type: "number", description: "Output token budget" },
+    context: { type: "number", description: "Context lines per match (0-5, default 0)" },
+    tag_symbols: { type: "boolean", description: "Tag AST definitions ([def:fn], [def:class])" },
+    budget_ms: { type: "number", description: "Deadline (ms); partial results set complete:false" },
   },
   required: ["pattern"],
   returns: "grep",
@@ -72,14 +73,14 @@ const GREP: UltraSearchToolSchema = {
 
 const MULTI_GREP: UltraSearchToolSchema = {
   name: "ultrasearch_multi_grep",
-  description: "Simultaneous multi-pattern OR content retrieval across trigram index in one call.",
+  description: "OR-search several patterns in one indexed call.",
   params: {
-    patterns: { type: "array", items: "string", description: "Array of search patterns" },
-    path_filter: { type: "string", description: "Subdirectory filter" },
-    limit: { type: "number", description: "Max files to return" },
-    compact: { type: "boolean", description: "Compact one-line format (default: true)" },
-    max_tokens: { type: "number", description: "Optional token budget ceiling" },
-    budget_ms: { type: "number", description: "Optional server-side deadline (ms); partial results carry complete:false" },
+    patterns: { type: "array", items: "string", description: "Patterns to OR" },
+    path_filter: { type: "string", description: "Subfolder filter" },
+    limit: { type: "number", description: "Max files (default 30)" },
+    compact: { type: "boolean", description: "One-line 'file:line: match' (default true)" },
+    max_tokens: { type: "number", description: "Output token budget" },
+    budget_ms: { type: "number", description: "Deadline (ms); partial results set complete:false" },
   },
   required: ["patterns"],
   returns: "multi_grep",
@@ -87,10 +88,10 @@ const MULTI_GREP: UltraSearchToolSchema = {
 
 const LOCATE: UltraSearchToolSchema = {
   name: "ultrasearch_locate",
-  description: "Instant O(1) filename lookup (e.g. 'package.json', 'Cargo.toml') within current workspace.",
+  description: "Exact filename lookup in the workspace (O(1) indexed).",
   params: {
-    filename: { type: "string", description: "Exact filename to locate" },
-    global: { type: "boolean", description: "Search entire disk" },
+    filename: { type: "string", description: "Exact filename (e.g. 'package.json')" },
+    global: { type: "boolean", description: "Whole disk" },
   },
   required: ["filename"],
   returns: "text",
@@ -98,9 +99,9 @@ const LOCATE: UltraSearchToolSchema = {
 
 const RECENT: UltraSearchToolSchema = {
   name: "ultrasearch_recent",
-  description: "Recently worked or edited files in current workspace (frecency ranked).",
+  description: "Recently edited workspace files, frecency-ranked.",
   params: {
-    limit: { type: "number", description: "Max recent files (default: 15)" },
+    limit: { type: "number", description: "Max files (default 15)" },
   },
   required: [],
   returns: "text",
@@ -109,10 +110,10 @@ const RECENT: UltraSearchToolSchema = {
 const METRICS: UltraSearchToolSchema = {
   name: "ultrasearch_metrics",
   description:
-    "Toolchain latency metrics (p50/p90/p95), error rates, zero-hit queries, and recursive self-learning advice. Defaults to organic (non-gate) rows.",
+    "Toolchain metrics: latency percentiles, error and zero-hit rates, tuning advice. Defaults to organic rows (gate/bench runs excluded).",
   params: {
-    view: { type: "string", enum: ["real", "synthetic", "all"], description: "Audit provenance view (default: real = organic sessions only)" },
-    limit: { type: "number", description: "Number of audit rows to analyze (default 1000)" },
+    view: { type: "string", enum: ["real", "synthetic", "all"], description: "Provenance view (default real = organic only)" },
+    limit: { type: "number", description: "Rows to analyze (default 1000)" },
   },
   required: [],
   returns: "text",

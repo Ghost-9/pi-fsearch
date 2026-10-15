@@ -272,11 +272,15 @@ fn log(msg: impl AsRef<str>) {
 /// Never let indexing download iCloud placeholders: on the calling thread,
 /// opening or listing a dataless file fails fast instead of materializing it.
 pub fn no_materialize() {
+    #[cfg(target_os = "macos")]
     unsafe extern "C" {
         fn setiopolicy_np(iotype: i32, scope: i32, policy: i32) -> i32;
     }
     // IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD, OFF
-    unsafe { setiopolicy_np(3, 1, 1) };
+    #[cfg(target_os = "macos")]
+    unsafe {
+        setiopolicy_np(3, 1, 1)
+    };
 }
 
 /// Searches run here, at user-interactive QoS: an app's background executor
@@ -297,7 +301,7 @@ fn pool() -> &'static rayon::ThreadPool {
         rayon::ThreadPoolBuilder::new()
             .thread_name(|i| format!("ultrasearch-search-{i}"))
             .start_handler(|_| {
-                unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INTERACTIVE, 0) };
+                crate::qos::set_self(crate::qos::Qos::UserInteractive);
                 crate::alloc::keep_on_this_thread();
             })
             .build()
@@ -320,7 +324,7 @@ fn warmer() -> &'static std::thread::Thread {
     static T: std::sync::OnceLock<std::thread::Thread> = std::sync::OnceLock::new();
     T.get_or_init(|| {
         let t = std::thread::Builder::new().name("ultrasearch-warm".into()).spawn(|| {
-            unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INTERACTIVE, 0) };
+            crate::qos::set_self(crate::qos::Qos::UserInteractive);
             loop {
                 let (from, until, now) = (WARM_FROM.load(Ordering::SeqCst), WARM_UNTIL.load(Ordering::SeqCst), now_ns());
                 if now >= until {
@@ -942,11 +946,11 @@ pub fn has_full_disk_access() -> bool {
     std::fs::File::open("/Library/Application Support/com.apple.TCC/TCC.db").is_ok()
 }
 
-fn content_pool(threads: usize, qos: libc::qos_class_t) -> rayon::ThreadPool {
+fn content_pool(threads: usize, qos: crate::qos::Qos) -> rayon::ThreadPool {
     rayon::ThreadPoolBuilder::new()
         .num_threads(threads)
-        .start_handler(move |_| unsafe {
-            libc::pthread_set_qos_class_self_np(qos, 0);
+        .start_handler(move |_| {
+            crate::qos::set_self(qos);
             no_materialize();
         })
         .build()
@@ -956,8 +960,8 @@ fn content_pool(threads: usize, qos: libc::qos_class_t) -> rayon::ThreadPool {
 fn content_loop(shared: &Shared, rx: Receiver<Resync>) {
     // Indexing file contents is background work: utility QoS keeps it off
     // the user's way (lower CPU priority and IO tier).
-    unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_UTILITY, 0) };
-    let pool = content_pool(4, libc::qos_class_t::QOS_CLASS_UTILITY);
+    crate::qos::set_self(crate::qos::Qos::Utility);
+    let pool = content_pool(4, crate::qos::Qos::Utility);
     let home = shared.home.as_bytes().to_vec();
     // First run, while the whole disk is listed: index the folders searches
     // ask about from their early indexes. (A request that comes as the
@@ -1062,7 +1066,7 @@ fn sync_wants(shared: &Shared, pool: &rayon::ThreadPool, wants: Vec<(Vec<u8>, bo
     let fast;
     let pool = if first {
         let threads = std::thread::available_parallelism().map_or(8, |n| n.get()).min(8);
-        fast = content_pool(threads, libc::qos_class_t::QOS_CLASS_USER_INITIATED);
+        fast = content_pool(threads, crate::qos::Qos::UserInitiated);
         &fast
     } else {
         pool

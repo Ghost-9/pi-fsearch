@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { UltraSearchClient } from "../src/client.ts";
 import { formatGrepFiles } from "../src/formatter.ts";
-import { formatAuditSummary, summarizeAudit, loadAudit } from "../src/telemetry.ts";
+import { formatAuditSummary, summarizeAudit, loadAudit, type AuditView } from "../src/telemetry.ts";
 import { LsmCompactor } from "../src/compactor.ts";
 import { formatRecursiveLearningReport } from "../src/recursive-learning.ts";
 import { UltraSearchTui } from "../src/tui.ts";
@@ -32,7 +32,7 @@ async function main() {
   const args = process.argv.slice(2);
   const command = args[0] || "help";
 
-  const client = new UltraSearchClient();
+  const client = new UltraSearchClient({ harness: "cli" });
 
   try {
     switch (command) {
@@ -159,10 +159,46 @@ async function main() {
         break;
       }
 
+      case "report":
       case "metrics": {
-        const audit = loadAudit();
-        const summary = summarizeAudit(audit.length, { view: "real" });
-        console.log(formatAuditSummary(summary));
+        // `report` is the Phase-4 surface; `metrics` stays as the historical
+        // alias. `--by harness` adds the per-harness attribution block while
+        // keeping the real/synthetic view split (real is the default).
+        const rest = command === "report" ? args.slice(1) : args;
+        let view: AuditView = "real";
+        let by: "tool" | "harness" = "tool";
+        let limit = 1000;
+        let asJson = false;
+        for (let i = 0; i < rest.length; i++) {
+          const arg = rest[i];
+          const value = rest[i + 1];
+          if (arg === "--by" && value) {
+            if (value !== "harness" && value !== "tool") {
+              console.error("Usage: ultrasearch report [--by harness|tool] [--view real|synthetic|all] [--limit n] [--json]");
+              process.exit(2);
+            }
+            by = value;
+            i++;
+          } else if (arg === "--view" && value) {
+            if (value !== "real" && value !== "synthetic" && value !== "all") {
+              console.error("Usage: ultrasearch report [--by harness|tool] [--view real|synthetic|all] [--limit n] [--json]");
+              process.exit(2);
+            }
+            view = value;
+            i++;
+          } else if (arg === "--limit" && value) {
+            limit = Math.max(1, parseInt(value, 10) || 1000);
+            i++;
+          } else if (arg === "--json") {
+            asJson = true;
+          } else if (arg.startsWith("--")) {
+            console.error(`Unknown report flag: ${arg}`);
+            process.exit(2);
+          }
+        }
+        const audit = loadAudit(limit);
+        const summary = summarizeAudit(Math.max(limit, audit.length), { view, by });
+        console.log(asJson ? JSON.stringify(summary, null, 2) : formatAuditSummary(summary));
         break;
       }
 
@@ -401,6 +437,7 @@ Commands:
   ultrasearch history [--suggest <text>]    Opt-in local query history + suggestions
   ultrasearch compact                       Trigger automated LSM index compaction
   ultrasearch metrics                       Display latency, throughput, token savings
+  ultrasearch report [--by harness]         Audit report; --by harness adds per-harness attribution
   ultrasearch learning                      Inspect recursive learning rules & mistakes
   ultrasearch tui [--once]                  Launch interactive mission control TUI
   ultrasearch install                       Install symlinks into ~/.local/bin

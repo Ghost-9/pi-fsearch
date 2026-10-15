@@ -3188,7 +3188,7 @@ fn helpers() -> &'static Helpers {
             let spawned = std::thread::Builder::new().name(format!("ultrasearch-help-{i}")).spawn(move || {
                 // Someone is waiting: keep off the slow cores and out of the
                 // throttled IO tiers, and never download iCloud placeholders.
-                unsafe { libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INITIATED, 0) };
+                crate::qos::set_self(crate::qos::Qos::UserInitiated);
                 crate::no_materialize();
                 // Which live set this helper served last: the next one it
                 // looks at after that, so one search cannot take every
@@ -3593,20 +3593,31 @@ const OPENING: usize = 4;
 /// spins on performance ones); the M6 (2 + 4 above its 6) gains 0.85x.
 fn readers_more() -> usize {
     static N: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
-    *N.get_or_init(|| {
-        let get = |name: &str| {
-            let name = std::ffi::CString::new(name).ok()?;
-            let (mut v, mut len) = (0i32, std::mem::size_of::<i32>());
-            let ok = unsafe { libc::sysctlbyname(name.as_ptr(), (&raw mut v).cast(), &mut len, std::ptr::null_mut(), 0) } == 0;
-            (ok && v > 0).then_some(v as usize)
-        };
-        // The levels run fastest first; the last one is the efficiency cores.
-        let fast = match get("hw.nperflevels") {
-            Some(n) if n > 1 => (0..n - 1).filter_map(|i| get(&format!("hw.perflevel{i}.physicalcpu"))).sum(),
-            _ => get("hw.physicalcpu").unwrap_or(READERS),
-        };
-        fast.clamp(READERS, READERS_MORE)
-    })
+    *N.get_or_init(readers_more_probe)
+}
+
+#[cfg(target_os = "macos")]
+fn readers_more_probe() -> usize {
+    let get = |name: &str| {
+        let name = std::ffi::CString::new(name).ok()?;
+        let (mut v, mut len) = (0i32, std::mem::size_of::<i32>());
+        let ok = unsafe { libc::sysctlbyname(name.as_ptr(), (&raw mut v).cast(), &mut len, std::ptr::null_mut(), 0) } == 0;
+        (ok && v > 0).then_some(v as usize)
+    };
+    // The levels run fastest first; the last one is the efficiency cores.
+    let fast = match get("hw.nperflevels") {
+        Some(n) if n > 1 => (0..n - 1).filter_map(|i| get(&format!("hw.perflevel{i}.physicalcpu"))).sum(),
+        _ => get("hw.physicalcpu").unwrap_or(READERS),
+    };
+    fast.clamp(READERS, READERS_MORE)
+}
+
+/// Off macOS there is no `hw.perflevel*` equivalent: keep the search at the
+/// baseline reader count instead of guessing at a core topology. This is the
+/// same value the macOS probe's fallback uses when the sysctl is absent.
+#[cfg(not(target_os = "macos"))]
+fn readers_more_probe() -> usize {
+    READERS
 }
 /// Index searches reading candidates now (see READERS).
 static READING: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
@@ -3627,7 +3638,10 @@ const AHEAD_AFTER: usize = 64;
 const SCAN_RUN: usize = 64;
 
 /// Run `f` with this thread never downloading iCloud placeholders (as the
-/// helper threads), then restore its policy.
+/// helper threads), then restore its policy. Darwin-only: the policy syscalls
+/// have no Linux equivalent, and both are hints (the port checklist drops
+/// them).
+#[cfg(target_os = "macos")]
 fn without_materializing<T>(f: impl FnOnce() -> T) -> T {
     unsafe extern "C" {
         fn getiopolicy_np(iotype: i32, scope: i32) -> i32;
@@ -3641,6 +3655,11 @@ fn without_materializing<T>(f: impl FnOnce() -> T) -> T {
         unsafe { setiopolicy_np(3, 1, prior) };
     }
     r
+}
+
+#[cfg(not(target_os = "macos"))]
+fn without_materializing<T>(f: impl FnOnce() -> T) -> T {
+    f()
 }
 
 pub struct FileMatches {
@@ -4942,10 +4961,15 @@ fn open_ahead(path: &[u8]) -> Option<std::fs::File> {
 
 /// `open_ahead`, and the file's size.
 fn open_ahead_sized(path: &[u8]) -> Option<(std::fs::File, u64)> {
-    use std::os::unix::io::AsRawFd;
     let (f, len) = open_sized(path)?;
-    let ra = libc::radvisory { ra_offset: 0, ra_count: len.min(MAX_REPO_FILE + 1) as libc::c_int };
-    unsafe { libc::fcntl(f.as_raw_fd(), libc::F_RDADVISE, &ra) };
+    // The kernel read-ahead hint is Darwin-only; it changes no result, only
+    // how early the read starts (port checklist item 4).
+    #[cfg(target_os = "macos")]
+    {
+        use std::os::unix::io::AsRawFd;
+        let ra = libc::radvisory { ra_offset: 0, ra_count: len.min(MAX_REPO_FILE + 1) as libc::c_int };
+        unsafe { libc::fcntl(f.as_raw_fd(), libc::F_RDADVISE, &ra) };
+    }
     Some((f, len))
 }
 
