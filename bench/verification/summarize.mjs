@@ -19,8 +19,27 @@ const A = path.join(HERE, "after");
 const read = (p) => JSON.parse(fs.readFileSync(p, "utf8"));
 const exists = (p) => fs.existsSync(p);
 
+// --- F10 repair: provenance guard -------------------------------------------------
+import { applyIdentityGuard, assertNoVerifiedIdentical, artifactMeta } from "./checks/identity-guard.mjs";
+import { execFileSync } from "node:child_process";
+const HEAD_COMMIT = execFileSync("git", ["-C", path.resolve(HERE, "..", ".."), "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+/** artifact sets backing each measurement lane (guard inputs). */
+const ART = {
+  latency: { before: [path.join(B, "latency-2026-10-14.json")], after: [path.join(A, "latency-2026-10-15.json")] },
+  latencyNeutral: { before: [path.join(B, "latency-rename-neutral.json")], after: [path.join(A, "latency-rename-neutral.json")] },
+  judgments: { before: [path.join(B, "judgments-baseline.json")], after: [path.join(A, "judgments-baseline.json")] },
+  tokens: { before: [path.join(B, "tokens-baseline.json")], after: [path.join(A, "tokens-baseline.json")] },
+  equivalence: { before: [path.join(B, "equivalence-golden.json")], after: [path.join(A, "equivalence-golden.json")] },
+  zeroresult: { before: [path.join(B, "zeroresult-baseline.json")], after: [path.join(A, "zeroresult-baseline.json")] },
+  gate: { before: [path.join(B, "gate-pre.json")], after: [path.join(A, "gate-pre.json")] },
+};
+
 const rows = [];
-const row = (r) => rows.push(r);
+const row = (r) => {
+  const g = r.guardArtifacts;
+  delete r.guardArtifacts;
+  rows.push(g ? applyIdentityGuard(r, { beforePaths: g.before, afterPaths: g.after, headCommit: HEAD_COMMIT }) : r);
+};
 
 // ---------------------------------------------------------------- bootstrap CI
 function mulberry32(seed) {
@@ -79,6 +98,7 @@ for (const id of Object.keys(latB.runs)) {
     method: `alternating A/B, median (unpaired across runs); native: ${rb.native_cmd ?? "none"}`,
     us_over_native_ratio: { before: ratioB, after: ratioA },
     gate: { before: latB.meta.environment?.status ?? latB.meta.status, after: latA.meta.environment?.status ?? latA.meta.status },
+    guardArtifacts: ART.latency,
     status: "verified",
     status_reason:
       scope === "repo"
@@ -108,6 +128,7 @@ if (exists(NEU_B) && exists(NEU_A)) {
       ci95: ra.us.median_ci95,
       n: ra.n,
       method: "rename-neutral variant of the repo grep row (patterns present in both checkouts), alternating A/B",
+      guardArtifacts: ART.latencyNeutral,
       status: "unverified",
       status_reason:
         "the two repo trees are different sizes (before 304 files, after 7 504 files: node_modules + engine/target), so absolute grep latency is not comparable; the fixture and /Users/Batra/Search rows are the comparable ones",
@@ -118,7 +139,9 @@ if (exists(NEU_B) && exists(NEU_A)) {
 
 // ---------------------------------------------------------------- judgments
 const jB = read(path.join(B, "judgments-baseline.json")).aggregates;
-const jA = read(path.join(A, "judgments-baseline.json")).aggregates;
+const jArtifactA = read(path.join(A, "judgments-baseline.json"));
+const jA = jArtifactA.aggregates;
+const jAfterGate = jArtifactA.meta?.environment?.status ?? jArtifactA.meta?.status ?? null;
 const jRows = [
   ["recall@1", "recall_at_1"],
   ["recall@3", "recall_at_3"],
@@ -135,6 +158,7 @@ const jRows = [
 for (const [label, key] of jRows) {
   const before = jB[key];
   const after = jA[key];
+  const valuesIdentical = typeof before === "number" && typeof after === "number" && Math.abs(before - after) < 1e-12;
   row({
     id: `judgments.${label}`,
     lane: "judgments",
@@ -145,7 +169,14 @@ for (const [label, key] of jRows) {
     ci95: null,
     n: jA.must_hit_queries + jA.negatives,
     method: "frozen 30-query judgment set, graded recall/nDCG; deterministic (identical run-to-run at equal index state)",
+    gate_requirement: "none", // retrieval quality is a set comparison, not a timing
+    after_gate: jAfterGate,
+    values_identical_across_runs: valuesIdentical,
+    guardArtifacts: ART.judgments,
     status: "verified",
+    status_reason: valuesIdentical
+      ? `identical value in two distinct runs of the two refs (load-invariant quality metric: the BEFORE artifact was measured at load1 ${(read(path.join(B, "judgments-baseline.json")).meta?.environment?.loadavg ?? [null])[0]?.toFixed?.(2) ?? "?"} and the AFTER artifact at load1 ${(jArtifactA.meta?.environment?.loadavg ?? [null])[0]?.toFixed?.(2) ?? "?"}); after-artifact gate=${jAfterGate}`
+      : `value changed by the migration; after-artifact gate=${jAfterGate}`,
     artifact: `${path.relative(HERE, path.join(B, "judgments-baseline.json"))} + ${path.relative(HERE, path.join(A, "judgments-baseline.json"))}`,
   });
 }
@@ -159,6 +190,9 @@ row({
   ci95: null,
   n: 30,
   method: "advisor acceptance gates: recall@10 1.0, nDCG@10 >= 0.75, FP 0, semantic >= 0.60, zero-result 0, reformulation",
+  gate_requirement: "none",
+  after_gate: jAfterGate,
+  guardArtifacts: ART.judgments,
   status: "verified",
   status_reason: "the gate outcomes are unchanged before/after; 6 of 7 gates fail on the frozen set both before and after Wave 1",
   artifact: `${path.relative(HERE, path.join(B, "judgments-baseline.json"))} + ${path.relative(HERE, path.join(A, "judgments-baseline.json"))}`,
@@ -177,6 +211,7 @@ row({
   ci95: null,
   n: 10,
   method: "sum of sanitised tool-output text / 4 over 10 fixed tasks (ESTIMATE, see TOKENS.md)",
+  guardArtifacts: ART.tokens,
   status: "unverified",
   status_reason:
     "6 of 10 tasks target the repo scope, whose tree differs between checkouts (304 vs 7 504 files); the +32 % total is dominated by t04/t07/t08/t10 seeing a bigger repo, not by a formatter regression",
@@ -199,6 +234,7 @@ row({
   ci95: null,
   n: 1,
   method: "set comparison against `rg -l -e p1 -e p2` (limit 1000 so the client is not the limiter)",
+  guardArtifacts: ART.equivalence,
   status: "verified",
   status_reason: "F3 fixed: the 3 files the default limit dropped are returned now",
   artifact: `${path.relative(HERE, path.join(B, "equivalence-golden.json"))} + ${path.relative(HERE, path.join(A, "equivalence-golden.json"))}`,
@@ -215,6 +251,7 @@ row({
   ci95: null,
   n: 1,
   method: "set comparison against `rg -l -e p1 -e p2` (limit 1000)",
+  guardArtifacts: ART.equivalence,
   status: "verified",
   status_reason:
     "the harness run read a repo being modified concurrently (30 vs 32 at 06:00); a controlled re-measure with no writers returns 37 files on both sides — exact parity",
@@ -230,6 +267,7 @@ row({
   ci95: null,
   n: 30,
   method: "raw and effective (ignore-filtered) set comparison; negative queries must return nothing",
+  guardArtifacts: ART.equivalence,
   status: "verified",
   status_reason: "negative queries return no hits on either side; scope differences explain the aggregate totals",
   artifact: `${path.relative(HERE, path.join(B, "equivalence-golden.json"))} + ${path.relative(HERE, path.join(A, "equivalence-golden.json"))}`,
@@ -248,6 +286,7 @@ row({
   ci95: null,
   n: zA.absent.total_calls,
   method: "runtime-generated absent token in the fixture; a false positive is a hit",
+  guardArtifacts: ART.zeroresult,
   status: "verified",
   artifact: `${path.relative(HERE, path.join(B, "zeroresult-baseline.json"))} + ${path.relative(HERE, path.join(A, "zeroresult-baseline.json"))}`,
 });
@@ -261,6 +300,7 @@ row({
   ci95: null,
   n: zA.present.total_calls,
   method: "present-token control: a miss is a failure",
+  guardArtifacts: ART.zeroresult,
   status: "verified",
   artifact: `${path.relative(HERE, path.join(B, "zeroresult-baseline.json"))} + ${path.relative(HERE, path.join(A, "zeroresult-baseline.json"))}`,
 });
@@ -274,6 +314,7 @@ row({
   ci95: null,
   n: 60,
   method: "audit rows written in the window, by source",
+  guardArtifacts: ART.zeroresult,
   status: "verified",
   status_reason: "0 native-fallback rows on both sides; the index/scan mix shifts 30/30 -> 40/20",
   artifact: `${path.relative(HERE, path.join(B, "zeroresult-baseline.json"))} + ${path.relative(HERE, path.join(A, "zeroresult-baseline.json"))}`,
@@ -383,6 +424,7 @@ row({
   ci95: null,
   n: null,
   method: "bench/baseline/gate-check.mjs",
+  guardArtifacts: ART.gate,
   status: "verified",
   status_reason:
     "the BEFORE suite produced status=final JSON in per-script gate windows; the AFTER latency/judgments JSONs stayed provisional because corespotlightd/mediaanalysisd kept the 1-min load above the gate (4.9 in the latency window)",
@@ -408,12 +450,200 @@ for (const t of tests.results) {
   });
 }
 
+// ----- F11: the drift the F10 masking hid (revealed by the repaired comparison)
+{
+  const jqB = read(path.join(B, "judgments-baseline.json")).queries;
+  const jqA = read(path.join(A, "judgments-baseline.json")).queries;
+  const sem = (rows) => rows.filter((q) => q.lane === "semantic" && !q.negative);
+  const avgLen = (rows) => (rows.length ? rows.reduce((a, r) => a + r.retrieved.length, 0) / rows.length : null);
+  const lenB = avgLen(sem(jqB));
+  const lenA = avgLen(sem(jqA));
+  row({
+    id: "judgments.semantic_returned_set_size",
+    lane: "judgments",
+    scope: "6 semantic must-hit queries",
+    before: Number(lenB?.toFixed(2)),
+    after: Number(lenA?.toFixed(2)),
+    delta: Number((lenA - lenB).toFixed(2)),
+    ci95: null,
+    n: 6,
+    method: "mean returned files per semantic must-hit query (limit: 10 in both runs)",
+    gate_requirement: "none",
+    after_gate: jAfterGate,
+    guardArtifacts: ART.judgments,
+    status: "verified",
+    status_reason:
+      "the fan-out now honours the caller's limit (files.slice(0, limit)); the old client returned everything the per-pattern greps found (16-24 for a limit:10 call). src/semantic.ts is byte-identical between the refs.",
+    artifact: "bench/verification/after/judgments-baseline.json",
+  });
+  const m4 = (rows) => rows.find((q) => q.id === "M4");
+  row({
+    id: "check.f11_semantic_drift",
+    lane: "instrument",
+    scope: "semantic lane, 6 must-hit queries",
+    before: { recall10: jB.recall_at_10, ndcg10: jB.ndcg_at_10, semantic_ndcg10: jB.semantic_ndcg_at_10 },
+    after: { recall10: jA.recall_at_10, ndcg10: jA.ndcg_at_10, semantic_ndcg10: jA.semantic_ndcg_at_10 },
+    delta: {
+      recall10: jA.recall_at_10 - jB.recall_at_10,
+      ndcg10: jA.ndcg_at_10 - jB.ndcg_at_10,
+      semantic_ndcg10: jA.semantic_ndcg_at_10 - jB.semantic_ndcg_at_10,
+    },
+    ci95: null,
+    n: 6,
+    method: "same frozen 30-query set, graded identically; per-query evidence in FINDINGS.md F11",
+    gate_requirement: "none",
+    after_gate: jAfterGate,
+    status: "verified",
+    status_reason:
+      "M4's grade-3 answer (ci.yml) left the top 10 and M5's (index.ts) entered it; every advisor gate fails before and after, so the wave-1 verdict is unchanged. Recorded so a later wave does not re-discover it as a regression.",
+    evidence: {
+      M4_before_top10: m4(jqB)?.retrieved.slice(0, 10),
+      M4_after_top10: m4(jqA)?.retrieved.slice(0, 10),
+      M4_ndcg_before: m4(jqB)?.score?.ndcg_at_10,
+      M4_ndcg_after: m4(jqA)?.score?.ndcg_at_10,
+    },
+    artifact: "bench/verification/after/judgments-baseline.json + before/judgments-baseline.json",
+  });
+}
+
+const WAVE2_CLAIMS = path.join(A, "wave2-claims.json");
+if (exists(WAVE2_CLAIMS)) {
+  const wc = read(WAVE2_CLAIMS);
+  for (const c of wc.claims ?? []) {
+    const eng = c.engine_only ?? null;
+    const wv = c.wave_as_whole ?? null;
+    const delta = wv?.mean_delta ?? (typeof eng?.mean_delta === "number" ? eng.mean_delta : null);
+    const ci = wv?.ci95_bca ?? eng?.ci95_bca ?? null;
+    row({
+      id: `wave2claim.${c.id}`,
+      lane: "wave2-baseline",
+      scope: c.claim,
+      before: null,
+      after: { engine_only: eng, relevance_wave: wv, fp_lanes: c.observed ?? null, tier_l_failures: c.observed ?? null },
+      delta,
+      ci95: ci,
+      n: wv?.n ?? eng?.n ?? null,
+      method:
+        "two independent A/Bs: engine_only = current client on both daemons (installed wave-1 vs isolated daemon from this tree); relevance_wave = pre-relevance client vs current client on the SAME wave-1 daemon. Paired per-query deltas, BCa bootstrap CI, 10000 resamples, seeded.",
+      attribution: c.attribution ?? null,
+      // No identity guard: this A/B deliberately shares the client commit and differs in the daemon.
+      status: c.verdict === "reproduced" ? "verified" : c.verdict === "refuted" ? "failed" : "unverified",
+      status_reason: [c.attribution, c.note].filter(Boolean).join(" — ") || null,
+      artifact: "bench/verification/after/wave2-claims.json",
+    });
+  }
+  const iso = wc.meta?.after_artifact?.daemon ?? wc.comparisons?.engine_only?.arms?.after?.daemon ?? null;
+  const live = wc.comparisons?.engine_only?.arms?.before?.daemon ?? null;
+  row({
+    id: "wave2.isolated_daemon_provenance",
+    lane: "wave2-baseline",
+    scope: "system under test for the wave-2 arms",
+    before: { arm: "installed wave-1 daemon", pid: live?.socket_owner_pid ?? null, entries: live?.entries ?? null, status: wc.comparisons?.engine_only?.arms?.before?.status ?? null },
+    after: { arm: "isolated daemon from this tree", pid: iso?.socket_owner_pid ?? null, entries: iso?.entries ?? null, event_id: iso?.event_id ?? null, single_owner: iso?.single_socket_owner ?? null, socket: iso?.socket ?? null },
+    delta: null,
+    ci95: null,
+    n: null,
+    method: "isolated-daemon.mjs: ULTRASEARCH_DIR/ULTRASEARCH_HOME/ULTRASEARCH_SCAN_ROOT + PI_ULTRASEARCH_SOCKET; the live daemon is never touched or reinstalled",
+    status: iso?.single_socket_owner === true ? "verified" : "unverified",
+    status_reason: iso?.single_socket_owner === true ? "exactly one owner on the isolated socket" : "isolated provenance recorded without a verified single owner",
+    artifact: "bench/verification/after/wave2-claims.json",
+  });
+}
+
+// ---------------------------------------------------------------- F10 repair + wave-2 baseline
+row({
+  id: "check.f10_identity_guard",
+  lane: "instrument",
+  scope: "summarize.mjs provenance guard",
+  before: "12 judgments.* rows were `verified` while the after artifact was byte-identical to the 0a16e50 golden (sha256 ab4e4ac7…)",
+  after: "guard G1/G2/G3/G4 in bench/verification/checks/identity-guard.mjs + generate-time tripwire; the same 12 rows are `needs-re-run` until a fresh gated artifact exists",
+  delta: null,
+  ci95: null,
+  n: 8,
+  method: "node --test bench/verification/checks/identity-guard.test.mjs (8 cases, including the F10 shape and a control that must stay verified)",
+  status: "verified",
+  status_reason:
+    "the guard fires on the real F10 pair (G2 stale after + G3 both sides at 0a16e50) and on byte-identical files; a missing artifact is also refused",
+  artifact: "bench/verification/checks/identity-guard.mjs + identity-guard.test.mjs",
+});
+
+const WAVE2 = path.join(A, "wave2-baseline.json");
+if (exists(WAVE2)) {
+  const w2 = read(WAVE2);
+  const w2final = w2.meta?.status === "final";
+  for (const [lane, v] of Object.entries(w2.aggregates ?? {})) {
+    const bars = w2.bars?.[lane] ?? [];
+    const failed = bars.filter((b) => b.pass === false).map((b) => b.bar);
+    row({
+      id: `wave2.${lane}`,
+      lane: "wave2-baseline",
+      scope: `corpus ${w2.meta?.corpus?.declared?.id ?? "?"} (${w2.meta?.corpus?.files ?? "?"} files, tree ${String(w2.meta?.corpus?.tree_sha256 ?? "").slice(0, 12)}…)`,
+      before: null,
+      after: {
+        recall10: v.recall10,
+        success3: v.success3,
+        mrr10: v.mrr10,
+        ndcg10: v.ndcg10,
+        zero_result_rate: v.zero_result_rate,
+        fp_rate: v.fp_rate,
+        top3_doc_share: v.top3_doc_share,
+        ms_p50: v.ms_p50,
+        must_hit_gated: v.must_hit_gated,
+        known_fail: v.known_fail_rows?.length ?? 0,
+        feature_gated: v.feature_gated_rows?.length ?? 0,
+      },
+      delta: null,
+      ci95: null,
+      n: v.must_hit_gated,
+      method: "wave-2 scorer (bench/verification/checks/score-wave2.mjs): wave-1 metric definitions, Tier-L exclusions (requires_feature, known_fail)",
+      status: w2final ? "verified" : "unverified",
+      status_reason: w2final
+        ? failed.length
+          ? `pre-registered baseline; Tier-L bars failing: ${failed.join(", ")}`
+          : "pre-registered baseline; every Tier-L bar passes"
+        : `baseline artifact is gate-${w2.meta?.status ?? "?"}: recorded as provisional (no quiet window), tier bars still evaluated`,
+      artifact: "bench/verification/after/wave2-baseline.json",
+    });
+  }
+  row({
+    id: "wave2.corpus_identity",
+    lane: "wave2-baseline",
+    scope: "frozen wave-2 corpus",
+    before: null,
+    after: {
+      declared_tree_sha256_match: w2.meta?.corpus?.declared_tree_sha256_match,
+      files: w2.meta?.corpus?.files,
+      spoiler_meta_inside_root: w2.meta?.corpus?.spoiler_meta_inside_root,
+      single_socket_owner: w2.meta?.daemon_provenance?.single_socket_owner,
+      daemon_pid: w2.meta?.daemon_provenance?.socket_owner_pid,
+      entries: w2.meta?.daemon_provenance?.entries,
+      event_id: w2.meta?.daemon_provenance?.event_id,
+    },
+    delta: null,
+    ci95: null,
+    n: null,
+    method: "tree sha256 recomputed over the corpus files (make-corpus algorithm) + lsof/pgrep socket-owner check",
+    status: w2.meta?.corpus?.declared_tree_sha256_match === true && w2.meta?.daemon_provenance?.single_socket_owner === true ? "verified" : "failed",
+    status_reason: w2.meta?.corpus?.spoiler_meta_inside_root
+      ? "the corpus-meta spoiler file is inside the root (advisor finding) — must be moved out"
+      : ".corpus-meta.json moved outside the corpus root (advisor recommendation), so it can no longer be returned by semantic queries",
+    artifact: "bench/verification/after/wave2-baseline.json",
+  });
+}
+
 // ---------------------------------------------------------------- output
 const out = {
   suite: "wave1-final-verification",
   wave: "wave1/verify-final",
   base_ref: "0a16e50 (BEFORE, isolated under HOME=/Users/batra/.cache/us-verify/before-home + upstream engine at ~/.cache/fsearch)",
-  head_ref: "3135e28 (AFTER, main worktree + installed renamed daemon PID 8887)",
+  head_ref: `${HEAD_COMMIT.slice(0, 8)} (AFTER, main worktree + installed renamed daemon)`,
+  head_commit: HEAD_COMMIT,
+  provenance: {
+    guard: "bench/verification/checks/identity-guard.mjs — G1 identical bytes, G2 stale after, G3 same ref on both sides, G4 missing artifact; any violation forces needs-re-run",
+    regression_test: "node --test bench/verification/checks/identity-guard.test.mjs (8 cases, including the F10 shape)",
+    gate_rule:
+      "TIMING rows (lane `latency`, and any ms_* field) need a gate-clean after artifact (AC + load1 < 1.5 + no cargo). QUALITY rows (judgments, equivalence, zero-result, wave-2 quality lanes) are set comparisons: the artifact's gate is recorded and the value is accepted when two distinct runs of the two refs agree — load invariance is evidenced by the judgments aggregates being identical at load1 1.43 (before) and 7.83 (after).",
+  },
   generated_at: new Date().toISOString(),
   status_legend: {
     verified: "independently re-measured; numbers agree with the artifact and the method is sound",
@@ -424,10 +654,19 @@ const out = {
     verified: rows.filter((r) => r.status === "verified").length,
     failed: rows.filter((r) => r.status === "failed").length,
     unverified: rows.filter((r) => r.status === "unverified").length,
+    needs_re_run: rows.filter((r) => r.status === "needs-re-run").length,
     total: rows.length,
   },
+  guard_firings: rows
+    .filter((r) => r.guard)
+    .map((r) => ({ id: r.id, status: r.status, fired: r.guard.fired, detail: r.guard.detail })),
   rows,
 };
+
+// Generate-time tripwire: refuse to publish a summary with a verified row whose
+// two sides are byte-identical (the F10 failure mode).
+assertNoVerifiedIdentical(rows);
 fs.writeFileSync(path.join(HERE, "wave1-summary.json"), JSON.stringify(out, null, 2) + "\n");
 console.log(JSON.stringify(out.counts));
+console.log(`guard firings: ${out.guard_firings.length}`);
 console.log("rows:", rows.map((r) => `${r.id}:${r.status}`).join(" "));

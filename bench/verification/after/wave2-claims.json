@@ -1,0 +1,2056 @@
+{
+  "meta": {
+    "suite": "wave2-claims",
+    "generated_at": "2026-10-15T06:59:02.301Z",
+    "method": "two independent A/Bs with the same scorers: engine_only = current client on both daemons (installed wave-1 daemon vs isolated daemon built from this tree); wave = pre-relevance client (91e7832) vs current client on the SAME wave-1 daemon. Paired per-query deltas, BCa bootstrap CI, 10000 resamples, seeded.",
+    "boot": 10000
+  },
+  "comparisons": {
+    "engine_only": {
+      "arms": {
+        "before": {
+          "path": "bench/verification/after/wave2-livewave1daemon.json",
+          "sha256": "0d18c1a133519ea852225ac6d9667d5d61a5a033cc1233e1cb8251e5d9e01a3b",
+          "head": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+          "daemon": {
+            "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+            "socket_owner_pid": 8887,
+            "socket_owner_count": 1,
+            "serve_process_count": 1,
+            "single_socket_owner": true,
+            "entries": 3921101,
+            "event_id": 5706394714,
+            "last_event_id": 5706394715,
+            "content_docs": 145876,
+            "index_bytes": 121179584,
+            "full_disk_access": true,
+            "staleness_ms": 0
+          },
+          "status": "final"
+        },
+        "after": {
+          "path": "bench/verification/after/wave2-baseline.json",
+          "sha256": "b4e43ef16c418365feb0d2b5342c180ada13072d0028f28fd21d6160568ced8d",
+          "head": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+          "daemon": {
+            "socket": "/Users/batra/.cache/us-verify/iso-w2/ultrasearch.sock",
+            "socket_owner_pid": 80937,
+            "socket_owner_count": 1,
+            "serve_process_count": 1,
+            "single_socket_owner": true,
+            "entries": 112,
+            "event_id": 5706331824,
+            "last_event_id": 5706369244,
+            "content_docs": 95,
+            "index_bytes": 14784,
+            "full_disk_access": false,
+            "staleness_ms": 47820
+          },
+          "status": "final"
+        }
+      },
+      "lanes": {
+        "symbol-ast": {
+          "all_before": {
+            "n": 9,
+            "recall10": 0.7777777777777778,
+            "recall3": 0.7777777777777778,
+            "success3": 0.7777777777777778,
+            "mrr10": 0.7777777777777778,
+            "ndcg10": 0.7777777777777778,
+            "zero_result_rate": 0.2222222222222222,
+            "ms_p50": 1.227415999999991,
+            "ms_max": 12.693167000000003
+          },
+          "all_after": {
+            "n": 9,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.8202920000000091,
+            "ms_max": 10.197083
+          },
+          "gated_before": {
+            "n": 7,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.2366670000000113,
+            "ms_max": 12.693167000000003
+          },
+          "gated_after": {
+            "n": 7,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.6330420000000032,
+            "ms_max": 10.197083
+          },
+          "fp_before": 0,
+          "fp_after": 0,
+          "paired_ndcg10_answerable": {
+            "n": 7,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "SY01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY05",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY09",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 9,
+            "mean_delta": 0.2222222222222222,
+            "ci95_bca": [
+              0,
+              0.4444444444444444
+            ],
+            "detail": [
+              {
+                "id": "SY01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY03",
+                "before": 0,
+                "after": 1,
+                "delta": 1
+              },
+              {
+                "id": "SY04",
+                "before": 0,
+                "after": 1,
+                "delta": 1
+              },
+              {
+                "id": "SY05",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY09",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 9,
+            "mean_delta": 0.2222222222222222,
+            "ci95_bca": [
+              0,
+              0.4444444444444444
+            ],
+            "detail": [
+              {
+                "id": "SY01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY03",
+                "before": 0,
+                "after": 1,
+                "delta": 1
+              },
+              {
+                "id": "SY04",
+                "before": 0,
+                "after": 1,
+                "delta": 1
+              },
+              {
+                "id": "SY05",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY09",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "zero_result_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "false_positive_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "recall10_min",
+              "expected": 0.78,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "success3_min",
+              "expected": 0.78,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "mrr10_min",
+              "expected": 0.78,
+              "observed": 1,
+              "pass": true
+            }
+          ]
+        },
+        "semantic-paraphrase": {
+          "all_before": {
+            "n": 10,
+            "recall10": 0.6833333333333333,
+            "recall3": 0.3916666666666667,
+            "success3": 0.3916666666666667,
+            "mrr10": 0.7142857142857143,
+            "ndcg10": 0.6721514022565691,
+            "zero_result_rate": 0,
+            "ms_p50": 42.53845849999999,
+            "ms_max": 144.49862499999998
+          },
+          "all_after": {
+            "n": 10,
+            "recall10": 0.6833333333333333,
+            "recall3": 0.3666666666666667,
+            "success3": 0.3666666666666667,
+            "mrr10": 0.7142857142857143,
+            "ndcg10": 0.6702299260006103,
+            "zero_result_rate": 0,
+            "ms_p50": 35.9898125,
+            "ms_max": 145.33550000000002
+          },
+          "gated_before": {
+            "n": 10,
+            "recall10": 0.6833333333333333,
+            "recall3": 0.3916666666666667,
+            "success3": 0.3916666666666667,
+            "mrr10": 0.7142857142857143,
+            "ndcg10": 0.6721514022565691,
+            "zero_result_rate": 0,
+            "ms_p50": 42.53845849999999,
+            "ms_max": 144.49862499999998
+          },
+          "gated_after": {
+            "n": 10,
+            "recall10": 0.6833333333333333,
+            "recall3": 0.3666666666666667,
+            "success3": 0.3666666666666667,
+            "mrr10": 0.7142857142857143,
+            "ndcg10": 0.6702299260006103,
+            "zero_result_rate": 0,
+            "ms_p50": 35.9898125,
+            "ms_max": 145.33550000000002
+          },
+          "fp_before": 0,
+          "fp_after": 0,
+          "paired_ndcg10_answerable": {
+            "n": 10,
+            "mean_delta": -0.0019214762559587651,
+            "ci95_bca": [
+              -0.013424476759668706,
+              0
+            ],
+            "detail": [
+              {
+                "id": "SE01",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "SE02",
+                "before": 0.8460101051764489,
+                "after": 0.8460101051764489,
+                "delta": 0
+              },
+              {
+                "id": "SE03",
+                "before": 0.8632631070688446,
+                "after": 0.8632631070688446,
+                "delta": 0
+              },
+              {
+                "id": "SE04",
+                "before": 0.5388668879616774,
+                "after": 0.5388668879616774,
+                "delta": 0
+              },
+              {
+                "id": "SE05",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "SE06",
+                "before": 0.8687688531957773,
+                "after": 0.8495540906361897,
+                "delta": -0.01921476255958765
+              },
+              {
+                "id": "SE07",
+                "before": 0.882808018370203,
+                "after": 0.882808018370203,
+                "delta": 0
+              },
+              {
+                "id": "SE08",
+                "before": 0.34708776240498096,
+                "after": 0.34708776240498096,
+                "delta": 0
+              },
+              {
+                "id": "SE09",
+                "before": 0.388782088943954,
+                "after": 0.388782088943954,
+                "delta": 0
+              },
+              {
+                "id": "SE10",
+                "before": 0.09239184719040397,
+                "after": 0.09239184719040397,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 10,
+            "mean_delta": -0.0019214762559587651,
+            "ci95_bca": [
+              -0.013424476759668706,
+              0
+            ],
+            "detail": [
+              {
+                "id": "SE01",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "SE02",
+                "before": 0.8460101051764489,
+                "after": 0.8460101051764489,
+                "delta": 0
+              },
+              {
+                "id": "SE03",
+                "before": 0.8632631070688446,
+                "after": 0.8632631070688446,
+                "delta": 0
+              },
+              {
+                "id": "SE04",
+                "before": 0.5388668879616774,
+                "after": 0.5388668879616774,
+                "delta": 0
+              },
+              {
+                "id": "SE05",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "SE06",
+                "before": 0.8687688531957773,
+                "after": 0.8495540906361897,
+                "delta": -0.01921476255958765
+              },
+              {
+                "id": "SE07",
+                "before": 0.882808018370203,
+                "after": 0.882808018370203,
+                "delta": 0
+              },
+              {
+                "id": "SE08",
+                "before": 0.34708776240498096,
+                "after": 0.34708776240498096,
+                "delta": 0
+              },
+              {
+                "id": "SE09",
+                "before": 0.388782088943954,
+                "after": 0.388782088943954,
+                "delta": 0
+              },
+              {
+                "id": "SE10",
+                "before": 0.09239184719040397,
+                "after": 0.09239184719040397,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 10,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "SE01",
+                "before": 0.6666666666666666,
+                "after": 0.6666666666666666,
+                "delta": 0
+              },
+              {
+                "id": "SE02",
+                "before": 0.6666666666666666,
+                "after": 0.6666666666666666,
+                "delta": 0
+              },
+              {
+                "id": "SE03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SE04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SE05",
+                "before": 0.6666666666666666,
+                "after": 0.6666666666666666,
+                "delta": 0
+              },
+              {
+                "id": "SE06",
+                "before": 0.75,
+                "after": 0.75,
+                "delta": 0
+              },
+              {
+                "id": "SE07",
+                "before": 0.6666666666666666,
+                "after": 0.6666666666666666,
+                "delta": 0
+              },
+              {
+                "id": "SE08",
+                "before": 0.6666666666666666,
+                "after": 0.6666666666666666,
+                "delta": 0
+              },
+              {
+                "id": "SE09",
+                "before": 0.5,
+                "after": 0.5,
+                "delta": 0
+              },
+              {
+                "id": "SE10",
+                "before": 0.25,
+                "after": 0.25,
+                "delta": 0
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "zero_result_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "false_positive_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "recall10_min",
+              "expected": 0.1,
+              "observed": 0.6833333333333333,
+              "pass": true
+            },
+            {
+              "bar": "top3_doc_share_max",
+              "expected": 0.67,
+              "observed": 0,
+              "pass": true
+            }
+          ]
+        },
+        "ranking-signal": {
+          "all_before": {
+            "n": 9,
+            "recall10": 0.8201058201058201,
+            "recall3": 0.7645502645502646,
+            "success3": 0.7645502645502646,
+            "mrr10": 0.8888888888888888,
+            "ndcg10": 0.8105516550382377,
+            "zero_result_rate": 0.1111111111111111,
+            "ms_p50": 0.7134169999999358,
+            "ms_max": 1.6287920000000895
+          },
+          "all_after": {
+            "n": 9,
+            "recall10": 0.8201058201058201,
+            "recall3": 0.7645502645502646,
+            "success3": 0.7645502645502646,
+            "mrr10": 0.8888888888888888,
+            "ndcg10": 0.8161508257832158,
+            "zero_result_rate": 0.1111111111111111,
+            "ms_p50": 0.5972499999999172,
+            "ms_max": 0.8963340000000244
+          },
+          "gated_before": {
+            "n": 6,
+            "recall10": 0.8968253968253969,
+            "recall3": 0.8134920634920636,
+            "success3": 0.8134920634920636,
+            "mrr10": 1,
+            "ndcg10": 0.9145676691397365,
+            "zero_result_rate": 0,
+            "ms_p50": 0.7500205000000619,
+            "ms_max": 1.6287920000000895
+          },
+          "gated_after": {
+            "n": 6,
+            "recall10": 0.8968253968253969,
+            "recall3": 0.8134920634920636,
+            "success3": 0.8134920634920636,
+            "mrr10": 1,
+            "ndcg10": 0.8908929053414903,
+            "zero_result_rate": 0,
+            "ms_p50": 0.6958329999999933,
+            "ms_max": 0.8963340000000244
+          },
+          "fp_before": 0,
+          "fp_after": 0,
+          "paired_ndcg10_answerable": {
+            "n": 6,
+            "mean_delta": -0.023674763798246123,
+            "ci95_bca": [
+              -0.14116202993668892,
+              0
+            ],
+            "detail": [
+              {
+                "id": "RS01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS02",
+                "before": 0.8097090645058169,
+                "after": 0.8097090645058169,
+                "delta": 0
+              },
+              {
+                "id": "RS04",
+                "before": 1,
+                "after": 0.8579514172105233,
+                "delta": -0.14204858278947674
+              },
+              {
+                "id": "RS05",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "RS06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS07",
+                "before": 0.7309292742059024,
+                "after": 0.7309292742059024,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 9,
+            "mean_delta": 0.00559917074497809,
+            "ci95_bca": [
+              -0.04734952759649225,
+              0.06414703983142651
+            ],
+            "detail": [
+              {
+                "id": "RS01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS02",
+                "before": 0.8097090645058169,
+                "after": 0.8097090645058169,
+                "delta": 0
+              },
+              {
+                "id": "RS03",
+                "before": 0.8075588805057204,
+                "after": 1,
+                "delta": 0.19244111949427956
+              },
+              {
+                "id": "RS04",
+                "before": 1,
+                "after": 0.8579514172105233,
+                "delta": -0.14204858278947674
+              },
+              {
+                "id": "RS05",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "RS06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS07",
+                "before": 0.7309292742059024,
+                "after": 0.7309292742059024,
+                "delta": 0
+              },
+              {
+                "id": "RS08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS09",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 9,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "RS01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS02",
+                "before": 0.7142857142857143,
+                "after": 0.7142857142857143,
+                "delta": 0
+              },
+              {
+                "id": "RS03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS05",
+                "before": 0.6666666666666666,
+                "after": 0.6666666666666666,
+                "delta": 0
+              },
+              {
+                "id": "RS06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS09",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "exact_recall10",
+              "expected": 1,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "glob_set_completeness",
+              "expected": 1,
+              "observed": 0.7142857142857143,
+              "pass": false
+            },
+            {
+              "bar": "false_positive_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "near_pair_order_differs",
+              "expected": true,
+              "observed": true,
+              "pass": true
+            },
+            {
+              "bar": "near_same_folder_peer_rank1",
+              "expected": true,
+              "observed": true,
+              "pass": true
+            }
+          ]
+        },
+        "control": {
+          "all_before": {
+            "n": 4,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.4053334999999834,
+            "ms_max": 2.4309580000000324
+          },
+          "all_after": {
+            "n": 4,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 0.38837499999999636,
+            "ms_max": 1.220625000000041
+          },
+          "gated_before": {
+            "n": 4,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.4053334999999834,
+            "ms_max": 2.4309580000000324
+          },
+          "gated_after": {
+            "n": 4,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 0.38837499999999636,
+            "ms_max": 1.220625000000041
+          },
+          "fp_before": null,
+          "fp_after": null,
+          "paired_ndcg10_answerable": {
+            "n": 4,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "CR01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 4,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "CR01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 4,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "CR01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "recall10",
+              "expected": 1,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "zero_result_rate",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "ndcg10_min",
+              "expected": 0.9,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "mrr10_min",
+              "expected": 0.9,
+              "observed": 1,
+              "pass": true
+            }
+          ]
+        }
+      }
+    },
+    "relevance_wave": {
+      "arms": {
+        "before": {
+          "path": "bench/verification/after/wave2-baseline-prewave2engine.json",
+          "sha256": "8a06572f79bc00f10965b78a4a78172eaa5c8cb97daec974aae84f42cc9142af",
+          "head": "ad4d4019e94c7a5afe634ccd7d0edf5c9ef4d9c1",
+          "daemon": {
+            "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+            "socket_owner_pid": 8887,
+            "socket_owner_count": 1,
+            "serve_process_count": 1,
+            "single_socket_owner": true,
+            "entries": 3920684,
+            "event_id": 5706313587,
+            "last_event_id": 5706313588,
+            "content_docs": 145871,
+            "index_bytes": 121174400,
+            "full_disk_access": true,
+            "staleness_ms": 0
+          },
+          "status": "final"
+        },
+        "after": {
+          "path": "bench/verification/after/wave2-livewave1daemon.json",
+          "sha256": "0d18c1a133519ea852225ac6d9667d5d61a5a033cc1233e1cb8251e5d9e01a3b",
+          "head": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+          "daemon": {
+            "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+            "socket_owner_pid": 8887,
+            "socket_owner_count": 1,
+            "serve_process_count": 1,
+            "single_socket_owner": true,
+            "entries": 3921101,
+            "event_id": 5706394714,
+            "last_event_id": 5706394715,
+            "content_docs": 145876,
+            "index_bytes": 121179584,
+            "full_disk_access": true,
+            "staleness_ms": 0
+          },
+          "status": "final"
+        }
+      },
+      "lanes": {
+        "symbol-ast": {
+          "all_before": null,
+          "all_after": {
+            "n": 9,
+            "recall10": 0.7777777777777778,
+            "recall3": 0.7777777777777778,
+            "success3": 0.7777777777777778,
+            "mrr10": 0.7777777777777778,
+            "ndcg10": 0.7777777777777778,
+            "zero_result_rate": 0.2222222222222222,
+            "ms_p50": 1.227415999999991,
+            "ms_max": 12.693167000000003
+          },
+          "gated_before": null,
+          "gated_after": {
+            "n": 7,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.2366670000000113,
+            "ms_max": 12.693167000000003
+          },
+          "fp_before": 0,
+          "fp_after": 0,
+          "paired_ndcg10_answerable": {
+            "n": 7,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "SY01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY05",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY09",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 9,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "SY01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY03",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              },
+              {
+                "id": "SY04",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              },
+              {
+                "id": "SY05",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY09",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 9,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "SY01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY03",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              },
+              {
+                "id": "SY04",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              },
+              {
+                "id": "SY05",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "SY09",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "zero_result_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "false_positive_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "recall10_min",
+              "expected": 0.78,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "success3_min",
+              "expected": 0.78,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "mrr10_min",
+              "expected": 0.78,
+              "observed": 1,
+              "pass": true
+            }
+          ]
+        },
+        "semantic-paraphrase": {
+          "all_before": null,
+          "all_after": {
+            "n": 10,
+            "recall10": 0.6833333333333333,
+            "recall3": 0.3916666666666667,
+            "success3": 0.3916666666666667,
+            "mrr10": 0.7142857142857143,
+            "ndcg10": 0.6721514022565691,
+            "zero_result_rate": 0,
+            "ms_p50": 42.53845849999999,
+            "ms_max": 144.49862499999998
+          },
+          "gated_before": null,
+          "gated_after": {
+            "n": 10,
+            "recall10": 0.6833333333333333,
+            "recall3": 0.3916666666666667,
+            "success3": 0.3916666666666667,
+            "mrr10": 0.7142857142857143,
+            "ndcg10": 0.6721514022565691,
+            "zero_result_rate": 0,
+            "ms_p50": 42.53845849999999,
+            "ms_max": 144.49862499999998
+          },
+          "fp_before": 1,
+          "fp_after": 0,
+          "paired_ndcg10_answerable": {
+            "n": 10,
+            "mean_delta": 0.611030538314324,
+            "ci95_bca": [
+              0.24882133574996687,
+              0.7878152594735445
+            ],
+            "detail": [
+              {
+                "id": "SE01",
+                "before": 0.035488215915533215,
+                "after": 0.9467676761267002,
+                "delta": 0.911279460211167
+              },
+              {
+                "id": "SE02",
+                "before": 0,
+                "after": 0.8460101051764489,
+                "delta": 0.8460101051764489
+              },
+              {
+                "id": "SE03",
+                "before": 0,
+                "after": 0.8632631070688446,
+                "delta": 0.8632631070688446
+              },
+              {
+                "id": "SE04",
+                "before": 0,
+                "after": 0.5388668879616774,
+                "delta": 0.5388668879616774
+              },
+              {
+                "id": "SE05",
+                "before": 0,
+                "after": 0.9467676761267002,
+                "delta": 0.9467676761267002
+              },
+              {
+                "id": "SE06",
+                "before": 0.039791002742006074,
+                "after": 0.8687688531957773,
+                "delta": 0.8289778504537713
+              },
+              {
+                "id": "SE07",
+                "before": 0.035488215915533215,
+                "after": 0.882808018370203,
+                "delta": 0.8473198024546698
+              },
+              {
+                "id": "SE08",
+                "before": 0,
+                "after": 0.34708776240498096,
+                "delta": 0.34708776240498096
+              },
+              {
+                "id": "SE09",
+                "before": 0,
+                "after": 0.388782088943954,
+                "delta": 0.388782088943954
+              },
+              {
+                "id": "SE10",
+                "before": 0.5004412048493774,
+                "after": 0.09239184719040397,
+                "delta": -0.40804935765897343
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 10,
+            "mean_delta": 0.611030538314324,
+            "ci95_bca": [
+              0.24882133574996687,
+              0.7878152594735445
+            ],
+            "detail": [
+              {
+                "id": "SE01",
+                "before": 0.035488215915533215,
+                "after": 0.9467676761267002,
+                "delta": 0.911279460211167
+              },
+              {
+                "id": "SE02",
+                "before": 0,
+                "after": 0.8460101051764489,
+                "delta": 0.8460101051764489
+              },
+              {
+                "id": "SE03",
+                "before": 0,
+                "after": 0.8632631070688446,
+                "delta": 0.8632631070688446
+              },
+              {
+                "id": "SE04",
+                "before": 0,
+                "after": 0.5388668879616774,
+                "delta": 0.5388668879616774
+              },
+              {
+                "id": "SE05",
+                "before": 0,
+                "after": 0.9467676761267002,
+                "delta": 0.9467676761267002
+              },
+              {
+                "id": "SE06",
+                "before": 0.039791002742006074,
+                "after": 0.8687688531957773,
+                "delta": 0.8289778504537713
+              },
+              {
+                "id": "SE07",
+                "before": 0.035488215915533215,
+                "after": 0.882808018370203,
+                "delta": 0.8473198024546698
+              },
+              {
+                "id": "SE08",
+                "before": 0,
+                "after": 0.34708776240498096,
+                "delta": 0.34708776240498096
+              },
+              {
+                "id": "SE09",
+                "before": 0,
+                "after": 0.388782088943954,
+                "delta": 0.388782088943954
+              },
+              {
+                "id": "SE10",
+                "before": 0.5004412048493774,
+                "after": 0.09239184719040397,
+                "delta": -0.40804935765897343
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 10,
+            "mean_delta": 0.5416666666666666,
+            "ci95_bca": [
+              0.26666666666666666,
+              0.7166666666666666
+            ],
+            "detail": [
+              {
+                "id": "SE01",
+                "before": 0.3333333333333333,
+                "after": 0.6666666666666666,
+                "delta": 0.3333333333333333
+              },
+              {
+                "id": "SE02",
+                "before": 0,
+                "after": 0.6666666666666666,
+                "delta": 0.6666666666666666
+              },
+              {
+                "id": "SE03",
+                "before": 0,
+                "after": 1,
+                "delta": 1
+              },
+              {
+                "id": "SE04",
+                "before": 0,
+                "after": 1,
+                "delta": 1
+              },
+              {
+                "id": "SE05",
+                "before": 0,
+                "after": 0.6666666666666666,
+                "delta": 0.6666666666666666
+              },
+              {
+                "id": "SE06",
+                "before": 0.25,
+                "after": 0.75,
+                "delta": 0.5
+              },
+              {
+                "id": "SE07",
+                "before": 0.3333333333333333,
+                "after": 0.6666666666666666,
+                "delta": 0.3333333333333333
+              },
+              {
+                "id": "SE08",
+                "before": 0,
+                "after": 0.6666666666666666,
+                "delta": 0.6666666666666666
+              },
+              {
+                "id": "SE09",
+                "before": 0,
+                "after": 0.5,
+                "delta": 0.5
+              },
+              {
+                "id": "SE10",
+                "before": 0.5,
+                "after": 0.25,
+                "delta": -0.25
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "zero_result_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "false_positive_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "recall10_min",
+              "expected": 0.1,
+              "observed": 0.6833333333333333,
+              "pass": true
+            },
+            {
+              "bar": "top3_doc_share_max",
+              "expected": 0.67,
+              "observed": 0,
+              "pass": true
+            }
+          ]
+        },
+        "ranking-signal": {
+          "all_before": null,
+          "all_after": {
+            "n": 9,
+            "recall10": 0.8201058201058201,
+            "recall3": 0.7645502645502646,
+            "success3": 0.7645502645502646,
+            "mrr10": 0.8888888888888888,
+            "ndcg10": 0.8105516550382377,
+            "zero_result_rate": 0.1111111111111111,
+            "ms_p50": 0.7134169999999358,
+            "ms_max": 1.6287920000000895
+          },
+          "gated_before": null,
+          "gated_after": {
+            "n": 6,
+            "recall10": 0.8968253968253969,
+            "recall3": 0.8134920634920636,
+            "success3": 0.8134920634920636,
+            "mrr10": 1,
+            "ndcg10": 0.9145676691397365,
+            "zero_result_rate": 0,
+            "ms_p50": 0.7500205000000619,
+            "ms_max": 1.6287920000000895
+          },
+          "fp_before": 0,
+          "fp_after": 0,
+          "paired_ndcg10_answerable": {
+            "n": 6,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "RS01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS02",
+                "before": 0.8097090645058169,
+                "after": 0.8097090645058169,
+                "delta": 0
+              },
+              {
+                "id": "RS04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS05",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "RS06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS07",
+                "before": 0.7309292742059024,
+                "after": 0.7309292742059024,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 9,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "RS01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS02",
+                "before": 0.8097090645058169,
+                "after": 0.8097090645058169,
+                "delta": 0
+              },
+              {
+                "id": "RS03",
+                "before": 0.8075588805057204,
+                "after": 0.8075588805057204,
+                "delta": 0
+              },
+              {
+                "id": "RS04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS05",
+                "before": 0.9467676761267002,
+                "after": 0.9467676761267002,
+                "delta": 0
+              },
+              {
+                "id": "RS06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS07",
+                "before": 0.7309292742059024,
+                "after": 0.7309292742059024,
+                "delta": 0
+              },
+              {
+                "id": "RS08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS09",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 9,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "RS01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS02",
+                "before": 0.7142857142857143,
+                "after": 0.7142857142857143,
+                "delta": 0
+              },
+              {
+                "id": "RS03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS05",
+                "before": 0.6666666666666666,
+                "after": 0.6666666666666666,
+                "delta": 0
+              },
+              {
+                "id": "RS06",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS07",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS08",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "RS09",
+                "before": 0,
+                "after": 0,
+                "delta": 0
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "exact_recall10",
+              "expected": 1,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "glob_set_completeness",
+              "expected": 1,
+              "observed": 0.7142857142857143,
+              "pass": false
+            },
+            {
+              "bar": "false_positive_rate_max",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "near_pair_order_differs",
+              "expected": true,
+              "observed": true,
+              "pass": true
+            },
+            {
+              "bar": "near_same_folder_peer_rank1",
+              "expected": true,
+              "observed": false,
+              "pass": false
+            }
+          ]
+        },
+        "control": {
+          "all_before": null,
+          "all_after": {
+            "n": 4,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.4053334999999834,
+            "ms_max": 2.4309580000000324
+          },
+          "gated_before": null,
+          "gated_after": {
+            "n": 4,
+            "recall10": 1,
+            "recall3": 1,
+            "success3": 1,
+            "mrr10": 1,
+            "ndcg10": 1,
+            "zero_result_rate": 0,
+            "ms_p50": 1.4053334999999834,
+            "ms_max": 2.4309580000000324
+          },
+          "fp_before": null,
+          "fp_after": null,
+          "paired_ndcg10_answerable": {
+            "n": 4,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "CR01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_ndcg10_all": {
+            "n": 4,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "CR01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "paired_recall10_all": {
+            "n": 4,
+            "mean_delta": 0,
+            "ci95_bca": [
+              0,
+              0
+            ],
+            "detail": [
+              {
+                "id": "CR01",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR02",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR03",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              },
+              {
+                "id": "CR04",
+                "before": 1,
+                "after": 1,
+                "delta": 0
+              }
+            ]
+          },
+          "bars_after": [
+            {
+              "bar": "recall10",
+              "expected": 1,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "zero_result_rate",
+              "expected": 0,
+              "observed": 0,
+              "pass": true
+            },
+            {
+              "bar": "ndcg10_min",
+              "expected": 0.9,
+              "observed": 1,
+              "pass": true
+            },
+            {
+              "bar": "mrr10_min",
+              "expected": 0.9,
+              "observed": 1,
+              "pass": true
+            }
+          ]
+        }
+      }
+    }
+  },
+  "claims": [
+    {
+      "id": "semantic-dndcg",
+      "claim": "semantic ΔnDCG@10 0.606 [0.242, 0.781]",
+      "attribution": "client-side relevance work (engine A/B is ~0)",
+      "engine_only": {
+        "mean_delta": -0.0019214762559587651,
+        "ci95_bca": [
+          -0.013424476759668706,
+          0
+        ],
+        "n": 10
+      },
+      "wave_as_whole": {
+        "mean_delta": 0.611030538314324,
+        "ci95_bca": [
+          0.24882133574996687,
+          0.7878152594735445
+        ],
+        "n": 10
+      },
+      "verdict": "reproduced",
+      "note": "The claim reproduces as the relevance wave's total effect (pre-relevance client vs current client, same daemon): point estimate and CI nearly identical to the published ones. It does NOT reproduce as an engine/daemon effect: with the current client on both daemons the semantic lane moves -0.002 [-0.013, 0.000]. Confound: the pre-relevance arm ran before corpus hygiene (.corpus-meta.json was still inside the corpus root, 98 files vs 97)."
+    },
+    {
+      "id": "symbol-zero-result",
+      "claim": "symbol-ast zero_result_rate 0.222 → 0",
+      "attribution": "engine-side (symbol ranking)",
+      "engine_only": {
+        "before": 0.2222222222222222,
+        "after": 0
+      },
+      "verdict": "reproduced"
+    },
+    {
+      "id": "symbol-recall10",
+      "claim": "symbol-ast recall@10 0.778 → 1 (9/9 categorical)",
+      "attribution": "engine-side (symbol ranking)",
+      "engine_only": {
+        "before": 0.7777777777777778,
+        "after": 1,
+        "categorical_before": "7/9",
+        "categorical_after": "9/9"
+      },
+      "verdict": "reproduced"
+    },
+    {
+      "id": "fp-zero-everywhere",
+      "claim": "false-positive rate 0 in every lane",
+      "attribution": "current system; the engine A/B is 0→0, so the residual FP the wave-1 corpus showed was already gone before the engine change",
+      "observed": {
+        "symbol-ast": {
+          "engine_before": 0,
+          "engine_after": 0,
+          "wave_before": 0
+        },
+        "semantic-paraphrase": {
+          "engine_before": 0,
+          "engine_after": 0,
+          "wave_before": 1
+        },
+        "ranking-signal": {
+          "engine_before": 0,
+          "engine_after": 0,
+          "wave_before": 0
+        }
+      },
+      "verdict": "reproduced",
+      "note": "negatives: SY10-12 (symbol), SE11-12 (semantic), RS10 (ranking). The wave-1 set's false_positive_rate chain is separate: 0.50 (stale golden) → 0.25 (91e7832) → 0.00 (current)."
+    },
+    {
+      "id": "tier-l-bars",
+      "claim": "every Tier-L floor in wave2-bars.json",
+      "attribution": "current system, isolated daemon",
+      "observed": {
+        "symbol-ast": [],
+        "semantic-paraphrase": [],
+        "ranking-signal": [
+          "glob_set_completeness"
+        ],
+        "control": []
+      },
+      "verdict": "not-all-pass",
+      "note": "ranking-signal/glob_set_completeness = 0.714: RS02 (`src/**/*.ts`, expected 14 files) returns 10. Not claimed by the relevance wave; recorded as the remaining Tier-L gap."
+    }
+  ]
+}

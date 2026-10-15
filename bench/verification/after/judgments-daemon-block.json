@@ -1,0 +1,46 @@
+{
+  "socket": "/Users/batra/.cache/us-verify/iso-w1/ultrasearch.sock",
+  "socket_owner_pid": 68727,
+  "socket_owner_count": 1,
+  "socket_owner_args": "/Users/batra/ultrasearch-verify/engine/target/release/ultrasearch serve",
+  "socket_owner_is_engine": true,
+  "serve_like_process_count": 4,
+  "serve_like_pids": [
+    8887,
+    16976,
+    16977,
+    68727
+  ],
+  "single_socket_owner": true,
+  "entries": 40,
+  "event_id": 5706336415,
+  "last_event_id": 5706366049,
+  "event_lag": 29634,
+  "content_docs": 34,
+  "content_pending": 0,
+  "index_bytes": 11904,
+  "full_disk_access": false,
+  "staleness_ms": 0,
+  "replay_in_progress": false,
+  "compactions": 0,
+  "status_error": null,
+  "client_commit": "e3e9a1c3712cf8c39a43d4bbc9fda99a229b6dbd",
+  "captured_at": "2026-10-15T06:46:23.884Z",
+  "gate": {
+    "status": "final",
+    "gate_pass": true,
+    "checks": {
+      "ac_power": true,
+      "load1_lt_gate": true,
+      "no_cargo_rustc": true
+    },
+    "ac_power": true,
+    "battery_percent": 100,
+    "discharging": false,
+    "load1": 1.45,
+    "competing_processes": [],
+    "daemon_pid": "8887",
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+    "checked_at": "2026-10-15T06:46:23.437Z"
+  }
+}
