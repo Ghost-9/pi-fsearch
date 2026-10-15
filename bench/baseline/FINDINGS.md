@@ -509,3 +509,66 @@ node bench/verification/wave3/analyze.mjs && node bench/verification/wave3/summa
 bash bench/verification/wave3/run-suites.sh
 CORPUS_ROOT=/tmp/w3v-clean-head bash bench/verification/wave3/check-trigram-test.sh
 ```
+
+## Wave 4 — independent verification of the v2 judgment set (7/7 gates)
+
+Verifier worktree `wave1/verify-final`, based on the wave-4 tip `b0401ac` (the artifact tip; `origin/main`
+was `4b625b9` when the fetch ran and the wave-4 commits are the branch's own). Everything below was
+re-measured on the verifier's own isolated daemons over the frozen corpus
+(`98e299a63f5dca90…`) with the verifier's own scorer (`bench/verification/wave4/metrics.mjs`), never by
+reading the author artifacts. Summary: `bench/verification/wave4-summary.json`.
+
+* **7/7 confirmed.** v2 n=33 must-hit: recall@10 **1.0000**, nDCG@10 **0.925772**, semantic **0.831344**,
+  zero-result **0.00**, false-positive **0.00**, reformulation **0.121212** overall, per-lane max
+  **0.25** (grep-literal). v1 record unchanged: recall **0.796154** (gate red), nDCG **0.91207**,
+  semantic **0.831344**, reformulation **0.038462**, every lane ≤ 0.20. v1 audited reachable recall
+  **1.0000** with the **same 16** unreachable expectations (set-identical to the author audit).
+* **Amendment neutrality.** 30/30 shared rows bit-identical `retrieved`, identical `call`/`source`;
+  v1 replayed after v2 is identical too; the **17** unchanged must-hit rows have delta exactly **0**
+  (the expected-identical set is 21 including the 4 negatives). The verifier's fresh retrieval
+  reproduces the author's `v1.json`/`v2.json` lists bit-for-bit (67/67 rows, 0 diffs).
+* **Validator is sound and falsifiable.** Shipped CLI VALID, 17/17 tests, v1 set fails on exactly 16
+  unsatisfiable; the wrong-`supersedes.sha256` guard fires. The verifier's 15 adversarial mutations all
+  fail with the expected codes: unsatisfiable expectation per lane kind (path/literal/regex/declaration/
+  semantic), `absent-string` removal that hides a real match, grade change, vanished expectation, window
+  rank inside the top 10, missing evidence, duplicate, negative-with-grade, empty must-hit, lane/mode
+  mismatch.
+* **The one delegated judgement (K3/README.md) upheld.** `client` matches 23 files in grep-literal;
+  README.md is **rank 18 of 23** (absent from the top 10 at limit 10), **rank 12** in the semantic lane
+  (the mapping's "12 of 15" is the same rank at limit 15; at limit 50 the list is 23 long), 6 cs / 7 ci
+  occurrences. The strict alternative (README.md:1 restored into K3c) reads **recall@10 0.984848** and
+  **fails gate 1** — published beside the gate. Legitimate window removal, not a relevance re-judgment.
+* **No hidden engine change.** `git diff 4b625b9 HEAD -- engine/ src/ index.ts` is empty; the engine
+  source tree hash is identical pre/post wave4. The author artifact's binary (`5a784b0e`) differs from
+  this worktree's rebuild (`16091e93`) because the build path differs; behavioural equality is covered
+  by the 67/67 bit-identical retrieved lists.
+* **Trigram guard.** With an isolated fresh index over the **main checkout**, `test/client.test.ts`
+  runs the full assertion and passes **25/25**; outside the index it skips with the reason and the scan
+  finds files (24 pass + 1 skip). The main checkout stayed clean (0 dirty files, same HEAD) — the live
+  daemon was never queried.
+* **Environment.** The author arms are `provisional` (load1 6.85 / 6.54, bound < 1.5). Every gate here is
+  a set/ranking comparison, not a timing row, so the label does not move the values; the verifier re-run
+  is likewise provisional on this shared host and reproduced every value exactly.
+
+### New finding (reported, not repaired)
+
+**F14 — the trigram assertion is still index-composition-sensitive at limit 30.** The wave-4 guard is
+honest — it skips only when `source=scan` and leaves the indexed-path asserts byte-identical (F3's fresh
+`git archive` fixture loses `src/client.ts`; main checkout passes 25/25) — but the indexed assertion
+itself depends on which candidates the engine pages at limit 30. Measured on isolated indexes: on the
+main checkout (415 docs) `src/client.ts` is **rank 1** at limit 30; on a `git archive HEAD` copy
+(388 docs) it is **absent** at limit 30 and **rank 1** at limit ≥ 33; on this worktree (5714 docs) it is
+absent at limit 30 as well. The skip-reason parenthetical "(verified: 25/25 with cwd at an indexed
+checkout)" is true for the main checkout but not for every indexed scope; a future fix should make the
+assertion limit/ranking-independent (or request `tag_symbols`) rather than assume it.
+
+### Reproduce (wave 4)
+
+```bash
+git fetch && git checkout wave1/verify-final && git rebase b0401ac   # artifact tip
+cargo build --release --manifest-path engine/Cargo.toml
+node bench/verification/wave4/verify-wave4.mjs --label verify --out bench/verification/wave4/results/verify-raw.json
+node bench/verification/wave4/adversarial-validator.mjs
+bash bench/verification/wave4/trigram-guard-check.sh
+node bench/verification/wave4/summarize-wave4.mjs
+```

@@ -1,0 +1,802 @@
+{
+  "suite": "wave4-independent-verification",
+  "wave": "wave4/verify",
+  "verifier": "independent verifier (this session) — every number re-measured or re-derived on an isolated daemon; author artifacts compared only after the fact",
+  "generated_at": "2026-10-15T15:27:03.837Z",
+  "head_commit": "b0401ace5ef8874e15597a94c4b6dd984e6c377f",
+  "head_ref": "wave1/verify-final",
+  "base_main": "b0401ace5ef8874e15597a94c4b6dd984e6c377f",
+  "status_legend": {
+    "verified": "independently re-measured or re-derived; the claim's numbers reproduce",
+    "refuted": "the claim does not reproduce",
+    "needs-re-run": "the artifact is stale/mismatched and no independent re-measurement exists"
+  },
+  "environment_note": "The author arms are gate=provisional (load1 6.54-6.85 against a < 1.5 bound). Every wave-4 gate is a set/ranking comparison (membership of expected paths in retrieved lists and the order-independent nDCG over them), not a timing row, so load does not move them; the verifier re-run is likewise provisional on this shared host and reproduced every value exactly.",
+  "method": {
+    "scorer": "bench/verification/wave4/metrics.mjs — the verifier's own implementation of the frozen recall/nDCG/reformulation definitions, cross-checked against the shipped scorer (max |delta| = 0)",
+    "measurement": "own isolated daemon (ULTRASEARCH_DIR/HOME/SCAN_ROOT in a scratch dir, own socket) over the frozen wave-1 corpus; the live daemon is never queried",
+    "corpus": {
+      "root": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+      "tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+      "meta_tree_sha256": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+      "files": 33,
+      "match": true
+    },
+    "engine_note": "the author artifact records the engine built in the wave-4 checkout; this verifier rebuilt the same engine source in its own worktree, so the binary hash differs (build paths) while the source tree is identical — behavioural equivalence is checked by the retrieved-list agreement below"
+  },
+  "verdict": {
+    "seven_of_seven_confirmed": true,
+    "green_count_v2": 7,
+    "strict_alternative_caveat": {
+      "value": 0.984848,
+      "gate1_passes": false,
+      "statement": "v2 passes gate 1 only with the K3/README.md window removal; restoring that one grade-1 expectation into K3c makes recall@10 0.9848 and gate 1 fails. The number is published beside the gate in gates-v2.json and the removal is documented in the mapping.",
+      "judgement": "verified"
+    },
+    "exceptions": [
+      "T-02: the test/client.test.ts assertion remains index-composition-sensitive at limit 30 (archive-composed index: client.ts absent; main checkout: rank 1). The guard does not weaken the assertion — the indexed path is byte-for-byte the original asserts — but the skip-reason parenthetical '(verified: 25/25 with cwd at an indexed checkout)' holds for the main checkout, not for every indexed scope."
+    ],
+    "blocking_findings": [],
+    "statement": "7/7 confirmed on v2 over the frozen corpus with the verifier's own scorer and isolated daemons; the strict alternative (K3/README.md restored) fails gate 1 at recall@10 0.9848."
+  },
+  "rows": [
+    {
+      "id": "P-01",
+      "claim": "v1 judgments are byte-identical to the pre-wave4 record; v2 / gates-v2 / mapping shas are recorded",
+      "verdict": "verified",
+      "value": {
+        "v1_sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+        "pre_wave4_refs": [
+          {
+            "ref": "4b625b9",
+            "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+            "matches": true
+          },
+          {
+            "ref": "479b275",
+            "sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+            "matches": true
+          }
+        ],
+        "v2_sha256": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "gates_v2_sha256": "f481c3a39097c63228dbeebf92d93f6e9e7b4bb96e1d1ed3d341f39cffae5ac2",
+        "mapping_sha256": "ed02c9f3078b29c68f3d87eca82532413ab7e3a8e9c7cf4bce3970fae5a868cc"
+      },
+      "threshold": "v1 sha256 == 4af5fed8cc7ed23d…",
+      "method": "git show <pre-wave4-ref>:bench/judgments/wave1-judgments.json | sha256",
+      "n": 2,
+      "artifact": "git refs 4b625b9 (origin/main at verification start) and 479b275 (prior verifier tip)",
+      "evidence_hashes": {
+        "v1": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "gates_v2": "f481c3a39097c63228dbeebf92d93f6e9e7b4bb96e1d1ed3d341f39cffae5ac2",
+        "mapping": "ed02c9f3078b29c68f3d87eca82532413ab7e3a8e9c7cf4bce3970fae5a868cc"
+      },
+      "gate": "provenance"
+    },
+    {
+      "id": "G1",
+      "claim": "recall@10 == 1.00 on all must-hit rows",
+      "verdict": "verified",
+      "value": 1,
+      "threshold": "== 1.00",
+      "method": "own scorer on a fresh isolated daemon over the frozen corpus; every must-hit row's recall@10 == 1",
+      "n": 33,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "engine": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf"
+      },
+      "gate": "seven advisor gates on v2 (n=33 must-hit, 4 negative)"
+    },
+    {
+      "id": "G2",
+      "claim": "nDCG@10 >= 0.75 overall",
+      "verdict": "verified",
+      "value": 0.925772,
+      "threshold": ">= 0.75",
+      "method": "own scorer on a fresh isolated daemon over the frozen corpus",
+      "n": 33,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "engine": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf"
+      },
+      "gate": "seven advisor gates on v2 (n=33 must-hit, 4 negative)"
+    },
+    {
+      "id": "G3",
+      "claim": "nDCG@10 >= 0.60 semantic lane",
+      "verdict": "verified",
+      "value": 0.831344,
+      "threshold": ">= 0.60",
+      "method": "own scorer on a fresh isolated daemon over the frozen corpus",
+      "n": 5,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "engine": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf"
+      },
+      "gate": "seven advisor gates on v2 (n=33 must-hit, 4 negative)"
+    },
+    {
+      "id": "G4",
+      "claim": "zero-result rate == 0.00 on must-hit rows",
+      "verdict": "verified",
+      "value": 0,
+      "threshold": "== 0.00",
+      "method": "own scorer on a fresh isolated daemon over the frozen corpus",
+      "n": 33,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "engine": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf"
+      },
+      "gate": "seven advisor gates on v2 (n=33 must-hit, 4 negative)"
+    },
+    {
+      "id": "G5",
+      "claim": "false-positive rate == 0.00 on negative rows",
+      "verdict": "verified",
+      "value": 0,
+      "threshold": "== 0.00",
+      "method": "own scorer on a fresh isolated daemon over the frozen corpus",
+      "n": 4,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "engine": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf"
+      },
+      "gate": "seven advisor gates on v2 (n=33 must-hit, 4 negative)"
+    },
+    {
+      "id": "G6",
+      "claim": "reformulation_signal <= 0.20 overall",
+      "verdict": "verified",
+      "value": 0.121212,
+      "threshold": "<= 0.20",
+      "method": "own scorer on a fresh isolated daemon over the frozen corpus",
+      "n": 33,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "engine": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf"
+      },
+      "gate": "seven advisor gates on v2 (n=33 must-hit, 4 negative)"
+    },
+    {
+      "id": "G7",
+      "claim": "reformulation_signal <= 0.35 per lane",
+      "verdict": "verified",
+      "value": {
+        "path": 0,
+        "grep-literal": 0.25,
+        "grep-regex": 0,
+        "symbol": 0,
+        "semantic": 0.2,
+        "ranking-frecency": 0,
+        "ranking-proximity": 0,
+        "ranking-boost-ab": 0,
+        "ranking-symbol-intrafile": 0
+      },
+      "threshold": "<= 0.35 per lane",
+      "method": "per-lane reformulation_signal rates from the same isolated run",
+      "n": 33,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d",
+        "engine": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf"
+      },
+      "gate": "seven advisor gates on v2 (n=33 must-hit, 4 negative)"
+    },
+    {
+      "id": "V1-RECORD",
+      "claim": "the unchanged v1 numbers still read recall@10 0.7962, nDCG 0.9121, semantic 0.8313, zero 0.00, FP 0.00, reformulation 0.0385, every lane <= 0.20",
+      "verdict": "verified",
+      "value": {
+        "recall10": 0.796154,
+        "ndcg10": 0.91207,
+        "semantic": 0.831344,
+        "zero_result": 0,
+        "false_positive": 0,
+        "reformulation": 0.038462,
+        "per_lane": {
+          "path": 0,
+          "grep-literal": 0,
+          "grep-regex": 0,
+          "symbol": 0,
+          "semantic": 0.2,
+          "ranking-frecency": 0,
+          "ranking-proximity": 0,
+          "ranking-boost-ab": 0,
+          "ranking-symbol-intrafile": 0
+        },
+        "gate1_pass": false
+      },
+      "threshold": "same values as the v1 historical record; gate 1 stays red",
+      "method": "own scorer, own isolated daemon, v1 set scored against its own expectations",
+      "n": 26,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v1": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+        "corpus_tree": "98e299a63f5dca90692cf73571c370ed54385b787f4af54efd0fc669aed6149d"
+      },
+      "gate": "v1 historical record (unchanged)"
+    },
+    {
+      "id": "V1-AUDIT",
+      "claim": "the audited reachable recall@10 is 1.0000 with the same 16 unreachable expectations",
+      "verdict": "verified",
+      "value": {
+        "reported_recall_at_10": 0.796154,
+        "audited_recall_at_10": 1,
+        "missing_total": 16,
+        "unsatisfiable": 16,
+        "rows_affected": 9,
+        "same_expectation_set_as_author_audit": true,
+        "author_classes": {
+          "path-lane-content": 6,
+          "absent-string": 3,
+          "symbol-lane-reference": 7
+        },
+        "verifier_kinds": {
+          "path": 8,
+          "content": 1,
+          "declaration": 7
+        }
+      },
+      "threshold": "audited reachable recall@10 == 1.0000; exactly 16 unreachable expectations",
+      "method": "own lane-satisfiability classifier over the frozen corpus, applied to the verifier's own v1 run; set-compared with the author audit",
+      "n": 26,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "author_audit": "a91da4f6c4205e63a7d8e98d2e5120c3fd75835fd7c79d809a55c28c95fea4ce",
+        "v1": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1"
+      },
+      "gate": "v1 reachability audit"
+    },
+    {
+      "id": "N-01",
+      "claim": "the amendment changed no retrieval: 30/30 shared rows have bit-identical retrieved lists and identical calls; the 17 unchanged must-hit rows have delta exactly 0",
+      "verdict": "verified",
+      "value": {
+        "shared_rows": 30,
+        "retrieved_identical": true,
+        "calls_identical": true,
+        "sources_identical": true,
+        "changed_rows": [],
+        "v1_replay_identical": true,
+        "controls_identical": true,
+        "unchanged_must_hit_rows": 17,
+        "expected_identical_all_rows": 21,
+        "unchanged_delta_max_abs": 0,
+        "unchanged_ids": [
+          "P1",
+          "P2",
+          "P5",
+          "P7",
+          "G1",
+          "G2",
+          "G3",
+          "G5",
+          "R1",
+          "R2",
+          "S2",
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "K4"
+        ],
+        "negative_rows": [
+          "P8",
+          "G6",
+          "R3",
+          "M6"
+        ]
+      },
+      "threshold": "30/30 bit-identical; 17 unchanged rows delta == 0",
+      "method": "own scorer; v1 and v2 measured on one isolated daemon, v1 replayed after v2 for order-independence",
+      "n": 30,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v1": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05"
+      },
+      "gate": "amendment neutrality"
+    },
+    {
+      "id": "A-01",
+      "claim": "the verifier's fresh measurement reproduces the author's raw retrieved lists and call shapes bit-for-bit",
+      "verdict": "verified",
+      "value": {
+        "v1_rows_compared": 30,
+        "v2_rows_compared": 37,
+        "v1_identical": true,
+        "v2_identical": true,
+        "v1_replay_identical": true,
+        "diffs": 0
+      },
+      "threshold": "zero diffs in retrieved / call / source",
+      "method": "string comparison of my rows against bench/wave4/results/{v1,v2}.json after the independent run",
+      "n": 67,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "author_v1": "e694e08dfb727b024656888c09701ccb10f8097739dbd8d1e7cd5262a8782c8b",
+        "author_v2": "4e303d689b2d0587eb3f75a77581fcf5682a8e02b80f568e1256020cb71543f4"
+      },
+      "gate": "independent reproduction"
+    },
+    {
+      "id": "S-01",
+      "claim": "the verifier's scorer and the shipped scorer agree on every row",
+      "verdict": "verified",
+      "value": {
+        "v1_max_abs_delta": 0,
+        "v2_max_abs_delta": 0
+      },
+      "threshold": "max |delta| == 0",
+      "method": "own metric implementation vs bench/verification/checks/scoring.mjs on the same retrieved arrays",
+      "n": 67,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "scorer": "aa502aeb8d449f8002144e5e604fcb063015d0c5d8baacd274cbddbe1e452aca"
+      },
+      "gate": "scorer correctness"
+    },
+    {
+      "id": "K3-STRICT",
+      "claim": "the strict alternative (K3/README.md restored) reads recall@10 = 0.9848 and fails gate 1",
+      "verdict": "verified",
+      "value": {
+        "recall10": 0.984848,
+        "gate1_passes": false,
+        "restored": [
+          {
+            "row": "K3c",
+            "restored": [
+              "README.md:1"
+            ],
+            "recall_at_10": 0.5,
+            "missing": [
+              "README.md:1"
+            ]
+          }
+        ]
+      },
+      "threshold": "== 1.00 for gate 1 to pass",
+      "method": "own scorer on the verifier's v2 retrieved lists with README.md:1 restored to the re-homing companion K3c",
+      "n": 33,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05"
+      },
+      "gate": "strict-alternative caveat"
+    },
+    {
+      "id": "K3-JUDGEMENT",
+      "claim": "the K3/README.md window removal is legitimate: one-token `client` ranks README.md outside the top 10 in every lane that can match it",
+      "verdict": "verified",
+      "value": {
+        "grep_literal_rank_limit50": 18,
+        "grep_literal_match_count_limit50": 23,
+        "grep_literal_in_top10": false,
+        "semantic_rank_limit50": 12,
+        "semantic_match_count_limit50": 23,
+        "semantic_rank_at_limit15": 12,
+        "readme_occurrences_cs_ci": [
+          6,
+          7
+        ],
+        "k3c_expected": [
+          {
+            "path": "src/mcp.ts",
+            "grade": 1
+          }
+        ],
+        "k3c_retrieved_head": [
+          "src/compactor.ts",
+          "src/mcp.ts",
+          "src/tui.ts",
+          "bin/cli.ts"
+        ]
+      },
+      "threshold": "rank > 10 (outside the gate's top-10 window) in the content and semantic lanes",
+      "method": "own probes over the frozen corpus: grep-literal `client` at limit 50 and 10, semantic intent at limits 10/15/20/50",
+      "n": 23,
+      "artifact": "bench/verification/wave4/results/verify-raw.json",
+      "evidence_hashes": {
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05"
+      },
+      "gate": "the one delegated judgement (window removal)"
+    },
+    {
+      "id": "X-01",
+      "claim": "the shipped validator passes v2, its 17 tests pass, and it rejects the shipped v1 on exactly the 16 audited expectations",
+      "verdict": "verified",
+      "value": {
+        "cli_exit": 0,
+        "cli_ok": true,
+        "cli_errors": 0,
+        "cli_warnings": 3,
+        "tests": {
+          "exit": 0,
+          "tests": 17,
+          "pass": 17,
+          "fail": 0,
+          "skipped": 0
+        },
+        "baseline_stats": {
+          "rows": 37,
+          "mustHitRows": 33,
+          "expectations": 71,
+          "removed": 4,
+          "checked": 71
+        },
+        "v1_unsatisfiable_errors": 16,
+        "v1_sha_guard": true
+      },
+      "threshold": "validator exit 0 on v2; 17/17 tests; 16 unsatisfiable errors on v1",
+      "method": "shipped CLI + shipped test file, then the shipped validateJudgments() on the shipped v1 set",
+      "n": 37,
+      "artifact": "bench/verification/wave4/results/adversarial.json",
+      "evidence_hashes": {
+        "adversarial": "9a3d44964e563ae9dfbbf04d2f971e87b456350d35ccca8b18143b953bccaba9",
+        "validator": "0f4eb834beaeb4fabadb424008c42f0c1817aa267f7b13e90fca2bdf605b9fd1",
+        "validator_tests": "280b943fa755b1e82f0584c59be7fc2c24f469ea9d10bf87e332e988f604d95e",
+        "v1": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+        "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05"
+      },
+      "gate": "validator soundness"
+    },
+    {
+      "id": "X-02",
+      "claim": "the validator rejects the verifier's adversarial mutations: an unsatisfiable expectation of every lane kind, a hidden real match behind a removal, a grade change, a vanished expectation, a window rank inside the top 10, and structural mutations",
+      "verdict": "verified",
+      "value": {
+        "cases_passed": 15,
+        "cases_total": 15,
+        "cases": [
+          {
+            "name": "unsatisfiable-path",
+            "expected": [
+              "unsatisfiable"
+            ],
+            "got": [
+              "unsatisfiable"
+            ],
+            "pass": true
+          },
+          {
+            "name": "unsatisfiable-content-literal",
+            "expected": [
+              "unsatisfiable"
+            ],
+            "got": [
+              "unsatisfiable"
+            ],
+            "pass": true
+          },
+          {
+            "name": "unsatisfiable-content-regex",
+            "expected": [
+              "unsatisfiable"
+            ],
+            "got": [
+              "unsatisfiable",
+              "duplicate"
+            ],
+            "pass": true
+          },
+          {
+            "name": "unsatisfiable-declaration",
+            "expected": [
+              "unsatisfiable"
+            ],
+            "got": [
+              "unsatisfiable"
+            ],
+            "pass": true
+          },
+          {
+            "name": "unsatisfiable-semantic-no-tokens",
+            "expected": [
+              "unsatisfiable"
+            ],
+            "got": [
+              "unsatisfiable"
+            ],
+            "pass": true
+          },
+          {
+            "name": "removal-hides-match",
+            "expected": [
+              "removal-hides-match"
+            ],
+            "got": [
+              "removal-hides-match"
+            ],
+            "pass": true
+          },
+          {
+            "name": "grade-changed",
+            "expected": [
+              "grade-changed"
+            ],
+            "got": [
+              "grade-changed"
+            ],
+            "pass": true
+          },
+          {
+            "name": "unaccounted-expectation",
+            "expected": [
+              "unaccounted"
+            ],
+            "got": [
+              "empty-must-hit",
+              "unaccounted"
+            ],
+            "pass": true
+          },
+          {
+            "name": "removal-window-rank",
+            "expected": [
+              "removal-window"
+            ],
+            "got": [
+              "removal-window"
+            ],
+            "pass": true
+          },
+          {
+            "name": "removal-no-evidence",
+            "expected": [
+              "removal-evidence"
+            ],
+            "got": [
+              "removal-evidence"
+            ],
+            "pass": true
+          },
+          {
+            "name": "duplicate-expectation",
+            "expected": [
+              "duplicate"
+            ],
+            "got": [
+              "duplicate"
+            ],
+            "pass": true
+          },
+          {
+            "name": "negative-with-grade1",
+            "expected": [
+              "negative"
+            ],
+            "got": [
+              "negative"
+            ],
+            "pass": true
+          },
+          {
+            "name": "empty-must-hit",
+            "expected": [
+              "empty-must-hit"
+            ],
+            "got": [
+              "empty-must-hit",
+              "unaccounted"
+            ],
+            "pass": true
+          },
+          {
+            "name": "symbol-lane-with-literal-mode",
+            "expected": [
+              "mode"
+            ],
+            "got": [
+              "mode"
+            ],
+            "pass": true
+          },
+          {
+            "name": "unknown-lane",
+            "expected": [
+              "lane"
+            ],
+            "got": [
+              "lane"
+            ],
+            "pass": true
+          }
+        ]
+      },
+      "threshold": "every case must fail with the expected error code",
+      "method": "deep-cloned v2 mutated per case, passed through the shipped validateJudgments()",
+      "n": 15,
+      "artifact": "bench/verification/wave4/results/adversarial.json",
+      "evidence_hashes": {
+        "adversarial": "9a3d44964e563ae9dfbbf04d2f971e87b456350d35ccca8b18143b953bccaba9",
+        "validator": "0f4eb834beaeb4fabadb424008c42f0c1817aa267f7b13e90fca2bdf605b9fd1"
+      },
+      "gate": "validator falsifiability"
+    },
+    {
+      "id": "E-01",
+      "claim": "wave4 touched no engine/, src/ or index.ts; the engine source tree is identical to pre-wave4",
+      "verdict": "verified",
+      "value": {
+        "engine_source_unchanged": true,
+        "engine_tree_sha256_head": "625b2e9143d021ac3361f23e0c7fdcd5ec9cf9ea2237d5769d80ce1b33790377",
+        "engine_tree_sha256_pre_wave4": "625b2e9143d021ac3361f23e0c7fdcd5ec9cf9ea2237d5769d80ce1b33790377",
+        "src_index_diff": "",
+        "verifier_binary_sha256": "16091e93cd9f2b40c6717c4f355359b3126acdb89382a1f8cee872c408c2dabf",
+        "author_artifact_engine_sha256": "5a784b0e1126433a49a45cbbcc4cce5db480b43a75dc6bd408009321de16faf1",
+        "binary_note": "the author artifact records the engine built in the wave-4 checkout; this verifier rebuilt the same engine source in its own worktree, so the binary hash differs (build paths) while the source tree is identical — behavioural equivalence is checked by the retrieved-list agreement below"
+      },
+      "threshold": "git diff 4b625b9..HEAD -- engine/ src/ index.ts is empty",
+      "method": "git tree-hash equality + empty diffstat; engine behavioural equality is independently covered by row A-01",
+      "n": 2,
+      "artifact": "git 4b625b9..HEAD",
+      "evidence_hashes": {
+        "engine_tree": "625b2e9143d021ac3361f23e0c7fdcd5ec9cf9ea2237d5769d80ce1b33790377",
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400"
+      },
+      "gate": "no hidden engine change"
+    },
+    {
+      "id": "T-01",
+      "claim": "the trigram-test change does not weaken the assertion: on a fresh isolated index over the main checkout the full assertion runs and passes 25/25",
+      "verdict": "verified",
+      "value": {
+        "case_a": {
+          "outcome": "skipped_source_scan",
+          "pass": 24,
+          "skipped": 1,
+          "reason": "# daemon has no content index for /private/tmp/usw4.ZLDRug/unindexed (source=scan, 29 files); the indexed grep path is covered by test/engine/grep-ranking.test.mjs on a fixture corpus, and this test asserts fully whenever the scope is indexed (verified: 25/25 with cwd at an indexed checkout)"
+        },
+        "case_c": {
+          "outcome": "passed_full_assertion",
+          "tests": 25,
+          "pass": 25,
+          "fail": 0,
+          "skipped": 0
+        },
+        "main_checkout_untouched": "head=b0401ace5ef8874e15597a94c4b6dd984e6c377f head_before=b0401ace5ef8874e15597a94c4b6dd984e6c377f dirty_files_after=0",
+        "assertion_code_unchanged": "the indexed path executes assert.ok(res.files.length > 0) and the client.ts membership assert; only the source=scan branch skips"
+      },
+      "threshold": "skip-with-reason outside the index; 25/25 with the full assertion on an indexed checkout",
+      "method": "two fresh isolated daemons (indexed archive copy; the real main checkout), live daemon never queried",
+      "n": 25,
+      "artifact": "bench/verification/wave4/results/trigram-guard.json",
+      "evidence_hashes": {
+        "trigram_evidence": "bf9e3ef4b3c4fe1244545aefc262e5049077ace9e7213dc1ba4992abebdaa13d",
+        "trigram_test": "5f3e34f0f33e48d9c45041fa15fb9f6b103e5900357fc9452f189ea07ff3336e",
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400"
+      },
+      "gate": "trigram test guard"
+    },
+    {
+      "id": "T-02",
+      "claim": "the trigram assertion is index-composition-sensitive at limit 30: on a 388-doc archive-composed index `src/client.ts` is absent from the page, while on the main checkout (415 docs) it ranks 1; at limit >= 33 it ranks 1 everywhere tested",
+      "verdict": "verified",
+      "value": {
+        "archive_scope": {
+          "outcome": "failed",
+          "fail": 1,
+          "client_ts_rank_limit30": "absent",
+          "client_ts_rank_limit33": 1
+        },
+        "main_checkout_scope": {
+          "outcome": "passed_full_assertion",
+          "client_ts_rank_limit30": 1
+        }
+      },
+      "threshold": "not a gate: this is the finding behind T-01's exception",
+      "method": "grep client-search symbol at limits 10/30/33/50/67/100 against two isolated indexes; the engine source is unchanged by wave4",
+      "n": 2,
+      "artifact": "bench/verification/wave4/results/trigram-guard.json",
+      "evidence_hashes": {
+        "trigram_evidence": "bf9e3ef4b3c4fe1244545aefc262e5049077ace9e7213dc1ba4992abebdaa13d",
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400"
+      },
+      "gate": "finding (test scope sensitivity)"
+    },
+    {
+      "id": "ENV-01",
+      "claim": "the author arms are label=provisional (load1 6.54-6.85, bound < 1.5); the gate values are set/ranking comparisons, which load does not move",
+      "verdict": "verified",
+      "value": {
+        "status": "provisional",
+        "rule": "each arm records AC + load1 < 1.5 + no cargo/rustc; anything else is provisional and the claims are provisional until the independent verifier round",
+        "arms": {
+          "v1": {
+            "status": "provisional",
+            "gate_pass": false,
+            "load1": 6.85,
+            "on_ac": true,
+            "competing": [],
+            "measured_at": "2026-10-15T14:42:05.616Z"
+          },
+          "v2": {
+            "status": "provisional",
+            "gate_pass": false,
+            "load1": 6.54,
+            "on_ac": true,
+            "competing": [],
+            "measured_at": "2026-10-15T14:42:08.890Z"
+          }
+        },
+        "isolated_daemon": {
+          "v1": "/Users/batra/.cache/us-w4g-w4-1792075320/ultrasearch.sock",
+          "v2": "/Users/batra/.cache/us-w4g-w4-1792075320/ultrasearch.sock",
+          "single_socket_owner": {
+            "v1": true,
+            "v2": true
+          }
+        },
+        "host_loadavg_at_score": [
+          6.09,
+          6.74,
+          9.56
+        ],
+        "PI_ULTRASEARCH_TEST": null
+      },
+      "threshold": "label recorded; not a gate value",
+      "method": "read gates-v2.json environment + the two artifact metas; verifier re-run also provisional (shared host)",
+      "n": 2,
+      "artifact": "bench/wave4/gates-v2.json",
+      "evidence_hashes": {
+        "gates_v2": "f481c3a39097c63228dbeebf92d93f6e9e7b4bb96e1d1ed3d341f39cffae5ac2",
+        "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400"
+      },
+      "gate": "environment label"
+    }
+  ],
+  "evidence_files": {
+    "raw": "4cbed164d319c3ecf98cec2f5fdd576a653c66e4024e37b3b4a23f7e76b1f400",
+    "adversarial": "9a3d44964e563ae9dfbbf04d2f971e87b456350d35ccca8b18143b953bccaba9",
+    "trigram": "bf9e3ef4b3c4fe1244545aefc262e5049077ace9e7213dc1ba4992abebdaa13d",
+    "v1": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+    "v2": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+    "gates_v2": "f481c3a39097c63228dbeebf92d93f6e9e7b4bb96e1d1ed3d341f39cffae5ac2",
+    "mapping": "ed02c9f3078b29c68f3d87eca82532413ab7e3a8e9c7cf4bce3970fae5a868cc",
+    "validator": "0f4eb834beaeb4fabadb424008c42f0c1817aa267f7b13e90fca2bdf605b9fd1",
+    "validator_tests": "280b943fa755b1e82f0584c59be7fc2c24f469ea9d10bf87e332e988f604d95e",
+    "scorer": "aa502aeb8d449f8002144e5e604fcb063015d0c5d8baacd274cbddbe1e452aca",
+    "author_v1_artifact": "e694e08dfb727b024656888c09701ccb10f8097739dbd8d1e7cd5262a8782c8b",
+    "author_v2_artifact": "4e303d689b2d0587eb3f75a77581fcf5682a8e02b80f568e1256020cb71543f4",
+    "author_audit": "a91da4f6c4205e63a7d8e98d2e5120c3fd75835fd7c79d809a55c28c95fea4ce",
+    "trigram_test": "5f3e34f0f33e48d9c45041fa15fb9f6b103e5900357fc9452f189ea07ff3336e"
+  },
+  "reproduction": [
+    "npm run bench:wave3:corpora",
+    "node bench/verification/wave4/verify-wave4.mjs --label verify --out bench/verification/wave4/results/verify-raw.json",
+    "node bench/verification/wave4/adversarial-validator.mjs",
+    "bash bench/verification/wave4/trigram-guard-check.sh",
+    "node bench/verification/wave4/summarize-wave4.mjs"
+  ]
+}

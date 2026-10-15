@@ -1,0 +1,327 @@
+{
+  "suite": "wave4-adversarial-validator",
+  "generated_at": "2026-10-15T15:02:17.074Z",
+  "shipped_cli": {
+    "exit": 0,
+    "ok": true,
+    "errors": 0,
+    "warnings": 3,
+    "v1_sha256_matches_recorded": true
+  },
+  "shipped_tests": {
+    "exit": 0,
+    "tests": 17,
+    "pass": 17,
+    "fail": 0,
+    "skipped": 0
+  },
+  "baseline": {
+    "ok": true,
+    "errors": 0,
+    "warnings": 3,
+    "stats": {
+      "rows": 37,
+      "mustHitRows": 33,
+      "expectations": 71,
+      "removed": 4,
+      "checked": 71
+    }
+  },
+  "v1_against_validator": {
+    "ok": false,
+    "unsatisfiable_errors": 16,
+    "codes": [
+      "unsatisfiable"
+    ]
+  },
+  "supersedes_sha_guard": {
+    "fails_on_wrong_v1_sha": true
+  },
+  "cases": [
+    {
+      "name": "unsatisfiable-path",
+      "expectCodes": [
+        "unsatisfiable"
+      ],
+      "got_codes": [
+        "unsatisfiable"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "unsatisfiable",
+          "msg": "P1 (path, \"package.json\"): src/client.ts is not satisfiable in its lane — path does not match query \"package.json\""
+        }
+      ]
+    },
+    {
+      "name": "unsatisfiable-content-literal",
+      "expectCodes": [
+        "unsatisfiable"
+      ],
+      "got_codes": [
+        "unsatisfiable"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "unsatisfiable",
+          "msg": "G4 (grep-literal, \"fsearch.sock\"): README.md is not satisfiable in its lane — no literal match for \"fsearch.sock\" in content"
+        }
+      ]
+    },
+    {
+      "name": "unsatisfiable-content-regex",
+      "expectCodes": [
+        "unsatisfiable"
+      ],
+      "got_codes": [
+        "unsatisfiable",
+        "duplicate"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "unsatisfiable",
+          "msg": "R1 (grep-regex, \"zzz_no_such_regex_match_zzz\"): src/client.ts is not satisfiable in its lane — no regex match for \"zzz_no_such_regex_match_zzz\" in content"
+        },
+        {
+          "code": "duplicate",
+          "msg": "R1: src/client.ts appears twice in one expected list"
+        },
+        {
+          "code": "unsatisfiable",
+          "msg": "R1 (grep-regex, \"zzz_no_such_regex_match_zzz\"): src/client.ts is not satisfiable in its lane — no regex match for \"zzz_no_such_regex_match_zzz\" in content"
+        }
+      ]
+    },
+    {
+      "name": "unsatisfiable-declaration",
+      "expectCodes": [
+        "unsatisfiable"
+      ],
+      "got_codes": [
+        "unsatisfiable"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "unsatisfiable",
+          "msg": "S1 (symbol, \"FSearchClient\"): test/client.test.ts is not satisfiable in its lane — references \"FSearchClient\" without declaring it"
+        }
+      ]
+    },
+    {
+      "name": "unsatisfiable-semantic-no-tokens",
+      "expectCodes": [
+        "unsatisfiable"
+      ],
+      "got_codes": [
+        "unsatisfiable"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "unsatisfiable",
+          "msg": "M1 (semantic, \"what is it\"): src/sanitize.ts is not satisfiable in its lane — intent has no distinctive token to search for"
+        },
+        {
+          "code": "unsatisfiable",
+          "msg": "M1 (semantic, \"what is it\"): src/formatter.ts is not satisfiable in its lane — intent has no distinctive token to search for"
+        },
+        {
+          "code": "unsatisfiable",
+          "msg": "M1 (semantic, \"what is it\"): test/empirical-10-tests.ts is not satisfiable in its lane — intent has no distinctive token to search for"
+        }
+      ]
+    },
+    {
+      "name": "removal-hides-match",
+      "expectCodes": [
+        "removal-hides-match"
+      ],
+      "got_codes": [
+        "removal-hides-match"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "removal-hides-match",
+          "msg": "K3: README.md DOES contain \"client\" (cs=6, ci=7); an absent-string removal must not hide a match"
+        }
+      ]
+    },
+    {
+      "name": "grade-changed",
+      "expectCodes": [
+        "grade-changed"
+      ],
+      "got_codes": [
+        "grade-changed"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "grade-changed",
+          "msg": "P3/test/client.test.ts: grade changed 2 -> 3; a lane change must not change the relevance judgment"
+        }
+      ]
+    },
+    {
+      "name": "unaccounted-expectation",
+      "expectCodes": [
+        "unaccounted"
+      ],
+      "got_codes": [
+        "empty-must-hit",
+        "unaccounted"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "empty-must-hit",
+          "msg": "P3: a must-hit query declares no grade>=1 expectation"
+        },
+        {
+          "code": "unaccounted",
+          "msg": "v1 expectation P3/src/client.ts is neither retained, re-homed, nor removed — an expectation must not disappear silently"
+        }
+      ]
+    },
+    {
+      "name": "removal-window-rank",
+      "expectCodes": [
+        "removal-window"
+      ],
+      "got_codes": [
+        "removal-window"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "removal-window",
+          "msg": "K3: README.md has no measured rank outside the top 10 (probe: {\"lane\":\"grep-literal\",\"mode\":\"literal\",\"match_count\":23,\"rank\":5,\"in_top10\":false,\"probe_artifact\":\"bench/wave4/companion-probe.json\"}); a rank inside the window would make the removal unjustified"
+        }
+      ]
+    },
+    {
+      "name": "removal-no-evidence",
+      "expectCodes": [
+        "removal-evidence"
+      ],
+      "got_codes": [
+        "removal-evidence"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "removal-evidence",
+          "msg": "K3: removed expectation README.md has no rg evidence"
+        }
+      ]
+    },
+    {
+      "name": "duplicate-expectation",
+      "expectCodes": [
+        "duplicate"
+      ],
+      "got_codes": [
+        "duplicate"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "duplicate",
+          "msg": "P1: package.json appears twice in one expected list"
+        }
+      ]
+    },
+    {
+      "name": "negative-with-grade1",
+      "expectCodes": [
+        "negative"
+      ],
+      "got_codes": [
+        "negative"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "negative",
+          "msg": "P8: a negative query must have no expected grade>=1 files"
+        }
+      ]
+    },
+    {
+      "name": "empty-must-hit",
+      "expectCodes": [
+        "empty-must-hit"
+      ],
+      "got_codes": [
+        "empty-must-hit",
+        "unaccounted"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "empty-must-hit",
+          "msg": "P1: a must-hit query declares no grade>=1 expectation"
+        },
+        {
+          "code": "unaccounted",
+          "msg": "v1 expectation P1/package.json is neither retained, re-homed, nor removed — an expectation must not disappear silently"
+        }
+      ]
+    },
+    {
+      "name": "symbol-lane-with-literal-mode",
+      "expectCodes": [
+        "mode"
+      ],
+      "got_codes": [
+        "mode"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "mode",
+          "msg": "S1: symbol lane with params.mode=\"literal\""
+        }
+      ]
+    },
+    {
+      "name": "unknown-lane",
+      "expectCodes": [
+        "lane"
+      ],
+      "got_codes": [
+        "lane"
+      ],
+      "pass": true,
+      "ok": false,
+      "errors": [
+        {
+          "code": "lane",
+          "msg": "P1: unknown lane \"nota-lane\""
+        }
+      ]
+    }
+  ],
+  "cases_passed": 15,
+  "cases_total": 15,
+  "v1_sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1"
+}
