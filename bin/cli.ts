@@ -192,7 +192,9 @@ async function main() {
         // The shared client is closed by main's finally; the session must not
         // close it early or hold the socket after stop().
         const stats = await session.run();
-        process.stderr.write(`# watch stopped: ${stats.added} added, ${stats.removed} removed, ${stats.refreshes} refresh(es), ${stats.errors} error(s)\n`);
+        process.stderr.write(
+          `# watch stopped: ${stats.added} added, ${stats.removed} removed, ${stats.refreshes} refresh(es), ${stats.pollRefreshes} poll refresh(es), ${stats.errors} error(s)\n`
+        );
         recordQuery("ultrasearch_watch", parsed.query, stats.baseline + stats.added, parsed.dir);
         break;
       }

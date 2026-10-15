@@ -167,9 +167,14 @@ ultrasearch watch "<query>" --in <dir> [--limit n] [--debounce ms] [--duration m
 
 Streams the baseline matches, then one `add`/`remove` event per file as the directory changes. The watch loop does
 not duplicate the daemon's journal: `fs.watch` supplies the change signal, `status` is consulted first so an event is
-not answered while the index is behind, and the query itself reuses the normal socket path. `stop()` (or Ctrl-C)
-closes the watcher, removes signal handlers and closes the client, so no socket or inode is held after exit.
-`--once` prints the baseline and exits (used by the tests and by scripting).
+not answered while the index is behind, and the query itself reuses the normal socket path. A **silence watchdog**
+polls the query when `fs.watch` has delivered nothing for `watchSilenceMs` (default 750 ms, period
+`pollIntervalMs` 1000 ms), so a late or dropped FSEvents notification degrades to polling instead of silence; a
+healthy watcher keeps the watchdog idle. `stop()` (or Ctrl-C) closes the watcher, removes signal handlers, stops
+the watchdog and closes the client, so no socket or inode is held after exit. `--once` prints the baseline and exits
+(used by the tests and by scripting). Events carry `via: "watch" | "poll" | "baseline"` so the detection path is
+visible; `stats.pollRefreshes` counts fallback refreshes. The freshness probe is injectable
+(`freshnessCheck`, or `null` to skip) for tests and callers that do not want the extra round trip.
 
 ### Multi-root workspaces and worktree dedupe (#28)
 
