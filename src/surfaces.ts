@@ -22,6 +22,8 @@ export const CLI_TOOL_SURFACE: Readonly<Record<string, readonly string[]>> = {
  * so a new `case` in `bin/cli.ts` has to be classified here deliberately.
  */
 export const CLI_NON_TOOL_COMMANDS: readonly string[] = [
+  "report",
+  "init",
   "policy",
   "watch",
   "history",
