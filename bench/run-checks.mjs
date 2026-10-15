@@ -16,9 +16,13 @@ import { fileURLToPath } from "node:url";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
+if (argv.includes("--help") || argv.includes("-h")) {
+  console.log("Usage: node bench/run-checks.mjs [--out <file>]\n\nRuns: " + ["npm test", "cargo test --release", "npm run test:engine", "npm run test:gate"].join(", ") + ".\nWrites each command's exit status as JSON for bench/release-artifact.mjs.");
+  process.exit(0);
+}
 const out = (() => {
   const i = argv.indexOf("--out");
-  return i >= 0 ? argv[i + 1] : "checks.json";
+  return i >= 0 && argv[i + 1] ? argv[i + 1] : "checks.json";
 })();
 
 const CHECKS = [
