@@ -185,6 +185,9 @@ async function runQuery(q) {
   } else if (q.expected && q.expected.length) {
     const k = q.id === "RS02" ? limit : 10;
     rec.score = scoreQuery(rec.retrieved, q.expected, k);
+    // RS02 is scored at its own limit (20); its recall@10 is capped by
+    // construction and is excluded from the lane recall@10 aggregate.
+    if (q.id === "RS02") rec.extra = { ...(rec.extra ?? {}), excluded_from_recall10: true };
     rec.zero_result = rec.retrieved.length === 0;
   } else if (q.must_hit) {
     rec.zero_result = rec.retrieved.length === 0;
@@ -215,6 +218,7 @@ const byLane = {};
 for (const lane of [...new Set(results.map((r) => r.lane))]) {
   const rows = results.filter((r) => r.lane === lane);
   const scored = rows.filter((r) => r.score);
+  const scored10 = scored.filter((r) => !r.extra?.excluded_from_recall10);
   const mustHit = rows.filter((r) => !r.negative && (r.must_hit || r.score));
   const negatives = rows.filter((r) => r.negative);
   const top3doc = scored.map((r) => {
@@ -225,7 +229,11 @@ for (const lane of [...new Set(results.map((r) => r.lane))]) {
     n: rows.length,
     must_hit: mustHit.length,
     negatives: negatives.length,
-    recall_at_10: mean(scored.map((r) => r.score.recall_at_10).filter((x) => x !== null)),
+    recall_at_10: mean(scored10.map((r) => r.score.recall_at_10).filter((x) => x !== null)),
+    recall_at_limit: (() => {
+      const rs02 = rows.find((r) => r.id === "RS02");
+      return rs02?.score ? { hits: rs02.score.recall_at_10, note: "RS02 measured at its own limit; recall@limit e.g. 14/14" } : null;
+    })(),
     success_recall_at_3: mean(scored.map((r) => r.score.success_recall_at_3).filter((x) => x !== null)),
     mrr_at_10: mean(scored.map((r) => r.score.mrr_at_10).filter((x) => x !== null)),
     ndcg_at_10: mean(scored.map((r) => r.score.ndcg_at_10).filter((x) => x !== null)),
@@ -236,7 +244,7 @@ for (const lane of [...new Set(results.map((r) => r.lane))]) {
     top3_doc_share: mean(top3doc),
   };
 }
-const scoredAll = results.filter((r) => r.score);
+const scoredAll = results.filter((r) => r.score && !r.extra?.excluded_from_recall10);
 const negativesAll = results.filter((r) => r.negative);
 const mustHitAll = results.filter((r) => !r.negative && (r.must_hit || r.score));
 const aggregates = {

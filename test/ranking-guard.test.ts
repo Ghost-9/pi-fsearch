@@ -14,7 +14,7 @@ import assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { formatGrepFiles } from "../src/formatter.ts";
+import { formatGrepFiles, explainReasonTags } from "../src/formatter.ts";
 import type { UltraSearchGrepFile } from "../src/types.ts";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -63,4 +63,17 @@ test("guard: engine definition verdicts drive [def:*] tags, not client detection
   const tagged = out.text.split("\n").filter((l) => l.includes("[def:"));
   assert.equal(tagged.length, 1, `exactly the engine-certified declaration is tagged:\n${out.text}`);
   assert.match(tagged[0], /export class UltraSearchClient/);
+});
+
+test("guard: explainReasonTags renders the engine's vector truthfully", () => {
+  const tagsFor = (query: string, hit: Parameters<typeof explainReasonTags>[1]) => explainReasonTags(query, hit);
+  assert.deepEqual(
+    tagsFor("src/client.ts", { path: "/root/src/client.ts", score: 30, match: 30 }),
+    ["exact", "match:30", "score:30"]
+  );
+  assert.ok(tagsFor("src/**/*.ts", { path: "/root/src/client.ts", score: 20, match: 20 }).includes("glob"));
+  assert.ok(tagsFor("client", { path: "/root/src/client.ts", score: 40, match: 15, near: 12, boost: 13 }).includes("proximity"));
+  assert.ok(tagsFor("client", { path: "/root/src/client.ts", score: 40, match: 30, boost: 10 }).includes("frecency"));
+  assert.ok(tagsFor("Policy", { path: "/root/engine/src/coverage.rs", score: 8, match: 8, def: 8 }).includes("symbol"));
+  assert.ok(tagsFor("x", { path: "/root/a.ts", score: 5, match: 5, git: "modified" }).includes("git:modified"));
 });
