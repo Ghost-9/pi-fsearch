@@ -2,9 +2,9 @@
   "schema": "ultrasearch/harness-smoke@1",
   "id": "antigravity",
   "label": "Antigravity",
-  "generatedAt": "2026-10-15T20:29:45.824Z",
-  "commit": "cc37a9a0b6bd6caa870a06df8d733083a9ac4112",
-  "worktreeDirty": true,
+  "generatedAt": "2026-10-15T20:41:20.954Z",
+  "commit": "219c0c5b9773a4a59e2bba7efa7a8532da40754a",
+  "worktreeDirty": false,
   "serverVersion": "0.3.1",
   "supportedProtocolVersions": [
     "2025-06-18",
