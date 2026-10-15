@@ -1,0 +1,21 @@
+{
+  "set": "bench/judgments/wave1-judgments.v2.json",
+  "sha256": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+  "corpus": "/Users/batra/.cache/ultrasearch/corpus/wave1-0a16e50",
+  "v1_sha256": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+  "v1_sha256_matches_recorded": true,
+  "ok": true,
+  "errors": [],
+  "warnings": [
+    "M1: AUDIT-2026-10-14.md shares no distinctive token with the intent \"where are credentials scrubbed before results reach the model\" (allowed for an intent lane; recorded for review)",
+    "M4: README.md shares no distinctive token with the intent \"what does CI run on every push\" (allowed for an intent lane; recorded for review)",
+    "M4: AUDIT-2026-10-14.md shares no distinctive token with the intent \"what does CI run on every push\" (allowed for an intent lane; recorded for review)"
+  ],
+  "stats": {
+    "rows": 37,
+    "mustHitRows": 33,
+    "expectations": 71,
+    "removed": 4,
+    "checked": 71
+  }
+}

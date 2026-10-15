@@ -68,7 +68,12 @@
     "test:empirical": "node --test test/empirical-10-tests.ts",
     "test:engine": "node --test --test-concurrency=1 test/engine/*.test.mjs",
     "test:gate": "node --test test/benchmark-gate.test.ts",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "bench:wave4:judgments": "node bench/wave4/make-judgments-v2.mjs",
+    "bench:wave4:probe": "node bench/wave4/probe-companions.mjs",
+    "bench:wave4:validate": "node bench/wave4/validate-judgments.mjs",
+    "bench:wave4:validate:test": "node --test bench/wave4/validate-judgments.test.mjs",
+    "bench:wave4:gates": "bash bench/wave4/run-gates.sh"
   },
   "keywords": [
     "pi-agent",
