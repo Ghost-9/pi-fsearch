@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-15T20:22:40.947Z",
+  "generated_at": "2026-10-15T20:38:34.731Z",
   "gate": {
     "status": "provisional",
     "pass": false,
     "ac_power": true,
-    "load1": 6.400390625,
+    "load1": 2.67333984375,
     "competing_processes": [],
     "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
   },
-  "baseline_root": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-mutate-baseline-VLNvSW",
+  "baseline_root": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-mutate-baseline-liykle",
   "cases": [
     {
       "issue": 25,
@@ -22,7 +22,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ grep: ignore filtering runs before limit and reports filtered/truncated counts (13.350959ms)\n✔ search: ignore filtering runs before limit and reports counts (11.05675ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 190.88075\n"
+        "tail": "✔ grep: ignore filtering runs before limit and reports filtered/truncated counts (12.898916ms)\n✔ search: ignore filtering runs before limit and reports counts (8.004625ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 190.349583\n"
       },
       "mutated": {
         "exit": 1,
@@ -48,7 +48,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ watch: stop() closes the watcher and every daemon socket, and no event follows (332.249834ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 502.361625\n"
+        "tail": "✔ watch: stop() closes the watcher and every daemon socket, and no event follows (332.294667ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 501.689541\n"
       },
       "mutated": {
         "exit": null,
@@ -57,7 +57,7 @@
         "fail": -1,
         "timed_out": true,
         "failed": true,
-        "tail": "✔ watch: stop() closes the watcher and every daemon socket, and no event follows (331.652083ms)\n"
+        "tail": "✔ watch: stop() closes the watcher and every daemon socket, and no event follows (335.835542ms)\n"
       },
       "mutation_error": null,
       "guard_is_live": true
@@ -74,7 +74,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "upeHits without a preferred active copy keeps the first occurrence (1.085208ms)\n✔ roots: grep files dedupe by realpath too (0.409208ms)\n✔ roots: multiRootGrep merges and dedupes across roots (0.595ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 165.272292\n"
+        "tail": "eHits without a preferred active copy keeps the first occurrence (1.218417ms)\n✔ roots: grep files dedupe by realpath too (0.414458ms)\n✔ roots: multiRootGrep merges and dedupes across roots (0.616042ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 153.44525\n"
       },
       "mutated": {
         "exit": 1,
@@ -100,7 +100,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ surface: the default is exactly one prefix and six tools (1.015209ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 175.173792\n"
+        "tail": "✔ surface: the default is exactly one prefix and six tools (1.020083ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 172.262458\n"
       },
       "mutated": {
         "exit": 1,
@@ -126,7 +126,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ telemetry views: real is the default and excludes synthetic rows (1.483583ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 155.625542\n"
+        "tail": "✔ telemetry views: real is the default and excludes synthetic rows (1.425708ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 151.737667\n"
       },
       "mutated": {
         "exit": 1,
@@ -152,7 +152,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ metadata: every result carries tokenCount/truncatedCount/complete (6.721ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 188.09975\n"
+        "tail": "✔ metadata: every result carries tokenCount/truncatedCount/complete (6.525083ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 169.261541\n"
       },
       "mutated": {
         "exit": 1,
@@ -178,7 +178,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ history: ULTRASEARCH_HISTORY enables, =0 is the explicit opt-out (0.701959ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 157.400333\n"
+        "tail": "✔ history: ULTRASEARCH_HISTORY enables, =0 is the explicit opt-out (0.754542ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 153.959\n"
       },
       "mutated": {
         "exit": 1,
@@ -204,7 +204,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ init: an unparseable JSON config is refused, not patched (3.580625ms)\n✔ init: an unparseable TOML config is refused, not patched (9.378292ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 195.394125\n"
+        "tail": "✔ init: an unparseable JSON config is refused, not patched (3.278125ms)\n✔ init: an unparseable TOML config is refused, not patched (7.789ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 183.964791\n"
       },
       "mutated": {
         "exit": 1,
@@ -230,7 +230,7 @@
         "fail": 0,
         "timed_out": false,
         "failed": false,
-        "tail": "✔ policy: an unterminated marker pair is refused, never guessed or duplicated (1.744ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 160.849833\n"
+        "tail": "✔ policy: an unterminated marker pair is refused, never guessed or duplicated (1.808166ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 164.088583\n"
       },
       "mutated": {
         "exit": 1,

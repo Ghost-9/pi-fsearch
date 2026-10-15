@@ -9,8 +9,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f51-init.json",
     "evidence_hashes": {
-      "artifact": "fde30b27067e7d5e8952ca8102acb7cd364599402dddd03bacc2698b13f0d7d4",
-      "probe": "3e7426147fc5b3648def6a3ab9089c51da0d95a243c5b27040a66994b5d9d72e"
+      "artifact": "fbeb89a53666af622e3b2d7d4226efeb79101fbc6b8b9b03b697af5ef1ae9081",
+      "probe": "368dc770fb1be116f01bb6805ad556619746b38ced4141abece6effe9531da85"
     },
     "notes": "patch, backup, idempotence, dry-run, printed-revert restore and refusal all reproduced on a temp HOME; non-blocking fidelity nit: --remove leaves the file one trailing newline short (the printed revert command restores it exactly)"
   },
@@ -24,8 +24,8 @@
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f53-policy.json",
     "evidence_hashes": {
-      "artifact": "0c08b4c473579ec900072938ff5d42be39814b8247239077dd9bd84cdb1050a1",
-      "probe": "b72e8833a16ce275e377174a5455a38e18f18c12678aee68165395e7eae40a50"
+      "artifact": "ba3154a3d3cf060452a730b4b8878fad3280d99d33783d8e290c31f0a237b01f",
+      "probe": "a0e76b440b6a48005e584e3d94427ece40ba2887218539f62e749acc62120bd9"
     },
     "notes": "dry-run, idempotence, byte-restore and marker refusal all reproduced"
   },
@@ -33,15 +33,15 @@
     "issue": 52,
     "claim": "capability matrix + smoke per harness: every claimed harness has a current artifact, unsupported harnesses are explicit, --check --require-fresh passes, and stored artifacts agree with a real protocol run",
     "verdict": "needs-work",
-    "evidence": "bench/harness-matrix.mjs --check --require-fresh exit=1; stored artifacts read: {\"pi\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"},\"codex\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"},\"claude-code\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"},\"zed\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"}}; verifier's own live protocol run: 6 tools, negotiated 2025-06-18",
+    "evidence": "bench/harness-matrix.mjs --check --require-fresh exit=1; HEAD=0ad4919; stored artifacts read: {\"pi\":{\"commit\":\"cc37a9a0b6bd6caa870a06df8d733083a9ac4112\",\"worktreeDirty\":true,\"fresh\":false,\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\",\"launchSource\":\"installed\"},\"codex\":{\"commit\":\"cc37a9a0b6bd6caa870a06df8d733083a9ac4112\",\"worktreeDirty\":true,\"fresh\":false,\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\",\"launchSource\":\"installed\"},\"claude-code\":{\"commit\":\"cc37a9a0b6bd6caa870a06df8d733083a9ac4112\",\"worktreeDirty\":true,\"fresh\":false,\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\",\"launchSource\":\"installed\"},\"zed\":{\"commit\":\"cc37a9a0b6bd6caa870a06df8d733083a9ac4112\",\"worktreeDirty\":true,\"fresh\":false,\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\",\"launchSource\":\"installed\"}}; verifier's own live protocol run: 6 tools, negotiated 2025-06-18",
     "method": "the shipped matrix checker run by the verifier, plus an independent MCP initialize/tools-list handshake compared against the stored artifacts",
     "n": 5,
     "gate": "provisional",
     "artifact": "bench/verification/backlog/results/f52-smoke.json",
     "evidence_hashes": {
-      "artifact": "6e3d1d3607f1cff8bac737e4bd212914975ec7d2a445326a3540ea7026259025",
-      "probe": "75ee2ed1daa24655106704998010aa4059313f4949476cd00aad294542e351eb"
+      "artifact": "d2bdb81039658c0534b6b409a5b46cbbf5f805c43b3fdb41a2acc1e473e10681",
+      "probe": "5a2c06098a687c3d2db78b7b9f84ae57d4d8ad8ba252f912fdb8e6563fa43c6e"
     },
-    "notes": "harness-matrix --check --require-fresh exited 1"
+    "notes": "harness-matrix --check --require-fresh exited 1 | pi artifact declares worktreeDirty=true: it names a tree that was not the tested one | pi artifact commit cc37a9a != HEAD 0ad4919 | codex artifact declares worktreeDirty=true: it names a tree that was not the tested one | codex artifact commit cc37a9a != HEAD 0ad4919 | claude-code artifact declares worktreeDirty=true: it names a tree that was not the tested one | claude-code artifact commit cc37a9a != HEAD 0ad4919 | zed artifact declares worktreeDirty=true: it names a tree that was not the tested one | zed artifact commit cc37a9a != HEAD 0ad4919"
   }
 ]

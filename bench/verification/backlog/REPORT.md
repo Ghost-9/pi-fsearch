@@ -1,11 +1,17 @@
 # Wave-5 backlog closure — independent verification report
 
-Verifier: independent session (`wave1/verify-final`). Commit under test: `97beeb140d…` (= `origin/main`).
-Deliverable: `bench/verification/backlog-closure.json` (18 issue rows + 1 control row).
+Verifier: independent session (`wave1/verify-final`). Commit under test: `0ad4919` (= `origin/main`).
+Re-adjudication round: `#24` and `#52` re-measured after the `0ad4919` fix. Deliverable:
+`bench/verification/backlog-closure.json` (18 issue rows + 1 control row).
 Raw evidence: `bench/verification/backlog/results/**`. Findings: `bench/verification/backlog/FINDINGS.md`.
 
-**Verdict: 12 verified · 6 needs-work · 0 refuted.** Nothing verified here was verified from an
+**Verdict: 13 verified · 5 needs-work · 0 refuted.** Nothing verified here was verified from an
 author summary; every row is a fresh run, a fresh derivation, or a mutation control.
+
+| re-adjudicated | before | now | evidence |
+|---|---|---|---|
+| #24 async fallback | needs-work | **verified** | non-git cwd: 0 `git` invocations, max loop gap 11.81 ms (was 1 invocation / 773 ms); widened guard fails when the pre-fix call is restored, old client-only scope still passes |
+| #52 smoke matrix | needs-work | **needs-work** | `--check --require-fresh` still exits 1: all 10 artifacts name `cc37a9a` with `worktreeDirty: true`; HEAD is `0ad4919`. The live handshake itself agrees (6 tools, `2025-06-18`) |
 
 ## Method
 
@@ -29,7 +35,7 @@ author summary; every row is a fresh run, a fresh derivation, or a mutation cont
 |--:|---|---|---|--:|
 | 20 | **needs-work** | estimate labelled in `telemetry.ts`/`tui.ts`; TOKENS.md carries scope, method, paired delta and the heuristic-overstatement table; committed artifact `-degraded` | doc + artifact audit + shipped label test | 5 |
 | 21 | **needs-work** | 5 scope artifacts carry n=30, median, p95 and BCa CIs per query; `compareSets` is discriminating (identical pass, missing/extra fail); committed artifacts `-degraded` | artifact audit + 4 constructed `compareSets` cases + golden re-run | 4 |
-| 24 | **needs-work** | fallback path async (max loop gap 11 ms while stubbed `rg` slept 400 ms), cancellation kills the child, no leak; **`index.ts` still calls `execFileSync` on the tool path for a non-git cwd (773 ms block, 1 invocation)** | own event-loop probe + scratch mutation to `execFileSync` (472 ms block) | 3 |
+| 24 | **verified** | fallback async (max loop gap 11.3 ms while stubbed `rg` slept 400 ms), cancellation kills the child, no leak; non-git cwd now **0 `git` invocations, max gap 11.8 ms** (was 1 / 773 ms); guard non-vacuity: the widened guard fails when the pre-fix call is restored while the old client-only scope passes | own event-loop probe + scratch mutations (`spawn.ts`→`execFileSync` blocks 477 ms; `index.ts` pre-fix call trips the widened guard) | 5 |
 | 25 | **verified** | limit 15 over 20 ignored + 25 visible → 15 hits, 0 ignored, `filteredCount` 10, `truncatedCount` 10, `truncated` true, `rawCount` 35; unfiltered control 40 hits; mock control limit 7 → filtered 10 / truncated 18 | real daemon + exact mock arithmetic | 3 |
 | 27 | **verified** | baseline 1; first add 215 ms after write; same-path rewrite added 0 events; delete → exactly 1 remove; `stop()` → lanes 0, no live resources, process exits 0 | real WatchSession in a child process against a real daemon | 5 |
 | 28 | **verified** | fan-out over two roots aliasing one inode → 3 unique hits, `duplicates` 1, the surviving row is the active root's alias, a physically-active file attributes `active: true` | real daemon + `multiRootSearch` | 4 |
@@ -43,7 +49,7 @@ author summary; every row is a fresh run, a fresh derivation, or a mutation cont
 | 49 | **verified** | full assertion on the `git archive HEAD` scope and on the main worktree (2/2 pass, 0 skipped each); the pre-#49 cwd+limit-30 shape fails on the archive scope; control test discriminates | shipped test run from two indexed scopes + scratch mutation | 3 |
 | 50 | **verified** | doc `1.0` (×2) == `PROTOCOL_VERSION` == real daemon `status.protocol_version`; 1.9 compatible / 2.0 not; mock 2.0 → `protocol_mismatch`; pre-#50 engine fails the shipped engine test | real daemon + mock + stale-engine build | 5 |
 | 51 | **verified** | 8/8 harnesses registered on a fresh HOME; dry-run writes nothing; one timestamped backup; idempotent second write reports unchanged and adds no backup; printed revert restores bytes exactly; unparseable config refused (exit 1) and untouched | real CLI on temp HOMEs | 8 |
-| 52 | **needs-work** | live handshake agrees (6 tools, `2025-06-18`) with the stored artifacts, but **`--check --require-fresh` exits 1: all 10 artifacts are from `397edb8`, HEAD is `97beeb1`** | shipped checker + own MCP handshake | 5 |
+| 52 | **needs-work** | live handshake agrees (6 tools, `2025-06-18`) with the stored artifacts, but **`--check --require-fresh` exits 1: all 10 artifacts name `cc37a9a` and carry `worktreeDirty: true`, HEAD is `0ad4919`** | shipped checker + own MCP handshake | 5 |
 | 53 | **verified** | default/dry-run write nothing; `--write` injects both markers with 1 backup and the measured reason; second write byte-identical; `--remove --write` restores the original bytes; half-marker refused; create+delete on a fresh root | real CLI on temp roots | 6 |
 
 Control row — **removal matrix (verified)**: 9/9 mutated guards fail when their feature is removed
@@ -51,10 +57,10 @@ Control row — **removal matrix (verified)**: 9/9 mutated guards fail when thei
 
 ## Safe to close
 
-`#25, #27, #28, #29, #30, #37, #38, #40, #49, #50, #51, #53`
+`#24, #25, #27, #28, #29, #30, #37, #38, #40, #49, #50, #51, #53`
 
 Notes attached to closing: #51 carries a non-blocking fidelity nit (F19); #50 is verified on a
-source-built engine (F22 shows the guard is live).
+source-built engine (F22 shows the guard is live); #24 was re-verified after the `0ad4919` fix (F18).
 
 ## Must stay open
 
@@ -62,15 +68,15 @@ source-built engine (F22 shows the guard is live).
 |--:|---|
 | 20 | measurement needs a gate-clean artifact; committed runs are `-degraded` (F: gate) |
 | 21 | same gate rule; artifacts are `-degraded`, so medians/CI may not be cited (F: gate) |
-| 24 | `index.ts` still spawns `git` synchronously on the tool path for a non-git cwd (F18) |
 | 31 | nightly summary not produced without a manual step (F16) |
 | 41 | no edit→grep latency measurement published (F17) |
-| 52 | smoke artifacts stale vs HEAD; `--require-fresh` fails (F15, F21) |
+| 52 | smoke artifacts name `cc37a9a` with `worktreeDirty: true`; `--require-fresh` exits 1 at HEAD `0ad4919`. The acceptance is only satisfiable in a regenerate-then-check window (CI form), or by relaxing the checker; the MCP surface itself is correct (F15, F21) |
 
 ## Findings
 
-F15 stale smoke artifacts (#52) · F16 unwired nightly (#31) · F17 missing prefetch latency
-measurement (#41) · F18 `execFileSync` on the tool path (#24) · F19 `init --remove` trailing-newline
+F15 smoke artifacts not fresh at HEAD (#52, open — regenerated at `cc37a9a` with a dirty tree) ·
+F16 unwired nightly (#31) · F17 missing prefetch latency
+measurement (#41) · F18 `execFileSync` on the tool path (#24, **resolved at `0ad4919`**) · F19 `init --remove` trailing-newline
 fidelity (#51) · F20 unlabelled TUI per-row savings (#20) · F21 smoke arm exercises the installed
 shim (#52) · F22 #50 engine guard is live (positive) · F23 all functional guards are live
 (positive) · F24 `npm test` excludes the engine (process). Full reproductions:
