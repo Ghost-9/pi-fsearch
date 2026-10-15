@@ -17,6 +17,10 @@ export interface UltraSearchHit {
   near?: number;
   /** The frecency component the daemon added to `score` (`boost: true`). */
   boost?: number;
+  /** The query's own match score, before `near`/`boost` were added (engine-owned vector). */
+  match?: number;
+  /** Definition component: 8 when this row declares the queried symbol, else 0/absent. */
+  def?: number;
 }
 
 /**
@@ -84,11 +88,15 @@ export interface UltraSearchGrepMatch {
   before?: string[];
   after?: string[];
   ranges?: Array<[number, number]>;
+  /** Engine verdict: this line declares the queried name (`mode: "symbol"`). */
+  def?: boolean;
 }
 
 export interface UltraSearchGrepFile {
   path: string;
   matches: UltraSearchGrepMatch[];
+  /** Definition component for the file (engine symbol mode): 8 declares the name, 0 does not. */
+  def?: number;
 }
 
 export interface UltraSearchGrepResponse {
@@ -199,4 +207,6 @@ export interface GrepOptions {
   respectIgnore?: boolean;
   /** Cancellation for fallback work (agent turn aborted). */
   signal?: AbortSignal;
+  /** Ask the engine for its definition verdicts (`def`) so matches can be tagged. */
+  tagSymbols?: boolean;
 }

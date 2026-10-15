@@ -1,0 +1,6014 @@
+{
+  "meta": {
+    "suite": "wave2-judgments",
+    "label": "sem-v10",
+    "repo": "/Users/batra/ultrasearch-waves2/relevance",
+    "repo_commit": "f9eadadac60aeca62b9744b7dea8a4b99ec6c1b8",
+    "repo_branch": "wave2/relevance",
+    "mode": "harness",
+    "engine_bin": "/Users/batra/ultrasearch-waves2/relevance/engine/target/release/ultrasearch",
+    "judgments_sha256": "f378a5b140eb8bcb47e6b97729d25a3d4f8127ed47b75a20ab683a3dee2789b8",
+    "corpus": {
+      "root": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean",
+      "id": "ultrasearch-repo@8d1419d",
+      "files": 97
+    },
+    "environment": {
+      "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "checks": {
+        "ac_power": true,
+        "load1_lt_gate": false,
+        "no_cargo_rustc": false
+      },
+      "power": {
+        "on_ac": true,
+        "percent": 100,
+        "raw": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+      },
+      "loadavg": [
+        18.42529296875,
+        10.16259765625,
+        7.52880859375
+      ],
+      "competing_processes": [
+        " 1745 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+        " 1749 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        " 1755 /Users/batra/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc"
+      ],
+      "daemon_status": {
+        "compactions": 0,
+        "compactions_postponed": 0,
+        "content_bytes": 0,
+        "content_docs": 0,
+        "content_pending": 0,
+        "content_policy": {
+          "configured": false,
+          "extensions": null,
+          "max_file_bytes": null,
+          "roots": null,
+          "source": null,
+          "warm": 0
+        },
+        "content_segments": 0,
+        "deny_configured": false,
+        "deny_rules": 0,
+        "dirs": 15,
+        "entries": 112,
+        "event_id": 5698179122,
+        "event_lag": 46,
+        "full_disk_access": false,
+        "id": 1,
+        "index_bytes": 14784,
+        "last_compact_bytes": 0,
+        "last_compact_entries": 0,
+        "last_compact_ms": 0,
+        "last_compact_secs_ago": 0,
+        "last_event_id": 5698179168,
+        "ok": true,
+        "overlay": 0,
+        "owner": true,
+        "queries_in_flight": 0,
+        "removed": 0,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      }
+    },
+    "status": "provisional",
+    "generated_at": "2026-10-15T06:03:00.285Z"
+  },
+  "aggregates": {
+    "overall": {
+      "recall_at_10": 0.6833333333333333,
+      "success_recall_at_3": 0.4833333333333332,
+      "mrr_at_10": 0.7142857142857143,
+      "ndcg_at_10": 0.6702299260006103,
+      "zero_result_rate": 0,
+      "false_positive_rate": 0
+    },
+    "by_lane": {
+      "semantic-paraphrase": {
+        "n": 12,
+        "must_hit": 10,
+        "negatives": 2,
+        "recall_at_10": 0.6833333333333333,
+        "success_recall_at_3": 0.4833333333333332,
+        "mrr_at_10": 0.7142857142857143,
+        "ndcg_at_10": 0.6702299260006103,
+        "zero_result_rate": 0,
+        "false_positive_rate": 0,
+        "ms_p50": 37.44116699999995,
+        "ms_p95": 51.634041000000025,
+        "top3_doc_share": 0
+      }
+    }
+  },
+  "queries": [
+    {
+      "id": "SE01",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "search client options and default configuration values",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/client.ts",
+        "src/types.ts",
+        "src/telemetry.ts",
+        "src/spawn.ts",
+        "engine/src/coverage.rs",
+        "src/mcp.ts",
+        "engine/src/deny.rs",
+        "src/formatter.ts",
+        "src/semantic.ts",
+        "engine/src/engine.rs"
+      ],
+      "ms": 49.67095800000004,
+      "error": null,
+      "extra": {
+        "confidence": 0.9124826897178732,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "search",
+          "client",
+          "option",
+          "config",
+          "set",
+          "default",
+          "env",
+          "constant",
+          "initial",
+          "configuration"
+        ],
+        "groups": [
+          {
+            "id": "search",
+            "variants": [
+              "search"
+            ],
+            "present": true,
+            "df": 76,
+            "weight": 0.7681823665028594,
+            "generic": false
+          },
+          {
+            "id": "client",
+            "variants": [
+              "client"
+            ],
+            "present": true,
+            "df": 46,
+            "weight": 1.0625072840259933,
+            "generic": false
+          },
+          {
+            "id": "option",
+            "variants": [
+              "option",
+              "config",
+              "set",
+              "default",
+              "env",
+              "constant"
+            ],
+            "present": true,
+            "df": 83,
+            "weight": 0.7224747956544653,
+            "generic": false
+          },
+          {
+            "id": "default",
+            "variants": [
+              "default",
+              "config",
+              "option",
+              "constant",
+              "initial"
+            ],
+            "present": true,
+            "df": 70,
+            "weight": 0.8124939381925116,
+            "generic": false
+          },
+          {
+            "id": "configuration",
+            "variants": [
+              "configuration",
+              "config",
+              "option",
+              "set",
+              "default",
+              "env",
+              "constant"
+            ],
+            "present": true,
+            "df": 83,
+            "weight": 0.7224747956544653,
+            "generic": false
+          },
+          {
+            "id": "value",
+            "variants": [
+              "value"
+            ],
+            "present": true,
+            "df": 26,
+            "weight": 0.36443833127550884,
+            "generic": true
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 41.705,
+            "coverage": 6,
+            "path_hit": true,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 5.52,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.07
+              },
+              {
+                "group": "client",
+                "primary": 4.99,
+                "synonym": 0.13,
+                "path": 3.19,
+                "declared": 4.25
+              },
+              {
+                "group": "option",
+                "primary": 5.63,
+                "synonym": 2.2,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 4.63,
+                "synonym": 3.04,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 2.88,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "value",
+                "primary": 1.39,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/types.ts",
+            "score": 38.566,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 4.14,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.07
+              },
+              {
+                "group": "client",
+                "primary": 3.53,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 2.17,
+                "synonym": 1.43,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 2.91,
+                "synonym": 1.29,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.43,
+                "path": 0,
+                "declared": 2.89
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/telemetry.ts",
+            "score": 34.329,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 4.54,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.07
+              },
+              {
+                "group": "client",
+                "primary": 2.75,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 1.87,
+                "synonym": 1.84,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 1.62,
+                "synonym": 1.24,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.84,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "value",
+                "primary": 1.21,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/spawn.ts",
+            "score": 32.63,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "option",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 1.54,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "client",
+                "primary": 2.13,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 3.4,
+                "synonym": 1.43,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 2.1,
+                "synonym": 1.91,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.87,
+                "path": 0,
+                "declared": 2.89
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/coverage.rs",
+            "score": 31.022,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "option",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 2.55,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 2.89,
+                "synonym": 1.65,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 2.7,
+                "synonym": 1.66,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.65,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "value",
+                "primary": 1.46,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 29.416,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 4.54,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.07
+              },
+              {
+                "group": "client",
+                "primary": 5.87,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 2.75,
+                "synonym": 1.53,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "default",
+                "primary": 3.39,
+                "synonym": 2.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.53,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/deny.rs",
+            "score": 28.394,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "option",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 1.54,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "client",
+                "primary": 2.13,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 1.87,
+                "synonym": 1.7,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 2.44,
+                "synonym": 1.14,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.7,
+                "path": 0,
+                "declared": 2.89
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/formatter.ts",
+            "score": 26.841,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "option",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 1.99,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 2.4,
+                "synonym": 1.24,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 2.44,
+                "synonym": 1.41,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.34,
+                "path": 0,
+                "declared": 2.89
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/semantic.ts",
+            "score": 26.083,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 3.43,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.07
+              },
+              {
+                "group": "client",
+                "primary": 3.81,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 2.59,
+                "synonym": 1.27,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "default",
+                "primary": 0,
+                "synonym": 1.6,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 1.6,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/engine.rs",
+            "score": 25.226,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "search",
+                "primary": 5.15,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.07
+              },
+              {
+                "group": "client",
+                "primary": 2.75,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "option",
+                "primary": 3.79,
+                "synonym": 1.94,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "default",
+                "primary": 3.99,
+                "synonym": 2.11,
+                "path": 0,
+                "declared": 3.25
+              },
+              {
+                "group": "configuration",
+                "primary": 0,
+                "synonym": 2.05,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "value",
+                "primary": 1.21,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.6666666666666666,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.9467676761267002,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE02",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "how are tests mocking the daemon socket",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "test/helpers/mock-daemon.ts",
+        "test/e2e-regressions.test.ts",
+        "test/fallback.test.ts",
+        "test/engine/harness.mjs",
+        "test/benchmark-gate.test.ts",
+        "test/client-features.test.ts",
+        "test/ipc-lanes.test.ts",
+        "test/mcp.test.ts",
+        "README.md",
+        "test/helpers/pi-harness.ts"
+      ],
+      "ms": 47.43379199999998,
+      "error": null,
+      "extra": {
+        "confidence": 0.8923325899742838,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "test",
+          "mock",
+          "stub",
+          "fake",
+          "harness",
+          "fixture",
+          "daemon",
+          "resident",
+          "serve",
+          "socket"
+        ],
+        "groups": [
+          {
+            "id": "test",
+            "variants": [
+              "test"
+            ],
+            "present": true,
+            "df": 58,
+            "weight": 0.21242906031287132,
+            "generic": true
+          },
+          {
+            "id": "mock",
+            "variants": [
+              "mock",
+              "stub",
+              "fake",
+              "harness",
+              "fixture"
+            ],
+            "present": true,
+            "df": 37,
+            "weight": 1.1245877750713704,
+            "generic": false
+          },
+          {
+            "id": "daemon",
+            "variants": [
+              "daemon",
+              "resident",
+              "serve",
+              "socket",
+              "sock",
+              "spawn",
+              "reconnect",
+              "retry",
+              "fallback",
+              "server"
+            ],
+            "present": true,
+            "df": 72,
+            "weight": 0.7334210796978854,
+            "generic": false
+          },
+          {
+            "id": "socket",
+            "variants": [
+              "socket",
+              "daemon",
+              "sock",
+              "reconnect",
+              "retry",
+              "fallback",
+              "ipc",
+              "connect",
+              "unix"
+            ],
+            "present": true,
+            "df": 67,
+            "weight": 0.7709248816026297,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/helpers/mock-daemon.ts",
+            "score": 33.151,
+            "coverage": 3,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "mock",
+                "primary": 4.69,
+                "synonym": 0.13,
+                "path": 3.37,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 2.63,
+                "synonym": 2.06,
+                "path": 2.2,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 3.71,
+                "synonym": 2.26,
+                "path": 2.31,
+                "declared": 3.08
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/e2e-regressions.test.ts",
+            "score": 29.548,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 0.97,
+                "synonym": 0.03,
+                "path": 0.64,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 5.16,
+                "synonym": 3.02,
+                "path": 0,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 4.43,
+                "synonym": 1.73,
+                "path": 0,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 3.21,
+                "synonym": 2.37,
+                "path": 0,
+                "declared": 3.08
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/fallback.test.ts",
+            "score": 26.92,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 1.02,
+                "synonym": 0.03,
+                "path": 0.64,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 0,
+                "synonym": 1.82,
+                "path": 0,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 2.2,
+                "synonym": 2.12,
+                "path": 2.2,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 2.31,
+                "synonym": 2.16,
+                "path": 2.31,
+                "declared": 3.08
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/engine/harness.mjs",
+            "score": 25.751,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 0.55,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 0,
+                "synonym": 2.29,
+                "path": 3.37,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 3.06,
+                "synonym": 1.87,
+                "path": 0,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 3.08,
+                "synonym": 1.96,
+                "path": 0,
+                "declared": 3.08
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/benchmark-gate.test.ts",
+            "score": 25.382,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 0.85,
+                "synonym": 0.03,
+                "path": 0.64,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 4.28,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 3.06,
+                "synonym": 1.73,
+                "path": 0,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 2.56,
+                "synonym": 1.91,
+                "path": 0,
+                "declared": 3.08
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/client-features.test.ts",
+            "score": 25.239,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 1.13,
+                "synonym": 0.03,
+                "path": 0.64,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 6.35,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 5.33,
+                "synonym": 1.62,
+                "path": 0,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 2.56,
+                "synonym": 2.89,
+                "path": 0,
+                "declared": 3.08
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/ipc-lanes.test.ts",
+            "score": 25.103,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 0.89,
+                "synonym": 0.03,
+                "path": 0.64,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 4.5,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 4.64,
+                "synonym": 1.9,
+                "path": 0,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 3.62,
+                "synonym": 2.56,
+                "path": 0,
+                "declared": 3.08
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/mcp.test.ts",
+            "score": 20.477,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 1.24,
+                "synonym": 0.03,
+                "path": 0.64,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 5.62,
+                "synonym": 0.13,
+                "path": 0,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 2.63,
+                "synonym": 2.79,
+                "path": 0,
+                "declared": 2.93
+              },
+              {
+                "group": "socket",
+                "primary": 2.31,
+                "synonym": 1.43,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/README.md",
+            "score": 15.542,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 1.11,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 2.91,
+                "synonym": 2.06,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 4.22,
+                "synonym": 1.82,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "socket",
+                "primary": 3.21,
+                "synonym": 2.46,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/helpers/pi-harness.ts",
+            "score": 15.362,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mock",
+            "contributions": [
+              {
+                "group": "test",
+                "primary": 0.55,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mock",
+                "primary": 0,
+                "synonym": 1.79,
+                "path": 3.37,
+                "declared": 4.5
+              },
+              {
+                "group": "daemon",
+                "primary": 0,
+                "synonym": 1.18,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "socket",
+                "primary": 2.56,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_3": 0.5,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.8460101051764489,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE03",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "where are api tokens and passwords masked before they reach the model",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "test/empirical-10-tests.ts",
+        "CHANGELOG.md",
+        "src/mcp.ts",
+        "src/formatter.ts",
+        "index.ts",
+        "AUDIT-2026-10-14.md",
+        "test/sanitize.test.ts",
+        "src/telemetry.ts"
+      ],
+      "ms": 27.18825000000004,
+      "error": null,
+      "extra": {
+        "confidence": 0.8886519662958342,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "api",
+          "token",
+          "auth",
+          "session",
+          "credential",
+          "password",
+          "mask",
+          "redact",
+          "sanitize",
+          "secret"
+        ],
+        "groups": [
+          {
+            "id": "api",
+            "variants": [
+              "api"
+            ],
+            "present": true,
+            "df": 10,
+            "weight": 1.7452394535931621,
+            "generic": false
+          },
+          {
+            "id": "token",
+            "variants": [
+              "token",
+              "auth",
+              "session",
+              "credential"
+            ],
+            "present": true,
+            "df": 45,
+            "weight": 0.7563260821814768,
+            "generic": false
+          },
+          {
+            "id": "password",
+            "variants": [
+              "password"
+            ],
+            "present": true,
+            "df": 4,
+            "weight": 2.4336133554004498,
+            "generic": false
+          },
+          {
+            "id": "mask",
+            "variants": [
+              "mask",
+              "redact",
+              "sanitize",
+              "secret",
+              "credential",
+              "scrub",
+              "guard"
+            ],
+            "present": true,
+            "df": 32,
+            "weight": 0.9461436950238362,
+            "generic": false
+          },
+          {
+            "id": "reach",
+            "variants": [
+              "reach"
+            ],
+            "present": true,
+            "df": 18,
+            "weight": 0.32956022446871874,
+            "generic": true
+          },
+          {
+            "id": "model",
+            "variants": [
+              "model"
+            ],
+            "present": true,
+            "df": 6,
+            "weight": 2.1316272948504063,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/sanitize.ts",
+            "score": 31.923,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "mask",
+            "contributions": [
+              {
+                "group": "api",
+                "primary": 5.24,
+                "synonym": 0.21,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "token",
+                "primary": 3.37,
+                "synonym": 1.49,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "password",
+                "primary": 6.29,
+                "synonym": 0.29,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 0,
+                "synonym": 2.83,
+                "path": 2.84,
+                "declared": 3.78
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/semantic.ts",
+            "score": 25.196,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "api",
+                "primary": 3.49,
+                "synonym": 0.21,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "token",
+                "primary": 2.88,
+                "synonym": 1.15,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "password",
+                "primary": 4.87,
+                "synonym": 0.29,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "model",
+                "primary": 4.26,
+                "synonym": 0.26,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/empirical-10-tests.ts",
+            "score": 15.687,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "api",
+                "primary": 5.24,
+                "synonym": 0.21,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "token",
+                "primary": 5.21,
+                "synonym": 0.86,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "password",
+                "primary": 4.87,
+                "synonym": 0.29,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 2.84,
+                "synonym": 2.47,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/CHANGELOG.md",
+            "score": 14.756,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "api",
+                "primary": 4.51,
+                "synonym": 0.21,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "token",
+                "primary": 2.27,
+                "synonym": 1.2,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 0,
+                "synonym": 1.62,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "reach",
+                "primary": 0.66,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "model",
+                "primary": 4.26,
+                "synonym": 0.26,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 14.448,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "token",
+                "primary": 3.56,
+                "synonym": 0.95,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 1.89,
+                "synonym": 1.08,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "model",
+                "primary": 4.26,
+                "synonym": 0.26,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/formatter.ts",
+            "score": 12.647,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "token",
+                "primary": 3.56,
+                "synonym": 1.06,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 2.45,
+                "synonym": 2.27,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/index.ts",
+            "score": 12.623,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "api",
+                "primary": 4.51,
+                "synonym": 0.21,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "token",
+                "primary": 4.22,
+                "synonym": 1.29,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 3.78,
+                "synonym": 1.98,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/AUDIT-2026-10-14.md",
+            "score": 11.524,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "api",
+                "primary": 4.51,
+                "synonym": 0.21,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "token",
+                "primary": 3.47,
+                "synonym": 1.79,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 2.45,
+                "synonym": 1.84,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/sanitize.test.ts",
+            "score": 11.513,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "token",
+                "primary": 2.27,
+                "synonym": 1.2,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "mask",
+                "primary": 0,
+                "synonym": 2.89,
+                "path": 2.84,
+                "declared": 0
+              },
+              {
+                "group": "reach",
+                "primary": 0.66,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "model",
+                "primary": 4.26,
+                "synonym": 0.26,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/telemetry.ts",
+            "score": 10.992,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": "token",
+            "contributions": [
+              {
+                "group": "token",
+                "primary": 4.03,
+                "synonym": 1.2,
+                "path": 0,
+                "declared": 3.03
+              },
+              {
+                "group": "mask",
+                "primary": 0,
+                "synonym": 1.08,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 1,
+        "success_recall_at_3": 0.3333333333333333,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.8632631070688446,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE04",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "is there a cache with a ttl for the ignore rules",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "engine/src/deny.rs",
+        "src/recursive-learning.ts",
+        "src/client.ts",
+        "src/sanitize.ts",
+        "index.ts",
+        "engine/src/engine.rs",
+        "src/types.ts",
+        "engine/src/git.rs",
+        "engine/src/server.rs",
+        "ROADMAP.md"
+      ],
+      "ms": 29.078500000000076,
+      "error": null,
+      "extra": {
+        "confidence": 0.8979360443003704,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "cache",
+          "ttl",
+          "expire",
+          "stale",
+          "memoize",
+          "expiration",
+          "ignorecache",
+          "ignore",
+          "gitignore",
+          "rule"
+        ],
+        "groups": [
+          {
+            "id": "cache",
+            "variants": [
+              "cache",
+              "ttl",
+              "expire",
+              "stale",
+              "memoize",
+              "expiration"
+            ],
+            "present": true,
+            "df": 33,
+            "weight": 0.9622758451159785,
+            "generic": false
+          },
+          {
+            "id": "ttl",
+            "variants": [
+              "ttl",
+              "cache",
+              "expire",
+              "expiration",
+              "stale",
+              "ignorecache"
+            ],
+            "present": true,
+            "df": 33,
+            "weight": 0.9622758451159785,
+            "generic": false
+          },
+          {
+            "id": "ignore",
+            "variants": [
+              "ignore",
+              "gitignore",
+              "rule",
+              "filter",
+              "exclude",
+              "matcher",
+              "pattern"
+            ],
+            "present": true,
+            "df": 52,
+            "weight": 0.7118393135720978,
+            "generic": false
+          },
+          {
+            "id": "rule",
+            "variants": [
+              "rule"
+            ],
+            "present": true,
+            "df": 29,
+            "weight": 1.041453874828161,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/deny.rs",
+            "score": 35.191,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "cache",
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 4.29,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ttl",
+                "primary": 0,
+                "synonym": 2.05,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ignore",
+                "primary": 1.42,
+                "synonym": 1.39,
+                "path": 0,
+                "declared": 2.85
+              },
+              {
+                "group": "rule",
+                "primary": 3.97,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 4.17
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/recursive-learning.ts",
+            "score": 31.31,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "cache",
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 4.01,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ttl",
+                "primary": 0,
+                "synonym": 1.92,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ignore",
+                "primary": 0,
+                "synonym": 1.9,
+                "path": 0,
+                "declared": 2.85
+              },
+              {
+                "group": "rule",
+                "primary": 4.34,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 24.011,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ignore",
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 4.81,
+                "synonym": 2.55,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ttl",
+                "primary": 2.89,
+                "synonym": 2.55,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignore",
+                "primary": 4.81,
+                "synonym": 2.61,
+                "path": 0,
+                "declared": 2.85
+              },
+              {
+                "group": "rule",
+                "primary": 5.38,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/sanitize.ts",
+            "score": 20.762,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": "ignore",
+            "contributions": [
+              {
+                "group": "ignore",
+                "primary": 3.84,
+                "synonym": 2.5,
+                "path": 0,
+                "declared": 2.85
+              },
+              {
+                "group": "rule",
+                "primary": 3.97,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 4.17
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/index.ts",
+            "score": 17.175,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": "cache",
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 4.41,
+                "synonym": 1.47,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ttl",
+                "primary": 2.49,
+                "synonym": 2.33,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ignore",
+                "primary": 1.84,
+                "synonym": 2.08,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/engine.rs",
+            "score": 16.034,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "cache",
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 3.2,
+                "synonym": 2.67,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ttl",
+                "primary": 0,
+                "synonym": 2.67,
+                "path": 0,
+                "declared": 3.85
+              },
+              {
+                "group": "ignore",
+                "primary": 1.42,
+                "synonym": 1.9,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "rule",
+                "primary": 2.69,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/types.ts",
+            "score": 15.619,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 0,
+                "synonym": 1.67,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ttl",
+                "primary": 0,
+                "synonym": 1.67,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignore",
+                "primary": 2.55,
+                "synonym": 1.71,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "rule",
+                "primary": 3.12,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/git.rs",
+            "score": 15.487,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": "ignore",
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 2.89,
+                "synonym": 1.78,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ttl",
+                "primary": 0,
+                "synonym": 1.67,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignore",
+                "primary": 3.74,
+                "synonym": 2.05,
+                "path": 0,
+                "declared": 2.85
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 13.77,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 2.49,
+                "synonym": 2.22,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ttl",
+                "primary": 0,
+                "synonym": 2.22,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignore",
+                "primary": 3.79,
+                "synonym": 2.28,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "rule",
+                "primary": 3.12,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/ROADMAP.md",
+            "score": 13.269,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "cache",
+                "primary": 2.49,
+                "synonym": 1.1,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ttl",
+                "primary": 0,
+                "synonym": 1.35,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignore",
+                "primary": 2.55,
+                "synonym": 1.58,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "rule",
+                "primary": 3.73,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0.5,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 0.5,
+        "mrr_at_10": 0.3333333333333333,
+        "ndcg_at_10": 0.5388668879616774,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE05",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "where is the ipc request handler and response correlation id",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/client.ts",
+        "src/types.ts",
+        "src/mcp.ts",
+        "test/helpers/mock-daemon.ts",
+        "engine/src/server.rs",
+        "engine/src/engine.rs",
+        "engine/src/fsevents.rs",
+        "src/semantic.ts",
+        "engine/src/mcp.rs",
+        "test/client-features.test.ts"
+      ],
+      "ms": 31.965542000000028,
+      "error": null,
+      "extra": {
+        "confidence": 0.8883012821645119,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=false decl=true dense=true)",
+        "expanded": [
+          "ipc",
+          "lane",
+          "dispatch",
+          "pend",
+          "socket",
+          "request",
+          "response",
+          "handler",
+          "reply",
+          "correlation"
+        ],
+        "groups": [
+          {
+            "id": "ipc",
+            "variants": [
+              "ipc",
+              "lane",
+              "dispatch",
+              "pend",
+              "socket",
+              "request"
+            ],
+            "present": true,
+            "df": 61,
+            "weight": 0.7781403933933381,
+            "generic": false
+          },
+          {
+            "id": "request",
+            "variants": [
+              "request",
+              "response",
+              "dispatch",
+              "lane",
+              "pend"
+            ],
+            "present": true,
+            "df": 47,
+            "weight": 0.9245895346888501,
+            "generic": false
+          },
+          {
+            "id": "handler",
+            "variants": [
+              "handler"
+            ],
+            "present": true,
+            "df": 12,
+            "weight": 1.889397938791971,
+            "generic": false
+          },
+          {
+            "id": "response",
+            "variants": [
+              "response",
+              "request",
+              "reply"
+            ],
+            "present": true,
+            "df": 36,
+            "weight": 1.0895624531481918,
+            "generic": false
+          },
+          {
+            "id": "correlation",
+            "variants": [
+              "correlation",
+              "id",
+              "dispatch",
+              "pend",
+              "request",
+              "response"
+            ],
+            "present": true,
+            "df": 55,
+            "weight": 0.834460713626523,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 31.811,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ipc",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 3.25,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "request",
+                "primary": 5.22,
+                "synonym": 3.86,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "response",
+                "primary": 6.02,
+                "synonym": 3.03,
+                "path": 0,
+                "declared": 4.36
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 2.62,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/types.ts",
+            "score": 31.101,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "request",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 1,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "request",
+                "primary": 2.39,
+                "synonym": 1.71,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "response",
+                "primary": 3.91,
+                "synonym": 1.53,
+                "path": 0,
+                "declared": 4.36
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 1.65,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 26.057,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 1.9,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "request",
+                "primary": 4.54,
+                "synonym": 2,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "handler",
+                "primary": 3.78,
+                "synonym": 0.23,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "response",
+                "primary": 4.36,
+                "synonym": 2.8,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 2.24,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/helpers/mock-daemon.ts",
+            "score": 22.221,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ipc",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 2.09,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "request",
+                "primary": 4.24,
+                "synonym": 2.37,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "response",
+                "primary": 0,
+                "synonym": 2.51,
+                "path": 0,
+                "declared": 4.36
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 1.92,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 22.023,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ipc",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 2.03,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "request",
+                "primary": 4.62,
+                "synonym": 1.05,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "response",
+                "primary": 0,
+                "synonym": 2.71,
+                "path": 0,
+                "declared": 4.36
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 2.24,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/engine.rs",
+            "score": 20.847,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "ipc",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 2.27,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "request",
+                "primary": 3.86,
+                "synonym": 2.7,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "handler",
+                "primary": 4.88,
+                "synonym": 0.23,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "response",
+                "primary": 0,
+                "synonym": 2.18,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 2.94,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/fsevents.rs",
+            "score": 20.137,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": "ipc",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 1.35,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "request",
+                "primary": 0,
+                "synonym": 1.6,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 1.87,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/semantic.ts",
+            "score": 18.919,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 0.79,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "request",
+                "primary": 1.85,
+                "synonym": 1.05,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "handler",
+                "primary": 3.78,
+                "synonym": 0.23,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "response",
+                "primary": 2.18,
+                "synonym": 1.24,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 0.95,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/mcp.rs",
+            "score": 16.56,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ipc",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 1.7,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "request",
+                "primary": 4.24,
+                "synonym": 0.11,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "response",
+                "primary": 0,
+                "synonym": 2.51,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 2.25,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/client-features.test.ts",
+            "score": 16.406,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ipc",
+            "contributions": [
+              {
+                "group": "ipc",
+                "primary": 0,
+                "synonym": 1.79,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "request",
+                "primary": 4,
+                "synonym": 1.41,
+                "path": 0,
+                "declared": 3.7
+              },
+              {
+                "group": "response",
+                "primary": 2.82,
+                "synonym": 2.89,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "correlation",
+                "primary": 0,
+                "synonym": 1.92,
+                "path": 0,
+                "declared": 3.34
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.6666666666666666,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.9467676761267002,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE06",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "what stops a runaway regular expression from reaching the daemon",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/validate.ts",
+        "engine/src/server.rs",
+        "src/sanitize.ts",
+        "src/client.ts",
+        "engine/src/mcp.rs",
+        "src/recursive-learning.ts",
+        "engine/src/main.rs",
+        "src/tui.ts",
+        "test/client-features.test.ts",
+        "src/mcp.ts"
+      ],
+      "ms": 37.44116699999995,
+      "error": null,
+      "extra": {
+        "confidence": 0.8927707065098157,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "stop",
+          "runaway",
+          "catastrophic",
+          "backtrack",
+          "reject",
+          "escape",
+          "regular",
+          "regex",
+          "pattern",
+          "validate"
+        ],
+        "groups": [
+          {
+            "id": "stop",
+            "variants": [
+              "stop"
+            ],
+            "present": true,
+            "df": 26,
+            "weight": 1.1814999484738773,
+            "generic": false
+          },
+          {
+            "id": "runaway",
+            "variants": [
+              "runaway",
+              "catastrophic",
+              "backtrack",
+              "reject",
+              "escape"
+            ],
+            "present": true,
+            "df": 24,
+            "weight": 1.235471471385307,
+            "generic": false
+          },
+          {
+            "id": "regular",
+            "variants": [
+              "regular",
+              "regex",
+              "pattern",
+              "validate",
+              "reject",
+              "catastrophic",
+              "backtrack",
+              "quantifier",
+              "compile"
+            ],
+            "present": true,
+            "df": 49,
+            "weight": 0.797507195884188,
+            "generic": false
+          },
+          {
+            "id": "expression",
+            "variants": [
+              "expression",
+              "regex",
+              "pattern"
+            ],
+            "present": true,
+            "df": 45,
+            "weight": 0.8441874379728113,
+            "generic": false
+          },
+          {
+            "id": "reach",
+            "variants": [
+              "reach"
+            ],
+            "present": true,
+            "df": 21,
+            "weight": 0.33194953860957055,
+            "generic": true
+          },
+          {
+            "id": "daemon",
+            "variants": [
+              "daemon",
+              "resident",
+              "serve",
+              "socket",
+              "sock",
+              "spawn",
+              "reconnect",
+              "retry",
+              "fallback",
+              "server"
+            ],
+            "present": true,
+            "df": 55,
+            "weight": 0.736822244062607,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/validate.ts",
+            "score": 33.303,
+            "coverage": 5,
+            "path_hit": true,
+            "declared": "regular",
+            "contributions": [
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 2.44,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 1.6,
+                "synonym": 2.3,
+                "path": 2.39,
+                "declared": 3.19
+              },
+              {
+                "group": "expression",
+                "primary": 1.69,
+                "synonym": 2.24,
+                "path": 0,
+                "declared": 3.38
+              },
+              {
+                "group": "reach",
+                "primary": 0.86,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 1.9,
+                "synonym": 0.84,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 27.647,
+            "coverage": 6,
+            "path_hit": true,
+            "declared": "stop",
+            "contributions": [
+              {
+                "group": "stop",
+                "primary": 4.24,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 4.73
+              },
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 1.82,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 2.07,
+                "path": 0,
+                "declared": 3.19
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 2.2,
+                "path": 0,
+                "declared": 3.38
+              },
+              {
+                "group": "reach",
+                "primary": 1,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 3.75,
+                "synonym": 1.92,
+                "path": 2.21,
+                "declared": 2.95
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/sanitize.ts",
+            "score": 20.119,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "regular",
+            "contributions": [
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 2.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 2.51,
+                "path": 0,
+                "declared": 3.19
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 2.66,
+                "path": 0,
+                "declared": 3.38
+              },
+              {
+                "group": "daemon",
+                "primary": 1.9,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 20.051,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "stop",
+            "contributions": [
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 2.88,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 2.52,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 2.46,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "reach",
+                "primary": 0.66,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 3.81,
+                "synonym": 2.98,
+                "path": 0,
+                "declared": 2.95
+              },
+              {
+                "group": "stop",
+                "primary": 0,
+                "synonym": 0,
+                "path": 0,
+                "declared": 4.73
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/mcp.rs",
+            "score": 18.587,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "regular",
+            "contributions": [
+              {
+                "group": "stop",
+                "primary": 2.36,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 2.55,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 2.6,
+                "path": 0,
+                "declared": 3.19
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 2.75,
+                "path": 0,
+                "declared": 3.38
+              },
+              {
+                "group": "reach",
+                "primary": 0.66,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 3.75,
+                "synonym": 1.35,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/recursive-learning.ts",
+            "score": 16.416,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": "regular",
+            "contributions": [
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 2.03,
+                "path": 0,
+                "declared": 3.19
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 2.15,
+                "path": 0,
+                "declared": 3.38
+              },
+              {
+                "group": "daemon",
+                "primary": 0,
+                "synonym": 0.84,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/main.rs",
+            "score": 15.764,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "stop",
+                "primary": 3.05,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 0.81,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 0.86,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "reach",
+                "primary": 0.86,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 3.68,
+                "synonym": 1.77,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/tui.ts",
+            "score": 14.7,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "stop",
+                "primary": 2.36,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 1.26,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 1.46,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 1.55,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 2.81,
+                "synonym": 0.93,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/client-features.test.ts",
+            "score": 13.832,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "stop",
+                "primary": 2.36,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 1.41,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 2.41,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 2.25,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "reach",
+                "primary": 1.19,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 5.35,
+                "synonym": 1.63,
+                "path": 0,
+                "declared": 2.95
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 13.581,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "runaway",
+                "primary": 0,
+                "synonym": 1.59,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "regular",
+                "primary": 0,
+                "synonym": 2.22,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "expression",
+                "primary": 0,
+                "synonym": 2.25,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "daemon",
+                "primary": 0,
+                "synonym": 1.68,
+                "path": 0,
+                "declared": 2.95
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0.25,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.75,
+        "success_recall_at_3": 0.3333333333333333,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.8495540906361897,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE07",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "what happens when the daemon socket goes away in the middle of a session",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/client.ts",
+        "engine/src/server.rs",
+        "src/telemetry.ts",
+        "test/fallback.test.ts",
+        "test/helpers/mock-daemon.ts",
+        "src/tui.ts",
+        "AUDIT-2026-10-14.md",
+        "test/ipc-lanes.test.ts",
+        "test/e2e-regressions.test.ts",
+        "README.md"
+      ],
+      "ms": 51.634041000000025,
+      "error": null,
+      "extra": {
+        "confidence": 0.8238609622652697,
+        "abstained": false,
+        "coverage_ratio": 0.8571428571428571,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "happen",
+          "daemon",
+          "resident",
+          "serve",
+          "socket",
+          "sock",
+          "spawn",
+          "reconnect",
+          "retry",
+          "fallback"
+        ],
+        "groups": [
+          {
+            "id": "happen",
+            "variants": [
+              "happen"
+            ],
+            "present": true,
+            "df": 5,
+            "weight": 0.6444220958097416,
+            "generic": true
+          },
+          {
+            "id": "daemon",
+            "variants": [
+              "daemon",
+              "resident",
+              "serve",
+              "socket",
+              "sock",
+              "spawn",
+              "reconnect",
+              "retry",
+              "fallback",
+              "server"
+            ],
+            "present": true,
+            "df": 73,
+            "weight": 0.6863674935745665,
+            "generic": false
+          },
+          {
+            "id": "socket",
+            "variants": [
+              "socket",
+              "daemon",
+              "sock",
+              "reconnect",
+              "retry",
+              "fallback",
+              "ipc",
+              "connect",
+              "unix"
+            ],
+            "present": true,
+            "df": 68,
+            "weight": 0.7217205530040015,
+            "generic": false
+          },
+          {
+            "id": "goe",
+            "variants": [
+              "goe"
+            ],
+            "present": false,
+            "df": 0,
+            "weight": 1.0760162733010423,
+            "generic": true
+          },
+          {
+            "id": "away",
+            "variants": [
+              "away",
+              "gone",
+              "disconnect",
+              "reconnect",
+              "fallback",
+              "dead",
+              "exit",
+              "disappear"
+            ],
+            "present": true,
+            "df": 42,
+            "weight": 0.24809751885320053,
+            "generic": true
+          },
+          {
+            "id": "middle",
+            "variants": [
+              "middle"
+            ],
+            "present": true,
+            "df": 2,
+            "weight": 0.8080302629045554,
+            "generic": true
+          },
+          {
+            "id": "session",
+            "variants": [
+              "session",
+              "token",
+              "auth",
+              "login",
+              "cookie",
+              "resident"
+            ],
+            "present": true,
+            "df": 43,
+            "weight": 0.9779843008794951,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 18.709,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 3.55,
+                "synonym": 2.78,
+                "path": 0,
+                "declared": 2.75
+              },
+              {
+                "group": "socket",
+                "primary": 4.33,
+                "synonym": 2.92,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.91,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 0,
+                "synonym": 1.7,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 17.951,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 3.49,
+                "synonym": 1.79,
+                "path": 2.06,
+                "declared": 2.75
+              },
+              {
+                "group": "socket",
+                "primary": 3.12,
+                "synonym": 2.09,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "away",
+                "primary": 0.64,
+                "synonym": 0.31,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 2.53,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/telemetry.ts",
+            "score": 17.604,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "session",
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 1.77,
+                "synonym": 1.4,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "socket",
+                "primary": 0,
+                "synonym": 1.47,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.48,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 2.93,
+                "synonym": 2.58,
+                "path": 0,
+                "declared": 3.91
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/fallback.test.ts",
+            "score": 16.824,
+            "coverage": 4,
+            "path_hit": true,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 2.06,
+                "synonym": 1.98,
+                "path": 2.06,
+                "declared": 2.75
+              },
+              {
+                "group": "socket",
+                "primary": 2.17,
+                "synonym": 2.03,
+                "path": 2.17,
+                "declared": 2.89
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.64,
+                "path": 0.74,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 0,
+                "synonym": 1.44,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/helpers/mock-daemon.ts",
+            "score": 15.612,
+            "coverage": 2,
+            "path_hit": true,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 2.46,
+                "synonym": 1.93,
+                "path": 2.06,
+                "declared": 2.75
+              },
+              {
+                "group": "socket",
+                "primary": 3.47,
+                "synonym": 2.11,
+                "path": 2.17,
+                "declared": 2.89
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/tui.ts",
+            "score": 15.029,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 2.61,
+                "synonym": 0.86,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "socket",
+                "primary": 1.44,
+                "synonym": 1.58,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.54,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 1.96,
+                "synonym": 2.3,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/AUDIT-2026-10-14.md",
+            "score": 15.014,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 3.95,
+                "synonym": 1.9,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "socket",
+                "primary": 3.01,
+                "synonym": 2.3,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.66,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 4.36,
+                "synonym": 2.37,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/ipc-lanes.test.ts",
+            "score": 14.393,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 4.34,
+                "synonym": 1.78,
+                "path": 0,
+                "declared": 2.75
+              },
+              {
+                "group": "socket",
+                "primary": 3.39,
+                "synonym": 2.4,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.25,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/e2e-regressions.test.ts",
+            "score": 14.356,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "daemon",
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 4.15,
+                "synonym": 1.62,
+                "path": 0,
+                "declared": 2.75
+              },
+              {
+                "group": "socket",
+                "primary": 3.01,
+                "synonym": 2.22,
+                "path": 0,
+                "declared": 2.89
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.25,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 0,
+                "synonym": 1.81,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/README.md",
+            "score": 14.042,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "daemon",
+                "primary": 3.95,
+                "synonym": 1.7,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "socket",
+                "primary": 3.01,
+                "synonym": 2.3,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "away",
+                "primary": 0,
+                "synonym": 0.48,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "session",
+                "primary": 2.53,
+                "synonym": 1.93,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_3": 0.5,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.882808018370203,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE08",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "keep results inside the workspace even if a symlink points out of it",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "engine/src/server.rs",
+        "engine/src/deny.rs",
+        "src/sanitize.ts",
+        "engine/src/env.rs",
+        "engine/src/mcp.rs",
+        "engine/src/alloc.rs",
+        "src/mcp.ts",
+        "src/client.ts",
+        "index.ts",
+        "engine/src/git.rs"
+      ],
+      "ms": 42.37087500000007,
+      "error": null,
+      "extra": {
+        "confidence": 0.8719532783456337,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=false decl=true dense=true)",
+        "expanded": [
+          "keep",
+          "result",
+          "inside",
+          "within",
+          "outside",
+          "pathsafe",
+          "scope",
+          "boundary",
+          "contain",
+          "escape"
+        ],
+        "groups": [
+          {
+            "id": "keep",
+            "variants": [
+              "keep"
+            ],
+            "present": true,
+            "df": 31,
+            "weight": 1.1786549963416462,
+            "generic": false
+          },
+          {
+            "id": "result",
+            "variants": [
+              "result"
+            ],
+            "present": true,
+            "df": 48,
+            "weight": 0.2259925618715286,
+            "generic": true
+          },
+          {
+            "id": "inside",
+            "variants": [
+              "inside",
+              "within",
+              "outside",
+              "pathsafe",
+              "scope",
+              "boundary",
+              "contain",
+              "escape"
+            ],
+            "present": true,
+            "df": 61,
+            "weight": 0.7707054149058198,
+            "generic": false
+          },
+          {
+            "id": "workspace",
+            "variants": [
+              "workspace",
+              "worktree",
+              "root",
+              "scope",
+              "repository",
+              "boundary"
+            ],
+            "present": true,
+            "df": 56,
+            "weight": 0.8167611365271219,
+            "generic": false
+          },
+          {
+            "id": "even",
+            "variants": [
+              "even"
+            ],
+            "present": true,
+            "df": 9,
+            "weight": 0.5260335385675519,
+            "generic": true
+          },
+          {
+            "id": "symlink",
+            "variants": [
+              "symlink",
+              "realpath",
+              "resolve",
+              "escape",
+              "traverse",
+              "outside",
+              "prefix"
+            ],
+            "present": true,
+            "df": 47,
+            "weight": 0.9162907318741551,
+            "generic": false
+          },
+          {
+            "id": "point",
+            "variants": [
+              "point"
+            ],
+            "present": true,
+            "df": 18,
+            "weight": 0.39160513183760237,
+            "generic": true
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 27.239,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "keep",
+            "contributions": [
+              {
+                "group": "keep",
+                "primary": 5.54,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 4.71
+              },
+              {
+                "group": "result",
+                "primary": 1.31,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 2.76,
+                "synonym": 2.68,
+                "path": 0,
+                "declared": 3.08
+              },
+              {
+                "group": "workspace",
+                "primary": 0,
+                "synonym": 2.64,
+                "path": 0,
+                "declared": 3.27
+              },
+              {
+                "group": "even",
+                "primary": 1.36,
+                "synonym": 0.06,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "symlink",
+                "primary": 3.04,
+                "synonym": 2.44,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/deny.rs",
+            "score": 25.732,
+            "coverage": 7,
+            "path_hit": false,
+            "declared": "symlink",
+            "contributions": [
+              {
+                "group": "keep",
+                "primary": 2.36,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 0.75,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 1.99,
+                "synonym": 1.27,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "workspace",
+                "primary": 0,
+                "synonym": 0.93,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "even",
+                "primary": 1.36,
+                "synonym": 0.06,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "symlink",
+                "primary": 2.75,
+                "synonym": 2.35,
+                "path": 0,
+                "declared": 3.67
+              },
+              {
+                "group": "point",
+                "primary": 0.78,
+                "synonym": 0.05,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/sanitize.ts",
+            "score": 24.97,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "inside",
+            "contributions": [
+              {
+                "group": "result",
+                "primary": 0.45,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 2.56,
+                "synonym": 2.09,
+                "path": 0,
+                "declared": 3.08
+              },
+              {
+                "group": "workspace",
+                "primary": 1.63,
+                "synonym": 2.16,
+                "path": 0,
+                "declared": 3.27
+              },
+              {
+                "group": "symlink",
+                "primary": 2.37,
+                "synonym": 2.53,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/env.rs",
+            "score": 24.293,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "workspace",
+            "contributions": [
+              {
+                "group": "inside",
+                "primary": 0,
+                "synonym": 0.79,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "workspace",
+                "primary": 0,
+                "synonym": 2.07,
+                "path": 0,
+                "declared": 3.27
+              },
+              {
+                "group": "even",
+                "primary": 1.05,
+                "synonym": 0.06,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "symlink",
+                "primary": 3.28,
+                "synonym": 1.46,
+                "path": 0,
+                "declared": 3.67
+              },
+              {
+                "group": "point",
+                "primary": 1.01,
+                "synonym": 0.05,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/mcp.rs",
+            "score": 19.103,
+            "coverage": 7,
+            "path_hit": false,
+            "declared": "inside",
+            "contributions": [
+              {
+                "group": "keep",
+                "primary": 3.92,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 1.28,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 1.54,
+                "synonym": 2.62,
+                "path": 0,
+                "declared": 3.08
+              },
+              {
+                "group": "workspace",
+                "primary": 0,
+                "synonym": 2.45,
+                "path": 0,
+                "declared": 3.27
+              },
+              {
+                "group": "even",
+                "primary": 1.05,
+                "synonym": 0.06,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "symlink",
+                "primary": 0,
+                "synonym": 2.49,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "point",
+                "primary": 1.01,
+                "synonym": 0.05,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/alloc.rs",
+            "score": 17.815,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": "keep",
+            "contributions": [
+              {
+                "group": "keep",
+                "primary": 5.54,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 4.71
+              },
+              {
+                "group": "inside",
+                "primary": 1.54,
+                "synonym": 0.88,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "workspace",
+                "primary": 0,
+                "synonym": 0.83,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 17.23,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "keep",
+                "primary": 2.36,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 1.13,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 1.54,
+                "synonym": 1.87,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "workspace",
+                "primary": 2.71,
+                "synonym": 2.23,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "symlink",
+                "primary": 0,
+                "synonym": 1.59,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 17.07,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "symlink",
+            "contributions": [
+              {
+                "group": "keep",
+                "primary": 3.54,
+                "synonym": 0.14,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 1.17,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 0,
+                "synonym": 2.71,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "workspace",
+                "primary": 0,
+                "synonym": 2.77,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "symlink",
+                "primary": 2.37,
+                "synonym": 2.85,
+                "path": 0,
+                "declared": 3.67
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/index.ts",
+            "score": 16.304,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "workspace",
+            "contributions": [
+              {
+                "group": "result",
+                "primary": 1.41,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 1.54,
+                "synonym": 2.31,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "workspace",
+                "primary": 3.53,
+                "synonym": 2.92,
+                "path": 0,
+                "declared": 3.27
+              },
+              {
+                "group": "symlink",
+                "primary": 0,
+                "synonym": 1.94,
+                "path": 0,
+                "declared": 3.67
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/git.rs",
+            "score": 16.148,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "inside",
+            "contributions": [
+              {
+                "group": "result",
+                "primary": 0.68,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "inside",
+                "primary": 0,
+                "synonym": 1.23,
+                "path": 0,
+                "declared": 3.08
+              },
+              {
+                "group": "workspace",
+                "primary": 0,
+                "synonym": 2.56,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "symlink",
+                "primary": 2.37,
+                "synonym": 1.57,
+                "path": 0,
+                "declared": 3.67
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0.3333333333333333,
+        "recall_at_5": 0.3333333333333333,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_3": 0.3333333333333333,
+        "mrr_at_10": 0.3333333333333333,
+        "ndcg_at_10": 0.34708776240498096,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE09",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "which files decide what gets ignored while searching a project",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "engine/src/git.rs",
+        "engine/src/mcp.rs",
+        "src/client.ts",
+        "engine/src/coverage.rs",
+        "src/sanitize.ts",
+        "src/mcp.ts",
+        "index.ts",
+        "src/codemode.ts",
+        "src/telemetry.ts",
+        "engine/src/server.rs"
+      ],
+      "ms": 32.60624999999993,
+      "error": null,
+      "extra": {
+        "confidence": 0.8501261825456529,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "file",
+          "decide",
+          "get",
+          "ignor",
+          "gitignore",
+          "rule",
+          "filter",
+          "exclude",
+          "matcher",
+          "pattern"
+        ],
+        "groups": [
+          {
+            "id": "file",
+            "variants": [
+              "file"
+            ],
+            "present": true,
+            "df": 71,
+            "weight": 0.1996269240544429,
+            "generic": true
+          },
+          {
+            "id": "decide",
+            "variants": [
+              "decide"
+            ],
+            "present": true,
+            "df": 8,
+            "weight": 0.5943716002917909,
+            "generic": true
+          },
+          {
+            "id": "get",
+            "variants": [
+              "get"
+            ],
+            "present": true,
+            "df": 36,
+            "weight": 0.3043489561645192,
+            "generic": true
+          },
+          {
+            "id": "ignor",
+            "variants": [
+              "ignor",
+              "gitignore",
+              "rule",
+              "filter",
+              "exclude",
+              "matcher",
+              "pattern"
+            ],
+            "present": true,
+            "df": 66,
+            "weight": 0.8387324975282806,
+            "generic": false
+          },
+          {
+            "id": "search",
+            "variants": [
+              "search"
+            ],
+            "present": true,
+            "df": 74,
+            "weight": 0.7762620872704519,
+            "generic": false
+          },
+          {
+            "id": "project",
+            "variants": [
+              "project"
+            ],
+            "present": true,
+            "df": 20,
+            "weight": 1.6468254445057207,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/git.rs",
+            "score": 22.689,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "ignor",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.14,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "decide",
+                "primary": 1.54,
+                "synonym": 0.07,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 1.68,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 4.34,
+                "synonym": 2.41,
+                "path": 0,
+                "declared": 3.35
+              },
+              {
+                "group": "search",
+                "primary": 2.96,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "project",
+                "primary": 3.29,
+                "synonym": 0.2,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/mcp.rs",
+            "score": 20.992,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "ignor",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.53,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "decide",
+                "primary": 1.19,
+                "synonym": 0.07,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 1.46,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 3.19,
+                "synonym": 2.97,
+                "path": 0,
+                "declared": 3.35
+              },
+              {
+                "group": "search",
+                "primary": 4.24,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "project",
+                "primary": 7.74,
+                "synonym": 0.2,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 18.646,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ignor",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.49,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 1.36,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 3.62,
+                "synonym": 3.07,
+                "path": 0,
+                "declared": 3.35
+              },
+              {
+                "group": "search",
+                "primary": 5.58,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.11
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/coverage.rs",
+            "score": 18.479,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.11,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 1.09,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 2.17,
+                "synonym": 1.56,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 2.58,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "project",
+                "primary": 4.26,
+                "synonym": 0.2,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/sanitize.ts",
+            "score": 16.759,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "ignor",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.03,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 0.61,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 2.79,
+                "synonym": 2.94,
+                "path": 0,
+                "declared": 3.35
+              },
+              {
+                "group": "search",
+                "primary": 2.01,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 16.747,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.18,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 0.61,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 1.68,
+                "synonym": 2.34,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.59,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.11
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/index.ts",
+            "score": 16.052,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.35,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "decide",
+                "primary": 1.19,
+                "synonym": 0.07,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 0.61,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 1.68,
+                "synonym": 2.45,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 5.16,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.11
+              },
+              {
+                "group": "project",
+                "primary": 3.29,
+                "synonym": 0.2,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/codemode.ts",
+            "score": 15.728,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 0.92,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 0.61,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 0,
+                "synonym": 1.88,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 3.73,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.11
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/telemetry.ts",
+            "score": 15.465,
+            "coverage": 4,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.38,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 1.09,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 0,
+                "synonym": 2.22,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.59,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 3.11
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 14.463,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "file",
+                "primary": 1.47,
+                "synonym": 0.02,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "decide",
+                "primary": 1.19,
+                "synonym": 0.07,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "get",
+                "primary": 1.87,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "ignor",
+                "primary": 4.46,
+                "synonym": 2.68,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.76,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.5,
+        "recall_at_10": 0.5,
+        "success_recall_at_3": 0.3333333333333333,
+        "mrr_at_10": 0.3333333333333333,
+        "ndcg_at_10": 0.388782088943954,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE10",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "why does a whole disk search return partial results",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "engine/src/walk.rs",
+        "src/mcp.ts",
+        "src/codemode.ts",
+        "src/types.ts",
+        "src/telemetry.ts",
+        "index.ts",
+        "src/client.ts",
+        "engine/src/engine.rs",
+        "engine/src/main.rs",
+        "engine/src/server.rs"
+      ],
+      "ms": 39.36033299999997,
+      "error": null,
+      "extra": {
+        "confidence": 0.8783427433051668,
+        "abstained": false,
+        "coverage_ratio": 1,
+        "reason": "terms present (path=true decl=true dense=true)",
+        "expanded": [
+          "whole",
+          "disk",
+          "global",
+          "entire",
+          "scan",
+          "filesystem",
+          "volume",
+          "search",
+          "return",
+          "partial"
+        ],
+        "groups": [
+          {
+            "id": "whole",
+            "variants": [
+              "whole",
+              "disk",
+              "global",
+              "entire",
+              "scan"
+            ],
+            "present": true,
+            "df": 54,
+            "weight": 0.23357730934420834,
+            "generic": true
+          },
+          {
+            "id": "disk",
+            "variants": [
+              "disk",
+              "global",
+              "whole",
+              "filesystem",
+              "volume"
+            ],
+            "present": true,
+            "df": 52,
+            "weight": 0.9569617716050828,
+            "generic": false
+          },
+          {
+            "id": "search",
+            "variants": [
+              "search"
+            ],
+            "present": true,
+            "df": 76,
+            "weight": 0.7437909133787003,
+            "generic": false
+          },
+          {
+            "id": "return",
+            "variants": [
+              "return"
+            ],
+            "present": true,
+            "df": 62,
+            "weight": 0.2135193868431456,
+            "generic": true
+          },
+          {
+            "id": "partial",
+            "variants": [
+              "partial",
+              "incomplete",
+              "truncate",
+              "budget",
+              "limit",
+              "complete",
+              "ceil",
+              "cap"
+            ],
+            "present": true,
+            "df": 53,
+            "weight": 0.9454898865664175,
+            "generic": false
+          },
+          {
+            "id": "result",
+            "variants": [
+              "result"
+            ],
+            "present": true,
+            "df": 45,
+            "weight": 0.26163898167801414,
+            "generic": true
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/walk.rs",
+            "score": 28.879,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "disk",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0.84,
+                "synonym": 0.61,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 4.78,
+                "synonym": 1.89,
+                "path": 0,
+                "declared": 3.83
+              },
+              {
+                "group": "search",
+                "primary": 3.1,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 1,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 0,
+                "synonym": 1.21,
+                "path": 0,
+                "declared": 3.78
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 26.138,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0.6,
+                "synonym": 0.46,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 2.87,
+                "synonym": 1.78,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.39,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 1.32,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 2.84,
+                "synonym": 2.73,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 1.31,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/codemode.ts",
+            "score": 24.837,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0.7,
+                "synonym": 0.46,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 2.87,
+                "synonym": 1.89,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 3.58,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 0.98,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 0,
+                "synonym": 2.46,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 0.52,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/types.ts",
+            "score": 24.651,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0,
+                "synonym": 0.46,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 2.47,
+                "synonym": 1.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.01,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 0.55,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 1.89,
+                "synonym": 2.34,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 1.33,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/telemetry.ts",
+            "score": 20.96,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0.6,
+                "synonym": 0.43,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 2.87,
+                "synonym": 1.34,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.39,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 1.24,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 0,
+                "synonym": 2.18,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 0.52,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/index.ts",
+            "score": 20.3,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0.47,
+                "synonym": 0.64,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 3.64,
+                "synonym": 2.61,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.94,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 1.3,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 3.6,
+                "synonym": 3.19,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 1.63,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/client.ts",
+            "score": 18.865,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "search",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0,
+                "synonym": 0.27,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 1.91,
+                "synonym": 0.11,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 5.35,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 1.6,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 0,
+                "synonym": 3.52,
+                "path": 0,
+                "declared": 3.78
+              },
+              {
+                "group": "result",
+                "primary": 1.35,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/engine.rs",
+            "score": 18.686,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "disk",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 1.17,
+                "synonym": 0.69,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 5.56,
+                "synonym": 2.5,
+                "path": 0,
+                "declared": 3.83
+              },
+              {
+                "group": "search",
+                "primary": 4.98,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 2.98
+              },
+              {
+                "group": "return",
+                "primary": 1.21,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 0,
+                "synonym": 1.19,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "result",
+                "primary": 1.17,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/main.rs",
+            "score": 17.287,
+            "coverage": 5,
+            "path_hit": false,
+            "declared": "disk",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0,
+                "synonym": 0.36,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 1.91,
+                "synonym": 1.34,
+                "path": 0,
+                "declared": 3.83
+              },
+              {
+                "group": "search",
+                "primary": 3.32,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "return",
+                "primary": 0.71,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 0,
+                "synonym": 0.96,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 17.12,
+            "coverage": 6,
+            "path_hit": false,
+            "declared": "partial",
+            "contributions": [
+              {
+                "group": "whole",
+                "primary": 0.89,
+                "synonym": 0.53,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "disk",
+                "primary": 1.91,
+                "synonym": 1.98,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "search",
+                "primary": 4.56,
+                "synonym": 0.09,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "return",
+                "primary": 1.41,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "partial",
+                "primary": 0,
+                "synonym": 2.94,
+                "path": 0,
+                "declared": 3.78
+              },
+              {
+                "group": "result",
+                "primary": 1.52,
+                "synonym": 0.03,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0.25,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0.14285714285714285,
+        "ndcg_at_10": 0.09239184719040397,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE11",
+      "lane": "semantic-paraphrase",
+      "sub_lane": null,
+      "negative": true,
+      "query": "database migration and schema",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 6.169209000000137,
+      "error": null,
+      "extra": {
+        "confidence": 0,
+        "abstained": true,
+        "coverage_ratio": 1,
+        "reason": "distinctive evidence absent (coverage 1.00, 3/3 groups, path=false decl=false dense=false)",
+        "expanded": [
+          "database",
+          "db",
+          "sql",
+          "migration",
+          "migrate",
+          "schema"
+        ],
+        "groups": [
+          {
+            "id": "database",
+            "variants": [
+              "database",
+              "db",
+              "sql"
+            ],
+            "present": true,
+            "df": 7,
+            "weight": 1.2878542883066382,
+            "generic": false
+          },
+          {
+            "id": "migration",
+            "variants": [
+              "migration",
+              "migrate"
+            ],
+            "present": true,
+            "df": 4,
+            "weight": 1.6486586255873816,
+            "generic": false
+          },
+          {
+            "id": "schema",
+            "variants": [
+              "schema"
+            ],
+            "present": true,
+            "df": 7,
+            "weight": 1.2878542883066382,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/semantic.ts",
+            "score": 11.27,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "database",
+                "primary": 3.33,
+                "synonym": 1.62,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "schema",
+                "primary": 2.58,
+                "synonym": 0.15,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/NOTICE",
+            "score": 7.035,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "migration",
+                "primary": 3.3,
+                "synonym": 0.2,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "schema",
+                "primary": 2.58,
+                "synonym": 0.15,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/CHANGELOG.md",
+            "score": 6.895,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "migration",
+                "primary": 4.26,
+                "synonym": 0.2,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "schema",
+                "primary": 2.58,
+                "synonym": 0.15,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/mcp.ts",
+            "score": 6.215,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "schema",
+                "primary": 5.15,
+                "synonym": 0.15,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/docs/engine-rebrand.md",
+            "score": 4.893,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "migration",
+                "primary": 4.95,
+                "synonym": 0.2,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/sanitize.ts",
+            "score": 3.637,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "database",
+                "primary": 2.58,
+                "synonym": 0.15,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/mcp.rs",
+            "score": 3.259,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "schema",
+                "primary": 3.86,
+                "synonym": 0.15,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/client.test.ts",
+            "score": 3.222,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "database",
+                "primary": 2.58,
+                "synonym": 1.81,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/mcp.test.ts",
+            "score": 3.078,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "schema",
+                "primary": 4.28,
+                "synonym": 0.15,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/engine.rs",
+            "score": 2.988,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "database",
+                "primary": 2.58,
+                "synonym": 1.47,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "SE12",
+      "lane": "semantic-paraphrase",
+      "sub_lane": null,
+      "negative": true,
+      "query": "react component state management hook",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 15.81987499999991,
+      "error": null,
+      "extra": {
+        "confidence": 0,
+        "abstained": true,
+        "coverage_ratio": 1,
+        "reason": "distinctive evidence absent (coverage 1.00, 5/5 groups, path=false decl=false dense=false)",
+        "expanded": [
+          "react",
+          "jsx",
+          "component",
+          "widget",
+          "state",
+          "management",
+          "manage",
+          "hook",
+          "usestate",
+          "useeffect"
+        ],
+        "groups": [
+          {
+            "id": "react",
+            "variants": [
+              "react",
+              "jsx"
+            ],
+            "present": true,
+            "df": 2,
+            "weight": 2.6855773452501515,
+            "generic": false
+          },
+          {
+            "id": "component",
+            "variants": [
+              "component",
+              "widget"
+            ],
+            "present": true,
+            "df": 22,
+            "weight": 1.0233888674305223,
+            "generic": false
+          },
+          {
+            "id": "state",
+            "variants": [
+              "state"
+            ],
+            "present": true,
+            "df": 15,
+            "weight": 0.3176156363986922,
+            "generic": true
+          },
+          {
+            "id": "management",
+            "variants": [
+              "management",
+              "manage"
+            ],
+            "present": true,
+            "df": 2,
+            "weight": 2.6855773452501515,
+            "generic": false
+          },
+          {
+            "id": "hook",
+            "variants": [
+              "hook",
+              "usestate",
+              "useeffect"
+            ],
+            "present": true,
+            "df": 14,
+            "weight": 1.3173014896329391,
+            "generic": false
+          }
+        ],
+        "ranking": [
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/CHANGELOG.md",
+            "score": 11.28,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "state",
+                "primary": 0.64,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "management",
+                "primary": 5.37,
+                "synonym": 3.06,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "hook",
+                "primary": 2.63,
+                "synonym": 0.16,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/engine.rs",
+            "score": 6.511,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "component",
+                "primary": 3.07,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "state",
+                "primary": 0.64,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "hook",
+                "primary": 4.38,
+                "synonym": 0.16,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/docs/wave1-engine-report.md",
+            "score": 6.134,
+            "coverage": 3,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "component",
+                "primary": 3.07,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "state",
+                "primary": 0.95,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "hook",
+                "primary": 2.63,
+                "synonym": 0.16,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/README.md",
+            "score": 5.281,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "component",
+                "primary": 2.05,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "hook",
+                "primary": 3.41,
+                "synonym": 0.16,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/frecency.rs",
+            "score": 4.044,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "hook",
+                "primary": 2.63,
+                "synonym": 0.16,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/src/types.ts",
+            "score": 3.974,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "component",
+                "primary": 2.65,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/alloc.rs",
+            "score": 3.872,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "hook",
+                "primary": 2.63,
+                "synonym": 0.16,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/deny.rs",
+            "score": 3.825,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "component",
+                "primary": 2.65,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/test/e2e-regressions.test.ts",
+            "score": 3.732,
+            "coverage": 1,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "hook",
+                "primary": 4.72,
+                "synonym": 0.16,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          },
+          {
+            "path": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean/engine/src/server.rs",
+            "score": 3.674,
+            "coverage": 2,
+            "path_hit": false,
+            "declared": null,
+            "contributions": [
+              {
+                "group": "component",
+                "primary": 3.07,
+                "synonym": 0.12,
+                "path": 0,
+                "declared": 0
+              },
+              {
+                "group": "state",
+                "primary": 0.64,
+                "synonym": 0.04,
+                "path": 0,
+                "declared": 0
+              }
+            ]
+          }
+        ]
+      },
+      "zero_result": true,
+      "false_positive": false
+    }
+  ]
+}

@@ -819,6 +819,10 @@ export class UltraSearchClient {
         limit: overscan,
         budget_ms: budgetMs,
         context: options.context ?? 1,
+        // Definition verdicts are engine-owned (#26): ask for them whenever the
+        // caller wants symbol semantics or definition tags, and render, not
+        // re-detect.
+        defs: options.mode === "symbol" || options.tagSymbols === true,
       };
       const deadlineOpts = budgetMs > 0 ? { deadlineMs: budgetMs + this.deadlineSlackMs } : {};
 

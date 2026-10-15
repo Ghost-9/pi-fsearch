@@ -700,6 +700,11 @@ fn bloom(hashes: &[u32], bits: usize, out: &mut Vec<u64>) {
 /// Keywords a definition starts with (`sym:` search).
 const DEFINES: &str = "fn|func|function|def|class|struct|enum|trait|interface|type|typealias|impl|let|const|var|val|static|module|mod|protocol|extension|macro_rules!|define|typedef|union|object|record|namespace|actor";
 
+/// Access and other modifiers that may precede a member declaration with no
+/// keyword of its own (`public applyProximityRanking(`, `private trySpawnDaemon(`)
+/// — #26: the two declarations the wave-1 probe could not find.
+const MODIFIERS: &str = "public|private|protected|internal|fileprivate|open|static|async|readonly|abstract|override|final|sealed|declare|export|default|pub|unsafe|extern";
+
 /// The posting key for "this doc defines `name`": a hash above the 24-bit
 /// trigram space, so definitions live in the same key table as trigrams.
 fn symbol_key(name: &[u8]) -> u32 {
@@ -717,7 +722,7 @@ fn plain_identifier(name: &[u8]) -> bool {
 fn symbols(buf: &[u8], out: &mut Vec<u32>) {
     static RE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
     let re = RE.get_or_init(|| {
-        RegexBuilder::new(&format!(r"(?-u:\b)(?:{DEFINES})(?:<[^>\n]*>)?[ \t*&]+(?:mut[ \t]+)?[A-Za-z_][A-Za-z0-9_]*"))
+        RegexBuilder::new(&format!(r"(?-u:\b)(?:(?:{DEFINES})(?:<[^>\n]*>)?[ \t*&]+(?:mut[ \t]+)?|(?:(?:{MODIFIERS})[ \t]+)+)[A-Za-z_][A-Za-z0-9_]*"))
             .unicode(false)
             .build()
             .unwrap()
@@ -3398,9 +3403,10 @@ impl Grep {
             GrepMode::Literal => regex::escape(pattern),
             GrepMode::Regex => pattern.to_string(),
             // A definition: a declaring keyword, optional generics/modifiers,
-            // then the name. ASCII word boundaries keep the regex on the fast
-            // DFA path even in files with non-ASCII text.
-            GrepMode::Symbol => format!(r"(?-u:\b)(?:{DEFINES})(?:<[^>\n]*>)?[ \t*&]+(?:mut[ \t]+)?{}(?-u:\b)", regex::escape(pattern)),
+            // then the name; or an access-modifier member declaration with no
+            // keyword (`public render(`). ASCII word boundaries keep the regex
+            // on the fast DFA path even in files with non-ASCII text.
+            GrepMode::Symbol => format!(r"(?-u:\b)(?:(?:{DEFINES})(?:<[^>\n]*>)?[ \t*&]+(?:mut[ \t]+)?|(?:(?:{MODIFIERS})[ \t]+)+){}(?-u:\b)", regex::escape(pattern)),
         };
         // (A definition's name is exact unless asked otherwise.)
         let case_insensitive = match mode {
@@ -3779,21 +3785,51 @@ fn matches_in(g: &Grep, path: &[u8], buf: &[u8], text: bool) -> Option<FileMatch
     if buf.len() as u64 > MAX_REPO_FILE || memchr::memchr(0, &buf[..buf.len().min(8192)]).is_some() {
         return None;
     }
+    // `mode: "symbol"`: the declaration lines from the AST are the authority
+    // when the language has a grammar. The lexical `defined_at` below stays
+    // the fast pre-filter and the only confirmation for other languages.
+    let ast_defs: Option<std::collections::HashSet<usize>> = if g.mode == GrepMode::Symbol {
+        let ext = Path::new(OsStr::from_bytes(path))
+            .extension()
+            .and_then(OsStr::to_str)
+            .map(str::to_ascii_lowercase);
+        ext.and_then(|e| crate::symbols::lang_for_ext(&e))
+            .and_then(|l| crate::symbols::declared_lines(buf, l, &g.pattern))
+            .map(|lines| lines.into_iter().collect())
+    } else {
+        None
+    };
     let (lines, hits) = match g.literal.as_ref().filter(|l| !l.needs_regex(buf)) {
-        Some(l) => lines_at(g, buf, l.starts(buf).map(|p| (p, p + l.len()))),
-        None => lines_at(g, buf, on_lines(g.re(), buf)),
+        Some(l) => lines_at(g, buf, l.starts(buf).map(|p| (p, p + l.len())), ast_defs.as_ref()),
+        None => lines_at(g, buf, on_lines(g.re(), buf), ast_defs.as_ref()),
     };
     (!lines.is_empty() && (!text || is_text(buf))).then(|| FileMatches { path: path.to_vec(), lines, hits })
 }
 
 /// The first `max_per_file` lines holding a match (by where matches start),
-/// numbered, as shown, and where the matches on them are.
-fn lines_at(g: &Grep, buf: &[u8], found: impl Iterator<Item = (usize, usize)>) -> (Vec<(usize, String)>, Vec<Hit>) {
+/// numbered, as shown, and where the matches on them are. With `ast_defs`
+/// (symbol mode, grammar available) only lines that declare the queried name
+/// are kept: a declaration-shaped string literal is not a declaration.
+fn lines_at(
+    g: &Grep,
+    buf: &[u8],
+    found: impl Iterator<Item = (usize, usize)>,
+    ast_defs: Option<&std::collections::HashSet<usize>>,
+) -> (Vec<(usize, String)>, Vec<Hit>) {
     let (mut lines, mut hits) = (Vec::new(), Vec::<Hit>::new());
     let (mut line_no, mut counted) = (1usize, 0usize);
+    // The line of every candidate (kept or filtered); the AST filter needs it.
+    let (mut scan_line, mut scan_pos) = (1usize, 0usize);
     // The current line, as it is shown.
     let (mut ls, mut le, mut raw, mut utf8) = (0, 0, &buf[..0], true);
     for (start, end) in found {
+        if let Some(defs) = ast_defs {
+            scan_line += memchr::memchr_iter(b'\n', &buf[scan_pos..start]).count();
+            scan_pos = start;
+            if !defs.contains(&scan_line) {
+                continue;
+            }
+        }
         if hits.is_empty() || start > le {
             if lines.len() >= g.max_per_file {
                 break;
@@ -3817,7 +3853,9 @@ fn lines_at(g: &Grep, buf: &[u8], found: impl Iterator<Item = (usize, usize)>) -
         if start - ls < raw.len() {
             hit.ranges.push((a, b.max(a)));
         }
-        hit.def |= g.defs && defined_at(buf, start, end - start);
+        // With an AST, every kept line is a declaration line (the filter
+        // above); without one the lexical confirmation decides.
+        hit.def |= g.defs && (ast_defs.is_some() || defined_at(buf, start, end - start));
     }
     (lines, hits)
 }
@@ -3957,17 +3995,64 @@ impl Literal {
 }
 
 /// Is the name at `hay[p..p + len]` defined there: an ASCII word boundary
-/// after it, and before it on its line a declaring keyword, maybe generics,
-/// spaces or `*&`, maybe `mut` (what `sym:`'s regex asks, split at the name)?
+/// after it, and before it on its line a declaring keyword (maybe generics,
+/// spaces or `*&`, maybe `mut`) or one or more access modifiers with no
+/// keyword (`public render(`), outside any string literal or comment?
 fn defined_at(hay: &[u8], p: usize, len: usize) -> bool {
     static KEYWORD: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
     let word = |b: Option<&u8>| b.is_some_and(|&b| b.is_ascii_alphanumeric() || b == b'_');
     if word(hay[..p + len].last()) == word(hay.get(p + len)) {
         return false;
     }
-    let re = KEYWORD.get_or_init(|| Regex::new(&format!(r"(?-u:\b)(?:{DEFINES})(?:<[^>\n]*>)?[ \t*&]+(?:mut[ \t]+)?\z")).unwrap());
     let line = memchr::memrchr(b'\n', &hay[..p]).map_or(0, |i| i + 1);
-    re.is_match(&hay[line..p])
+    let prefix = &hay[line..p];
+    if in_string_or_comment(prefix) {
+        return false;
+    }
+    let re = KEYWORD.get_or_init(|| {
+        Regex::new(&format!(
+            r"(?-u:\b)(?:(?:{DEFINES})(?:<[^>\n]*>)?[ \t*&]+(?:mut[ \t]+)?|(?:(?:{MODIFIERS})[ \t]+)+)\z"
+        ))
+        .unwrap()
+    });
+    re.is_match(prefix)
+}
+
+/// True when a line prefix (up to a candidate match) ends inside a string
+/// literal or a comment. Quote state only: an opening quote with no close, an
+/// unterminated block comment, or a line comment before the candidate.
+fn in_string_or_comment(prefix: &[u8]) -> bool {
+    let mut quote: Option<u8> = None;
+    let mut escaped = false;
+    let mut i = 0;
+    while i < prefix.len() {
+        let b = prefix[i];
+        match quote {
+            Some(q) => {
+                if escaped {
+                    escaped = false;
+                } else if b == b'\\' {
+                    escaped = true;
+                } else if b == q {
+                    quote = None;
+                }
+            }
+            None => {
+                if b == b'"' || b == b'\'' || b == b'`' {
+                    quote = Some(b);
+                } else if b == b'/' && prefix.get(i + 1) == Some(&b'/') {
+                    return true;
+                } else if b == b'/' && prefix.get(i + 1) == Some(&b'*') {
+                    match prefix[i + 2..].windows(2).position(|w| w == b"*/") {
+                        Some(rel) => i += 2 + rel + 1,
+                        None => return true,
+                    }
+                }
+            }
+        }
+        i += 1;
+    }
+    quote.is_some()
 }
 
 /// The first place at or after `from` where `hay` holds `needle` (lower

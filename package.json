@@ -44,7 +44,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepack": "npm run build",
-    "test": "node --test test/client.test.ts test/sanitize.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/e2e-regressions.test.ts test/interop-surface.test.ts test/roots.test.ts test/history.test.ts test/watch.test.ts test/prefetch.test.ts test/cli-interop.test.ts",
+    "test": "node --test test/client.test.ts test/sanitize.test.ts test/mcp.test.ts test/client-features.test.ts test/ipc-lanes.test.ts test/fallback.test.ts test/telemetry-views.test.ts test/e2e-regressions.test.ts test/interop-surface.test.ts test/roots.test.ts test/history.test.ts test/watch.test.ts test/prefetch.test.ts test/cli-interop.test.ts test/ranking-guard.test.ts",
     "test:engine": "node --test --test-concurrency=1 test/engine/*.test.mjs",
     "codemode:declarations": "node bin/gen-codemode-declarations.ts",
     "bench:engine": "node bench/engine-ab.mjs",

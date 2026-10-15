@@ -1,5 +1,30 @@
 import { SecretGuard, isSensitiveFile } from "./sanitize.ts";
-import type { UltraSearchGrepFile } from "./types.ts";
+import type { UltraSearchGrepFile, UltraSearchHit } from "./types.ts";
+
+/** Engine-owned row score vector (#42): the client renders it, never recomputes it. */
+export interface RankedHit extends Pick<UltraSearchHit, "path" | "score" | "match" | "near" | "boost" | "def" | "git"> {}
+
+/**
+ * Reason tags for one ranked row. The decision is the engine's; these strings
+ * only say which component the engine used, so a reader can see why a row is
+ * where it is (a row tagged [exact] has a positive exact-path component).
+ */
+export function explainReasonTags(query: string, hit: RankedHit): string[] {
+  const tags: string[] = [];
+  const q = query.trim();
+  const base = q.split("/").pop() ?? q;
+  const rel = hit.path;
+  const glob = /[*?[\]{}]/.test(q);
+  if (!glob && q.length > 0 && (rel.endsWith("/" + q) || rel.split("/").pop() === base && base === q || rel === q)) tags.push("exact");
+  else if (glob) tags.push("glob");
+  if (hit.git) tags.push(`git:${hit.git}`);
+  if (hit.near !== undefined && hit.near !== 0) tags.push("proximity");
+  if (hit.boost !== undefined && hit.boost !== 0) tags.push("frecency");
+  if ((hit.def ?? 0) > 0) tags.push("symbol");
+  tags.push(`match:${hit.match ?? hit.score}`);
+  tags.push(`score:${hit.score}`);
+  return tags;
+}
 
 export interface FormatOptions {
   worktreeRoot: string;
@@ -81,7 +106,17 @@ export function formatGrepFiles(
           scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
         }
 
-        const tag = (tagSymbols && !isSensitive) ? detectSymbolTag(m.text) : null;
+        // The engine's `def` verdict is authoritative; the regex tag is only a
+        // fallback for rows the engine did not annotate (native fallback).
+        const engineDef = (m as { def?: boolean }).def;
+        const tag =
+          tagSymbols && !isSensitive
+            ? engineDef === true
+              ? `def:${detectSymbolTag(m.text)?.split(":")[1] ?? "def"}`
+              : engineDef === false
+                ? null
+                : detectSymbolTag(m.text)
+            : null;
         const tagPrefix = tag ? `[${tag}] ` : "";
 
         // If context lines exist and showContext is requested
@@ -142,7 +177,8 @@ export function formatGrepFiles(
           scrubbed = "[DLP_PROTECTED: Environment credential / key masked to prevent secret leakage]";
         }
 
-        const tag = (!isSensitive) ? detectSymbolTag(m.text) : null;
+        const engineDef = (m as { def?: boolean }).def;
+      const tag = isSensitive ? null : engineDef === true ? `def:${detectSymbolTag(m.text)?.split(":")[1] ?? "def"}` : engineDef === false ? null : detectSymbolTag(m.text);
         const tagPrefix = tag ? `[${tag}] ` : "";
 
         if (showContext && !isSensitive && m.before && m.before.length > 0) {

@@ -1,0 +1,2036 @@
+{
+  "meta": {
+    "suite": "wave2-judgments",
+    "label": "wave2-before",
+    "repo": "/tmp/us-w2-baseline",
+    "repo_commit": "f9eadadac60aeca62b9744b7dea8a4b99ec6c1b8",
+    "repo_branch": "",
+    "mode": "harness",
+    "engine_bin": "/tmp/us-engine-before",
+    "judgments_sha256": "f378a5b140eb8bcb47e6b97729d25a3d4f8127ed47b75a20ab683a3dee2789b8",
+    "corpus": {
+      "root": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean",
+      "id": "ultrasearch-repo@8d1419d",
+      "files": 97
+    },
+    "environment": {
+      "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "checks": {
+        "ac_power": true,
+        "load1_lt_gate": false,
+        "no_cargo_rustc": true
+      },
+      "power": {
+        "on_ac": true,
+        "percent": 100,
+        "raw": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+      },
+      "loadavg": [
+        2.9501953125,
+        5.154296875,
+        6.0185546875
+      ],
+      "competing_processes": [],
+      "daemon_status": {
+        "compactions": 0,
+        "compactions_postponed": 0,
+        "content_bytes": 0,
+        "content_docs": 0,
+        "content_pending": 0,
+        "content_policy": {
+          "configured": false,
+          "extensions": null,
+          "max_file_bytes": null,
+          "roots": null,
+          "source": null,
+          "warm": 0
+        },
+        "content_segments": 0,
+        "deny_configured": false,
+        "deny_rules": 0,
+        "dirs": 15,
+        "entries": 112,
+        "event_id": 5696509767,
+        "event_lag": 46,
+        "full_disk_access": false,
+        "id": 1,
+        "index_bytes": 14784,
+        "last_compact_bytes": 0,
+        "last_compact_entries": 0,
+        "last_compact_ms": 0,
+        "last_compact_secs_ago": 0,
+        "last_event_id": 5696509813,
+        "ok": true,
+        "overlay": 0,
+        "owner": true,
+        "queries_in_flight": 0,
+        "removed": 0,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      }
+    },
+    "status": "provisional",
+    "generated_at": "2026-10-15T05:52:27.298Z"
+  },
+  "aggregates": {
+    "overall": {
+      "recall_at_10": 0.6290922619047619,
+      "success_recall_at_3": 0.5796130952380951,
+      "mrr_at_10": 0.609375,
+      "ndcg_at_10": 0.5976667905074539,
+      "zero_result_rate": 0.09375,
+      "false_positive_rate": 0.3333333333333333
+    },
+    "by_lane": {
+      "symbol-ast": {
+        "n": 12,
+        "must_hit": 9,
+        "negatives": 3,
+        "recall_at_10": 0.7777777777777778,
+        "success_recall_at_3": 0.7777777777777778,
+        "mrr_at_10": 0.7777777777777778,
+        "ndcg_at_10": 0.7777777777777778,
+        "zero_result_rate": 0.2222222222222222,
+        "false_positive_rate": 0,
+        "ms_p50": 0.5340840000000071,
+        "ms_p95": 1.8825829999999542,
+        "top3_doc_share": 0
+      },
+      "semantic-paraphrase": {
+        "n": 12,
+        "must_hit": 10,
+        "negatives": 2,
+        "recall_at_10": 0.175,
+        "success_recall_at_3": 0.03333333333333333,
+        "mrr_at_10": 0.05,
+        "ndcg_at_10": 0.06400814654001998,
+        "zero_result_rate": 0,
+        "false_positive_rate": 1,
+        "ms_p50": 4.096667000000025,
+        "ms_p95": 5.647167000000081,
+        "top3_doc_share": 0.6
+      },
+      "ranking-signal": {
+        "n": 10,
+        "must_hit": 9,
+        "negatives": 1,
+        "recall_at_10": 0.8201058201058201,
+        "success_recall_at_3": 0.8015873015873016,
+        "mrr_at_10": 0.8888888888888888,
+        "ndcg_at_10": 0.8316950923153692,
+        "zero_result_rate": 0.1111111111111111,
+        "false_positive_rate": 0,
+        "ms_p50": 0.8351659999998446,
+        "ms_p95": 0.9527080000000296,
+        "top3_doc_share": 0.125
+      },
+      "control": {
+        "n": 4,
+        "must_hit": 4,
+        "negatives": 0,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "zero_result_rate": 0,
+        "false_positive_rate": null,
+        "ms_p50": 0.9565000000000055,
+        "ms_p95": 1.4584159999999429,
+        "top3_doc_share": 0
+      }
+    }
+  },
+  "queries": [
+    {
+      "id": "SY01",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "UltraSearchClient",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "ms": 1.8825829999999542,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "src/client.ts",
+            "file_rank": 1,
+            "first_match": "export class UltraSearchClient {",
+            "first_match_matches": true,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [
+          "test/benchmark-gate.test.ts"
+        ],
+        "declaration_rank1": true
+      },
+      "source": "scan",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SY02",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "validateRegexPattern",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/validate.ts"
+      ],
+      "ms": 1.4389999999999645,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "src/validate.ts",
+            "file_rank": 1,
+            "first_match": "export function validateRegexPattern(pattern: string): RegexValidation {",
+            "first_match_matches": true,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "scan",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SY03",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "applyProximityRanking",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 1.3415410000000065,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "src/client.ts",
+            "file_rank": null,
+            "first_match": null,
+            "first_match_matches": null,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": false
+      },
+      "source": "scan",
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": true
+    },
+    {
+      "id": "SY04",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "trySpawnDaemon",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 0.5261669999999867,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "src/client.ts",
+            "file_rank": null,
+            "first_match": null,
+            "first_match_matches": null,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": false
+      },
+      "source": "index",
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": true
+    },
+    {
+      "id": "SY05",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "searchSemanticIntent",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/semantic.ts"
+      ],
+      "ms": 0.6538329999999632,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "src/semantic.ts",
+            "file_rank": 1,
+            "first_match": "export async function searchSemanticIntent(",
+            "first_match_matches": true,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SY06",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "EngineHarness",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [
+        "test/engine/harness.mjs"
+      ],
+      "ms": 0.6265419999999722,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "test/engine/harness.mjs",
+            "file_rank": 1,
+            "first_match": "export class EngineHarness {",
+            "first_match_matches": true,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SY07",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "Policy",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [
+        "engine/src/coverage.rs"
+      ],
+      "ms": 0.517832999999996,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "engine/src/coverage.rs",
+            "file_rank": 1,
+            "first_match": "pub struct Policy {",
+            "first_match_matches": true,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SY08",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "nearness",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [
+        "engine/src/server.rs"
+      ],
+      "ms": 0.5153750000000628,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "engine/src/server.rs",
+            "file_rank": 1,
+            "first_match": "fn nearness(near: &[u8], path: &[u8]) -> i32 {",
+            "first_match_matches": true,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SY09",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": false,
+      "query": "isPathSafe",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/sanitize.ts"
+      ],
+      "ms": 0.5340840000000071,
+      "error": null,
+      "extra": {
+        "assertions": [
+          {
+            "path": "src/sanitize.ts",
+            "file_rank": 1,
+            "first_match": "export function isPathSafe(filePath: string, allowedRoot?: string): boolean {",
+            "first_match_matches": true,
+            "expect_file_rank": 1
+          }
+        ],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SY10",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": true,
+      "query": "kubernetesPodReconcilerV2",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 0.33533299999999144,
+      "error": null,
+      "extra": {
+        "assertions": [],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "SY11",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": true,
+      "query": "DeserializeWorktreeOverlayIndex",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 0.2937080000000378,
+      "error": null,
+      "extra": {
+        "assertions": [],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "SY12",
+      "lane": "symbol-ast",
+      "sub_lane": null,
+      "negative": true,
+      "query": "ultraThinMaterial",
+      "params": {
+        "mode": "symbol",
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 0.34741699999995035,
+      "error": null,
+      "extra": {
+        "assertions": [],
+        "not_expected_returned": [],
+        "declaration_rank1": true
+      },
+      "source": "index",
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "SE01",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "search client options and default configuration values",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        ".github/workflows/ci.yml",
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "NOTICE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "bin/cli.ts"
+      ],
+      "ms": 5.534207999999921,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "search",
+          "client",
+          "options",
+          "config",
+          "settings",
+          "env",
+          "constant",
+          "and"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0.03358585698341708,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE02",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "how are tests mocking the daemon socket",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "docs/content-index-policy.md",
+        "docs/engine-rebrand.md",
+        "docs/wave1-engine-report.md",
+        "engine/README.md",
+        "engine/examples/fresh.rs"
+      ],
+      "ms": 4.963250000000016,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "how",
+          "are",
+          "tests",
+          "test",
+          "spec",
+          "assert",
+          "mock",
+          "fixture"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE03",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "where are api tokens and passwords masked before they reach the model",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "ms": 3.466083000000026,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "where",
+          "are",
+          "api",
+          "route",
+          "endpoint",
+          "controller",
+          "handler",
+          "request"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE04",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "is there a cache with a ttl for the ignore rules",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "README.md",
+        "docs/wave1-engine-report.md",
+        "engine/BUILD.md",
+        "engine/examples/quality.py",
+        "engine/src/content.rs",
+        "engine/src/engine.rs",
+        "engine/src/git.rs",
+        "engine/src/live.rs"
+      ],
+      "ms": 4.414999999999964,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "there",
+          "cache",
+          "redis",
+          "memoize",
+          "store",
+          "ttl",
+          "with",
+          "for"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE05",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "mapped",
+      "negative": false,
+      "query": "where is the ipc request handler and response correlation id",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "ms": 3.3166250000000446,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "where",
+          "the",
+          "ipc",
+          "request",
+          "route",
+          "endpoint",
+          "controller",
+          "handler"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0.030775184909865944,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE06",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "what stops a runaway regular expression from reaching the daemon",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "NOTICE",
+        "README.md",
+        "ROADMAP.md",
+        "docs/content-index-policy.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "ms": 3.095874999999978,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "what",
+          "stops",
+          "runaway",
+          "regular",
+          "expression",
+          "from",
+          "reaching",
+          "the"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0.25,
+        "recall_at_10": 0.25,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0.039791002742006074,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE07",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "what happens when the daemon socket goes away in the middle of a session",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "NOTICE",
+        "README.md",
+        "ROADMAP.md",
+        "docs/content-index-policy.md",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "ms": 4.096667000000025,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "what",
+          "happens",
+          "when",
+          "the",
+          "daemon",
+          "socket",
+          "goes",
+          "away"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0.3333333333333333,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0.035488215915533215,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE08",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "keep results inside the workspace even if a symlink points out of it",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "bin/cli.ts",
+        "docs/engine-changes.md",
+        "docs/engine-rebrand.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md"
+      ],
+      "ms": 4.401500000000169,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "keep",
+          "results",
+          "inside",
+          "the",
+          "workspace",
+          "even",
+          "symlink",
+          "points"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE09",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "which files decide what gets ignored while searching a project",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "AUDIT-2026-10-14.md",
+        "LICENSE",
+        "bin/cli.ts",
+        "docs/engine-changes.md",
+        "engine/rebrand.sh",
+        "engine/src/alloc.rs",
+        "engine/src/content.rs",
+        "engine/src/deny.rs",
+        "engine/src/engine.rs",
+        "engine/src/env.rs"
+      ],
+      "ms": 3.8630410000000666,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "which",
+          "files",
+          "decide",
+          "what",
+          "gets",
+          "ignored",
+          "while",
+          "searching"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE10",
+      "lane": "semantic-paraphrase",
+      "sub_lane": "paraphrase",
+      "negative": false,
+      "query": "why does a whole disk search return partial results",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "OPTIMIZATIONS.md",
+        "docs/engine-changes.md",
+        "docs/wave1-engine-report.md",
+        "engine/src/coverage.rs",
+        "engine/src/engine.rs",
+        "engine/src/mcp.rs",
+        "engine/src/query.rs",
+        "engine/src/server.rs",
+        "test/engine/security.test.mjs",
+        "AUDIT-2026-10-14.md"
+      ],
+      "ms": 5.647167000000081,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "why",
+          "does",
+          "whole",
+          "disk",
+          "search",
+          "return",
+          "partial",
+          "results"
+        ]
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0.25,
+        "recall_at_5": 0.25,
+        "recall_at_10": 0.5,
+        "success_recall_at_3": 0.3333333333333333,
+        "mrr_at_10": 0.5,
+        "ndcg_at_10": 0.5004412048493774,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": false
+    },
+    {
+      "id": "SE11",
+      "lane": "semantic-paraphrase",
+      "sub_lane": null,
+      "negative": true,
+      "query": "database migration and schema",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "engine/src/engine.rs",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "test/client.test.ts",
+        "OPTIMIZATIONS.md",
+        "README.md",
+        "ROADMAP.md",
+        "engine/src/content.rs",
+        "engine/src/server.rs",
+        "src/codemode.ts"
+      ],
+      "ms": 2.8120829999998023,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "database",
+          "db",
+          "sql",
+          "prisma",
+          "query",
+          "connection",
+          "schema",
+          "model"
+        ]
+      },
+      "zero_result": false,
+      "false_positive": true
+    },
+    {
+      "id": "SE12",
+      "lane": "semantic-paraphrase",
+      "sub_lane": null,
+      "negative": true,
+      "query": "react component state management hook",
+      "params": {
+        "mode": "semantic",
+        "limit": 10
+      },
+      "retrieved": [
+        "LICENSE",
+        "README.md",
+        "docs/engine-changes.md",
+        "docs/security-deny-list.md",
+        "docs/wave1-engine-report.md",
+        "engine/examples/fresh.rs",
+        "engine/pgo.sh",
+        "engine/src/content.rs",
+        "engine/src/deny.rs",
+        "engine/src/engine.rs"
+      ],
+      "ms": 2.2838339999998425,
+      "error": null,
+      "extra": {
+        "confidence": 1,
+        "abstained": null,
+        "coverage_ratio": null,
+        "reason": null,
+        "expanded": [
+          "react",
+          "component",
+          "state",
+          "management",
+          "hook"
+        ]
+      },
+      "zero_result": false,
+      "false_positive": true
+    },
+    {
+      "id": "RS01",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "src/client.ts",
+      "params": {
+        "limit": 10
+      },
+      "retrieved": [
+        "src/client.ts"
+      ],
+      "ms": 0.8635840000001735,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "src/client.ts",
+            "score": 377,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS02",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "src/**/*.ts",
+      "params": {
+        "limit": 20
+      },
+      "retrieved": [
+        "src/client.ts",
+        "src/codemode.ts",
+        "src/compactor.ts",
+        "src/formatter.ts",
+        "src/mcp.ts",
+        "src/observer.ts",
+        "src/recursive-learning.ts",
+        "src/sanitize.ts",
+        "src/semantic.ts",
+        "src/spawn.ts",
+        "src/telemetry.ts",
+        "src/tui.ts",
+        "src/types.ts",
+        "src/validate.ts"
+      ],
+      "ms": 0.8152499999998781,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "src/client.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/codemode.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/compactor.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/formatter.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/mcp.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/observer.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/recursive-learning.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/sanitize.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/semantic.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/spawn.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/telemetry.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/tui.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/types.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/validate.ts",
+            "score": -25,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 0.07142857142857142,
+        "recall_at_3": 0.21428571428571427,
+        "recall_at_5": 0.35714285714285715,
+        "recall_at_10": 0.7142857142857143,
+        "success_recall_at_3": 0.21428571428571427,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS03",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "near": "src/client.ts",
+        "limit": 10
+      },
+      "retrieved": [
+        "test/client.test.ts",
+        "test/client-features.test.ts",
+        "src/client.ts"
+      ],
+      "ms": 0.7052499999999782,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "test/client.test.ts",
+            "score": 47,
+            "near": 6,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client-features.test.ts",
+            "score": 44,
+            "near": 6,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/client.ts",
+            "score": 22,
+            "near": -20,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "near": "src/client.ts",
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.8075588805057204,
+        "top1_grade": 2,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS04",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "near": "test/client.test.ts",
+        "limit": 10
+      },
+      "retrieved": [
+        "test/client-features.test.ts",
+        "src/client.ts",
+        "test/client.test.ts"
+      ],
+      "ms": 0.5756249999999454,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "test/client-features.test.ts",
+            "score": 50,
+            "near": 12,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "src/client.ts",
+            "score": 48,
+            "near": 6,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client.test.ts",
+            "score": 21,
+            "near": -20,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "near": "test/client.test.ts",
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS05",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "readme",
+      "params": {
+        "limit": 10
+      },
+      "retrieved": [
+        "README.md",
+        "engine/README.md"
+      ],
+      "ms": 0.8402080000000751,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "README.md",
+            "score": 77,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "engine/README.md",
+            "score": 42,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 0.6666666666666666,
+        "recall_at_5": 0.6666666666666666,
+        "recall_at_10": 0.6666666666666666,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.9467676761267002,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS06",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "boost": true
+      },
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts",
+        "test/client-features.test.ts"
+      ],
+      "ms": 0.8814589999999498,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "src/client.ts",
+            "score": 50,
+            "near": null,
+            "boost": 8,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client.test.ts",
+            "score": 49,
+            "near": null,
+            "boost": 8,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client-features.test.ts",
+            "score": 46,
+            "near": null,
+            "boost": 8,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": true
+      },
+      "score": {
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS07",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "limit": 10,
+        "git": "modified"
+      },
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts",
+        "test/client-features.test.ts"
+      ],
+      "ms": 0.8351659999998446,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "src/client.ts",
+            "score": 42,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client.test.ts",
+            "score": 41,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client-features.test.ts",
+            "score": 38,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 0.5,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 0.7309292742059024,
+        "top1_grade": 2,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS08",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "client",
+      "params": {
+        "limit": 10
+      },
+      "retrieved": [
+        "src/client.ts",
+        "test/client.test.ts",
+        "test/client-features.test.ts"
+      ],
+      "ms": 0.9527080000000296,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "src/client.ts",
+            "score": 42,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client.test.ts",
+            "score": 41,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          },
+          {
+            "path": "test/client-features.test.ts",
+            "score": 38,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "RS09",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": false,
+      "query": "format grep files",
+      "params": {
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 0.8050409999998465,
+      "error": null,
+      "extra": {
+        "hit_vectors": []
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 0,
+        "recall_at_3": 0,
+        "recall_at_5": 0,
+        "recall_at_10": 0,
+        "success_recall_at_3": 0,
+        "mrr_at_10": 0,
+        "ndcg_at_10": 0,
+        "top1_grade": 0,
+        "reformulation": true
+      },
+      "zero_result": true
+    },
+    {
+      "id": "RS10",
+      "lane": "ranking-signal",
+      "sub_lane": null,
+      "negative": true,
+      "query": "zodSchemaValidator",
+      "params": {
+        "limit": 10
+      },
+      "retrieved": [],
+      "ms": 0.7791669999999158,
+      "error": null,
+      "extra": {
+        "hit_vectors": []
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "zero_result": true,
+      "false_positive": false
+    },
+    {
+      "id": "CR01",
+      "lane": "control",
+      "sub_lane": null,
+      "negative": false,
+      "query": "package.json",
+      "params": {
+        "limit": 10
+      },
+      "retrieved": [
+        "package.json"
+      ],
+      "ms": 0.8628750000000309,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": "package.json",
+            "score": 76,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "CR02",
+      "lane": "control",
+      "sub_lane": null,
+      "negative": false,
+      "query": "ci.yml",
+      "params": {
+        "limit": 10
+      },
+      "retrieved": [
+        ".github/workflows/ci.yml"
+      ],
+      "ms": 0.9565000000000055,
+      "error": null,
+      "extra": {
+        "hit_vectors": [
+          {
+            "path": ".github/workflows/ci.yml",
+            "score": 43,
+            "near": null,
+            "boost": null,
+            "def": null,
+            "match": null,
+            "git": null,
+            "explain": null
+          }
+        ]
+      },
+      "source": null,
+      "search_options": {
+        "boost": false
+      },
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "CR03",
+      "lane": "control",
+      "sub_lane": null,
+      "negative": false,
+      "query": "SYMBOL_REGEX",
+      "params": {
+        "mode": "literal",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/formatter.ts"
+      ],
+      "ms": 0.6154169999999795,
+      "error": null,
+      "extra": null,
+      "source": "index",
+      "score": {
+        "recall_at_1": 1,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    },
+    {
+      "id": "CR04",
+      "lane": "control",
+      "sub_lane": null,
+      "negative": false,
+      "query": "class\\s+\\w+Client",
+      "params": {
+        "mode": "regex",
+        "limit": 10
+      },
+      "retrieved": [
+        "src/client.ts",
+        "test/benchmark-gate.test.ts"
+      ],
+      "ms": 1.4584159999999429,
+      "error": null,
+      "extra": null,
+      "source": "index",
+      "score": {
+        "recall_at_1": 0.5,
+        "recall_at_3": 1,
+        "recall_at_5": 1,
+        "recall_at_10": 1,
+        "success_recall_at_3": 1,
+        "mrr_at_10": 1,
+        "ndcg_at_10": 1,
+        "top1_grade": 3,
+        "reformulation": false
+      },
+      "zero_result": false
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { UltraSearchClient } from "./src/client.ts";
 import { isPathSafe, unsafeQueryScope, scrubSecrets } from "./src/sanitize.ts";
-import { formatGrepFiles } from "./src/formatter.ts";
+import { formatGrepFiles, explainReasonTags } from "./src/formatter.ts";
 import { summarizeAudit, formatAuditSummary, resetAudit } from "./src/telemetry.ts";
 import { analyzeCommandForBypass, diagnoseEmptyQuery } from "./src/observer.ts";
 import { searchSemanticIntent } from "./src/semantic.ts";
@@ -105,9 +105,10 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
       limit: Type.Optional(Type.Number({ description: "Maximum results to return (default: 30)." })),
       global: Type.Optional(Type.Boolean({ description: "Search entire disk instead of restricting to current repository worktree." })),
       near: Type.Optional(Type.String({ description: "Optional active file path to re-rank results by folder proximity." })),
+      explain: Type.Optional(Type.Boolean({ description: "Append engine reason tags ([exact] [glob] [git:modified] [proximity] [frecency] [symbol]) to each result. Default true." })),
       budget_ms: Type.Optional(Type.Number({ description: "Optional server-side deadline in milliseconds. On expiry the result is partial and carries complete:false." })),
     }),
-    execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string; budget_ms?: number }) => {
+    execute: async (_toolCallId: string, params: { query: string; limit?: number; global?: boolean; near?: string; budget_ms?: number; explain?: boolean }) => {
       try {
         const worktreeRoot = resolveWorktreeRoot();
         const searchScope = params.global ? undefined : worktreeRoot;
@@ -187,7 +188,9 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
             // The daemon owns proximity ranking; its component is reported so
             // the ordering is explainable (see `server::nearness`).
             const nearTag = proximityTarget && h.near !== undefined ? ` [near:${h.near >= 0 ? "+" : ""}${h.near}]` : "";
-            return `${safe}${gitTag}${distTag}${nearTag} (${h.kind}, score: ${h.score})`;
+            // #42: reason tags rendered from the engine's returned vector.
+            const explain = params.explain === false ? "" : ` ${explainReasonTags(params.query, h).map((t) => `[${t}]`).join(" ")}`;
+            return `${safe}${gitTag}${distTag}${nearTag}${explain} (${h.kind}, score: ${h.score})`;
           })
           .join("\n");
 
@@ -281,6 +284,7 @@ export default function piUltraSearchExtension(pi: ExtensionAPI): void {
             limit: params.limit ?? 30,
             budget_ms: params.budget_ms ?? 2500,
             context: params.context ?? 0,
+            tagSymbols: params.tag_symbols ?? (params.mode === "symbol"),
           });
           if (!res.ok && res.error) {
             return { content: [{ type: "text", text: `UltraSearch grep error: ${res.error}` }], details: { tool: "ultrasearch_grep", error: res.error, complete: false } };
