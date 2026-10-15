@@ -144,6 +144,18 @@ export interface UltraSearchStatusResponse {
   ok: boolean;
   took_us?: number;
   version?: string;
+  /**
+   * The daemon wire-protocol version it speaks (`docs/protocol.md`). Absent
+   * on daemons older than 1.0; a client with a different major must not
+   * assume the rest of this shape (#50).
+   */
+  protocol_version?: string;
+  /**
+   * Set by `client.status()` when the daemon reports a different protocol
+   * major than the client speaks. The fields below may not mean what this
+   * client expects (#50).
+   */
+  protocol_mismatch?: { client: string; daemon: string };
   entries?: number;
   index_bytes?: number;
   content_files?: number;

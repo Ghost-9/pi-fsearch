@@ -16,6 +16,7 @@ import type {
   GrepOptions,
 } from "./types.ts";
 import { recordAudit } from "./telemetry.ts";
+import { PROTOCOL_VERSION, protocolCompatible } from "./protocol.ts";
 import { loadIgnoreRules, matchesIgnorePattern } from "./sanitize.ts";
 import { killAllChildren, spawnCapture } from "./spawn.ts";
 import { validateRegexPattern } from "./validate.ts";
@@ -631,6 +632,11 @@ export class UltraSearchClient {
 
   public async status(): Promise<UltraSearchStatusResponse> {
     const res = await this.request<UltraSearchStatusResponse>({ op: "status" });
+    // #50: a daemon that speaks a different protocol major may have changed
+    // what these fields mean. Surface it rather than reading them anyway.
+    if (typeof res.protocol_version === "string" && !protocolCompatible(PROTOCOL_VERSION, res.protocol_version)) {
+      res.protocol_mismatch = { client: PROTOCOL_VERSION, daemon: res.protocol_version };
+    }
     await this.annotateDaemonHealth(res);
     return res;
   }

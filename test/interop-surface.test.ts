@@ -15,8 +15,10 @@ import {
   resolveMcpSurfaceConfig,
 } from "../src/mcp.ts";
 import { TOOL_SCHEMAS, canonicalToolNames, toolJsonSchema } from "../src/tool-schema.ts";
+import { PROTOCOL_VERSION, protocolCompatible } from "../src/protocol.ts";
+import { CLI_NON_TOOL_COMMANDS, CLI_TOOL_SURFACE, cliCommands } from "../src/surfaces.ts";
 import { generateDeclarations, getUltraSearchCodemodeTools, runSearchGrepReadRecipe, CODEMODE_RECIPES, renderRecipeDocs } from "../src/codemode.ts";
-import type { UltraSearchClient } from "../src/client.ts";
+import { UltraSearchClient } from "../src/client.ts";
 import { MockDaemon } from "./helpers/mock-daemon.ts";
 import { loadPiHarness } from "./helpers/pi-harness.ts";
 
@@ -259,5 +261,116 @@ test("surface: bin/mcp-server.ts exposes a configured alias prefix over real std
     assert.deepEqual(list.slice(0, 6), canonicalToolNames());
   } finally {
     child.kill("SIGKILL");
+  }
+});
+
+// ---------------------------------------------------------------------------
+// #50 protocol conformance: the registry is the single source on every surface
+// ---------------------------------------------------------------------------
+
+/** Parameters declared for one tool in the generated Code Mode declarations. */
+function declaredParams(generated: string, name: string): string[] {
+  const block = generated.match(new RegExp(`function ${name}\\(args\\??: \\{([\\s\\S]*?)\\n  \\}\\)`));
+  assert.ok(block, `${name} is missing from the Code Mode declarations`);
+  const params = [...block[1].matchAll(/^\s{4}([A-Za-z_][A-Za-z0-9_]*)\??:/gm)].map((m) => m[1]);
+  return [...params].sort();
+}
+
+test("codemode: every tool declares exactly the registry parameter set (no drift, no extras)", () => {
+  const generated = generateDeclarations();
+  assert.deepEqual(
+    [...generated.matchAll(/function (ultrasearch_[a-z_]+)\(/g)].map((m) => m[1]),
+    canonicalToolNames(),
+    "the Code Mode functions must equal the registry, in order"
+  );
+  for (const schema of TOOL_SCHEMAS) {
+    assert.deepEqual(
+      declaredParams(generated, schema.name),
+      Object.keys(schema.params).sort(),
+      `${schema.name}: a parameter exists on the Code Mode surface but not in the registry, or vice versa`
+    );
+  }
+});
+
+test("cli: every registry tool is reachable from the command surface, and every case is classified", () => {
+  assert.deepEqual(
+    Object.keys(CLI_TOOL_SURFACE).sort(),
+    [...canonicalToolNames()].sort(),
+    "CLI_TOOL_SURFACE must cover exactly the registry"
+  );
+  const source = fs.readFileSync(path.join(repoRoot, "bin", "cli.ts"), "utf-8");
+  const cases = [...source.matchAll(/^\s*case "([^"]+)":/gm)].map((m) => m[1]);
+  assert.ok(cases.length > 0, "bin/cli.ts must dispatch commands");
+  const declared = cliCommands();
+  for (const cmd of declared) {
+    assert.ok(cases.includes(cmd), `command "${cmd}" is declared on a surface but has no case in bin/cli.ts`);
+  }
+  const classified = new Set(declared);
+  for (const c of cases) {
+    assert.ok(classified.has(c), `CLI case "${c}" is on neither the tool surface nor the admin list (issue #50)`);
+  }
+  for (const cmd of CLI_NON_TOOL_COMMANDS) {
+    assert.equal(
+      Object.values(CLI_TOOL_SURFACE).flat().includes(cmd),
+      false,
+      `"${cmd}" is listed as an admin command and as a tool command at once`
+    );
+  }
+});
+
+test("cli: help advertises every tool command", async () => {
+  const child = spawn(process.execPath, [path.join(repoRoot, "bin", "cli.ts"), "help"], {
+    cwd: repoRoot,
+    stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, PI_ULTRASEARCH_TEST: "1" },
+  });
+  let stdout = "";
+  child.stdout.setEncoding("utf-8");
+  child.stdout.on("data", (chunk: string) => {
+    stdout += chunk;
+  });
+  const code = await new Promise<number | null>((resolve) => child.on("close", resolve));
+  assert.equal(code, 0);
+  for (const [tool, commands] of Object.entries(CLI_TOOL_SURFACE)) {
+    for (const cmd of commands) {
+      // `search` is the same command as `query`; the help line names the canonical one.
+      if (cmd === "search") continue;
+      assert.ok(stdout.includes(`ultrasearch ${cmd} `), `${tool}: help does not advertise \`ultrasearch ${cmd}\``);
+    }
+  }
+});
+
+test("#50 protocol: docs/protocol.md freezes the version the client speaks", () => {
+  const doc = fs.readFileSync(path.join(repoRoot, "docs", "protocol.md"), "utf-8");
+  const frozen = doc.match(/Current version: \*\*([0-9]+\.[0-9]+)\*\*/);
+  assert.ok(frozen, "docs/protocol.md must state `Current version: **<major>.<minor>**`");
+  assert.equal(frozen[1], PROTOCOL_VERSION, "the documented version and PROTOCOL_VERSION must not drift");
+  assert.equal(protocolCompatible(PROTOCOL_VERSION, PROTOCOL_VERSION), true);
+  assert.equal(protocolCompatible("1.0", "1.7"), true, "a minor bump is additive and stays compatible");
+  assert.equal(protocolCompatible("1.0", "2.0"), false, "a major bump is breaking");
+});
+
+test("#50 protocol: status() surfaces the daemon version and flags a major mismatch", async () => {
+  const same = new MockDaemon({ reply: (req: any) => (req.op === "status" ? { ok: true, protocol_version: "1.4" } : { ok: true }) });
+  await same.listen();
+  const client = new UltraSearchClient({ socketPath: same.socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0 });
+  try {
+    const res = await client.status();
+    assert.equal(res.protocol_version, "1.4", "the client type must carry the daemon's protocol_version");
+    assert.equal(res.protocol_mismatch, undefined, "a same-major daemon is not a mismatch");
+  } finally {
+    client.close();
+    await same.close();
+  }
+
+  const other = new MockDaemon({ reply: (req: any) => (req.op === "status" ? { ok: true, protocol_version: "2.0" } : { ok: true }) });
+  await other.listen();
+  const older = new UltraSearchClient({ socketPath: other.socketPath, autoSpawnDaemon: false, maxReconnectRetries: 0 });
+  try {
+    const res = await older.status();
+    assert.deepEqual(res.protocol_mismatch, { client: PROTOCOL_VERSION, daemon: "2.0" });
+  } finally {
+    older.close();
+    await other.close();
   }
 });
