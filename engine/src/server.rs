@@ -1208,7 +1208,9 @@ mod tests {
     #[test]
     fn near() {
         let n = |a: &str, b: &str| nearness(a.as_bytes(), b.as_bytes());
-        assert_eq!((n("/p/src/a.rs", "/p/src/b.rs"), n("/p/src/a.rs", "/p/src/a.rs")), (12, -20));
+        // The wave-2 proximity fix removed the -20 self-penalty: the `near` file
+        // itself is now the strongest match at +10.
+        assert_eq!((n("/p/src/a.rs", "/p/src/b.rs"), n("/p/src/a.rs", "/p/src/a.rs")), (12, 10));
         assert_eq!((n("/p/src/a.rs", "/p/src/ui/c.rs"), n("/p/src/a.rs", "/p/docs/x.md"), n("/p/a/b/c/d.rs", "/q/e.rs")), (9, 6, 0));
     }
 }
