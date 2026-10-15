@@ -1,0 +1,38 @@
+{
+  "socket": "/Users/batra/Library/Application Support/UltraSearch/ultrasearch.sock",
+  "socket_owner_pid": 8887,
+  "socket_owner_count": 1,
+  "serve_process_count": 1,
+  "single_socket_owner": true,
+  "entries": 3920684,
+  "event_id": 5706313536,
+  "last_event_id": 5706313537,
+  "event_lag": 1,
+  "content_docs": 145871,
+  "content_pending": 0,
+  "index_bytes": 121174400,
+  "full_disk_access": true,
+  "staleness_ms": 0,
+  "replay_in_progress": false,
+  "compactions": 39,
+  "status_error": null,
+  "client_commit": "ad4d4019e94c7a5afe634ccd7d0edf5c9ef4d9c1",
+  "captured_at": "2026-10-15T06:34:28.415Z",
+  "gate": {
+    "status": "final",
+    "gate_pass": true,
+    "checks": {
+      "ac_power": true,
+      "load1_lt_gate": true,
+      "no_cargo_rustc": true
+    },
+    "ac_power": true,
+    "battery_percent": 100,
+    "discharging": false,
+    "load1": 1.41,
+    "competing_processes": [],
+    "daemon_pid": "8887",
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+    "checked_at": "2026-10-15T06:34:28.008Z"
+  }
+}
