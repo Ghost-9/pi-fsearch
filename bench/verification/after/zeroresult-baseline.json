@@ -1,0 +1,1079 @@
+{
+  "meta": {
+    "suite": "zeroresult-fallback",
+    "wave": "wave1/baseline",
+    "generated_at": "2026-10-15T00:49:48.602Z",
+    "date_short": "2026-10-15",
+    "commit": "3135e282785e0ee97f771db99ae20f25f3817191",
+    "branch": "wave1/verify-final",
+    "machine": {
+      "chip": "Apple M1 Pro",
+      "model": "MacBookPro18,1",
+      "macos": "27.0.1",
+      "kernel": "27.0.0",
+      "node": "v26.11.1",
+      "v8": "14.6.202.34-node.37",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "arch": "arm64",
+      "platform": "darwin",
+      "cpuCount": 10,
+      "totalMemBytes": 17179869184,
+      "loadavg_at_start": [
+        1.4853515625,
+        2.55615234375,
+        3.123046875
+      ]
+    },
+    "reps": 5,
+    "audit_file": "/Users/batra/.pi/agent/cache/pi-ultrasearch/test_audit.jsonl",
+    "note": "Audit isolation is by line-offset snapshot: only rows appended during this run AND matching this run's query set/scope are attributed. Other waves may append to the same test file concurrently.",
+    "daemon": {
+      "compactions": 2,
+      "compactions_postponed": 0,
+      "content_bytes": 169795968,
+      "content_docs": 145653,
+      "content_pending": 0,
+      "content_policy": {
+        "configured": false,
+        "extensions": null,
+        "max_file_bytes": null,
+        "roots": null,
+        "source": null,
+        "warm": 0
+      },
+      "content_segments": 42,
+      "deny_configured": false,
+      "deny_rules": 0,
+      "dirs": 630248,
+      "entries": 3879989,
+      "event_id": 5694583390,
+      "event_lag": 100,
+      "full_disk_access": true,
+      "id": 2,
+      "index_bytes": 120238464,
+      "last_compact_bytes": 120238464,
+      "last_compact_entries": 3879989,
+      "last_compact_ms": 1776,
+      "last_compact_secs_ago": 0,
+      "last_event_id": 5694583490,
+      "ok": true,
+      "overlay": 9567,
+      "owner": true,
+      "queries_in_flight": 0,
+      "removed": 10474,
+      "replay_in_progress": false,
+      "staleness_ms": 0
+    },
+    "status": "final",
+    "environment": {
+      "status": "final",
+      "gate_pass": true,
+      "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "gate_load1_max": 1.5,
+      "checks": {
+        "ac_power": true,
+        "load1_lt_gate": true,
+        "no_cargo_rustc": true
+      },
+      "power": {
+        "on_ac": true,
+        "percent": 100,
+        "discharging": false,
+        "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+      },
+      "loadavg": [
+        1.4853515625,
+        2.55615234375,
+        3.123046875
+      ],
+      "competing_processes": [],
+      "daemon_processes": [
+        "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+      ],
+      "daemon_pid": "8887",
+      "daemon_status": {
+        "ok": true,
+        "entries": 3879989,
+        "content_docs": 145653,
+        "content_pending": 0,
+        "index_bytes": 120238464,
+        "content_bytes": 169795968,
+        "full_disk_access": true
+      },
+      "checked_at": "2026-10-15T00:49:48.777Z",
+      "pre_run": {
+        "status": "final",
+        "gate_pass": true,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": true,
+          "load1_lt_gate": true,
+          "no_cargo_rustc": true
+        },
+        "power": {
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+        },
+        "loadavg": [
+          1.4853515625,
+          2.55615234375,
+          3.123046875
+        ],
+        "competing_processes": [],
+        "daemon_processes": [
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "8887",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3879989,
+          "content_docs": 145653,
+          "content_pending": 0,
+          "index_bytes": 120238464,
+          "content_bytes": 169795968,
+          "full_disk_access": true
+        },
+        "checked_at": "2026-10-15T00:49:48.777Z"
+      },
+      "end_of_run": {
+        "status": "provisional",
+        "gate_pass": false,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": true,
+          "load1_lt_gate": false,
+          "no_cargo_rustc": true
+        },
+        "power": {
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+        },
+        "loadavg": [
+          4.6494140625,
+          3.1943359375,
+          3.3447265625
+        ],
+        "competing_processes": [],
+        "daemon_processes": [
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "8887",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3879989,
+          "content_docs": 145653,
+          "content_pending": 0,
+          "index_bytes": 120238464,
+          "content_bytes": 169795968,
+          "full_disk_access": true
+        },
+        "checked_at": "2026-10-15T00:49:50.924Z"
+      },
+      "degraded_during_run": false
+    }
+  },
+  "daemon_reachable_before": true,
+  "daemon_reachable_after": true,
+  "absent": {
+    "query_count": 6,
+    "total_calls": 30,
+    "zero_hit_rate": 1,
+    "false_positives": []
+  },
+  "present": {
+    "query_count": 6,
+    "total_calls": 30,
+    "miss_rate": 0,
+    "false_negatives": []
+  },
+  "fallback": {
+    "my_audit_rows": 60,
+    "source_counts": {
+      "index": 40,
+      "scan": 20
+    },
+    "native_fallback_rows": 0,
+    "native_fallback_rate": 0,
+    "scan_rows": 20,
+    "index_rows": 40,
+    "fallback_examples": []
+  },
+  "audit_window": {
+    "fresh_rows_total": 60,
+    "mine_rows": 60,
+    "other_writers_rows": 0,
+    "other_tools_sample": []
+  },
+  "per_query": [
+    {
+      "id": "a1",
+      "kind": "path",
+      "q": "zzz_absent_path_alpha_9c3f",
+      "scope": "/Users/batra/ultrasearch-verify",
+      "scopeId": "repo",
+      "class": "absent",
+      "reps": 5,
+      "zero_hit_calls": 5,
+      "zero_hit_rate": 1,
+      "error_calls": 0,
+      "source_counts": {
+        "null": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.4100410000000352,
+        "max": 3.0224580000000287,
+        "mean": 1.0384000000000129,
+        "median": 0.4914590000000203,
+        "p50": 0.4914590000000203,
+        "p95": 2.5766414000000277,
+        "median_ci95": [
+          0.4100410000000352,
+          3.0224580000000287
+        ],
+        "samples": [
+          3.0224580000000287,
+          0.7933750000000259,
+          0.4914590000000203,
+          0.4100410000000352,
+          0.474666999999954
+        ]
+      },
+      "calls": [
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 3.0225,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.7934,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.4915,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.41,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.4747,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "a2",
+      "kind": "path",
+      "q": "zzz_absent_path_beta_9c3f",
+      "scope": "/Users/batra/.cache/pi-ultrasearch-bench/fixture-5k",
+      "scopeId": "fixture",
+      "class": "absent",
+      "reps": 5,
+      "zero_hit_calls": 5,
+      "zero_hit_rate": 1,
+      "error_calls": 0,
+      "source_counts": {
+        "null": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.40816699999999173,
+        "max": 1.0309589999999957,
+        "mean": 0.5721169999999915,
+        "median": 0.4534169999999449,
+        "p50": 0.4534169999999449,
+        "p95": 0.9281839999999988,
+        "median_ci95": [
+          0.40816699999999173,
+          1.0309589999999957
+        ],
+        "samples": [
+          1.0309589999999957,
+          0.5170840000000112,
+          0.4509580000000142,
+          0.4534169999999449,
+          0.40816699999999173
+        ]
+      },
+      "calls": [
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 1.031,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.5171,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.451,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.4534,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.4082,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "a3",
+      "kind": "path",
+      "q": "zzz_absent_path_gamma_9c3f",
+      "scope": "/Users/batra/Search",
+      "scopeId": "search",
+      "class": "absent",
+      "reps": 5,
+      "zero_hit_calls": 5,
+      "zero_hit_rate": 1,
+      "error_calls": 0,
+      "source_counts": {
+        "null": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.742541000000017,
+        "max": 3.41537500000004,
+        "mean": 1.473750000000018,
+        "median": 1.086084000000028,
+        "p50": 1.086084000000028,
+        "p95": 2.981366600000035,
+        "median_ci95": [
+          0.742541000000017,
+          3.41537500000004
+        ],
+        "samples": [
+          3.41537500000004,
+          0.8794169999999895,
+          1.086084000000028,
+          0.742541000000017,
+          1.2453330000000165
+        ]
+      },
+      "calls": [
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 3.4154,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.8794,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 1.0861,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 0.7425,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": null,
+          "ms": 1.2453,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "a4",
+      "kind": "grep",
+      "q": "zzz_absent_grep_alpha_9c3f",
+      "scope": "/Users/batra/.cache/pi-ultrasearch-bench/fixture-5k",
+      "scopeId": "fixture",
+      "class": "absent",
+      "reps": 5,
+      "zero_hit_calls": 5,
+      "zero_hit_rate": 1,
+      "error_calls": 0,
+      "source_counts": {
+        "scan": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 37.16416600000002,
+        "max": 109.99374999999998,
+        "mean": 53.62005839999999,
+        "median": 39.53233399999999,
+        "p50": 39.53233399999999,
+        "p95": 96.82471679999995,
+        "median_ci95": [
+          37.16416600000002,
+          109.99374999999998
+        ],
+        "samples": [
+          109.99374999999998,
+          39.53233399999999,
+          44.148583999999914,
+          37.26145800000006,
+          37.16416600000002
+        ]
+      },
+      "calls": [
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 109.9937,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 39.5323,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 44.1486,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 37.2615,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 37.1642,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "a5",
+      "kind": "grep",
+      "q": "zzz_absent_grep_beta_9c3f",
+      "scope": "/Users/batra/Search",
+      "scopeId": "search",
+      "class": "absent",
+      "reps": 5,
+      "zero_hit_calls": 5,
+      "zero_hit_rate": 1,
+      "error_calls": 0,
+      "source_counts": {
+        "index": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.22174999999992906,
+        "max": 4.150416000000064,
+        "mean": 1.064683200000013,
+        "median": 0.2590420000000222,
+        "p50": 0.2590420000000222,
+        "p95": 3.4087494000000556,
+        "median_ci95": [
+          0.22174999999992906,
+          4.150416000000064
+        ],
+        "samples": [
+          4.150416000000064,
+          0.25012500000002547,
+          0.22174999999992906,
+          0.4420830000000251,
+          0.2590420000000222
+        ]
+      },
+      "calls": [
+        {
+          "count": 0,
+          "ok": true,
+          "source": "index",
+          "ms": 4.1504,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "index",
+          "ms": 0.2501,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "index",
+          "ms": 0.2217,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "index",
+          "ms": 0.4421,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "index",
+          "ms": 0.259,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "a6",
+      "kind": "grep",
+      "q": "zzz_absent_grep_gamma_9c3f",
+      "scope": "/Users/batra/.cache/pi-ultrasearch-bench/fixture-5k",
+      "scopeId": "fixture",
+      "class": "absent",
+      "reps": 5,
+      "zero_hit_calls": 5,
+      "zero_hit_rate": 1,
+      "error_calls": 0,
+      "source_counts": {
+        "scan": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 36.417125000000055,
+        "max": 41.33262500000001,
+        "mean": 37.58927540000004,
+        "median": 36.800459000000046,
+        "p50": 36.800459000000046,
+        "p95": 40.461291800000005,
+        "median_ci95": [
+          36.417125000000055,
+          41.33262500000001
+        ],
+        "samples": [
+          36.417125000000055,
+          36.97595899999999,
+          41.33262500000001,
+          36.800459000000046,
+          36.42020900000011
+        ]
+      },
+      "calls": [
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 36.4171,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 36.976,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 41.3326,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 36.8005,
+          "err": null
+        },
+        {
+          "count": 0,
+          "ok": true,
+          "source": "scan",
+          "ms": 36.4202,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "b1",
+      "kind": "path",
+      "q": "package.json",
+      "scope": "/Users/batra/ultrasearch-verify",
+      "scopeId": "repo",
+      "class": "present",
+      "reps": 5,
+      "zero_hit_calls": 0,
+      "zero_hit_rate": 0,
+      "error_calls": 0,
+      "source_counts": {
+        "null": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.9800000000000182,
+        "max": 2.909791999999925,
+        "mean": 1.3775667999999315,
+        "median": 0.9977499999999964,
+        "p50": 0.9977499999999964,
+        "p95": 2.5291169999999052,
+        "median_ci95": [
+          0.9800000000000182,
+          2.909791999999925
+        ],
+        "samples": [
+          2.909791999999925,
+          1.0064169999998285,
+          0.9800000000000182,
+          0.993874999999889,
+          0.9977499999999964
+        ]
+      },
+      "calls": [
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 2.9098,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 1.0064,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.98,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.9939,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.9977,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "kind": "path",
+      "q": "module_01232.ts",
+      "scope": "/Users/batra/.cache/pi-ultrasearch-bench/fixture-5k",
+      "scopeId": "fixture",
+      "class": "present",
+      "reps": 5,
+      "zero_hit_calls": 0,
+      "zero_hit_rate": 0,
+      "error_calls": 0,
+      "source_counts": {
+        "null": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.5304579999999532,
+        "max": 1.4499579999999241,
+        "mean": 0.8194166000000678,
+        "median": 0.7035420000001977,
+        "p50": 0.7035420000001977,
+        "p95": 1.329741399999966,
+        "median_ci95": [
+          0.5304579999999532,
+          1.4499579999999241
+        ],
+        "samples": [
+          1.4499579999999241,
+          0.8488750000001346,
+          0.7035420000001977,
+          0.5642500000001291,
+          0.5304579999999532
+        ]
+      },
+      "calls": [
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 1.45,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.8489,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.7035,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.5643,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.5305,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "kind": "path",
+      "q": "dmg.py",
+      "scope": "/Users/batra/Search",
+      "scopeId": "search",
+      "class": "present",
+      "reps": 5,
+      "zero_hit_calls": 0,
+      "zero_hit_rate": 0,
+      "error_calls": 0,
+      "source_counts": {
+        "null": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.6560420000000704,
+        "max": 1.8232499999999163,
+        "mean": 1.0337665999999899,
+        "median": 0.7523330000001351,
+        "p50": 0.7523330000001351,
+        "p95": 1.7115333999999165,
+        "median_ci95": [
+          0.6560420000000704,
+          1.8232499999999163
+        ],
+        "samples": [
+          1.8232499999999163,
+          1.2646669999999176,
+          0.6725409999999101,
+          0.6560420000000704,
+          0.7523330000001351
+        ]
+      },
+      "calls": [
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 1.8232,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 1.2647,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.6725,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.656,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": null,
+          "ms": 0.7523,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "kind": "grep",
+      "q": "FSearchClient",
+      "scope": "/Users/batra/ultrasearch-verify",
+      "scopeId": "repo",
+      "class": "present",
+      "reps": 5,
+      "zero_hit_calls": 0,
+      "zero_hit_rate": 0,
+      "error_calls": 0,
+      "source_counts": {
+        "scan": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 7.886209000000008,
+        "max": 18.169541999999865,
+        "mean": 10.640733599999976,
+        "median": 9.103374999999915,
+        "p50": 9.103374999999915,
+        "p95": 16.417525199999908,
+        "median_ci95": [
+          7.886209000000008,
+          18.169541999999865
+        ],
+        "samples": [
+          18.169541999999865,
+          9.409458000000086,
+          7.886209000000008,
+          8.635084000000006,
+          9.103374999999915
+        ]
+      },
+      "calls": [
+        {
+          "count": 30,
+          "ok": true,
+          "source": "scan",
+          "ms": 18.1695,
+          "err": null
+        },
+        {
+          "count": 30,
+          "ok": true,
+          "source": "scan",
+          "ms": 9.4095,
+          "err": null
+        },
+        {
+          "count": 30,
+          "ok": true,
+          "source": "scan",
+          "ms": 7.8862,
+          "err": null
+        },
+        {
+          "count": 30,
+          "ok": true,
+          "source": "scan",
+          "ms": 8.6351,
+          "err": null
+        },
+        {
+          "count": 30,
+          "ok": true,
+          "source": "scan",
+          "ms": 9.1034,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "b5",
+      "kind": "grep",
+      "q": "ULTRAMARKER_1232",
+      "scope": "/Users/batra/.cache/pi-ultrasearch-bench/fixture-5k",
+      "scopeId": "fixture",
+      "class": "present",
+      "reps": 5,
+      "zero_hit_calls": 0,
+      "zero_hit_rate": 0,
+      "error_calls": 0,
+      "source_counts": {
+        "scan": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 36.60383300000012,
+        "max": 117.8594579999999,
+        "mean": 77.5393584,
+        "median": 77.5981670000001,
+        "p50": 77.5981670000001,
+        "p95": 116.6835747999999,
+        "median_ci95": [
+          36.60383300000012,
+          117.8594579999999
+        ],
+        "samples": [
+          111.98004199999991,
+          117.8594579999999,
+          77.5981670000001,
+          36.60383300000012,
+          43.65529199999992
+        ]
+      },
+      "calls": [
+        {
+          "count": 1,
+          "ok": true,
+          "source": "scan",
+          "ms": 111.98,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": "scan",
+          "ms": 117.8595,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": "scan",
+          "ms": 77.5982,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": "scan",
+          "ms": 36.6038,
+          "err": null
+        },
+        {
+          "count": 1,
+          "ok": true,
+          "source": "scan",
+          "ms": 43.6553,
+          "err": null
+        }
+      ]
+    },
+    {
+      "id": "b6",
+      "kind": "grep",
+      "q": "PageFind",
+      "scope": "/Users/batra/Search",
+      "scopeId": "search",
+      "class": "present",
+      "reps": 5,
+      "zero_hit_calls": 0,
+      "zero_hit_rate": 0,
+      "error_calls": 0,
+      "source_counts": {
+        "index": 5
+      },
+      "ms_stats": {
+        "n": 5,
+        "min": 0.7065829999996822,
+        "max": 1.3260000000000218,
+        "mean": 0.9007333999998991,
+        "median": 0.781666999999743,
+        "p50": 0.781666999999743,
+        "p95": 1.2476000000000567,
+        "median_ci95": [
+          0.7065829999996822,
+          1.3260000000000218
+        ],
+        "samples": [
+          1.3260000000000218,
+          0.7554169999998521,
+          0.7065829999996822,
+          0.9340000000001965,
+          0.781666999999743
+        ]
+      },
+      "calls": [
+        {
+          "count": 4,
+          "ok": true,
+          "source": "index",
+          "ms": 1.326,
+          "err": null
+        },
+        {
+          "count": 4,
+          "ok": true,
+          "source": "index",
+          "ms": 0.7554,
+          "err": null
+        },
+        {
+          "count": 4,
+          "ok": true,
+          "source": "index",
+          "ms": 0.7066,
+          "err": null
+        },
+        {
+          "count": 4,
+          "ok": true,
+          "source": "index",
+          "ms": 0.934,
+          "err": null
+        },
+        {
+          "count": 4,
+          "ok": true,
+          "source": "index",
+          "ms": 0.7817,
+          "err": null
+        }
+      ]
+    }
+  ]
+}

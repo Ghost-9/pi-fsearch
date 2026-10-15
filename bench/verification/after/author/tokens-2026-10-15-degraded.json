@@ -1,0 +1,643 @@
+{
+  "schema": "ultrasearch.bench.tokens/v1",
+  "status": "degraded",
+  "date": "2026-10-15",
+  "startedAt": "2026-10-15T04:23:11.807Z",
+  "method": {
+    "estimator": "ceil(chars / 4) — documented ESTIMATE, same as src/formatter.ts; sensitivity estimator ceil(chars/3.5) also reported",
+    "design": "counterbalanced A/B alternating arm order; 30 paired observations across 6 tasks",
+    "statistic": "median",
+    "ci": "BCa bootstrap, 10000 resamples, alpha=0.05, on paired deltas",
+    "ultraArm": "Pi tool formatting path (index.ts -> formatGrepFiles / path listing)",
+    "nativeArm": "raw stdout of the equivalent rg/find command in the same workspace",
+    "heuristic": "legacy 150 + 75×hits (grep) / 100 + 30×hits (path) comparison; labelled an ESTIMATE everywhere"
+  },
+  "environment": {
+    "checkedAt": "2026-10-15T04:23:07.265Z",
+    "platform": "darwin",
+    "arch": "arm64",
+    "hostname": "Mayanks-MacBook-Pro.local",
+    "cpuCount": 10,
+    "cpuModel": "Apple M1 Pro",
+    "onAC": true,
+    "powerSource": "AC Power",
+    "load1m": 46.482,
+    "load5m": 16.867,
+    "load15m": 9.284,
+    "competingProcesses": [],
+    "daemonPids": [
+      8887
+    ],
+    "daemonPid": 8887,
+    "socketOwnerPid": 8887,
+    "daemonWarnings": [],
+    "daemon": {
+      "pid": 8887,
+      "entries": 3879170,
+      "index_bytes": 119984896,
+      "content_docs": 145651,
+      "content_pending": 0
+    }
+  },
+  "environmentGate": {
+    "ok": false,
+    "reasons": [
+      "load1m 46.48 >= 1.5"
+    ]
+  },
+  "corpus": "/Users/batra/ultrasearch-verify",
+  "pairs": 30,
+  "ultraTokens": {
+    "n": 30,
+    "median": 23,
+    "mean": 362.03333333333336,
+    "p50": 23,
+    "p95": 943,
+    "p95IsMax": true,
+    "min": 15,
+    "max": 943,
+    "stdev": 385.5840606354106
+  },
+  "nativeTokens": {
+    "n": 30,
+    "median": 155,
+    "mean": 856,
+    "p50": 155,
+    "p95": 2677,
+    "p95IsMax": true,
+    "min": 4,
+    "max": 2677,
+    "stdev": 971.2093421126552
+  },
+  "tokenDelta": {
+    "n": 30,
+    "point": 132,
+    "lo": 26,
+    "hi": 132,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": -1.7576915893659013,
+    "acceleration": 0,
+    "quantity": "delta(a - b)"
+  },
+  "savingsRatio": {
+    "n": 30,
+    "point": 0.8516129032258064,
+    "lo": 0.8516129032258064,
+    "hi": 0.9032258064516129,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": -1.787851312757676,
+    "acceleration": 1.1515765950628342e-16,
+    "quantity": "fraction of tokens saved (1 - ultra/native)"
+  },
+  "perTask": {
+    "find-file": {
+      "n": 5,
+      "ultraChars": {
+        "n": 5,
+        "median": 57,
+        "mean": 57,
+        "p50": 57,
+        "p95": 57,
+        "p95IsMax": true,
+        "min": 57,
+        "max": 57,
+        "stdev": 0
+      },
+      "nativeChars": {
+        "n": 5,
+        "median": 620,
+        "mean": 620,
+        "p50": 620,
+        "p95": 620,
+        "p95IsMax": true,
+        "min": 620,
+        "max": 620,
+        "stdev": 0
+      },
+      "ultraTokens": {
+        "n": 5,
+        "median": 15,
+        "mean": 15,
+        "p50": 15,
+        "p95": 15,
+        "p95IsMax": true,
+        "min": 15,
+        "max": 15,
+        "stdev": 0
+      },
+      "nativeTokens": {
+        "n": 5,
+        "median": 155,
+        "mean": 155,
+        "p50": 155,
+        "p95": 155,
+        "p95IsMax": true,
+        "min": 155,
+        "max": 155,
+        "stdev": 0
+      },
+      "medianSavingsFraction": 0.9080645161290323
+    },
+    "find-definition": {
+      "n": 5,
+      "ultraChars": {
+        "n": 5,
+        "median": 3039,
+        "mean": 3039.4,
+        "p50": 3039,
+        "p95": 3040,
+        "p95IsMax": true,
+        "min": 3039,
+        "max": 3040,
+        "stdev": 0.5477225575051661
+      },
+      "nativeChars": {
+        "n": 5,
+        "median": 5561,
+        "mean": 5561,
+        "p50": 5561,
+        "p95": 5561,
+        "p95IsMax": true,
+        "min": 5561,
+        "max": 5561,
+        "stdev": 0
+      },
+      "ultraTokens": {
+        "n": 5,
+        "median": 760,
+        "mean": 760,
+        "p50": 760,
+        "p95": 760,
+        "p95IsMax": true,
+        "min": 760,
+        "max": 760,
+        "stdev": 0
+      },
+      "nativeTokens": {
+        "n": 5,
+        "median": 1391,
+        "mean": 1391,
+        "p50": 1391,
+        "p95": 1391,
+        "p95IsMax": true,
+        "min": 1391,
+        "max": 1391,
+        "stdev": 0
+      },
+      "medianSavingsFraction": 0.45351555475633876
+    },
+    "locate-config": {
+      "n": 5,
+      "ultraChars": {
+        "n": 5,
+        "median": 91,
+        "mean": 91,
+        "p50": 91,
+        "p95": 91,
+        "p95IsMax": true,
+        "min": 91,
+        "max": 91,
+        "stdev": 0
+      },
+      "nativeChars": {
+        "n": 5,
+        "median": 193,
+        "mean": 193,
+        "p50": 193,
+        "p95": 193,
+        "p95IsMax": true,
+        "min": 193,
+        "max": 193,
+        "stdev": 0
+      },
+      "ultraTokens": {
+        "n": 5,
+        "median": 23,
+        "mean": 23,
+        "p50": 23,
+        "p95": 23,
+        "p95IsMax": true,
+        "min": 23,
+        "max": 23,
+        "stdev": 0
+      },
+      "nativeTokens": {
+        "n": 5,
+        "median": 49,
+        "mean": 49,
+        "p50": 49,
+        "p95": 49,
+        "p95IsMax": true,
+        "min": 49,
+        "max": 49,
+        "stdev": 0
+      },
+      "medianSavingsFraction": 0.5284974093264249
+    },
+    "grep-literal": {
+      "n": 5,
+      "ultraChars": {
+        "n": 5,
+        "median": 1838,
+        "mean": 1663.2,
+        "p50": 1838,
+        "p95": 1839,
+        "p95IsMax": true,
+        "min": 962,
+        "max": 1839,
+        "stdev": 391.98303534719463
+      },
+      "nativeChars": {
+        "n": 5,
+        "median": 3439,
+        "mean": 3439,
+        "p50": 3439,
+        "p95": 3439,
+        "p95IsMax": true,
+        "min": 3439,
+        "max": 3439,
+        "stdev": 0
+      },
+      "ultraTokens": {
+        "n": 5,
+        "median": 460,
+        "mean": 416.2,
+        "p50": 460,
+        "p95": 460,
+        "p95IsMax": true,
+        "min": 241,
+        "max": 460,
+        "stdev": 97.93977741449079
+      },
+      "nativeTokens": {
+        "n": 5,
+        "median": 860,
+        "mean": 860,
+        "p50": 860,
+        "p95": 860,
+        "p95IsMax": true,
+        "min": 860,
+        "max": 860,
+        "stdev": 0
+      },
+      "medianSavingsFraction": 0.4655423088107008
+    },
+    "find-config": {
+      "n": 5,
+      "ultraChars": {
+        "n": 5,
+        "median": 58,
+        "mean": 58,
+        "p50": 58,
+        "p95": 58,
+        "p95IsMax": true,
+        "min": 58,
+        "max": 58,
+        "stdev": 0
+      },
+      "nativeChars": {
+        "n": 5,
+        "median": 16,
+        "mean": 16,
+        "p50": 16,
+        "p95": 16,
+        "p95IsMax": true,
+        "min": 16,
+        "max": 16,
+        "stdev": 0
+      },
+      "ultraTokens": {
+        "n": 5,
+        "median": 15,
+        "mean": 15,
+        "p50": 15,
+        "p95": 15,
+        "p95IsMax": true,
+        "min": 15,
+        "max": 15,
+        "stdev": 0
+      },
+      "nativeTokens": {
+        "n": 5,
+        "median": 4,
+        "mean": 4,
+        "p50": 4,
+        "p95": 4,
+        "p95IsMax": true,
+        "min": 4,
+        "max": 4,
+        "stdev": 0
+      },
+      "medianSavingsFraction": -2.625
+    },
+    "grep-symbol": {
+      "n": 5,
+      "ultraChars": {
+        "n": 5,
+        "median": 3770,
+        "mean": 3769.8,
+        "p50": 3770,
+        "p95": 3770,
+        "p95IsMax": true,
+        "min": 3769,
+        "max": 3770,
+        "stdev": 0.4472135954999579
+      },
+      "nativeChars": {
+        "n": 5,
+        "median": 10706,
+        "mean": 10706,
+        "p50": 10706,
+        "p95": 10706,
+        "p95IsMax": true,
+        "min": 10706,
+        "max": 10706,
+        "stdev": 0
+      },
+      "ultraTokens": {
+        "n": 5,
+        "median": 943,
+        "mean": 943,
+        "p50": 943,
+        "p95": 943,
+        "p95IsMax": true,
+        "min": 943,
+        "max": 943,
+        "stdev": 0
+      },
+      "nativeTokens": {
+        "n": 5,
+        "median": 2677,
+        "mean": 2677,
+        "p50": 2677,
+        "p95": 2677,
+        "p95IsMax": true,
+        "min": 2677,
+        "max": 2677,
+        "stdev": 0
+      },
+      "medianSavingsFraction": 0.647861012516346
+    }
+  },
+  "heuristicComparison": [
+    {
+      "task": "find-file",
+      "hitsUsedForHeuristic": 13,
+      "heuristicSavedTokens": null,
+      "measuredOutputSavedTokens": 140,
+      "heuristicOverstates": null
+    },
+    {
+      "task": "find-definition",
+      "hitsUsedForHeuristic": 31,
+      "heuristicSavedTokens": 2475,
+      "measuredOutputSavedTokens": 631,
+      "heuristicOverstates": true
+    },
+    {
+      "task": "locate-config",
+      "hitsUsedForHeuristic": 6,
+      "heuristicSavedTokens": null,
+      "measuredOutputSavedTokens": 26,
+      "heuristicOverstates": null
+    },
+    {
+      "task": "grep-literal",
+      "hitsUsedForHeuristic": 27,
+      "heuristicSavedTokens": 2175,
+      "measuredOutputSavedTokens": 400,
+      "heuristicOverstates": true
+    },
+    {
+      "task": "find-config",
+      "hitsUsedForHeuristic": 1,
+      "heuristicSavedTokens": null,
+      "measuredOutputSavedTokens": -11,
+      "heuristicOverstates": null
+    },
+    {
+      "task": "grep-symbol",
+      "hitsUsedForHeuristic": 106,
+      "heuristicSavedTokens": 8100,
+      "measuredOutputSavedTokens": 1734,
+      "heuristicOverstates": true
+    }
+  ],
+  "observations": [
+    {
+      "task": "find-file",
+      "ultraChars": 57,
+      "nativeChars": 620,
+      "ultraTokens": 15,
+      "nativeTokens": 155
+    },
+    {
+      "task": "find-definition",
+      "ultraChars": 3040,
+      "nativeChars": 5561,
+      "ultraTokens": 760,
+      "nativeTokens": 1391
+    },
+    {
+      "task": "locate-config",
+      "ultraChars": 91,
+      "nativeChars": 193,
+      "ultraTokens": 23,
+      "nativeTokens": 49
+    },
+    {
+      "task": "grep-literal",
+      "ultraChars": 962,
+      "nativeChars": 3439,
+      "ultraTokens": 241,
+      "nativeTokens": 860
+    },
+    {
+      "task": "find-config",
+      "ultraChars": 58,
+      "nativeChars": 16,
+      "ultraTokens": 15,
+      "nativeTokens": 4
+    },
+    {
+      "task": "grep-symbol",
+      "ultraChars": 3770,
+      "nativeChars": 10706,
+      "ultraTokens": 943,
+      "nativeTokens": 2677
+    },
+    {
+      "task": "find-file",
+      "ultraChars": 57,
+      "nativeChars": 620,
+      "ultraTokens": 15,
+      "nativeTokens": 155
+    },
+    {
+      "task": "find-definition",
+      "ultraChars": 3039,
+      "nativeChars": 5561,
+      "ultraTokens": 760,
+      "nativeTokens": 1391
+    },
+    {
+      "task": "locate-config",
+      "ultraChars": 91,
+      "nativeChars": 193,
+      "ultraTokens": 23,
+      "nativeTokens": 49
+    },
+    {
+      "task": "grep-literal",
+      "ultraChars": 1839,
+      "nativeChars": 3439,
+      "ultraTokens": 460,
+      "nativeTokens": 860
+    },
+    {
+      "task": "find-config",
+      "ultraChars": 58,
+      "nativeChars": 16,
+      "ultraTokens": 15,
+      "nativeTokens": 4
+    },
+    {
+      "task": "grep-symbol",
+      "ultraChars": 3770,
+      "nativeChars": 10706,
+      "ultraTokens": 943,
+      "nativeTokens": 2677
+    },
+    {
+      "task": "find-file",
+      "ultraChars": 57,
+      "nativeChars": 620,
+      "ultraTokens": 15,
+      "nativeTokens": 155
+    },
+    {
+      "task": "find-definition",
+      "ultraChars": 3039,
+      "nativeChars": 5561,
+      "ultraTokens": 760,
+      "nativeTokens": 1391
+    },
+    {
+      "task": "locate-config",
+      "ultraChars": 91,
+      "nativeChars": 193,
+      "ultraTokens": 23,
+      "nativeTokens": 49
+    },
+    {
+      "task": "grep-literal",
+      "ultraChars": 1838,
+      "nativeChars": 3439,
+      "ultraTokens": 460,
+      "nativeTokens": 860
+    },
+    {
+      "task": "find-config",
+      "ultraChars": 58,
+      "nativeChars": 16,
+      "ultraTokens": 15,
+      "nativeTokens": 4
+    },
+    {
+      "task": "grep-symbol",
+      "ultraChars": 3769,
+      "nativeChars": 10706,
+      "ultraTokens": 943,
+      "nativeTokens": 2677
+    },
+    {
+      "task": "find-file",
+      "ultraChars": 57,
+      "nativeChars": 620,
+      "ultraTokens": 15,
+      "nativeTokens": 155
+    },
+    {
+      "task": "find-definition",
+      "ultraChars": 3039,
+      "nativeChars": 5561,
+      "ultraTokens": 760,
+      "nativeTokens": 1391
+    },
+    {
+      "task": "locate-config",
+      "ultraChars": 91,
+      "nativeChars": 193,
+      "ultraTokens": 23,
+      "nativeTokens": 49
+    },
+    {
+      "task": "grep-literal",
+      "ultraChars": 1838,
+      "nativeChars": 3439,
+      "ultraTokens": 460,
+      "nativeTokens": 860
+    },
+    {
+      "task": "find-config",
+      "ultraChars": 58,
+      "nativeChars": 16,
+      "ultraTokens": 15,
+      "nativeTokens": 4
+    },
+    {
+      "task": "grep-symbol",
+      "ultraChars": 3770,
+      "nativeChars": 10706,
+      "ultraTokens": 943,
+      "nativeTokens": 2677
+    },
+    {
+      "task": "find-file",
+      "ultraChars": 57,
+      "nativeChars": 620,
+      "ultraTokens": 15,
+      "nativeTokens": 155
+    },
+    {
+      "task": "find-definition",
+      "ultraChars": 3040,
+      "nativeChars": 5561,
+      "ultraTokens": 760,
+      "nativeTokens": 1391
+    },
+    {
+      "task": "locate-config",
+      "ultraChars": 91,
+      "nativeChars": 193,
+      "ultraTokens": 23,
+      "nativeTokens": 49
+    },
+    {
+      "task": "grep-literal",
+      "ultraChars": 1839,
+      "nativeChars": 3439,
+      "ultraTokens": 460,
+      "nativeTokens": 860
+    },
+    {
+      "task": "find-config",
+      "ultraChars": 58,
+      "nativeChars": 16,
+      "ultraTokens": 15,
+      "nativeTokens": 4
+    },
+    {
+      "task": "grep-symbol",
+      "ultraChars": 3770,
+      "nativeChars": 10706,
+      "ultraTokens": 943,
+      "nativeTokens": 2677
+    }
+  ],
+  "finishedAt": "2026-10-15T04:23:11.807Z"
+}

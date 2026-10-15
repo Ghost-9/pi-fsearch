@@ -1,0 +1,19 @@
+{
+  "suite": "equivalence-m01-recheck",
+  "why": "the AFTER equivalence harness run (06:00) measured m01 at 30 files vs native 32 (recall 0.9375) while the repo was being written to by this verification (bench/verification/*). Re-measured with no concurrent writers.",
+  "measured_at": "2026-10-15T05:00:00Z",
+  "call": "client.multiGrep([\"recordAudit\",\"formatGrepFiles\"], { in: REPO, limit: 1000 })",
+  "scope": "/Users/batra/ultrasearch-verify",
+  "client_union_files": 37,
+  "native_rg_union_files": 37,
+  "only_in_client": [],
+  "only_in_rg": [],
+  "recall_vs_native": 1.0,
+  "source_label": "native_fallback",
+  "complete": false,
+  "per_pattern": {
+    "recordAudit": { "daemon_files": 26, "rg_files": 26, "identical": true },
+    "formatGrepFiles": { "daemon_files": 29, "rg_files": 27, "daemon_only": ["bench/results/tokens-2026-10-14-degraded.json", "bench/results/tokens-2026-10-15-degraded.json"], "note": "rg skips those two because .gitignore line 11 ignores bench/results/*-degraded.json; the client filters them too, so the tool output matches rg" }
+  },
+  "note": "multi_grep is not a daemon socket op in either wave (upstream v0.2.1 or the fork): the daemon answers {\"error\":\"unknown op multi_grep\"} and the client fans out to per-pattern greps and merges. The AFTER client labels that path source=native_fallback; the BEFORE client labelled the same path source=index. Behaviour is the same fan-out; only the label changed."
+}

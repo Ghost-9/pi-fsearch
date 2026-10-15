@@ -1,0 +1,67 @@
+[bench] environment gate: final
+error: rustup could not choose a version of rustc to run, because one wasn't specified explicitly, and no default is configured.
+help: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.
+[bench] p01 path/repo us=4 (ignored:3) native=1 recall=1
+[bench] p02 path/repo us=1 native=1 recall=1
+[bench] p03 path/repo us=1 native=1 recall=1
+[bench] p04 path/repo us=1 native=1 recall=1
+[bench] p05 path/repo us=4 (ignored:3) native=1 recall=1
+[bench] p06 path/repo us=1 native=1 recall=1
+[bench] p07 path/fixture us=1 native=1 recall=1
+[bench] p08 path/fixture us=1 native=1 recall=1
+[bench] p09 path/fixture us=1 native=1 recall=1
+[bench] p10 path/fixture us=3 native=3 recall=1
+[bench] p11 path/search us=1 native=1 recall=1
+[bench] p12 path/search us=1 native=1 recall=1
+[bench] p13 path/search us=1 native=1 recall=1
+[bench] g01 grep/repo us=32 native=32 recall=1
+[bench] g02 grep/repo us=23 native=23 recall=1
+[bench] g03 grep/repo us=3 native=3 recall=1
+[bench] g04 grep/repo us=14 native=14 recall=1
+[bench] g05 grep/repo us=14 native=14 recall=1
+[bench] g06 grep/repo us=7 native=7 recall=1
+[bench] g07 grep/repo us=8 native=8 recall=1
+[bench] g08 grep/fixture us=1 native=1 recall=1
+[bench] g09 grep/fixture us=18 native=18 recall=1
+[bench] g10 grep/fixture us=386 native=386 recall=1
+[bench] g11 grep/search us=1 native=1 recall=1
+[bench] g12 grep/search us=4 native=4 recall=1
+[bench] m01 multi/repo us=20 native=20 recall=1
+[bench] m02 multi/fixture us=16 native=19 recall=0.8421052631578947
+[bench] n01 path/repo us=0 native=0 recall=1
+[bench] n02 path/fixture us=0 native=0 recall=1
+[bench] n03 grep/fixture us=0 native=0 recall=1
+
+=== EQUIVALENCE GOLDEN (files, effective vs native) ===
+p01 path   repo     us=   4 ignored=  3 native=   1 recall_eff=1.000 recall_raw=1.000
+p02 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p03 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p04 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p05 path   repo     us=   4 ignored=  3 native=   1 recall_eff=1.000 recall_raw=1.000
+p06 path   repo     us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p07 path   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p08 path   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p09 path   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p10 path   fixture  us=   3 ignored=  0 native=   3 recall_eff=1.000 recall_raw=1.000
+p11 path   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p12 path   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+p13 path   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+g01 grep   repo     us=  32 ignored=  0 native=  32 recall_eff=1.000 recall_raw=1.000
+g02 grep   repo     us=  23 ignored=  0 native=  23 recall_eff=1.000 recall_raw=1.000
+g03 grep   repo     us=   3 ignored=  0 native=   3 recall_eff=1.000 recall_raw=1.000
+g04 grep   repo     us=  14 ignored=  0 native=  14 recall_eff=1.000 recall_raw=1.000
+g05 grep   repo     us=  14 ignored=  0 native=  14 recall_eff=1.000 recall_raw=1.000
+g06 grep   repo     us=   7 ignored=  0 native=   7 recall_eff=1.000 recall_raw=1.000
+g07 grep   repo     us=   8 ignored=  0 native=   8 recall_eff=1.000 recall_raw=1.000
+g08 grep   fixture  us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+g09 grep   fixture  us=  18 ignored=  0 native=  18 recall_eff=1.000 recall_raw=1.000
+g10 grep   fixture  us= 386 ignored=  0 native= 386 recall_eff=1.000 recall_raw=1.000
+g11 grep   search   us=   1 ignored=  0 native=   1 recall_eff=1.000 recall_raw=1.000
+g12 grep   search   us=   4 ignored=  0 native=   4 recall_eff=1.000 recall_raw=1.000
+m01 multi  repo     us=  20 ignored=  0 native=  20 recall_eff=1.000 recall_raw=1.000
+m02 multi  fixture  us=  16 ignored=  0 native=  19 recall_eff=0.842 recall_raw=0.842
+n01 path   repo     us=   0 ignored=  0 native=   0 recall_eff=1.000 recall_raw=1.000
+n02 path   fixture  us=   0 ignored=  0 native=   0 recall_eff=1.000 recall_raw=1.000
+n03 grep   fixture  us=   0 ignored=  0 native=   0 recall_eff=1.000 recall_raw=1.000
+
+raw JSON: /Users/batra/.cache/us-verify/before/bench/baseline/results/equivalence-golden.json

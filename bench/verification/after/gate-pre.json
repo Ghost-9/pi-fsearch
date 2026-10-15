@@ -1,0 +1,14 @@
+{
+  "note": "recorded pre-run gate of the AFTER latency measurement (the AFTER suite's gate window); not a fresh check",
+  "status": "provisional",
+  "gate_pass": false,
+  "load1": 4.867,
+  "ac_power": true,
+  "checks": {
+    "ac_power": true,
+    "load1_lt_gate": false,
+    "no_cargo_rustc": true
+  },
+  "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+  "checked_at": "2026-10-15T04:15:43.748Z"
+}

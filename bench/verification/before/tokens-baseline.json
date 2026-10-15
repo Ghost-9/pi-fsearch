@@ -1,0 +1,491 @@
+{
+  "meta": {
+    "suite": "tokens",
+    "wave": "wave1/baseline",
+    "generated_at": "2026-10-14T23:57:02.806Z",
+    "date_short": "2026-10-14",
+    "commit": "0a16e5055002c2d80feed47afecc2e0416afd1a2",
+    "branch": "",
+    "machine": {
+      "chip": "Apple M1 Pro",
+      "model": "MacBookPro18,1",
+      "macos": "27.0.1",
+      "kernel": "27.0.0",
+      "node": "v26.11.1",
+      "v8": "14.6.202.34-node.37",
+      "rustc": null,
+      "arch": "arm64",
+      "platform": "darwin",
+      "cpuCount": 10,
+      "totalMemBytes": 17179869184,
+      "loadavg_at_start": [
+        1.4892578125,
+        2.11767578125,
+        2.7021484375
+      ]
+    },
+    "daemon": {
+      "content_bytes": 16384,
+      "content_docs": 1,
+      "content_pending": 0,
+      "content_segments": 1,
+      "dirs": 547253,
+      "entries": 3362952,
+      "event_id": 5692983518,
+      "full_disk_access": false,
+      "id": 1,
+      "index_bytes": 91561344,
+      "ok": true,
+      "overlay": 942,
+      "owner": true,
+      "removed": 304
+    },
+    "estimator": {
+      "formula": "ceil(characters / 4)",
+      "rationale": "Characters/4 is the standard rough BPE estimate for English prose and source code. It is an ESTIMATE, not a tokenizer measurement: error is typically ±20%, worse for CJK, base64, minified JSON or long identifiers. Only deltas measured with the SAME estimator are meaningful; do not compare against counts from a different tokenizer.",
+      "limits": [
+        "Timing strings inside tool text (e.g. 'in 2.63ms') are dynamic; run-to-run variation is <15 chars.",
+        "The zero-hit path-search text may gain a dynamic diagnostic hint at runtime (not captured here).",
+        "Formatter tokenCount itself uses ceil(chars/4); it is not an independent measurement."
+      ]
+    },
+    "tasks": [
+      {
+        "id": "t01",
+        "tool": "fsearch_query",
+        "params": {
+          "query": "package.json",
+          "limit": 30
+        }
+      },
+      {
+        "id": "t02",
+        "tool": "fsearch_query",
+        "params": {
+          "query": "module_01232.ts",
+          "limit": 30
+        }
+      },
+      {
+        "id": "t03",
+        "tool": "fsearch_query",
+        "params": {
+          "query": "zzz_absent_alpha_9c3f.ts",
+          "limit": 30
+        }
+      },
+      {
+        "id": "t04",
+        "tool": "fsearch_grep",
+        "params": {
+          "pattern": "FSearchClient",
+          "limit": 30,
+          "context": 0,
+          "mode": "literal"
+        }
+      },
+      {
+        "id": "t05",
+        "tool": "fsearch_grep",
+        "params": {
+          "pattern": "ULTRAMARKER_1232",
+          "limit": 30,
+          "context": 0,
+          "mode": "literal"
+        }
+      },
+      {
+        "id": "t06",
+        "tool": "fsearch_grep",
+        "params": {
+          "pattern": "zzz_absent_token_9c3f",
+          "limit": 30,
+          "context": 0,
+          "mode": "literal"
+        }
+      },
+      {
+        "id": "t07",
+        "tool": "fsearch_multi_grep",
+        "params": {
+          "patterns": [
+            "recordAudit",
+            "formatGrepFiles"
+          ],
+          "limit": 30
+        }
+      },
+      {
+        "id": "t08",
+        "tool": "fsearch_multi_grep",
+        "params": {
+          "patterns": [
+            "ULTRAMARKER_1232",
+            "ULTRAMARKER_7"
+          ],
+          "limit": 30
+        }
+      },
+      {
+        "id": "t09",
+        "tool": "fsearch_locate",
+        "params": {
+          "filename": "package.json",
+          "global": true,
+          "limit": 10
+        }
+      },
+      {
+        "id": "t10",
+        "tool": "fsearch_recent",
+        "params": {
+          "limit": 15
+        }
+      }
+    ],
+    "status": "final",
+    "environment": {
+      "status": "final",
+      "gate_pass": true,
+      "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+      "gate_load1_max": 1.5,
+      "checks": {
+        "ac_power": true,
+        "load1_lt_gate": true,
+        "no_cargo_rustc": true
+      },
+      "power": {
+        "on_ac": true,
+        "percent": 100,
+        "discharging": false,
+        "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+      },
+      "loadavg": [
+        1.4892578125,
+        2.11767578125,
+        2.7021484375
+      ],
+      "competing_processes": [],
+      "daemon_processes": [
+        "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+      ],
+      "daemon_pid": "8887",
+      "daemon_status": {
+        "ok": true,
+        "entries": 3362952,
+        "content_docs": 1,
+        "content_pending": 0,
+        "index_bytes": 91561344,
+        "content_bytes": 16384,
+        "full_disk_access": false
+      },
+      "checked_at": "2026-10-14T23:57:02.805Z",
+      "pre_run": {
+        "status": "final",
+        "gate_pass": true,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": true,
+          "load1_lt_gate": true,
+          "no_cargo_rustc": true
+        },
+        "power": {
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+        },
+        "loadavg": [
+          1.4892578125,
+          2.11767578125,
+          2.7021484375
+        ],
+        "competing_processes": [],
+        "daemon_processes": [
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "8887",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3362952,
+          "content_docs": 1,
+          "content_pending": 0,
+          "index_bytes": 91561344,
+          "content_bytes": 16384,
+          "full_disk_access": false
+        },
+        "checked_at": "2026-10-14T23:57:02.805Z"
+      },
+      "end_of_run": {
+        "status": "final",
+        "gate_pass": true,
+        "gate_rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process",
+        "gate_load1_max": 1.5,
+        "checks": {
+          "ac_power": true,
+          "load1_lt_gate": true,
+          "no_cargo_rustc": true
+        },
+        "power": {
+          "on_ac": true,
+          "percent": 100,
+          "discharging": false,
+          "raw": "Now drawing from 'AC Power' |  -InternalBattery-0 (id=23003235)\t100%; charged; 0:00 remaining present: true"
+        },
+        "loadavg": [
+          1.4892578125,
+          2.11767578125,
+          2.7021484375
+        ],
+        "competing_processes": [],
+        "daemon_processes": [
+          "8887 /Applications/UltraSearch.app/Contents/MacOS/UltraSearch serve"
+        ],
+        "daemon_pid": "8887",
+        "daemon_status": {
+          "ok": true,
+          "entries": 3362952,
+          "content_docs": 1,
+          "content_pending": 0,
+          "index_bytes": 91561344,
+          "content_bytes": 16384,
+          "full_disk_access": false
+        },
+        "checked_at": "2026-10-14T23:57:03.215Z"
+      },
+      "degraded_during_run": false
+    }
+  },
+  "summary": {
+    "tasks": 10,
+    "total_tool_text_chars": 15942,
+    "total_estimated_tokens": 3988,
+    "max_task_tokens": 2044,
+    "median_task_tokens": 67
+  },
+  "tasks": [
+    {
+      "id": "t01",
+      "tool": "fsearch_query",
+      "scope": "/Users/batra/.cache/us-verify/before",
+      "params": {
+        "query": "package.json",
+        "limit": 30
+      },
+      "ok": true,
+      "us_source": null,
+      "took_us": 229,
+      "hit_count": 4,
+      "tool_text_chars": 267,
+      "tool_text_lines": 5,
+      "estimated_tokens": 67,
+      "formatter_token_count": null,
+      "raw_json_chars": 657,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "Found 4 matches in 0.23ms:\npackage.json (file, score: 59)\nnode_modules/@types/node/package.json [git:ignored] (file, score: 29)\nnode_modules/typescript/package.json [git:ignored] (file, score: 29)\nnode_modules/undici-types/package.json [git:ignored] (file, score: 29)",
+      "tool_text_sample_truncated": false
+    },
+    {
+      "id": "t02",
+      "tool": "fsearch_query",
+      "scope": "/Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k",
+      "params": {
+        "query": "module_01232.ts",
+        "limit": 30
+      },
+      "ok": true,
+      "us_source": null,
+      "took_us": 146,
+      "hit_count": 1,
+      "tool_text_chars": 67,
+      "tool_text_lines": 2,
+      "estimated_tokens": 17,
+      "formatter_token_count": null,
+      "raw_json_chars": 240,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "Found 1 matches in 0.15ms:\ndir_12/module_01232.ts (file, score: 48)",
+      "tool_text_sample_truncated": false
+    },
+    {
+      "id": "t03",
+      "tool": "fsearch_query",
+      "scope": "/Users/batra/.cache/us-verify/before",
+      "params": {
+        "query": "zzz_absent_alpha_9c3f.ts",
+        "limit": 30
+      },
+      "ok": true,
+      "us_source": null,
+      "took_us": 53,
+      "hit_count": 0,
+      "tool_text_chars": 82,
+      "tool_text_lines": 1,
+      "estimated_tokens": 21,
+      "formatter_token_count": null,
+      "raw_json_chars": 78,
+      "dynamic_hint_possible": true,
+      "tool_text_sample": "No files matching \"zzz_absent_alpha_9c3f.ts\" found (zero typo tolerance enforced).",
+      "tool_text_sample_truncated": false
+    },
+    {
+      "id": "t04",
+      "tool": "fsearch_grep",
+      "scope": "/Users/batra/.cache/us-verify/before",
+      "params": {
+        "pattern": "FSearchClient",
+        "limit": 30,
+        "context": 0,
+        "mode": "literal"
+      },
+      "ok": true,
+      "us_source": "scan",
+      "took_us": 6323,
+      "hit_count": 30,
+      "tool_text_chars": 8173,
+      "tool_text_lines": 78,
+      "estimated_tokens": 2044,
+      "formatter_token_count": 2030,
+      "raw_json_chars": 12922,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "Found matches across 30 files in 6.32ms (~2030 tokens):\nbench/baseline/TOKENS.md:26: | t04 | fsearch_grep | ~/.cache/us-verify/before | `{\"pattern\":\"FSearchClient\",\"limit\":30,\"context\":0,\"mode\":\"literal\"}` | 30 | 8174 | 2044 | 2030 | 12934 |\nbench/baseline/results/tokens-baseline.json:81: \"pattern\": \"FSearchClient\",\nbench/baseline/results/tokens-baseline.json:336: \"pattern\": \"FSearchClient\",\nbench/baseline/results/tokens-baseline.json:351: \"tool_text_sample\": \"Found matches across 30 files in 12.37ms (~2030 tokens):\\nbench/baseline/TOKENS.md:26: | t04 | fsearch_grep | ~/.cache/us-verify/before | `{\\\"pattern\\\":\\\"FSearchClient\\\",\\\"limit\\\":30,\\\"context\\\":0,\\\"mode\\\":\\\"literal\\\"}` | 30 | 8174 | 2044 | 2030 | 12923 |\\nbench/baseline/results/tokens-baseline.json:81: \\\"pattern\\\": \\\"FSearchClient\\\",\\nbench/baseline/results/tokens-basel\nbench/baseline/results/equivalence-golden.json:929: \"query\": \"FSearchClient\",\nbench/baseline/results/judgments-baseline.json:1063: \"query\": \"FSearchClient\",\nbench/baseline/results/judgments-baseline.json:1068: \"call\": \"grep(\\\"FSearchClient\\\", in=<root>, mode=symbol, limit=10)\",\nbench/baseline/results/judgments-baseline.json:2058: \"query\": \"FSearchClient\",\nbench/baseline/results/judgments-baseline.json:2064: \"call\": \"grep(\\\"FSearchClient\\\", in=<root>, mode=symbol, limit=10)\",\nbench/baseline/results/judgments-input.json:65: {\"id\": \"S1\", \"lane\": \"symbol\", \"difficulty\": \"head\", \"query\": \"FSearchClient\", \"params\": {\"mode\": \"symbol\", \"limit\": 10}, \"must_hit\":",
+      "tool_text_sample_truncated": true
+    },
+    {
+      "id": "t05",
+      "tool": "fsearch_grep",
+      "scope": "/Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k",
+      "params": {
+        "pattern": "ULTRAMARKER_1232",
+        "limit": 30,
+        "context": 0,
+        "mode": "literal"
+      },
+      "ok": true,
+      "us_source": "scan",
+      "took_us": 114146,
+      "hit_count": 1,
+      "tool_text_chars": 128,
+      "tool_text_lines": 2,
+      "estimated_tokens": 32,
+      "formatter_token_count": 19,
+      "raw_json_chars": 376,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "Found matches across 1 files in 114.15ms (~19 tokens):\ndir_12/module_01232.ts:33: export const marker_1232 = \"ULTRAMARKER_1232\";",
+      "tool_text_sample_truncated": false
+    },
+    {
+      "id": "t06",
+      "tool": "fsearch_grep",
+      "scope": "/Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k",
+      "params": {
+        "pattern": "zzz_absent_token_9c3f",
+        "limit": 30,
+        "context": 0,
+        "mode": "literal"
+      },
+      "ok": true,
+      "us_source": "scan",
+      "took_us": 46311,
+      "hit_count": 0,
+      "tool_text_chars": 48,
+      "tool_text_lines": 1,
+      "estimated_tokens": 12,
+      "formatter_token_count": null,
+      "raw_json_chars": 156,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "No occurrences of \"zzz_absent_token_9c3f\" found.",
+      "tool_text_sample_truncated": false
+    },
+    {
+      "id": "t07",
+      "tool": "fsearch_multi_grep",
+      "scope": "/Users/batra/.cache/us-verify/before",
+      "params": {
+        "patterns": [
+          "recordAudit",
+          "formatGrepFiles"
+        ],
+        "limit": 30
+      },
+      "ok": true,
+      "us_source": "index",
+      "took_us": 7130,
+      "hit_count": 20,
+      "tool_text_chars": 5424,
+      "tool_text_lines": 61,
+      "estimated_tokens": 1356,
+      "formatter_token_count": 1343,
+      "raw_json_chars": 15035,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "Multi-grep matched 20 files in 7.13ms (~1343 tokens):\nbench/baseline/TOKENS.md:29: | t07 | fsearch_multi_grep | ~/.cache/us-verify/before | `{\"patterns\":[\"recordAudit\",\"formatGrepFiles\"],\"limit\":30}` | 20 | 5424 | 1356 | 1343 | 15029 |\nbench/baseline/results/tokens-baseline.json:112: \"recordAudit\",\nbench/baseline/results/tokens-baseline.json:406: \"recordAudit\",\nbench/baseline/results/tokens-baseline.json:421: \"tool_text_sample\": \"Multi-grep matched 20 files in 6.52ms (~1343 tokens):\\nbench/baseline/TOKENS.md:29: | t07 | fsearch_multi_grep | ~/.cache/us-verify/before | `{\\\"patterns\\\":[\\\"recordAudit\\\",\\\"formatGrepFiles\\\"],\\\"limit\\\":30}` | 20 | 5424 | 1356 | 1343 | 15029 |\\nbench/baseline/results/tokens-baseline.json:112: \\\"recordAudit\\\",\\nbench/baseline/results/tokens-baseline.json:406: \\\"recordAud\nbench/baseline/results/tokens-baseline.json:113: \"formatGrepFiles\"\nbench/baseline/results/tokens-baseline.json:407: \"formatGrepFiles\"\nbench/baseline/results/equivalence-golden.json:1256: \"query\": \"recordAudit\",\nbench/baseline/results/equivalence-golden.json:3076: \"recordAudit\",\nbench/baseline/results/equivalence-golden.json:1349: \"query\": \"formatGrepFiles\",\nbench/baseline/results/equivalence-golden.json:3077: \"formatGrepFiles\"\nbench/baseline/results/latency-2026-10-14.json:190: \"recordAudit\",\nbench/baseline/results/latency-2026-10-14.json:521: \"native_cmd\": \"rg -l --no-messages -e recordAudit -e formatGrepFiles /Users/batra/.cache/us-verify/before\"\nbench/baseline/results/latency-2026",
+      "tool_text_sample_truncated": true
+    },
+    {
+      "id": "t08",
+      "tool": "fsearch_multi_grep",
+      "scope": "/Users/batra/.cache/us-verify/before-home/.cache/pi-ultrasearch-bench/fixture-5k",
+      "params": {
+        "patterns": [
+          "ULTRAMARKER_1232",
+          "ULTRAMARKER_7"
+        ],
+        "limit": 30
+      },
+      "ok": true,
+      "us_source": "index",
+      "took_us": 78460,
+      "hit_count": 16,
+      "tool_text_chars": 1199,
+      "tool_text_lines": 17,
+      "estimated_tokens": 300,
+      "formatter_token_count": 287,
+      "raw_json_chars": 5841,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "Multi-grep matched 16 files in 78.46ms (~287 tokens):\ndir_12/module_01232.ts:33: export const marker_1232 = \"ULTRAMARKER_1232\";\ndir_00/module_00007.ts:33: export const marker_7 = \"ULTRAMARKER_7\";\ndir_00/module_00070.ts:33: export const marker_70 = \"ULTRAMARKER_70\";\ndir_00/module_00077.ts:33: export const marker_77 = \"ULTRAMARKER_77\";\ndir_07/module_00700.ts:33: export const marker_700 = \"ULTRAMARKER_700\";\ndir_07/module_00707.ts:33: export const marker_707 = \"ULTRAMARKER_707\";\ndir_07/module_00714.ts:33: export const marker_714 = \"ULTRAMARKER_714\";\ndir_07/module_00721.ts:33: export const marker_721 = \"ULTRAMARKER_721\";\ndir_07/module_00728.ts:33: export const marker_728 = \"ULTRAMARKER_728\";\ndir_07/module_00735.ts:33: export const marker_735 = \"ULTRAMARKER_735\";\ndir_07/module_00742.ts:33: export const marker_742 = \"ULTRAMARKER_742\";\ndir_07/module_00749.ts:33: export const marker_749 = \"ULTRAMARKER_749\";\ndir_07/module_00756.ts:33: export const marker_756 = \"ULTRAMARKER_756\";\ndir_07/module_00763.ts:33: export const marker_763 = \"ULTRAMARKER_763\";\ndir_07/module_00770.ts:33: export const marker_770 = \"ULTRAMARKER_770\";\ndir_07/module_00777.ts:33: export const marker_777 = \"ULTRAMARKER_777\";",
+      "tool_text_sample_truncated": false
+    },
+    {
+      "id": "t09",
+      "tool": "fsearch_locate",
+      "scope": null,
+      "params": {
+        "filename": "package.json",
+        "global": true,
+        "limit": 10
+      },
+      "ok": true,
+      "us_source": null,
+      "took_us": 631,
+      "hit_count": 10,
+      "tool_text_chars": 507,
+      "tool_text_lines": 11,
+      "estimated_tokens": 127,
+      "formatter_token_count": null,
+      "raw_json_chars": 1218,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "Located:\n/Users/batra/avartanalabs/package.json\n/Users/batra/ultrasearch-verify/package.json\n/Users/batra/fikr/third_party/flutter_gemma/web/rag/package.json\n/Users/batra/Samarohh/package.json\n/Users/batra/Samarohh/ui/package.json\n/Users/batra/Downloads/Github/anvay/main-frontend/package.json\n/Users/batra/token-monitor/package.json\n/Users/batra/token-monitor/worker/package.json\n/Users/batra/vanisree-digital-suite/package.json\n/Users/batra/vanisree-digital-suite/videos/ch01-all-about-me-rig/package.json",
+      "tool_text_sample_truncated": false
+    },
+    {
+      "id": "t10",
+      "tool": "fsearch_recent",
+      "scope": "/Users/batra/.cache/us-verify/before",
+      "params": {
+        "limit": 15
+      },
+      "ok": true,
+      "us_source": null,
+      "took_us": 0,
+      "hit_count": 0,
+      "tool_text_chars": 47,
+      "tool_text_lines": 1,
+      "estimated_tokens": 12,
+      "formatter_token_count": null,
+      "raw_json_chars": 41,
+      "dynamic_hint_possible": false,
+      "tool_text_sample": "No recent activity recorded for this workspace.",
+      "tool_text_sample_truncated": false
+    }
+  ]
+}

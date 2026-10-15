@@ -1,0 +1,84 @@
+{
+  "suite": "wave1-claim-tests",
+  "commit": "3135e28",
+  "generated_at": "2026-10-15T04:54:18Z",
+  "results": [
+    {
+      "id": "npm_test",
+      "command": "npm test",
+      "claimed": "95 pass, 0 fail",
+      "result": {
+        "tests": 95,
+        "pass": 95,
+        "fail": 0
+      },
+      "n": 95,
+      "status": "verified",
+      "note": null
+    },
+    {
+      "id": "test_engine",
+      "command": "npm run test:engine",
+      "claimed": "26 pass, 0 fail",
+      "result": {
+        "tests": 26,
+        "pass": 26,
+        "fail": 0
+      },
+      "n": 26,
+      "status": "verified",
+      "note": "real daemon per test, in-repo engine binary"
+    },
+    {
+      "id": "cargo_test",
+      "command": "cargo test --release (engine/)",
+      "claimed": "39 pass, 0 fail (30 lib + 9 bin)",
+      "result": {
+        "tests": 39,
+        "pass": 39,
+        "fail": 0
+      },
+      "n": 39,
+      "status": "verified",
+      "note": null
+    },
+    {
+      "id": "typecheck",
+      "command": "npm run typecheck",
+      "claimed": "pass",
+      "result": {
+        "exit": 0
+      },
+      "status": "verified",
+      "note": null
+    },
+    {
+      "id": "build",
+      "command": "npm run build",
+      "claimed": "pass (dist emitted)",
+      "result": {
+        "exit": 0
+      },
+      "status": "verified",
+      "note": null
+    },
+    {
+      "id": "test_gate",
+      "command": "npm run test:gate",
+      "claimed": "4/4 pass (with the note that the live 5 ms grep gate is load-sensitive)",
+      "result": {
+        "tests": 4,
+        "pass": 3,
+        "fail": 1,
+        "failing": "Live CI Gate: daemon-backed p95 trigram grep < 5ms",
+        "observed_ms": {
+          "p50": 7.47,
+          "p95": 9.04
+        }
+      },
+      "n": 4,
+      "status": "unverified",
+      "note": "the failing leg measures 7.17 ms p50 / 7.65 ms p95 on the raw daemon socket with no client (bench/verification/after/checks-gate-floor.json): the threshold is below the machine floor, matching the Wave 1 blocker note. Not a Wave 1 regression, but the '4/4 pass' claim does not hold on this machine right now."
+    }
+  ]
+}
