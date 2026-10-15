@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-10-15T20:26:09.483Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 5.93017578125,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "declaration_sha256": {
+    "regenerated": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
+    "golden": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
+    "match": true
+  },
+  "drift_test": {
+    "exit": 0,
+    "pass": "2",
+    "fail": "0"
+  },
+  "recipe_test": {
+    "exit": 0,
+    "pass": "3",
+    "fail": "0"
+  },
+  "drift_removal_control": {
+    "ran": true,
+    "failed": true,
+    "error": 1,
+    "note": "registry mutated in a scratch copy of HEAD; the guard must fail"
+  },
+  "defects": [],
+  "stderr_tail": ""
+}

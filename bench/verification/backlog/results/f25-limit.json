@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-10-15T20:18:44.803Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.76513671875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "real_daemon": {
+    "scope": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/filter",
+    "limit": 15,
+    "returned": 15,
+    "ignored_kept": 0,
+    "filteredCount": 10,
+    "truncatedCount": 10,
+    "truncated": true,
+    "rawCount": 35,
+    "complete": false,
+    "unfiltered_control_hits": 40
+  },
+  "mock_control": {
+    "limit": 7,
+    "returned": 7,
+    "filteredCount": 10,
+    "truncatedCount": 18,
+    "truncated": true,
+    "rawCount": 35
+  },
+  "defects": []
+}

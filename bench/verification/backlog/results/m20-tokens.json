@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-10-15T20:20:03.983Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 6.400390625,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "artifacts": [
+    "tokens-2026-10-14-degraded.json",
+    "tokens-2026-10-15-degraded.json"
+  ],
+  "latest_artifact_status": "degraded",
+  "latest_artifact_method": {
+    "estimator": "ceil(chars / 4) — documented ESTIMATE, same as src/formatter.ts; sensitivity estimator ceil(chars/3.5) also reported",
+    "design": "counterbalanced A/B alternating arm order; 30 paired observations across 6 tasks",
+    "statistic": "median",
+    "ci": "BCa bootstrap, 10000 resamples, alpha=0.05, on paired deltas",
+    "ultraArm": "Pi tool formatting path (index.ts -> formatGrepFiles / path listing)",
+    "nativeArm": "raw stdout of the equivalent rg/find command in the same workspace",
+    "heuristic": "legacy 150 + 75×hits (grep) / 100 + 30×hits (path) comparison; labelled an ESTIMATE everywhere"
+  },
+  "labels": [
+    {
+      "file": "src/telemetry.ts",
+      "shown": 1,
+      "unlabelled": 0,
+      "sample": [
+        "    `Tokens Saved (ESTIMATE ONLY — formula 150+75×hits, not measured; see bench/results/TOKENS.md): ${summary.totalTokensSaved.toLocaleString()}`"
+      ]
+    },
+    {
+      "file": "src/tui.ts",
+      "shown": 2,
+      "unlabelled": 0,
+      "sample": [
+        "      ` [💰 Tokens Saved (est)]: \\x1B[1;32m~${totalTokensSaved.toLocaleString()} tokens\\x1B[0m   ` +",
+        "        lines.push(`║ \\x1B[1mTokens Saved (ESTIMATE)\\x1B[0m:  +${savedCount} tokens (formula 150+75×hits, not measured)`);"
+      ]
+    }
+  ],
+  "per_row_tui_figure_labelled_on_its_own_line": false,
+  "label_test": {
+    "exit": 0,
+    "ok": true
+  },
+  "doc": {
+    "measured_delta": true,
+    "method_documented": true,
+    "heuristic_compared": true
+  },
+  "defects": [
+    "measurement artifact status=degraded, gate=provisional: the measured deltas may not be cited as production evidence"
+  ]
+}

@@ -1,0 +1,21 @@
+[
+  {
+    "issue": 24,
+    "claim": "async fallback with timeout + cancellation; no `execFileSync` in the request path; a cancelled fallback stops the child; event loop responsive (measured)",
+    "verdict": "needs-work",
+    "evidence": "real fallback trigger with a sleeping stubbed rg: event loop max gap 16.42ms over 90 ticks (100 expected) for a 803ms call, source=native_fallback, hits=1; removal control (src/spawn.ts -> execFileSync in a scratch copy): max gap 480.96ms; cancellation: 1 child tracked mid-flight, 0 after abort (\"native fallback cancelled\"); index.ts::resolveWorktreeRoot from a non-git cwd: 1 sync git invocation(s), max gap 744.13ms",
+    "method": "verifier probe: HOME=temp so the consent-gated fallback trigger fires; stubbed `rg` sleeps 400ms; 10ms event-loop sampler around client.search(); removal control mutates src/spawn.ts in a scratch copy of HEAD; index.ts probed through the real Pi harness with a stubbed `git` from a non-git cwd",
+    "n": 3,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f24-fallback.json",
+    "evidence_hashes": {
+      "artifact": "6d3d52ff9eab929db96154e594fb4317a1baeb7d265285137e96f19f325f024d",
+      "lexical": "aa2f455e60685ee9e457044e171787eec98568de24734c61e20496e791e2ee59",
+      "async_probe": "96cfd8c5ea3a507e33bf705639007b4115c466731a2184e22a3b8f5014f35d08",
+      "sync_probe": "fc4280ee892d5d80b7d9fc148884093c137570cbc5bd0e18103509c2ea910cfc",
+      "index_probe": "fbefb14abd608c7f389a29ef4e1cf0576ee41e8d6f35530bbec84e5127bb1430",
+      "cancellation": "f62ff7cb3ab632dce8a14ef9476b42b77d40f44c85a7039ff9ba83ae69524afd"
+    },
+    "notes": "execFileSync still in the request path: index.ts::resolveWorktreeRoot shells out to git for a non-git cwd (blocked 744.13ms, 1 invocation(s))"
+  }
+]

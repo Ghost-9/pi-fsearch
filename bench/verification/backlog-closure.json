@@ -1,0 +1,423 @@
+{
+  "suite": "wave5-backlog-closure",
+  "wave": "wave5/verify",
+  "verifier": "independent verifier (this session) — every number re-measured or re-derived; author summaries never used as inputs",
+  "generated_at": "2026-10-15T20:26:36.366Z",
+  "head_commit": "0990e8057b8a5c7608eab504e22abbe769ffaff3",
+  "head_ref": "wave1/verify-final",
+  "base_main": "97beeb140dec16ce25eb7303e832ca376afd6c83",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.28466796875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "status_legend": {
+    "verified": "independently re-measured or re-derived; the acceptance lines reproduce",
+    "refuted": "the claim does not reproduce",
+    "needs-work": "at least one acceptance line does not reproduce; the failing line is named in notes"
+  },
+  "environment_note": "The shared host is not idle (load1 4.28 against a < 1.5 bound), so the environment gate is provisional. Every row here is a functional or set comparison, not a latency claim, except where noted; timing numbers that need a clean gate (#20, #21) are marked needs-work for that reason rather than promoted.",
+  "method": {
+    "isolation": "every daemon-backed check starts its own daemon (own ULTRASEARCH_DIR/HOME/SCAN_ROOT/socket) over a verifier fixture; the live daemon is never queried",
+    "removal_tests": "each functional guard is re-run against a scratch `git archive HEAD` copy with the pre-fix behaviour restored; a guard that still passes is reported dead (bench/verification/backlog/results/removal-matrix.json)",
+    "evidence": "raw JSON per check under bench/verification/backlog/results/, hashed into each row"
+  },
+  "rows": [
+    {
+      "issue": 20,
+      "claim": "prompt-token accounting harness with measured deltas and the heuristic's overstatement; estimate formula labelled everywhere",
+      "verdict": "needs-work",
+      "evidence": "harness artifacts: [\"tokens-2026-10-14-degraded.json\",\"tokens-2026-10-15-degraded.json\"] (status=degraded); TOKENS.md documents the scope/method, a measured paired delta and a heuristic-vs-measurement table (overstatement rows: 7); estimate labelling present in [{\"file\":\"src/telemetry.ts\",\"shown\":1,\"unlabelled\":0,\"sample\":[\"    `Tokens Saved (ESTIMATE ONLY — formula 150+75×hits, not measured; see bench/results/TOKENS.md): ${summary.totalTokensSaved.toLocaleString()}`\"]},{\"file\":\"src/tui.ts\",\"shown\":2,\"unlabelled\":0,\"sample\":[\"      ` [💰 Tokens Saved (est)]: \\\\x1B[1;32m~${totalTokensSaved.toLocaleString()} tokens\\\\x1B[0m   ` +\",\"        lines.push(`║ \\\\x1B[1mTokens Saved (ESTIMATE)\\\\x1B[0m:  +${savedCount} tokens (formula 150+75×hits, not measured)`);\"]}]; shipped label test pass=true; environment gate: provisional (load1 6.40 vs < 1.5)",
+      "method": "verifier reads the committed token artifacts and the shipped doc, re-runs the labelling guard, and applies the frozen gate rule: a measurement on a provisional host may not be promoted to verified",
+      "n": 5,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/m20-tokens.json",
+      "evidence_hashes": {
+        "artifact": "f7900f9db58bf8c4cfb0153730185834b785886477188798a3fca95896a0d6d8",
+        "probe": "ce5375f1f3a1e300ea60ddb72d52ee2bac30b056c43a8b03788e2f83e1c854f9"
+      },
+      "notes": "measurement artifact status=degraded, gate=provisional: the measured deltas may not be cited as production evidence; fidelity note: the TUI per-row savings figure is unlabelled on its own line (the labelled header and inspector cover it)",
+      "check": "measure",
+      "ci95": {
+        "source": "bench/results/TOKENS.md (saved fraction, read from the committed table; no independent re-measurement on a provisional host)",
+        "saved_fraction": [
+          0.884,
+          0.884
+        ],
+        "paired_delta_tokens": [
+          0,
+          137
+        ],
+        "gate": "degraded"
+      }
+    },
+    {
+      "issue": 21,
+      "claim": "multi-scope fixtures with medians/p95/n/CI committed per release, plus an output-equivalence check that fails beyond a documented tolerance",
+      "verdict": "needs-work",
+      "evidence": "artifacts: [{\"f\":\"scopes-2026-10-14-degraded.json\",\"status\":\"degraded\",\"queries\":9,\"with_stats\":9,\"with_ci\":9},{\"f\":\"scopes-2026-10-15-degraded.json\",\"status\":\"degraded\",\"queries\":9,\"with_stats\":9,\"with_ci\":9},{\"f\":\"scopes-home-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3},{\"f\":\"scopes-monorepo-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3},{\"f\":\"scopes-small-degraded.json\",\"status\":\"degraded\",\"queries\":3,\"with_stats\":3,\"with_ci\":3}]; equivalence guard non-vacuous: identical=true missing=false extra=false tolerance=true; re-check over the committed golden: 30 rows, pass rate 1; environment gate: provisional (load1 6.40 vs < 1.5)",
+      "method": "verifier reads the committed scope artifacts for the required statistics, drives the shipped compareSets with four constructed cases, and re-runs it over the committed equivalence golden",
+      "n": 4,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/m21-scopes.json",
+      "evidence_hashes": {
+        "artifact": "9960d9cabbb30c1efd8a06036c3dd030b9e30bd5366aa7256e4edb9f2f3a720c",
+        "probe": "5de06ba7a56d5a850200b8d276d310ee2624aab394f17aa31dd14f5b1b293492"
+      },
+      "notes": "scope artifact status=degraded, gate=provisional: the medians/CI may not be cited as production evidence",
+      "check": "measure",
+      "ci95": {
+        "source": "bench/results/scopes-2026-10-15-degraded.json (small-path-exact, paired delta ms)",
+        "n": 30,
+        "point": -2.7136239999997542,
+        "lo": -2.9472920000000613,
+        "hi": -2.4437920000000304,
+        "method": "bca",
+        "resamples": 10000,
+        "gate": "degraded"
+      }
+    },
+    {
+      "issue": 24,
+      "claim": "async fallback with timeout + cancellation; no `execFileSync` in the request path; a cancelled fallback stops the child; event loop responsive (measured)",
+      "verdict": "needs-work",
+      "evidence": "real fallback trigger with a sleeping stubbed rg: event loop max gap 16.42ms over 90 ticks (100 expected) for a 803ms call, source=native_fallback, hits=1; removal control (src/spawn.ts -> execFileSync in a scratch copy): max gap 480.96ms; cancellation: 1 child tracked mid-flight, 0 after abort (\"native fallback cancelled\"); index.ts::resolveWorktreeRoot from a non-git cwd: 1 sync git invocation(s), max gap 744.13ms",
+      "method": "verifier probe: HOME=temp so the consent-gated fallback trigger fires; stubbed `rg` sleeps 400ms; 10ms event-loop sampler around client.search(); removal control mutates src/spawn.ts in a scratch copy of HEAD; index.ts probed through the real Pi harness with a stubbed `git` from a non-git cwd",
+      "n": 3,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f24-fallback.json",
+      "evidence_hashes": {
+        "artifact": "6d3d52ff9eab929db96154e594fb4317a1baeb7d265285137e96f19f325f024d",
+        "lexical": "aa2f455e60685ee9e457044e171787eec98568de24734c61e20496e791e2ee59",
+        "async_probe": "96cfd8c5ea3a507e33bf705639007b4115c466731a2184e22a3b8f5014f35d08",
+        "sync_probe": "fc4280ee892d5d80b7d9fc148884093c137570cbc5bd0e18103509c2ea910cfc",
+        "index_probe": "fbefb14abd608c7f389a29ef4e1cf0576ee41e8d6f35530bbec84e5127bb1430",
+        "cancellation": "f62ff7cb3ab632dce8a14ef9476b42b77d40f44c85a7039ff9ba83ae69524afd"
+      },
+      "notes": "execFileSync still in the request path: index.ts::resolveWorktreeRoot shells out to git for a non-git cwd (blocked 744.13ms, 1 invocation(s))",
+      "check": "f24"
+    },
+    {
+      "issue": 25,
+      "claim": "filter first, then limit; responses report filtered and truncated counts; limit+ignore combinations covered",
+      "verdict": "verified",
+      "evidence": "real daemon: limit 15 over a scope with 20 ignored + 25 visible matches returned 15 hits, 0 from build/, filteredCount=10, truncatedCount=10, truncated=true, rawCount=35; the same query with respectIgnore:false returned 40 hits; mock control (10 ignored + 25 visible, limit 7): returned 7, filteredCount=10, truncatedCount=18",
+      "method": "real daemon over a verifier fixture with a .gitignore'd build/ dir; a mock daemon gives exact truncation arithmetic; filter-then-limit means the returned page contains no ignored row while still filling the limit",
+      "n": 3,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f25-limit.json",
+      "evidence_hashes": {
+        "artifact": "c5bc6cba670187309fa55e658b00a9abbb5c4cb9c5cd97e230f7f616914ddaaa",
+        "probe": "2c199de64d027b06f10e25970f066c6fe9c637dcfbd072cf673b5deca2106664"
+      },
+      "notes": "ordering and both counters reproduced, exact arithmetic on the mock control",
+      "check": "daemon"
+    },
+    {
+      "issue": 27,
+      "claim": "watch mode streams new matches on change, exits cleanly, and leaks neither sockets nor duplicate events",
+      "verdict": "verified",
+      "evidence": "real WatchSession against a real isolated daemon in a child process: baseline=1; first add after 338ms; a second write to the same path added 0 event(s); deletion emitted 1 remove event(s); stats={\"baseline\":1,\"added\":1,\"removed\":1,\"refreshes\":4,\"errors\":0,\"pollRefreshes\":0,\"stopped\":true}; client lanes after stop=0; active resources after stop=[\"PipeWrap\"]; child exit=0",
+      "method": "verifier child process runs the real WatchSession over a verifier fixture: baseline, create, same-path rewrite, delete, stop(); residual sockets/timers read from process.getActiveResourcesInfo() and the process must exit on its own",
+      "n": 5,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f27-watch.json",
+      "evidence_hashes": {
+        "artifact": "91b7020c2e43915de3d147ca655791dee5acf7779b16297e9435600a095f71fa",
+        "probe": "7eb665a73a79be10f54d7163f9549ff1870d06ff97291ac9f86d9002f99a2af8"
+      },
+      "notes": "stream, dedupe and clean shutdown reproduced end to end",
+      "check": "daemon"
+    },
+    {
+      "issue": 28,
+      "claim": "multi-root search deduplicates by realpath, keeps the active worktree's copy and attributes every hit to its root",
+      "verdict": "verified",
+      "evidence": "fan-out over active=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active and extra=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other: 3 unique hits, duplicates=1; the surviving row is the active root's alias=true (path=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active/shared.ts); a file physically in the active root is attributed active=true (root=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active); attributeRoot(active-only path)={\"root\":\"/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active\",\"active\":true}",
+      "method": "two configured roots where the active root holds a symlink to the other root's file (same inode, different string paths), searched through the real daemon so the dedupe sees genuine daemon rows",
+      "n": 4,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f28-roots.json",
+      "evidence_hashes": {
+        "artifact": "5f6f667d5f43db0cc425b6a491284e2a34e348ee1a4702140504128ede2af189",
+        "probe": "f32b6e2974a70cfc2e2a6d89a297d08e6c77658d900b9e4cce2306c9a3b784cc"
+      },
+      "notes": "dedupe, active-copy preference and attribution reproduced against real daemon rows",
+      "check": "daemon"
+    },
+    {
+      "issue": 29,
+      "claim": "Code Mode declarations are generated from the registry with a drift test that fails the build on mismatch, plus end-to-end pipeline recipes",
+      "verdict": "verified",
+      "evidence": "regenerated declarations sha256 50a467b09c0d594d… == committed golden 50a467b09c0d594d… true; drift test: pass=2 fail=0; recipe test: pass=3 fail=0; removal control (registry mutated in scratch): drift guard failed=true",
+      "method": "own regeneration via bin/gen-codemode-declarations.ts --stdout compared byte-for-byte with the golden; the repo's drift and recipe tests re-run by the verifier; removal control mutates src/tool-schema.ts in a scratch copy of HEAD",
+      "n": 4,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f29-codemode.json",
+      "evidence_hashes": {
+        "artifact": "5d34a38e84c076a4eee69f53dd990024314136fcfcd4a0808f7a452dcf4474ee",
+        "regenerated": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
+        "golden": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
+        "probe": "43946577e077d99aede54716d6d54d9af62dce17dc916b69712a5ca9e8e87b06"
+      },
+      "notes": "generation is the single source, the guard is live and non-vacuous, recipes execute",
+      "check": "surface"
+    },
+    {
+      "issue": 30,
+      "claim": "MCP alias surface: default exactly 6 tools, aliases callable when configured, per-client parity smoke",
+      "verdict": "verified",
+      "evidence": "real stdio MCP server: default tools/list = 6 [ultrasearch_query, ultrasearch_grep, ultrasearch_multi_grep, ultrasearch_locate, ultrasearch_recent, ultrasearch_metrics]; --alias fsearch tools/list = 12 (6 canonical + 6 alias); tools/call fsearch_locate answered=true; unconfigured fsearch_locate rejected=true; client profiles listing 6 and calling their representative tool: 5/5 (Claude Desktop:2024-11-05, VS Code:2024-11-05, Antigravity:2025-03-26, Cursor:2025-03-26, T3 Code:2025-06-18)",
+      "method": "verifier drives the real bin/mcp-server.ts over stdio with initialize/initialized/tools/list/tools/call for the default surface, a configured alias, an unconfigured alias, and every profile in MCP_CLIENT_PROFILES",
+      "n": 7,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f30-mcp-surface.json",
+      "evidence_hashes": {
+        "artifact": "6f140634893ab4e0fc11f88728856302742e92613faf3385be32c1b00f4ba017",
+        "probe": "84e0058af6e7827092b674bdd4da0ecc8a6f5738b3589f0a109e64df01ffadae"
+      },
+      "notes": "default prefix, alias copies, alias call and every profile reproduced over real stdio; the tool *calls* run with an intentionally unreachable socket (NO_SPAWN + /tmp socket), so what they prove is alias/call routing — the native fallback answered — not daemon behaviour",
+      "check": "surface"
+    },
+    {
+      "issue": 31,
+      "claim": "real-vs-synthetic telemetry view: real-only percentiles by default, origin tags, and a nightly summary artifact produced without manual steps",
+      "verdict": "needs-work",
+      "evidence": "views on a 3-row log (organic/synthetic/unmarked): real=2, synthetic=1, all=3; default view=real; real CLI `report --json` default: view=real, totalCalls=2, originCounts={\"organic\":2,\"synthetic\":1,\"unmarked\":1}; recordAudit under PI_ULTRASEARCH_TEST stamped origin=synthetic harness=test; nightly artifacts on disk=[\"nightly-2026-10-14.json\",\"nightly-2026-10-14.md\"], CI wiring=\"\", cron wiring=\"\"",
+      "method": "verifier-built audit log with explicit and absent origins; the real CLI report run against it; recordAudit observed under PI_ULTRASEARCH_TEST; CI/cron checked for the nightly job",
+      "n": 6,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f31-telemetry.json",
+      "evidence_hashes": {
+        "artifact": "d1b00fd590a8d772a339ff947c9c3b6bc88200500488100dab942c5a0e36bfe3",
+        "probe": "4ff114f7e9515c5832bc7351c40632ad94b21c941999a91a562056f394dec5f4"
+      },
+      "notes": "nightly summary is not wired into CI or cron: acceptance says it is produced without manual steps",
+      "check": "telemetry"
+    },
+    {
+      "issue": 37,
+      "claim": "every grep/multi-grep/query result carries machine-readable tokenCount/truncatedCount/complete on the MCP and Pi surfaces",
+      "verdict": "verified",
+      "evidence": "MCP _meta: query={\"complete\":false,\"truncated\":true,\"truncatedCount\":0,\"engineCapped\":true,\"filteredCount\":0,\"tokenCount\":130,\"charCount\":520,\"source\":\"index\",\"deadlineExceeded\":false,\"rawCount\":5,\"tool\":\"ultrasearch_query\",\"hitCount\":5}; grep={\"complete\":true,\"truncated\":true,\"truncatedCount\":5,\"engineCapped\":true,\"filteredCount\":0,\"tokenCount\":47,\"charCount\":595,\"source\":\"index\",\"budgetMs\":2500,\"deadlineExceeded\":false,\"rawCount\":10,\"tool\":\"ultrasearch_grep\",\"fileCount\":5}; multi_grep={\"complete\":false,\"truncated\":true,\"truncatedCount\":5,\"engineCapped\":true,\"filteredCount\":0,\"tokenCount\":47,\"charCount\":595,\"source\":\"native_fallback\",\"budgetMs\":3000,\"deadlineExceeded\":false,\"rawCount\":10,\"withheld\":0,\"staleMs\":0,\"tool\":\"ultrasearch_multi_grep\",\"fileCount\":5}; Pi tool details: query={\"tool\":\"ultrasearch_query\",\"hitCount\":5,\"complete\":false,\"truncated\":true,\"truncatedCount\":20,\"filteredCount\":0,\"tokenCount\":130,\"charCount\":520,\"deadlineExceeded\":false}; grep={\"tool\":\"ultrasearch_grep\",\"fileCount\":5,\"complete\":true,\"truncated\":true,\"truncatedCount\":5,\"filteredCount\":0,\"tokenCount\":38,\"charCount\":595,\"maxTokensDropped\":0,\"source\":\"index\",\"budgetMs\":2500,\"deadlineExceeded\":false}",
+      "method": "real stdio MCP session and the real Pi harness against one isolated daemon; the counts are read from the tool result metadata, never parsed from prose",
+      "n": 5,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f37-metadata.json",
+      "evidence_hashes": {
+        "artifact": "083098ebcc66d8c665ca079f88831583465ca6c95eb9f9004f67acf0bf6ff7c6",
+        "probe": "8b94cfe916fcb20727635c4844e2a2142d3614828c0f8d6910d0cbd2d10fff6c"
+      },
+      "notes": "all five surfaces carry numeric counts and a boolean complete",
+      "check": "daemon"
+    },
+    {
+      "issue": 38,
+      "claim": "tool-description prompt tax: measured before/after prompt tokens for the tool block",
+      "verdict": "verified",
+      "evidence": "my own serializer, estimator ceil(chars/4): MCP 1056 -> 938 tokens (-11.2%), Pi 1012 -> 667 tokens (-34.1%); published table 1056->938 (-11.2%) and 1012->667 (-34.1%); shipped bench/tool-descriptions.mjs combined (my run) = 6418 chars ~ 1605 tokens",
+      "method": "verifier-owned measurement over HEAD and over the pre-trim commit (git archive 3d1268d~1, the trim commit's parent) with the same serializer; shipped script re-run by the verifier for cross-check",
+      "n": 4,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f38-prompt-tax.json",
+      "evidence_hashes": {
+        "artifact": "156422adbc8907e98eafa4a01cf7bf9df89f34b998ee9d7f6f95a5974d87efcf",
+        "probe": "78fe21cdf1a715d794282c6ac92c6a66106231efc6fbdf5c68bb9003a5b5e8d2"
+      },
+      "notes": "every published number reproduced exactly with the verifier's own serializer",
+      "check": "telemetry"
+    },
+    {
+      "issue": 40,
+      "claim": "query history: opt-in default off, documented retention cap and opt-out, 0600, scrubbed, suggestions in TUI and CLI",
+      "verdict": "verified",
+      "evidence": "default run (no env): history file exists=false; ULTRASEARCH_HISTORY=1: exists=true, mode=600, credential-shaped token scrubbed=true; ULTRASEARCH_HISTORY=0: exists=false; retention max=10 after 12 appends: 10 stored (query-2..query-11); CLI --suggest returned: \"query-11  (prefix)\\n  query-10  (prefix)\\n  query-9  (prefix)\"; TUI reads the module=true",
+      "method": "real CLI (`bin/cli.ts`) runs under a temp HOME with an unreachable socket; retention and suggestion logic driven through the history module directly; the credential-shaped token is a verifier-constructed canary, never a real secret",
+      "n": 6,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f40-history.json",
+      "evidence_hashes": {
+        "artifact": "f9ba36adcd5ee15fa348c6ed370dfce8d89ec9d2704a9c349eb44bb75ceca25a",
+        "probe": "28ff2eba8a318c64545546bbaa6dba2e839dc4a21a8d7eb89debfffc52e7c857"
+      },
+      "notes": "opt-in, mode, scrub, cap, opt-out and both surfaces reproduced",
+      "check": "f40"
+    },
+    {
+      "issue": 41,
+      "claim": "prefetch on edit: debounced warm-up, a single tool_execution_end listener, and edit->grep latency measured before/after with no ungated latency claim",
+      "verdict": "needs-work",
+      "evidence": "real Pi extension against a mock daemon: tool_execution_end listeners=1; 5 rapid edits of one file produced 1 prefetch request(s) carrying [1] path(s); a read event produced 0 additional prefetch(es); removal control (debounce -> 0ms in scratch): 5 request(s); published prefetch latency claims: none",
+      "method": "verifier drives the real index.ts tool_execution_end handler via test/helpers/pi-harness.ts against a mock daemon and counts the ops; removal control mutates the debounce constant in a scratch copy of HEAD; docs grepped for prefetch latency numbers",
+      "n": 4,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f41-prefetch.json",
+      "evidence_hashes": {
+        "artifact": "ae73c240f1c43f93b0c20721ddef66ea848a5356d71656cf22e37bb42faed9d7",
+        "probe": "4b2f6394225408f8b15427d7263c85e92839982af2619f5c153750c23b183e4b"
+      },
+      "notes": "acceptance line 'edit→grep latency measured before/after' has no published artifact (no ungated latency claim either)",
+      "check": "f41"
+    },
+    {
+      "issue": 49,
+      "claim": "the trigram assertion is index-composition independent (same property on any indexed scope, no skip) with a control that fails if it is silently skipped",
+      "verdict": "verified",
+      "evidence": "archive scope (git archive HEAD, 388-doc-style index): tests=2 pass=2 fail=0 skipped=0, assertion ran=true; main worktree scope: tests=2 pass=2 fail=0 skipped=0, assertion ran=true; removal control (pre-#49 scope/limit reverted in scratch, run against the archive scope): failed=true",
+      "method": "the shipped test/client.test.ts trigram tests run by the verifier from two different indexed scopes against one isolated daemon, plus a mutation restoring the pre-#49 cwd+limit-30 shape",
+      "n": 3,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f49-trigram.json",
+      "evidence_hashes": {
+        "artifact": "8fa7db3137d7f676f521593ac7c0ba3d815f128df3363df2fbff82b8fc5c31e9",
+        "probe": "99e1a813e629caf8622404504a97614b5212a81e5f9a3895a72557321f14bac8"
+      },
+      "notes": "full assertion on both scopes; the pre-#49 shape fails, so the change is load-bearing",
+      "check": "daemon"
+    },
+    {
+      "issue": 50,
+      "claim": "protocol freeze: docs/protocol.md, PROTOCOL_VERSION and a real daemon agree; incompatible majors are flagged instead of misread",
+      "verdict": "verified",
+      "evidence": "PROTOCOL_VERSION=1.0; docs/protocol.md \"Current version\"=[\"1.0\",\"1.0\"]; real isolated daemon status.protocol_version=1.0; compatibility: 1.9 same-major=true, 2.0=false; client against a mock daemon reporting 2.0 -> protocol_mismatch={\"client\":\"1.0\",\"daemon\":\"2.0\"}; non-vacuity control: an engine built from the pre-#50 source (ba76d15~1) fails the shipped engine test (failed=true, missing protocol_version=true), while the binary built from HEAD passes",
+      "method": "doc grep, the exported constant, a real isolated daemon status reply, and a mock daemon with a different major driving the reference client's status()",
+      "n": 5,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f50-protocol.json",
+      "evidence_hashes": {
+        "artifact": "715b46d20a5efa6ec0e1624516e0daa43efb8471590047aa88e55c44fa5994e8",
+        "probe": "a962646ea89d83e4a01be4c441e38ea810ddd7b931f94f175988192f349052a5"
+      },
+      "notes": "doc, constant and daemon agree; mismatch semantics reproduced",
+      "check": "daemon"
+    },
+    {
+      "issue": 51,
+      "claim": "`ultrasearch init` patches each harness config with timestamped backups, is idempotent, --dry-run writes nothing, the printed revert restores bytes, and unparseable configs are refused",
+      "verdict": "verified",
+      "evidence": "temp HOME: --list exit 0; --dry-run printed the diff and stated nothing was written; --write created 1 timestamped backup(s) with a printed revert command that restores the original bytes exactly=true; a second --write reported unchanged with identical bytes and no new backup; --remove --write byte-restores=false; fresh HOME: 8/8 harness configs created; an unparseable cursor config was refused (exit 1) and left byte-identical",
+      "method": "real CLI with --home pinned at temp dirs (no real harness config is read or written): pre-existing codex config with user content, dry-run, write, printed-revert restore, idempotent re-write, remove, an 8-harness fresh-home registration and a corrupt config",
+      "n": 8,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f51-init.json",
+      "evidence_hashes": {
+        "artifact": "fde30b27067e7d5e8952ca8102acb7cd364599402dddd03bacc2698b13f0d7d4",
+        "probe": "3e7426147fc5b3648def6a3ab9089c51da0d95a243c5b27040a66994b5d9d72e"
+      },
+      "notes": "patch, backup, idempotence, dry-run, printed-revert restore and refusal all reproduced on a temp HOME; non-blocking fidelity nit: --remove leaves the file one trailing newline short (the printed revert command restores it exactly)",
+      "check": "harness"
+    },
+    {
+      "issue": 52,
+      "claim": "capability matrix + smoke per harness: every claimed harness has a current artifact, unsupported harnesses are explicit, --check --require-fresh passes, and stored artifacts agree with a real protocol run",
+      "verdict": "needs-work",
+      "evidence": "bench/harness-matrix.mjs --check --require-fresh exit=1; stored artifacts read: {\"pi\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"},\"codex\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"},\"claude-code\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"},\"zed\":{\"commit\":\"397edb87f808079300223603b38727f1d5d3bf37\",\"tools\":6,\"negotiated\":\"2025-06-18\",\"status\":\"pass\"}}; verifier's own live protocol run: 6 tools, negotiated 2025-06-18",
+      "method": "the shipped matrix checker run by the verifier, plus an independent MCP initialize/tools-list handshake compared against the stored artifacts",
+      "n": 5,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f52-smoke.json",
+      "evidence_hashes": {
+        "artifact": "6e3d1d3607f1cff8bac737e4bd212914975ec7d2a445326a3540ea7026259025",
+        "probe": "75ee2ed1daa24655106704998010aa4059313f4949476cd00aad294542e351eb"
+      },
+      "notes": "harness-matrix --check --require-fresh exited 1",
+      "check": "harness"
+    },
+    {
+      "issue": 53,
+      "claim": "per-harness directive injection: dry-run diff, idempotence, --remove restores bytes, marker refusal",
+      "verdict": "verified",
+      "evidence": "default invocation wrote nothing=true; --dry-run printed a diff and wrote nothing=true; --write injected markers with 1 backup and the measured reason=true; a second --write was a byte-identical no-op reporting unchanged=true; --remove --write restored the original bytes=true; a half-written marker pair was refused (exit 1) and left byte-identical; create-from-absent=true and remove-deletes-a-policy-only-file=true",
+      "method": "real CLI under temp roots only: pre-existing AGENTS.md with user content, then default/dry-run/write/re-write/remove; a half-marker fixture for the refusal; a fresh root for create+delete",
+      "n": 6,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/f53-policy.json",
+      "evidence_hashes": {
+        "artifact": "0c08b4c473579ec900072938ff5d42be39814b8247239077dd9bd84cdb1050a1",
+        "probe": "b72e8833a16ce275e377174a5455a38e18f18c12678aee68165395e7eae40a50"
+      },
+      "notes": "dry-run, idempotence, byte-restore and marker refusal all reproduced",
+      "check": "harness"
+    }
+  ],
+  "controls": [
+    {
+      "issue": "removal-matrix",
+      "claim": "every functional guard fails when the feature it guards is removed (non-vacuity)",
+      "verdict": "verified",
+      "evidence": "#25: baseline pass=2/fail=0, mutated pass=1/fail=1 → live=true; #27: baseline pass=1/fail=0, mutated pass=-1/fail=-1 (timed out) → live=true; #28: baseline pass=3/fail=0, mutated pass=2/fail=1 → live=true; #30: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #31: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #37: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #40: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true; #51: baseline pass=2/fail=0, mutated pass=0/fail=2 → live=true; #53: baseline pass=1/fail=0, mutated pass=0/fail=1 → live=true",
+      "method": "each case is a fresh `git archive HEAD` copy; one targeted mutation restores the pre-fix behaviour; the shipped guard test is re-run and must fail",
+      "n": 9,
+      "gate": "provisional",
+      "artifact": "bench/verification/backlog/results/removal-matrix.json",
+      "evidence_hashes": {
+        "artifact": "28c38625fb82778276fcd1c50fe45ff1f47df3796c834c2f4d50b48533fb1e7d",
+        "probe": "9b1508f542942948335e61a0c1b5fc4783747e714c94f9980557ef7f423f9408"
+      },
+      "notes": "all guards are live",
+      "check": "removal"
+    }
+  ],
+  "verdicts": {
+    "verified": [
+      25,
+      27,
+      28,
+      29,
+      30,
+      37,
+      38,
+      40,
+      49,
+      50,
+      51,
+      53
+    ],
+    "needs_work": [
+      20,
+      21,
+      24,
+      31,
+      41,
+      52
+    ],
+    "counts": {
+      "verified": 12,
+      "needs_work": 6,
+      "total": 18
+    }
+  },
+  "safe_to_close": [
+    25,
+    27,
+    28,
+    29,
+    30,
+    37,
+    38,
+    40,
+    49,
+    50,
+    51,
+    53
+  ],
+  "must_stay_open": [
+    20,
+    21,
+    24,
+    31,
+    41,
+    52
+  ],
+  "findings": "bench/verification/backlog/FINDINGS.md",
+  "report": "bench/verification/backlog/REPORT.md",
+  "failures": [],
+  "reproduction": [
+    "cd <worktree> && PI_ULTRASEARCH_TEST=1 node bench/verification/backlog/run-all.mjs",
+    "PI_ULTRASEARCH_TEST=1 node bench/verification/backlog/checks/daemon-suite.mjs   # daemon-backed rows",
+    "PI_ULTRASEARCH_TEST=1 node bench/verification/backlog/checks/removal-matrix.mjs  # guard non-vacuity"
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "issue": 31,
+    "claim": "real-vs-synthetic telemetry view: real-only percentiles by default, origin tags, and a nightly summary artifact produced without manual steps",
+    "verdict": "needs-work",
+    "evidence": "views on a 3-row log (organic/synthetic/unmarked): real=2, synthetic=1, all=3; default view=real; real CLI `report --json` default: view=real, totalCalls=2, originCounts={\"organic\":2,\"synthetic\":1,\"unmarked\":1}; recordAudit under PI_ULTRASEARCH_TEST stamped origin=synthetic harness=test; nightly artifacts on disk=[\"nightly-2026-10-14.json\",\"nightly-2026-10-14.md\"], CI wiring=\"\", cron wiring=\"\"",
+    "method": "verifier-built audit log with explicit and absent origins; the real CLI report run against it; recordAudit observed under PI_ULTRASEARCH_TEST; CI/cron checked for the nightly job",
+    "n": 6,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f31-telemetry.json",
+    "evidence_hashes": {
+      "artifact": "d1b00fd590a8d772a339ff947c9c3b6bc88200500488100dab942c5a0e36bfe3",
+      "probe": "4ff114f7e9515c5832bc7351c40632ad94b21c941999a91a562056f394dec5f4"
+    },
+    "notes": "nightly summary is not wired into CI or cron: acceptance says it is produced without manual steps"
+  },
+  {
+    "issue": 38,
+    "claim": "tool-description prompt tax: measured before/after prompt tokens for the tool block",
+    "verdict": "verified",
+    "evidence": "my own serializer, estimator ceil(chars/4): MCP 1056 -> 938 tokens (-11.2%), Pi 1012 -> 667 tokens (-34.1%); published table 1056->938 (-11.2%) and 1012->667 (-34.1%); shipped bench/tool-descriptions.mjs combined (my run) = 6418 chars ~ 1605 tokens",
+    "method": "verifier-owned measurement over HEAD and over the pre-trim commit (git archive 3d1268d~1, the trim commit's parent) with the same serializer; shipped script re-run by the verifier for cross-check",
+    "n": 4,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f38-prompt-tax.json",
+    "evidence_hashes": {
+      "artifact": "156422adbc8907e98eafa4a01cf7bf9df89f34b998ee9d7f6f95a5974d87efcf",
+      "probe": "78fe21cdf1a715d794282c6ac92c6a66106231efc6fbdf5c68bb9003a5b5e8d2"
+    },
+    "notes": "every published number reproduced exactly with the verifier's own serializer"
+  }
+]

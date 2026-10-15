@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-10-15T20:20:00.721Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 6.87060546875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "default_writes": false,
+  "dry_run": {
+    "exit": 0,
+    "diff_head": "--- a/AGENTS.md\n+++ b/AGENTS.md\n@@ -4,0 +4,22 @@\n \n Do not commit secrets.\n+\n+<!-- ultrasearch-policy:begin -->\n+## File search: use UltraSearch before `grep -rn` / `find`\n+\n+This project is indexed by UltraSearch (a resident daemon with a path index and a trigram content\n+index). Prefer it over shell file search:\n+\n+- **`ultrasearch_query`** (MCP) / **`ultrasearch query <glob|name>`** (CLI) — pat",
+    "file_unchanged": true
+  },
+  "write": {
+    "exit": 0,
+    "backups": [
+      "AGENTS.md.bak-20261016-014959"
+    ],
+    "bytes_sha256": "80c5273244813daecdc28baae0f4109b312e08547072343f131c09fdb77f6e2b",
+    "carries_reason": true
+  },
+  "idempotent": {
+    "exit": 0,
+    "identical": true,
+    "reported_unchanged": true
+  },
+  "remove": {
+    "exit": 0,
+    "restored_bytes": true
+  },
+  "marker_refusal": {
+    "exit": 1,
+    "unchanged": true,
+    "stderr": "policy error: found <!-- ultrasearch-policy:begin --> without <!-- ultrasearch-policy:end -->\n"
+  },
+  "create_and_delete": {
+    "created": true,
+    "deleted_on_remove": true
+  },
+  "defects": []
+}

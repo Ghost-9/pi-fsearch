@@ -1,0 +1,34 @@
+[
+  {
+    "issue": 29,
+    "claim": "Code Mode declarations are generated from the registry with a drift test that fails the build on mismatch, plus end-to-end pipeline recipes",
+    "verdict": "verified",
+    "evidence": "regenerated declarations sha256 50a467b09c0d594d… == committed golden 50a467b09c0d594d… true; drift test: pass=2 fail=0; recipe test: pass=3 fail=0; removal control (registry mutated in scratch): drift guard failed=true",
+    "method": "own regeneration via bin/gen-codemode-declarations.ts --stdout compared byte-for-byte with the golden; the repo's drift and recipe tests re-run by the verifier; removal control mutates src/tool-schema.ts in a scratch copy of HEAD",
+    "n": 4,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f29-codemode.json",
+    "evidence_hashes": {
+      "artifact": "5d34a38e84c076a4eee69f53dd990024314136fcfcd4a0808f7a452dcf4474ee",
+      "regenerated": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
+      "golden": "50a467b09c0d594d9f28458079499da8524560e3534eda612a23d062b77a9a35",
+      "probe": "43946577e077d99aede54716d6d54d9af62dce17dc916b69712a5ca9e8e87b06"
+    },
+    "notes": "generation is the single source, the guard is live and non-vacuous, recipes execute"
+  },
+  {
+    "issue": 30,
+    "claim": "MCP alias surface: default exactly 6 tools, aliases callable when configured, per-client parity smoke",
+    "verdict": "verified",
+    "evidence": "real stdio MCP server: default tools/list = 6 [ultrasearch_query, ultrasearch_grep, ultrasearch_multi_grep, ultrasearch_locate, ultrasearch_recent, ultrasearch_metrics]; --alias fsearch tools/list = 12 (6 canonical + 6 alias); tools/call fsearch_locate answered=true; unconfigured fsearch_locate rejected=true; client profiles listing 6 and calling their representative tool: 5/5 (Claude Desktop:2024-11-05, VS Code:2024-11-05, Antigravity:2025-03-26, Cursor:2025-03-26, T3 Code:2025-06-18)",
+    "method": "verifier drives the real bin/mcp-server.ts over stdio with initialize/initialized/tools/list/tools/call for the default surface, a configured alias, an unconfigured alias, and every profile in MCP_CLIENT_PROFILES",
+    "n": 7,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f30-mcp-surface.json",
+    "evidence_hashes": {
+      "artifact": "6f140634893ab4e0fc11f88728856302742e92613faf3385be32c1b00f4ba017",
+      "probe": "84e0058af6e7827092b674bdd4da0ecc8a6f5738b3589f0a109e64df01ffadae"
+    },
+    "notes": "default prefix, alias copies, alias call and every profile reproduced over real stdio; the tool *calls* run with an intentionally unreachable socket (NO_SPAWN + /tmp socket), so what they prove is alias/call routing — the native fallback answered — not daemon behaviour"
+  }
+]

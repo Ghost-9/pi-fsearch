@@ -1,0 +1,92 @@
+[
+  {
+    "issue": 25,
+    "claim": "filter first, then limit; responses report filtered and truncated counts; limit+ignore combinations covered",
+    "verdict": "verified",
+    "evidence": "real daemon: limit 15 over a scope with 20 ignored + 25 visible matches returned 15 hits, 0 from build/, filteredCount=10, truncatedCount=10, truncated=true, rawCount=35; the same query with respectIgnore:false returned 40 hits; mock control (10 ignored + 25 visible, limit 7): returned 7, filteredCount=10, truncatedCount=18",
+    "method": "real daemon over a verifier fixture with a .gitignore'd build/ dir; a mock daemon gives exact truncation arithmetic; filter-then-limit means the returned page contains no ignored row while still filling the limit",
+    "n": 3,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f25-limit.json",
+    "evidence_hashes": {
+      "artifact": "c5bc6cba670187309fa55e658b00a9abbb5c4cb9c5cd97e230f7f616914ddaaa",
+      "probe": "2c199de64d027b06f10e25970f066c6fe9c637dcfbd072cf673b5deca2106664"
+    },
+    "notes": "ordering and both counters reproduced, exact arithmetic on the mock control"
+  },
+  {
+    "issue": 37,
+    "claim": "every grep/multi-grep/query result carries machine-readable tokenCount/truncatedCount/complete on the MCP and Pi surfaces",
+    "verdict": "verified",
+    "evidence": "MCP _meta: query={\"complete\":false,\"truncated\":true,\"truncatedCount\":0,\"engineCapped\":true,\"filteredCount\":0,\"tokenCount\":130,\"charCount\":520,\"source\":\"index\",\"deadlineExceeded\":false,\"rawCount\":5,\"tool\":\"ultrasearch_query\",\"hitCount\":5}; grep={\"complete\":true,\"truncated\":true,\"truncatedCount\":5,\"engineCapped\":true,\"filteredCount\":0,\"tokenCount\":47,\"charCount\":595,\"source\":\"index\",\"budgetMs\":2500,\"deadlineExceeded\":false,\"rawCount\":10,\"tool\":\"ultrasearch_grep\",\"fileCount\":5}; multi_grep={\"complete\":false,\"truncated\":true,\"truncatedCount\":5,\"engineCapped\":true,\"filteredCount\":0,\"tokenCount\":47,\"charCount\":595,\"source\":\"native_fallback\",\"budgetMs\":3000,\"deadlineExceeded\":false,\"rawCount\":10,\"withheld\":0,\"staleMs\":0,\"tool\":\"ultrasearch_multi_grep\",\"fileCount\":5}; Pi tool details: query={\"tool\":\"ultrasearch_query\",\"hitCount\":5,\"complete\":false,\"truncated\":true,\"truncatedCount\":20,\"filteredCount\":0,\"tokenCount\":130,\"charCount\":520,\"deadlineExceeded\":false}; grep={\"tool\":\"ultrasearch_grep\",\"fileCount\":5,\"complete\":true,\"truncated\":true,\"truncatedCount\":5,\"filteredCount\":0,\"tokenCount\":38,\"charCount\":595,\"maxTokensDropped\":0,\"source\":\"index\",\"budgetMs\":2500,\"deadlineExceeded\":false}",
+    "method": "real stdio MCP session and the real Pi harness against one isolated daemon; the counts are read from the tool result metadata, never parsed from prose",
+    "n": 5,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f37-metadata.json",
+    "evidence_hashes": {
+      "artifact": "083098ebcc66d8c665ca079f88831583465ca6c95eb9f9004f67acf0bf6ff7c6",
+      "probe": "8b94cfe916fcb20727635c4844e2a2142d3614828c0f8d6910d0cbd2d10fff6c"
+    },
+    "notes": "all five surfaces carry numeric counts and a boolean complete"
+  },
+  {
+    "issue": 27,
+    "claim": "watch mode streams new matches on change, exits cleanly, and leaks neither sockets nor duplicate events",
+    "verdict": "verified",
+    "evidence": "real WatchSession against a real isolated daemon in a child process: baseline=1; first add after 338ms; a second write to the same path added 0 event(s); deletion emitted 1 remove event(s); stats={\"baseline\":1,\"added\":1,\"removed\":1,\"refreshes\":4,\"errors\":0,\"pollRefreshes\":0,\"stopped\":true}; client lanes after stop=0; active resources after stop=[\"PipeWrap\"]; child exit=0",
+    "method": "verifier child process runs the real WatchSession over a verifier fixture: baseline, create, same-path rewrite, delete, stop(); residual sockets/timers read from process.getActiveResourcesInfo() and the process must exit on its own",
+    "n": 5,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f27-watch.json",
+    "evidence_hashes": {
+      "artifact": "91b7020c2e43915de3d147ca655791dee5acf7779b16297e9435600a095f71fa",
+      "probe": "7eb665a73a79be10f54d7163f9549ff1870d06ff97291ac9f86d9002f99a2af8"
+    },
+    "notes": "stream, dedupe and clean shutdown reproduced end to end"
+  },
+  {
+    "issue": 28,
+    "claim": "multi-root search deduplicates by realpath, keeps the active worktree's copy and attributes every hit to its root",
+    "verdict": "verified",
+    "evidence": "fan-out over active=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active and extra=/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/other: 3 unique hits, duplicates=1; the surviving row is the active root's alias=true (path=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active/shared.ts); a file physically in the active root is attributed active=true (root=/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active); attributeRoot(active-only path)={\"root\":\"/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-daemonfx-ttZZRl/effort/active\",\"active\":true}",
+    "method": "two configured roots where the active root holds a symlink to the other root's file (same inode, different string paths), searched through the real daemon so the dedupe sees genuine daemon rows",
+    "n": 4,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f28-roots.json",
+    "evidence_hashes": {
+      "artifact": "5f6f667d5f43db0cc425b6a491284e2a34e348ee1a4702140504128ede2af189",
+      "probe": "f32b6e2974a70cfc2e2a6d89a297d08e6c77658d900b9e4cce2306c9a3b784cc"
+    },
+    "notes": "dedupe, active-copy preference and attribution reproduced against real daemon rows"
+  },
+  {
+    "issue": 50,
+    "claim": "protocol freeze: docs/protocol.md, PROTOCOL_VERSION and a real daemon agree; incompatible majors are flagged instead of misread",
+    "verdict": "verified",
+    "evidence": "PROTOCOL_VERSION=1.0; docs/protocol.md \"Current version\"=[\"1.0\",\"1.0\"]; real isolated daemon status.protocol_version=1.0; compatibility: 1.9 same-major=true, 2.0=false; client against a mock daemon reporting 2.0 -> protocol_mismatch={\"client\":\"1.0\",\"daemon\":\"2.0\"}; non-vacuity control: an engine built from the pre-#50 source (ba76d15~1) fails the shipped engine test (failed=true, missing protocol_version=true), while the binary built from HEAD passes",
+    "method": "doc grep, the exported constant, a real isolated daemon status reply, and a mock daemon with a different major driving the reference client's status()",
+    "n": 5,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f50-protocol.json",
+    "evidence_hashes": {
+      "artifact": "715b46d20a5efa6ec0e1624516e0daa43efb8471590047aa88e55c44fa5994e8",
+      "probe": "a962646ea89d83e4a01be4c441e38ea810ddd7b931f94f175988192f349052a5"
+    },
+    "notes": "doc, constant and daemon agree; mismatch semantics reproduced"
+  },
+  {
+    "issue": 49,
+    "claim": "the trigram assertion is index-composition independent (same property on any indexed scope, no skip) with a control that fails if it is silently skipped",
+    "verdict": "verified",
+    "evidence": "archive scope (git archive HEAD, 388-doc-style index): tests=2 pass=2 fail=0 skipped=0, assertion ran=true; main worktree scope: tests=2 pass=2 fail=0 skipped=0, assertion ran=true; removal control (pre-#49 scope/limit reverted in scratch, run against the archive scope): failed=true",
+    "method": "the shipped test/client.test.ts trigram tests run by the verifier from two different indexed scopes against one isolated daemon, plus a mutation restoring the pre-#49 cwd+limit-30 shape",
+    "n": 3,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f49-trigram.json",
+    "evidence_hashes": {
+      "artifact": "8fa7db3137d7f676f521593ac7c0ba3d815f128df3363df2fbff82b8fc5c31e9",
+      "probe": "99e1a813e629caf8622404504a97614b5212a81e5f9a3895a72557321f14bac8"
+    },
+    "notes": "full assertion on both scopes; the pre-#49 shape fails, so the change is load-bearing"
+  }
+]

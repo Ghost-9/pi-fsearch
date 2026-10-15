@@ -1,0 +1,249 @@
+{
+  "generated_at": "2026-10-15T20:22:40.947Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 6.400390625,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "baseline_root": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-mutate-baseline-VLNvSW",
+  "cases": [
+    {
+      "issue": 25,
+      "feature": "filter-then-limit ordering in search()",
+      "file": "src/client.ts",
+      "test": "client-features.test.ts :: ignore filtering runs before limit",
+      "baseline": {
+        "exit": 0,
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ grep: ignore filtering runs before limit and reports filtered/truncated counts (13.350959ms)\n✔ search: ignore filtering runs before limit and reports counts (11.05675ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 190.88075\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 2,
+        "pass": 1,
+        "fail": 1,
+        "timed_out": false,
+        "failed": true,
+        "tail": " (node:internal/test_runner/test:1409:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: [ 'a.json' ],\n    expected: [ 'a.json', 'b.json' ],\n    operator: 'deepStrictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 27,
+      "feature": "WatchSession.stop() closes the directory watcher",
+      "file": "src/watch.ts",
+      "test": "watch.test.ts :: stop\\(\\) closes the watcher",
+      "baseline": {
+        "exit": 0,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ watch: stop() closes the watcher and every daemon socket, and no event follows (332.249834ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 502.361625\n"
+      },
+      "mutated": {
+        "exit": null,
+        "tests": -1,
+        "pass": -1,
+        "fail": -1,
+        "timed_out": true,
+        "failed": true,
+        "tail": "✔ watch: stop() closes the watcher and every daemon socket, and no event follows (331.652083ms)\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 28,
+      "feature": "realpath dedupe in dedupeHits",
+      "file": "src/roots.ts",
+      "test": "roots.test.ts :: dedupe",
+      "baseline": {
+        "exit": 0,
+        "tests": 3,
+        "pass": 3,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "upeHits without a preferred active copy keeps the first occurrence (1.085208ms)\n✔ roots: grep files dedupe by realpath too (0.409208ms)\n✔ roots: multiRootGrep merges and dedupes across roots (0.595ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 165.272292\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 3,
+        "pass": 2,
+        "fail": 1,
+        "timed_out": false,
+        "failed": true,
+        "tail": "nner/test:1402:25)\n      at Test.start (node:internal/test_runner/test:1262:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 2,\n    expected: 1,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 30,
+      "feature": "the default MCP surface is exactly one prefix and six tools",
+      "file": "src/mcp.ts",
+      "test": "interop-surface.test.ts :: exactly one prefix and six tools",
+      "baseline": {
+        "exit": 0,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ surface: the default is exactly one prefix and six tools (1.015209ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 175.173792\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "timed_out": false,
+        "failed": true,
+        "tail": "ner/test:1402:25)\n      at Test.start (node:internal/test_runner/test:1262:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 12,\n    expected: 6,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 31,
+      "feature": "the real-session view is the default",
+      "file": "src/telemetry.ts",
+      "test": "telemetry-views.test.ts :: real is the default",
+      "baseline": {
+        "exit": 0,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ telemetry views: real is the default and excludes synthetic rows (1.483583ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 155.625542\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "timed_out": false,
+        "failed": true,
+        "tail": ":1402:25)\n      at Test.start (node:internal/test_runner/test:1262:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'all',\n    expected: 'real',\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 37,
+      "feature": "machine-readable tokenCount on every result",
+      "file": "src/client.ts",
+      "test": "client-features.test.ts :: every result carries tokenCount",
+      "baseline": {
+        "exit": 0,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ metadata: every result carries tokenCount/truncatedCount/complete (6.721ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 188.09975\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "timed_out": false,
+        "failed": true,
+        "tail": "at async Test.run (node:internal/test_runner/test:1409:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'undefined',\n    expected: 'number',\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 40,
+      "feature": "history is opt-in",
+      "file": "src/history.ts",
+      "test": "history.test.ts :: ULTRASEARCH_HISTORY enables",
+      "baseline": {
+        "exit": 0,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ history: ULTRASEARCH_HISTORY enables, =0 is the explicit opt-out (0.701959ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 157.400333\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "timed_out": false,
+        "failed": true,
+        "tail": "t:1402:25)\n      at Test.start (node:internal/test_runner/test:1262:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: true,\n    expected: false,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 51,
+      "feature": "init refuses to patch an unparseable config",
+      "file": "src/harness-init.ts",
+      "test": "harness-init.test.ts :: unparseable",
+      "baseline": {
+        "exit": 0,
+        "tests": 2,
+        "pass": 2,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ init: an unparseable JSON config is refused, not patched (3.580625ms)\n✔ init: an unparseable TOML config is refused, not patched (9.378292ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 195.394125\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 2,
+        "pass": 0,
+        "fail": 2,
+        "timed_out": false,
+        "failed": true,
+        "tail": ")\n      at Test.run (node:internal/test_runner/test:1467:12)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'create',\n    expected: 'refuse',\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    },
+    {
+      "issue": 53,
+      "feature": "a half-written marker pair is refused",
+      "file": "src/policy.ts",
+      "test": "policy.test.ts :: unterminated marker",
+      "baseline": {
+        "exit": 0,
+        "tests": 1,
+        "pass": 1,
+        "fail": 0,
+        "timed_out": false,
+        "failed": false,
+        "tail": "✔ policy: an unterminated marker pair is refused, never guessed or duplicated (1.744ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 160.849833\n"
+      },
+      "mutated": {
+        "exit": 1,
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "timed_out": false,
+        "failed": true,
+        "tail": "ernal/test_runner/test:1402:25)\n      at Test.start (node:internal/test_runner/test:1262:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: undefined,\n    operator: 'throws',\n    diff: 'simple'\n  }\n"
+      },
+      "mutation_error": null,
+      "guard_is_live": true
+    }
+  ],
+  "dead_guards": []
+}

@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-10-15T20:25:18.833Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 10.51953125,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "default_run": {
+    "exit": 0,
+    "history_exists": false,
+    "stdout": "/private/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-hist-ZO5vS7/repo/needle-file.txt"
+  },
+  "opt_in_run": {
+    "exit": 0,
+    "history_exists": true,
+    "mode": "600",
+    "scrubbed": true,
+    "keys": [
+      "version",
+      "entries"
+    ]
+  },
+  "opt_out_run": {
+    "history_exists": false
+  },
+  "retention": {
+    "stored": [
+      "query-2",
+      "query-3",
+      "query-4",
+      "query-5",
+      "query-6",
+      "query-7",
+      "query-8",
+      "query-9",
+      "query-10",
+      "query-11"
+    ],
+    "ok": true
+  },
+  "cli_suggest": {
+    "exit": 0,
+    "stdout": "query-11  (prefix)\n  query-10  (prefix)\n  query-9  (prefix)",
+    "stderr": ""
+  },
+  "tui_uses_history": true,
+  "defects": []
+}

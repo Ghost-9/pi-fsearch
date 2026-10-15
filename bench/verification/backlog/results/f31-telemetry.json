@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-10-15T20:18:41.069Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 4.83203125,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "views": {
+    "real": 2,
+    "synthetic": 1,
+    "all": 3,
+    "default_view": "real",
+    "filtered_out": 1
+  },
+  "cli_report": {
+    "view": "real",
+    "totalCalls": 2,
+    "originCounts": {
+      "organic": 2,
+      "synthetic": 1,
+      "unmarked": 1
+    },
+    "filteredOutRows": 1
+  },
+  "stamped_row": {
+    "ts": 1792095520876,
+    "tool": "ultrasearch_query",
+    "query": "stamp",
+    "ms": 1,
+    "ok": true,
+    "hitCount": 1,
+    "source": "index",
+    "tokensSaved": 130,
+    "origin": "synthetic",
+    "harness": "test"
+  },
+  "nightly": {
+    "artifacts": [
+      "nightly-2026-10-14.json",
+      "nightly-2026-10-14.md"
+    ],
+    "ci_wiring": [],
+    "cron_lines": "",
+    "documented_cron": true
+  },
+  "defects": [
+    "nightly summary is not wired into CI or cron: acceptance says it is produced without manual steps"
+  ]
+}

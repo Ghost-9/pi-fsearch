@@ -1,0 +1,17 @@
+[
+  {
+    "issue": 41,
+    "claim": "prefetch on edit: debounced warm-up, a single tool_execution_end listener, and edit->grep latency measured before/after with no ungated latency claim",
+    "verdict": "needs-work",
+    "evidence": "real Pi extension against a mock daemon: tool_execution_end listeners=1; 5 rapid edits of one file produced 1 prefetch request(s) carrying [1] path(s); a read event produced 0 additional prefetch(es); removal control (debounce -> 0ms in scratch): 5 request(s); published prefetch latency claims: none",
+    "method": "verifier drives the real index.ts tool_execution_end handler via test/helpers/pi-harness.ts against a mock daemon and counts the ops; removal control mutates the debounce constant in a scratch copy of HEAD; docs grepped for prefetch latency numbers",
+    "n": 4,
+    "gate": "provisional",
+    "artifact": "bench/verification/backlog/results/f41-prefetch.json",
+    "evidence_hashes": {
+      "artifact": "ae73c240f1c43f93b0c20721ddef66ea848a5356d71656cf22e37bb42faed9d7",
+      "probe": "4b2f6394225408f8b15427d7263c85e92839982af2619f5c153750c23b183e4b"
+    },
+    "notes": "acceptance line 'edit→grep latency measured before/after' has no published artifact (no ungated latency claim either)"
+  }
+]

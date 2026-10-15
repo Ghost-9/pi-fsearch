@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-10-15T20:19:59.397Z",
+  "gate": {
+    "status": "provisional",
+    "pass": false,
+    "ac_power": true,
+    "load1": 6.87060546875,
+    "competing_processes": [],
+    "rule": "AC power AND 1-min load < 1.5 AND no cargo/rustc process"
+  },
+  "home": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/ults-init-RpVcgO",
+  "list_exit": 0,
+  "dry_run": {
+    "exit": 0,
+    "printed_diff": true,
+    "file_unchanged": true,
+    "said_no_write": true
+  },
+  "write": {
+    "exit": 0,
+    "backups": [
+      "config.toml.bak-20261016-014958-ultrasearch-init"
+    ],
+    "contains_registration": true,
+    "has_revert_command": true,
+    "revert_restores_exact_bytes": true
+  },
+  "idempotent_rerun": {
+    "exit": 0,
+    "identical": true,
+    "backups": [
+      "config.toml.bak-20261016-014958-ultrasearch-init"
+    ],
+    "reported": true
+  },
+  "remove": {
+    "exit": 0,
+    "restored_bytes": false,
+    "note": "the removal path leaves the pre-existing file one trailing newline shorter; the printed `cp` revert command does restore it exactly"
+  },
+  "fresh_home": {
+    "exit": 0,
+    "written": 8,
+    "existing": 8,
+    "ids": [
+      "claude-code",
+      "claude-desktop",
+      "cursor",
+      "windsurf",
+      "zed",
+      "vscode",
+      "antigravity",
+      "codex"
+    ]
+  },
+  "unparseable_refusal": {
+    "exit": 1,
+    "unchanged": true
+  },
+  "defects": [],
+  "fidelity_notes": [
+    "--remove --write does not byte-restore a pre-existing config (trailing newline)"
+  ]
+}
