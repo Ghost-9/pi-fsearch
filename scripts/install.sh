@@ -1,0 +1,354 @@
+#!/usr/bin/env bash
+# UltraSearch daemon installer (macOS) — Phase 5 packaging.
+#
+# Installs the resident daemon binary and its LaunchAgent, or removes them
+# again. The conventions (paths, bundle identifier, codesign requirement,
+# backup names) are the ones in docs/engine-rebrand.md; this script is the
+# scripted form of the manual install, not a second convention.
+#
+#   ./scripts/install.sh                 install (idempotent)
+#   ./scripts/install.sh --dry-run       print every action, change nothing
+#   ./scripts/install.sh --bin <path>    install a specific engine binary
+#   ./scripts/install.sh --uninstall     remove the job and installed binaries
+#
+# What it does NOT do:
+#   * it never touches ~/Library/Application Support/UltraSearch (the index
+#     and state are user data; uninstall only reports the path);
+#   * it does not register harnesses — that is `ultrasearch init --list`
+#     (phase 1), printed as the next step;
+#   * it does not download anything: build the engine first
+#     (engine/BUILD.md), or pass --bin.
+#
+# The daemon is macOS-only today. Running this on Linux exits 2 and points at
+# docs/linux-daemon-blockers.md; the client surfaces themselves work on Linux.
+set -euo pipefail
+
+LABEL="com.pi.ultrasearch"
+APP="/Applications/UltraSearch.app"
+APP_BIN="$APP/Contents/MacOS/UltraSearch"
+DAEMON_BIN="$HOME/.local/bin/ultrasearch-daemon"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+SUPPORT_DIR="$HOME/Library/Application Support/UltraSearch"
+LOG_FILE="$SUPPORT_DIR/daemon.log"
+STAMP="$(date +%Y%m%d-%H%M%S)"
+
+DRY_RUN=0
+UNINSTALL=0
+SOURCE_BIN=""
+
+usage() {
+  cat <<'EOF'
+Usage: scripts/install.sh [options]
+
+Options:
+  --bin <path>   Engine binary to install (default: engine/target/release/ultrasearch,
+                 then ~/ultrasearch-engine/target/release/ultrasearch, then ./target/release/ultrasearch)
+  --dry-run      Print every action without executing it
+  --uninstall    Stop the LaunchAgent and remove the installed binaries
+  -h, --help     This help
+
+Environment:
+  ULTRASEARCH_DAEMON_BIN  Alternative default for --bin
+EOF
+}
+
+# ---------------------------------------------------------------------------
+# dry-run-aware primitives
+# ---------------------------------------------------------------------------
+
+say() { printf '%s\n' "$*"; }
+ok() { printf 'ok: %s\n' "$*"; }
+warn() { printf 'warn: %s\n' "$*" >&2; }
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit "${2:-1}"
+}
+
+run() {
+  if [ "$DRY_RUN" = 1 ]; then
+    printf '[dry-run]'
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
+
+# Writes stdin to a file, skipping the write when the content is unchanged.
+write_file() {
+  local path="$1"
+  local tmp
+  tmp="$(mktemp)"
+  cat >"$tmp"
+  if [ -f "$path" ] && cmp -s "$tmp" "$path"; then
+    ok "unchanged $path"
+    rm -f "$tmp"
+    return 0
+  fi
+  if [ "$DRY_RUN" = 1 ]; then
+    printf '[dry-run] write %s (%s bytes)\n' "$path" "$(wc -c <"$tmp" | tr -d ' ')"
+    rm -f "$tmp"
+  else
+    mkdir -p "$(dirname "$path")"
+    install -m 0644 "$tmp" "$path"
+    ok "wrote $path"
+    rm -f "$tmp"
+  fi
+}
+
+job_loaded() {
+  launchctl print "gui/$(id -u)/$LABEL" >/dev/null 2>&1
+}
+
+# Same header shape, copied from the live job so launchd semantics stay
+# identical when the job is bootstrapped.
+plist_content() {
+  cat <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$LABEL</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>$APP_BIN</string>
+    <string>serve</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>$HOME</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>$LOG_FILE</string>
+  <key>StandardErrorPath</key>
+  <string>$LOG_FILE</string>
+  <key>ProcessType</key>
+  <string>Interactive</string>
+</dict>
+</plist>
+EOF
+}
+
+fda_steps() {
+  cat <<EOF
+
+Full Disk Access (required for whole-disk search):
+  1. Open System Settings -> Privacy & Security -> Full Disk Access.
+  2. Add $APP if it is not listed (the + button, then choose the app).
+  3. Toggle it on. The daemon must be restarted after the toggle:
+       launchctl kickstart -k gui/$(id -u)/$LABEL
+  The grant binds to the bundle identifier "$LABEL"; do not change it when
+  re-signing (docs/engine-rebrand.md section 2).
+
+Next step (harness registration; requires the phase-1 \`init\` command):
+  ultrasearch init --list
+
+State directory (index, content index, logs) — left untouched:
+  $SUPPORT_DIR
+EOF
+}
+
+# ---------------------------------------------------------------------------
+# argument parsing
+# ---------------------------------------------------------------------------
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --bin)
+      [ $# -ge 2 ] || die "--bin needs a path" 3
+      SOURCE_BIN="$2"
+      shift 2
+      ;;
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    --uninstall)
+      UNINSTALL=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      die "unknown option: $1" 3
+      ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# platform gate
+# ---------------------------------------------------------------------------
+
+if [ "$(uname -s)" != "Darwin" ]; then
+  warn "the UltraSearch daemon is macOS-only today (getattrlistbulk/FSEvents)."
+  warn "exact blockers and the port checklist: docs/linux-daemon-blockers.md"
+  warn "the CLI/MCP client surfaces run on Linux without the daemon (client-only build)."
+  exit 2
+fi
+
+# ---------------------------------------------------------------------------
+# uninstall
+# ---------------------------------------------------------------------------
+
+if [ "$UNINSTALL" = 1 ]; then
+  say "== UltraSearch uninstall =="
+  if job_loaded; then
+    run launchctl bootout "gui/$(id -u)/$LABEL"
+    ok "stopped $LABEL"
+  else
+    ok "LaunchAgent was not loaded"
+  fi
+
+  if [ -f "$PLIST" ]; then
+    run mv "$PLIST" "$PLIST.uninstalled-$STAMP"
+    ok "moved LaunchAgent to $PLIST.uninstalled-$STAMP"
+  else
+    ok "no LaunchAgent at $PLIST"
+  fi
+
+  if [ -f "$DAEMON_BIN" ]; then
+    run mv "$DAEMON_BIN" "$DAEMON_BIN.uninstalled-$STAMP"
+    ok "moved daemon binary to $DAEMON_BIN.uninstalled-$STAMP"
+  else
+    ok "no daemon binary at $DAEMON_BIN"
+  fi
+
+  if [ -d "$APP" ]; then
+    run mv "$APP" "$APP.uninstalled-$STAMP"
+    ok "moved app bundle to $APP.uninstalled-$STAMP (reversible)"
+  else
+    ok "no app bundle at $APP"
+  fi
+
+  cat <<EOF
+
+Removed. Nothing in "$SUPPORT_DIR" was touched; delete it manually
+if you also want to drop the index and logs.
+EOF
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# install
+# ---------------------------------------------------------------------------
+
+say "== UltraSearch install =="
+
+# 1. Locate the engine binary.
+if [ -z "$SOURCE_BIN" ] && [ -n "${ULTRASEARCH_DAEMON_BIN:-}" ]; then
+  SOURCE_BIN="$ULTRASEARCH_DAEMON_BIN"
+fi
+if [ -z "$SOURCE_BIN" ]; then
+  REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  for candidate in \
+    "$REPO_ROOT/engine/target/release/ultrasearch" \
+    "$HOME/ultrasearch-engine/target/release/ultrasearch" \
+    "./target/release/ultrasearch"; do
+    if [ -f "$candidate" ]; then
+      SOURCE_BIN="$candidate"
+      break
+    fi
+  done
+fi
+if [ -z "$SOURCE_BIN" ] || [ ! -f "$SOURCE_BIN" ]; then
+  die "no engine binary found. Build it first (engine/BUILD.md) or pass --bin <path>." 1
+fi
+if [ ! -x "$SOURCE_BIN" ]; then
+  die "$SOURCE_BIN is not executable" 1
+fi
+ok "source binary: $SOURCE_BIN ($(shasum -a 256 "$SOURCE_BIN" | cut -c1-12))"
+
+# 2. Detect an existing install before changing anything.
+DETECTED=0
+[ -f "$PLIST" ] && DETECTED=1
+[ -f "$APP_BIN" ] && DETECTED=1
+[ -f "$DAEMON_BIN" ] && DETECTED=1
+if [ "$DETECTED" = 1 ]; then
+  ok "existing install detected (plist=$([ -f "$PLIST" ] && echo yes || echo no), app=$([ -f "$APP_BIN" ] && echo yes || echo no), daemon=$([ -f "$DAEMON_BIN" ] && echo yes || echo no))"
+  if job_loaded; then
+    ok "$LABEL job is loaded"
+  else
+    warn "$LABEL job is NOT loaded"
+  fi
+else
+  ok "no existing install detected (fresh install)"
+fi
+
+# 3. Install the CLI-side daemon binary.
+run mkdir -p "$(dirname "$DAEMON_BIN")"
+if [ -f "$DAEMON_BIN" ] && [ ! "$SOURCE_BIN" -ef "$DAEMON_BIN" ] && cmp -s "$SOURCE_BIN" "$DAEMON_BIN" 2>/dev/null; then
+  ok "unchanged $DAEMON_BIN"
+else
+  run install -m 0755 "$SOURCE_BIN" "$DAEMON_BIN"
+  ok "installed $DAEMON_BIN"
+fi
+
+# 4. Install the app-bundle binary (what launchd runs and what holds the FDA
+#    grant). The bundle is created when missing so a fresh machine needs one
+#    command, not a manual mkdir.
+run mkdir -p "$APP/Contents/MacOS"
+run mkdir -p "$SUPPORT_DIR"
+if [ -f "$APP_BIN" ] && cmp -s "$SOURCE_BIN" "$APP_BIN" 2>/dev/null; then
+  ok "unchanged $APP_BIN"
+else
+  if [ -f "$APP_BIN" ]; then
+    run cp -R "$APP" "$APP.bak-$STAMP"
+    ok "backed up existing bundle to $APP.bak-$STAMP"
+  fi
+  run install -m 0755 "$SOURCE_BIN" "$APP_BIN"
+  ok "installed $APP_BIN"
+fi
+
+# The bundle identity must exist even when the binary was unchanged, so the
+# FDA grant and codesign identifiers resolve. An existing Info.plist is never
+# rewritten — the bundle id it carries is what the TCC grant is stored against.
+if [ ! -f "$APP/Contents/Info.plist" ]; then
+  write_file "$APP/Contents/Info.plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleIdentifier</key>
+  <string>$LABEL</string>
+  <key>CFBundleName</key>
+  <string>UltraSearch</string>
+  <key>CFBundleExecutable</key>
+  <string>UltraSearch</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0</string>
+</dict>
+</plist>
+EOF
+else
+  ok "keeping existing $APP/Contents/Info.plist"
+fi
+
+# 5. Re-sign with the identifier-only designated requirement. This is what
+#    keeps an existing Full Disk Access grant valid across reinstalls.
+run codesign --force --deep --sign - \
+  --identifier "$LABEL" \
+  --requirements "=designated => identifier \"$LABEL\"" \
+  "$APP"
+run codesign --force --sign - --identifier "$LABEL.daemon" "$DAEMON_BIN"
+ok "signed $APP and $DAEMON_BIN (identifier-only requirement)"
+
+# 6. Install and (re)start the LaunchAgent.
+write_file "$PLIST" < <(plist_content)
+if job_loaded; then
+  run launchctl bootout "gui/$(id -u)/$LABEL" || true
+fi
+run launchctl bootstrap "gui/$(id -u)" "$PLIST"
+run launchctl kickstart -k "gui/$(id -u)/$LABEL"
+ok "started $LABEL"
+
+fda_steps
+say ""
+say "done. Verify: printf '{\"op\":\"status\",\"id\":1}\\n' | nc -U \"$SUPPORT_DIR/ultrasearch.sock\""
