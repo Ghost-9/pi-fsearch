@@ -38,6 +38,14 @@ config file sees the same searches and the same index as v0.2.1.
 | `Progress` (deadline, candidate cap, `scanned`/`considered`, `expired`) on `Query` | `query.rs` | `budget_ms` and `candidates` bound a cold or whole-disk query. `None` unless asked for, so an ordinary search pays one predictable branch per entry and no atomics. |
 | Deadline checks in `Scan::full` / `Scan::selective` and at pass/round boundaries | `query.rs` | A spent budget skips the deeper typo retry, another `spread` round, another `driven` try and the `ranked` batch loop, and stops the entry scan mid-piece. Granularity is `min(4096 entries, 1/8 piece)`, and each piece also checks at its first entry — a piece shorter than the tick would otherwise never check at all. |
 | `complete` / `scanned` / `considered` / `budget_ms` in a search reply; `scanned`/`considered` added to grep's reply beside `candidates`/`read` | `server.rs` | A partial answer must say so, and the work it did must be checkable. |
+| `early_exit: true` (or `low_run: N`) adds a **low-score run** stop: after `N` considered entries in a row that did not improve the k-th best, the scan stops and the reply is `complete:false` with `stopped_by:"low_run"` (`LOW_RUN_DEFAULT` = 1<<20 when `early_exit` is set) | `query.rs` (`Progress::note_candidate`), `Scan::full`/`Scan::selective`, `server.rs` | #35: a cold whole-disk path scan that keeps scoring entries below the floor has a bounded tail. Off unless asked for; the deadline/cap `stopped_by` values name the other two stops. |
+| `stopped_by` in a partial search reply | `server.rs` | `deadline` / `candidates` / `low_run` — an agent can tell why the top-k is partial. |
+
+## Concurrency (helper pool)
+
+| Change | File | Why |
+|---|---|---|
+| The helper pool keeps a registry of every live `run_lanes` set and each helper serves the next set with unclaimed lanes (round-robin), instead of a single "latest search" slot | `content.rs` (`Helpers`, `Lanes::claim`, `run_lanes`) | Concurrent greps must share the pool. With one slot the helpers all served the newest search; each earlier one was left with only its caller thread (one of four to six lanes) and ran near-serially. Measured before the fix: three concurrent greps used ~3.6 cores total and took 2.1–2.3× one call whatever the lane count. `concurrent_runs_share_the_helper_pool` fails on the old code. |
 
 ## Index health (#19, #34)
 
@@ -96,5 +104,8 @@ directory the rename missed.
 * `scanned`/`considered` are 0 for a query answered by a strategy that visits
   names rather than entries (`ranked`, `driven`); they are counts of the entry
   scan, and the reply says nothing when no budget was requested.
-* No discrete "low-score run" heuristic was added for #35: the early exit is a
-  deadline, a candidate cap, and the existing floor-based pruning in `top_k`.
+* The low-score run was the documented #35 deferral; `early_exit`/`low_run`
+  now add that stop for the entry-scan strategies (`full`, `selective`). The
+  bound-driven strategies (`ranked`, `spread`) already stop when no source can
+  beat the floor and ignore it. A fired run answers with the top-k of what was
+  scanned — partial by contract, `complete:false`, never a fabricated hit.

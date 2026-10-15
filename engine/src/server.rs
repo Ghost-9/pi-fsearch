@@ -212,9 +212,10 @@ fn respond(line: &str, cx: &Ctx, out: &mut Vec<u8>) {
                     withheld,
                     stale,
                     complete: budget.map(|b| b.complete),
+                    stopped_by: budget.and_then(|b| b.stopped_by),
                     scanned: budget.map(|b| b.scanned),
                     considered: budget.map(|b| b.considered),
-                    budget_ms: budget.map(|b| b.ms),
+                    budget_ms: budget.and_then(|b| b.ms),
                 },
             )
         }
@@ -266,13 +267,19 @@ enum Reply {
 /// What a `budget_ms` search did (#16, #35).
 #[derive(Debug, Clone, Copy)]
 struct Budget {
-    ms: u64,
-    /// False: the deadline passed, the hits are the best found so far.
+    /// The requested deadline; `None` when the caller only capped the
+    /// candidates or asked for an early exit.
+    ms: Option<u64>,
+    /// False: the scan stopped early (deadline, candidate cap or low-score
+    /// run), the hits are the best found so far.
     complete: bool,
     /// Entries the scan examined.
     scanned: usize,
     /// Candidates that passed the cheap per-name filter and were scored.
     considered: usize,
+    /// Why the scan stopped early (#35): `low_run`, `candidates` or
+    /// `deadline`. `None` when it ran to completion.
+    stopped_by: Option<&'static str>,
 }
 
 /// The JSON of a name-search answer. Keys in sorted order, the order every
@@ -290,6 +297,10 @@ struct Hits<'a> {
     /// the top-k of the whole index: a client may widen the budget or re-run.
     #[serde(skip_serializing_if = "Option::is_none")]
     complete: Option<bool>,
+    /// Why a partial answer stopped early (#35): `low_run`, `candidates` or
+    /// `deadline`. Present only when `complete` is false.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    stopped_by: Option<&'static str>,
     /// Entries the scan examined (#35). 0 when the query was answered by a
     /// strategy that visits names rather than entries.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -449,22 +460,39 @@ fn run(v: &Value, cx: &Ctx, root: Option<&[u8]>, deny: &DenyList) -> Result<Repl
             guard_denied(deny, q.scope.as_deref())?;
             // `budget_ms` (#16): a deadline the scan honours, so a cold or
             // whole-disk query cannot run for seconds. The counters (#35) ride
-            // along only when a budget was asked for.
+            // along whenever any bound was asked for. `early_exit` adds the
+            // low-score-run stop (LOW_RUN_DEFAULT); `low_run` sets its length.
             let budget = v.get("budget_ms").and_then(Value::as_u64).filter(|&ms| ms > 0);
             let cap = v.get("candidates").and_then(Value::as_u64).filter(|&n| n > 0).map(|n| n as usize);
-            let progress = (budget.is_some() || cap.is_some()).then(|| {
+            let early = v.get("early_exit").and_then(Value::as_bool).unwrap_or(false);
+            let low_run = v
+                .get("low_run")
+                .and_then(Value::as_u64)
+                .filter(|&n| n > 0)
+                .map(|n| n as usize)
+                .or(early.then_some(ultrasearch::query::LOW_RUN_DEFAULT));
+            let progress = (budget.is_some() || cap.is_some() || low_run.is_some()).then(|| {
                 let ms = budget.unwrap_or(0);
                 if ms > 0 {
                     q.deadline = Some(Instant::now() + Duration::from_millis(ms));
                 }
-                let p = std::sync::Arc::new(ultrasearch::query::Progress::budget(ms).cap_candidates(cap));
+                let p = std::sync::Arc::new(ultrasearch::query::Progress::budget(ms).cap_candidates(cap).low_run(low_run));
                 q.progress = Some(p.clone());
-                (ms, p)
+                (budget, p)
             });
             let outcome = || {
                 progress.as_ref().map(|(ms, p)| {
                     let (scanned, considered) = p.counted();
-                    Budget { ms: *ms, complete: !p.expired(), scanned, considered }
+                    let stopped_by = if !p.expired() {
+                        None
+                    } else if p.low_run_stopped() {
+                        Some("low_run")
+                    } else if p.capped() {
+                        Some("candidates")
+                    } else {
+                        Some("deadline")
+                    };
+                    Budget { ms: *ms, complete: !p.expired(), scanned, considered, stopped_by }
                 })
             };
             let t = Instant::now();
@@ -532,7 +560,7 @@ struct Extras {
 }
 
 /// Request fields `Extras` reads, not query filters.
-const EXTRAS: &[&str] = &["offset", "cursor", "glob", "cwd", "git", "ignored", "boost", "near", "budget_ms", "candidates", "root"];
+const EXTRAS: &[&str] = &["offset", "cursor", "glob", "cwd", "git", "ignored", "boost", "near", "budget_ms", "candidates", "early_exit", "low_run", "root"];
 /// Frecency reorders this many of the best hits (a fixed window, so pages
 /// agree). Replays did as well with 32-200: a file needs to be among them.
 const RERANK: usize = 256;

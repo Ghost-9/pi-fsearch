@@ -4434,4 +4434,68 @@ mod tests {
         assert_eq!(scanned, 4096, "every entry must be counted");
         assert_eq!(considered, 4096);
     }
+
+    /// `note_candidate` counts a run, resets it on an improvement, and stops
+    /// exactly at the limit (#35).
+    #[test]
+    fn a_low_run_is_reset_by_an_improvement() {
+        let p = Progress::budget(0).low_run(Some(3));
+        assert!(!p.note_candidate(false));
+        assert!(!p.note_candidate(false));
+        assert!(!p.note_candidate(true), "an improvement resets the run");
+        assert!(!p.note_candidate(false));
+        assert!(!p.note_candidate(false));
+        assert!(p.note_candidate(false), "the third low candidate in a row stops");
+        assert!(p.low_run_stopped());
+        assert!(p.expired());
+    }
+
+    /// No run limit: `note_candidate` is inert, whatever it is told.
+    #[test]
+    fn no_low_run_limit_never_stops() {
+        let p = Progress::budget(0);
+        for _ in 0..10_000 {
+            assert!(!p.note_candidate(false));
+        }
+        assert!(!p.low_run_stopped());
+        assert!(!p.expired());
+    }
+
+    /// The low-score run (#35) ends a whole-disk scan that is finding
+    /// nothing new: the answer is marked partial, says why, and stays a
+    /// genuine subset of the full scan's top hits.
+    #[test]
+    fn a_low_run_stops_and_says_so() {
+        let l = many(4096);
+        let want = Searcher { live: &l }.search(&Query::parse("limit:50 alpha", "/h").unwrap());
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::budget(0).low_run(Some(64)));
+        q.progress = Some(p.clone());
+        let hits = Searcher { live: &l }.search(&q);
+        assert!(p.low_run_stopped(), "the run must be reported");
+        assert!(p.expired());
+        let (_, considered) = p.counted();
+        assert!(considered < 4096, "considered {considered} of 4096 entries despite the run limit");
+        assert!(hits.len() <= q.limit);
+        let key = |h: &Hit| (h.score, h.idx);
+        let full: std::collections::HashSet<_> = want.iter().map(key).collect();
+        for h in &hits {
+            assert!(full.contains(&key(h)), "a partial answer must not invent hits");
+        }
+    }
+
+    /// A low-run limit nothing reaches changes nothing: the answer equals
+    /// the unbudgeted one, with the same order.
+    #[test]
+    fn a_low_run_out_of_reach_is_equivalent_to_no_budget() {
+        let l = many(4096);
+        let want = Searcher { live: &l }.search(&Query::parse("limit:50 alpha", "/h").unwrap());
+        let mut q = Query::parse("limit:50 alpha", "/h").unwrap();
+        let p = std::sync::Arc::new(Progress::budget(0).low_run(Some(usize::MAX)));
+        q.progress = Some(p.clone());
+        let got = Searcher { live: &l }.search(&q);
+        assert!(!p.low_run_stopped());
+        let key = |h: &Hit| (h.score, h.idx);
+        assert_eq!(got.iter().map(key).collect::<Vec<_>>(), want.iter().map(key).collect::<Vec<_>>());
+    }
 }
