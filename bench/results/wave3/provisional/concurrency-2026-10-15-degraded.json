@@ -1,0 +1,230 @@
+{
+  "schema": "ultrasearch.bench.engine-concurrency/v1",
+  "status": "degraded",
+  "date": "2026-10-15",
+  "generatedAt": "2026-10-15T11:34:03.013Z",
+  "gate": {
+    "ok": false,
+    "reasons": [
+      "load1m 13.53 >= 1.5"
+    ],
+    "info": {
+      "checkedAt": "2026-10-15T11:33:38.635Z",
+      "platform": "darwin",
+      "arch": "arm64",
+      "hostname": "Mayanks-MacBook-Pro.local",
+      "cpuCount": 10,
+      "cpuModel": "Apple M1 Pro",
+      "onAC": true,
+      "powerSource": "AC Power",
+      "load1m": 13.525,
+      "load5m": 16.979,
+      "load15m": 18.822,
+      "competingProcesses": [],
+      "daemonPids": [
+        8887,
+        35128
+      ],
+      "daemonPid": 8887,
+      "socketOwnerPid": 8887,
+      "daemonWarnings": [
+        "multiple daemons running: 8887, 35128 (socket owner: 8887)"
+      ]
+    }
+  },
+  "method": {
+    "design": "counterbalanced alternating rounds; raw sockets; two daemons over one fixture",
+    "statistic": "median of paired rounds; batch = concurrent greps issued together",
+    "ci": "seeded bootstrap, 10000 resamples",
+    "note": "ratio ~1 = batch finishes like one call; ~N = serialized; cores = daemon cputime / wall during the batch"
+  },
+  "platform": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpus": 10,
+    "loadavg": [
+      23.982421875,
+      19.13818359375,
+      19.54443359375
+    ]
+  },
+  "fixture": {
+    "root": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/us-conc-tree-35120-0-zS5Sga/tree",
+    "files": 5000
+  },
+  "workload": {
+    "pattern": "value",
+    "limit": 100000,
+    "concurrent": 3,
+    "pairs": 20
+  },
+  "daemons": [
+    {
+      "name": "baseline",
+      "bin": "/Applications/UltraSearch.app.bak-20261015-wave3ops/Contents/MacOS/UltraSearch",
+      "pid": 35128,
+      "entries": 5001,
+      "content_docs": 0,
+      "socket": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/us-conc-35120-1-7H9UNa/data/ultrasearch.sock"
+    },
+    {
+      "name": "treatment",
+      "bin": "engine/target/release/ultrasearch",
+      "pid": 35131,
+      "entries": 5001,
+      "content_docs": 0,
+      "socket": "/var/folders/_s/8tbk7qt16cl4tb8z7bphvzz80000gn/T/us-conc-35120-2-lCbwEd/data/ultrasearch.sock"
+    }
+  ],
+  "summary": {
+    "baseline": {
+      "singleMedianMs": 128.70960400000058,
+      "batchMedianMs": 261.2568744999992,
+      "ratio": 2.029816473524369,
+      "singleCI": [
+        116.22300050000058,
+        152.32993749999923
+      ],
+      "batchCI": [
+        247.4873750000006,
+        283.3255835
+      ],
+      "coresUsed": 3.224653534061079,
+      "n": 20
+    },
+    "treatment": {
+      "singleMedianMs": 136.52743750000081,
+      "batchMedianMs": 275.69829200000004,
+      "ratio": 2.0193618004439466,
+      "singleCI": [
+        122.6922085000001,
+        150.6568540000003
+      ],
+      "batchCI": [
+        257.15895850000015,
+        290.5127499999994
+      ],
+      "coresUsed": 4.141413250058011,
+      "n": 20
+    }
+  },
+  "pairedBatchDeltaMs": {
+    "n": 20,
+    "point": 14.549251000002187,
+    "lo": -4.349457999999231,
+    "hi": 40.90708299999915,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": 0.2533471028599986,
+    "acceleration": -1.9610818322019594e-18,
+    "quantity": "delta(a - b)"
+  },
+  "pairedBatchRatio": {
+    "n": 20,
+    "point": 0.9468816018523782,
+    "lo": 0.8536561848666415,
+    "hi": 1.0150539085541703,
+    "method": "bca",
+    "resamples": 10000,
+    "alpha": 0.05,
+    "biasCorrection": -0.2876691587691543,
+    "acceleration": -0.0013460486053396227,
+    "quantity": "ratio(medianB / medianA)"
+  },
+  "significant": false,
+  "samples": {
+    "baseline": {
+      "single": [
+        140.61483399999997,
+        118.76470900000004,
+        95.13316599999962,
+        141.96141700000044,
+        110.66625000000022,
+        153.71437500000047,
+        156.7533339999991,
+        111.05945799999972,
+        121.5766249999997,
+        93.18904199999997,
+        97.95724999999948,
+        125.32837500000096,
+        132.0908330000002,
+        197.00508399999853,
+        113.68129200000112,
+        124.9580420000002,
+        150.945499999998,
+        172.78920799999833,
+        174.7325000000019,
+        184.31929200000013
+      ],
+      "batch": [
+        263.1607079999999,
+        223.3546669999996,
+        220.17679099999987,
+        259.0647920000001,
+        241.86716700000034,
+        323.134,
+        286.0889590000006,
+        236.0079999999998,
+        271.54241600000023,
+        215.9623329999995,
+        248.73837500000081,
+        269.60120800000004,
+        259.3530409999985,
+        290.27279199999975,
+        255.33124999999927,
+        291.7441250000011,
+        246.2363750000004,
+        280.5622079999994,
+        287.04954200000066,
+        331.1491669999996
+      ]
+    },
+    "treatment": {
+      "single": [
+        132.5108339999997,
+        198.93695800000023,
+        118.32029199999943,
+        124.99004200000036,
+        141.42062499999975,
+        113.27358300000014,
+        183.13941700000032,
+        139.98616700000093,
+        281.9055840000001,
+        120.39437499999985,
+        136.35195799999929,
+        94.23866599999928,
+        119.55479100000048,
+        116.2592910000003,
+        136.7815410000003,
+        159.89308300000084,
+        136.70291700000234,
+        128.4028330000001,
+        163.8701669999973,
+        170.19095799999923
+      ],
+      "batch": [
+        289.49866699999984,
+        386.17983300000014,
+        254.37024999999994,
+        244.824834,
+        315.64308399999936,
+        289.64545799999996,
+        296.98275000000103,
+        258.81125000000065,
+        218.89166699999987,
+        215.98241699999926,
+        273.90229200000067,
+        291.38004199999887,
+        255.50666699999965,
+        277.4942919999994,
+        262.79245900000024,
+        244.2127079999991,
+        262.92199999999866,
+        299.7951670000002,
+        307.47191699999894,
+        284.00987499999974
+      ]
+    }
+  }
+}

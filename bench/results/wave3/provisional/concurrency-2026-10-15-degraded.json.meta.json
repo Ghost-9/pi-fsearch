@@ -1,0 +1,36 @@
+{
+  "capturedAt": "2026-10-15T11:37:18.484415Z",
+  "artifact": "/Users/batra/ultrasearch-waves3/ops/bench/results/engine/concurrency-2026-10-15-degraded.json",
+  "artifactSha256": "7ab3043b0d23af9ffaa80acceabd37d602bd7535ee231cd00e304b806ce75aaa",
+  "machine": {
+    "hostname": "Mayanks-MacBook-Pro.local",
+    "model": "MacBookPro18,1",
+    "cpu": "Apple M1 Pro",
+    "power": "AC Power",
+    "load1": 27.99
+  },
+  "engine": {
+    "builtSha256": "878e636c37942e587db0885c71793398f7aaf12fcf467895c9e2e9ab2081af64",
+    "installedLocalBinSha256Signed": "d5ef5d18594e2ec1488410c6dc17336913b6f97786fd531d279d9b8e69a077f8",
+    "installedAppBundleSha256Signed": "e783f6a9c9549bdbd3431c775172205f6fee0a5ee6a7ec0856c2585f08daeaea",
+    "machOUuidBuilt": "6E008204-1698-38D3-99FE-BD6FBF3A4D3E",
+    "machOUuidLocalBin": "6E008204-1698-38D3-99FE-BD6FBF3A4D3E",
+    "machOUuidAppBundle": "6E008204-1698-38D3-99FE-BD6FBF3A4D3E",
+    "sameCode": true,
+    "note": "codesign rewrites the Mach-O signature, so file hashes differ from the unsigned build; LC_UUID identifies the code"
+  },
+  "daemon": {
+    "socketOwnerPids": [
+      36122
+    ],
+    "pid": 36122,
+    "entries": 7030442,
+    "event_id": 5719211053,
+    "content_docs": 155893,
+    "socket_ino": 41663190,
+    "lock_pid": 36122,
+    "uptime_ms": 157551,
+    "replay_in_progress": false,
+    "staleness_ms": 0
+  }
+}

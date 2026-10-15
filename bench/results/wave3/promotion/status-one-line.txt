@@ -1,0 +1,1 @@
+status: pid=36122 uptime_ms=526920 entries=7030442 dirs=1022235 content_docs=155905 index_bytes=173930624 fda=True owner=True event_id=5726016779 socket_ino=41663190 lock_pid=36122 staleness_ms=0 replay=False compactions=1

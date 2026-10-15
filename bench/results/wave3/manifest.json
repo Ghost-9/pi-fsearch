@@ -1,0 +1,641 @@
+{
+  "schema": "ultrasearch.wave3.ops-manifest/v1",
+  "wave": "wave3/ops",
+  "createdAt": "2026-10-15T12:05:34.053280Z",
+  "gitHead": "c64c62bf3b317f7111ea0af252dbc519e083e4ac",
+  "engine": {
+    "builtSha256": "878e636c37942e587db0885c71793398f7aaf12fcf467895c9e2e9ab2081af64",
+    "installedLocalBinSha256Signed": "d5ef5d18594e2ec1488410c6dc17336913b6f97786fd531d279d9b8e69a077f8",
+    "installedAppBundleSha256Signed": "e783f6a9c9549bdbd3431c775172205f6fee0a5ee6a7ec0856c2585f08daeaea",
+    "machOUuidBuilt": "6E008204-1698-38D3-99FE-BD6FBF3A4D3E",
+    "machOUuidLocalBin": "6E008204-1698-38D3-99FE-BD6FBF3A4D3E",
+    "machOUuidAppBundle": "6E008204-1698-38D3-99FE-BD6FBF3A4D3E",
+    "sameCode": true,
+    "note": "codesign rewrites the Mach-O signature, so file hashes differ from the unsigned build; LC_UUID identifies the code",
+    "baselineWave1AppBundleSha256": "14bbcc13fd04f37da3170199e010402eb47ee7c69f10388bcdeee8bee082ae02",
+    "baselineEngineAbFsearchSha256": "d96cfbcf34e8623f1cc6b2ede508b097c9a7947195d55abfebd2e5a6a103ed62",
+    "baselineEngineAbRef": "f84ce92"
+  },
+  "installedDaemon": {
+    "pid": 36122,
+    "launchagent": "gui/$(id -u)/com.pi.ultrasearch",
+    "binary": "/Applications/UltraSearch.app/Contents/MacOS/UltraSearch",
+    "localCopy": "/Users/batra/.local/bin/ultrasearch-daemon"
+  },
+  "promotion": {
+    "runbook": "docs/engine-rebrand.md",
+    "backupStamp": "20261015-wave3ops",
+    "backups": {
+      "appBundle": "/Applications/UltraSearch.app.bak-20261015-wave3ops",
+      "localBin": "/Users/batra/.local/bin/ultrasearch-daemon.bak-20261015-wave3ops",
+      "launchAgent": "/Users/batra/Library/LaunchAgents/com.pi.ultrasearch.plist.bak-20261015-wave3ops"
+    },
+    "rollbackScript": "bench/results/wave3/rollback-wave3-ops.sh",
+    "restoreDrill": "passed: backup binary served isolated socket, status ok, grep 2 hits (bench/results/wave3/promotion/restore-drill-*)",
+    "verified": {
+      "full_disk_access": true,
+      "newStatusFields": [
+        "pid",
+        "uptime_ms",
+        "socket",
+        "socket_dev",
+        "socket_ino",
+        "lock_pid",
+        "staleness_ms",
+        "compactions",
+        "content_policy"
+      ],
+      "legacyCompatPing": true,
+      "indexReused": true,
+      "entriesBefore": 6999615,
+      "entriesAfter": 7030442,
+      "lockPidEqualsPid": true,
+      "socketInodeBefore": 39874674,
+      "socketInodeAfter": 41663190,
+      "codesignIdentifier": "com.pi.ultrasearch",
+      "codesignRequirement": "=designated => identifier \"com.pi.ultrasearch\""
+    },
+    "evidence": "bench/results/wave3/promotion/"
+  },
+  "gateWait": {
+    "method": "30 s sampling, 60 samples (30 min bounded wait), gate = AC + load1 < 1.5 + no cargo/rustc",
+    "samples": 60,
+    "passing": 0,
+    "minLoad1": 9.45,
+    "maxLoad1": 128.44,
+    "file": "bench/results/wave3/gate-samples.jsonl"
+  },
+  "artifacts": [
+    {
+      "name": "bench:scopes",
+      "path": "bench/results/wave3/provisional/scopes-2026-10-15-degraded.json",
+      "status": "degraded",
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "load1m 23.97 >= 1.5"
+        ]
+      },
+      "daemon": {
+        "socketOwnerPids": [
+          36122
+        ],
+        "pid": 36122,
+        "entries": 7030442,
+        "event_id": 5718104932,
+        "content_docs": 155892,
+        "socket_ino": 41663190,
+        "lock_pid": 36122,
+        "uptime_ms": 104996,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      },
+      "n": 30,
+      "summary": {
+        "small": [
+          {
+            "id": "small-path-exact",
+            "n": 30,
+            "ultra_p50_ms": 0.7028330000000551,
+            "native_p50_ms": 4.104624999999942,
+            "delta_ms": {
+              "point": -3.4017919999998867,
+              "lo": -3.9124590000001263,
+              "hi": -3.2174590000000762
+            },
+            "ratio": {
+              "point": 5.840114223435183,
+              "lo": 5.232412081315354,
+              "hi": 7.447427382439351
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          },
+          {
+            "id": "small-path-glob",
+            "n": 30,
+            "ultra_p50_ms": 1.0703340000000026,
+            "native_p50_ms": 4.2035829999999805,
+            "delta_ms": {
+              "point": -3.133248999999978,
+              "lo": -3.3653739999999743,
+              "hi": -2.8794159999997646
+            },
+            "ratio": {
+              "point": 3.92735632055038,
+              "lo": 3.6446460002325405,
+              "hi": 4.454239414919163
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          },
+          {
+            "id": "small-grep",
+            "n": 30,
+            "ultra_p50_ms": 1.333167000000003,
+            "native_p50_ms": 8.724583000000166,
+            "delta_ms": {
+              "point": -7.391416000000163,
+              "lo": -7.588207999999895,
+              "hi": -7.160457999999835
+            },
+            "ratio": {
+              "point": 6.544253645642403,
+              "lo": 6.171367176616187,
+              "hi": 6.895453949136336
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          }
+        ],
+        "monorepo": [
+          {
+            "id": "mono-path-exact",
+            "n": 30,
+            "ultra_p50_ms": 0.6902909999998883,
+            "native_p50_ms": 7.332000000000335,
+            "delta_ms": {
+              "point": -6.641709000000446,
+              "lo": -6.940082999999959,
+              "hi": -6.3097499999998945
+            },
+            "ratio": {
+              "point": 10.62160740905143,
+              "lo": 9.40599500416163,
+              "hi": 13.290576569905335
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          },
+          {
+            "id": "mono-path-glob",
+            "n": 30,
+            "ultra_p50_ms": 1.2349169999997684,
+            "native_p50_ms": 7.979334000000108,
+            "delta_ms": {
+              "point": -6.74441700000034,
+              "lo": -6.949374000000262,
+              "hi": -6.508750999999847
+            },
+            "ratio": {
+              "point": 6.461433440467339,
+              "lo": 6.0747481162725645,
+              "hi": 7.018717162873581
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          },
+          {
+            "id": "mono-grep",
+            "n": 30,
+            "ultra_p50_ms": 23.217375000000175,
+            "native_p50_ms": 30.169875000000047,
+            "delta_ms": {
+              "point": -6.952499999999873,
+              "lo": -7.398333000000093,
+              "hi": -6.327375000000302
+            },
+            "ratio": {
+              "point": 1.2994524574806505,
+              "lo": 1.267209358120933,
+              "hi": 1.3200467897397936
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          }
+        ],
+        "home": [
+          {
+            "id": "home-path-exact",
+            "n": 30,
+            "ultra_p50_ms": 0.7579590000004828,
+            "native_p50_ms": 31.73633300000074,
+            "delta_ms": {
+              "point": -30.978374000000258,
+              "lo": -34.16266699999869,
+              "hi": -27.80329200000051
+            },
+            "ratio": {
+              "point": 41.87077797081442,
+              "lo": 36.74399087988173,
+              "hi": 51.430635911936854
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          },
+          {
+            "id": "home-path-glob",
+            "n": 30,
+            "ultra_p50_ms": 1.4188340000000608,
+            "native_p50_ms": 32.82883299999958,
+            "delta_ms": {
+              "point": -31.409998999999516,
+              "lo": -33.04383299999972,
+              "hi": -29.703083000000333
+            },
+            "ratio": {
+              "point": 23.137895624152065,
+              "lo": 21.045565705783908,
+              "hi": 25.636795240664252
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          },
+          {
+            "id": "home-grep",
+            "n": 30,
+            "ultra_p50_ms": 56.49962500000038,
+            "native_p50_ms": 63.52741699999933,
+            "delta_ms": {
+              "point": -7.0277919999989535,
+              "lo": -11.403542000000016,
+              "hi": -4.198374999999942
+            },
+            "ratio": {
+              "point": 1.124386524689304,
+              "lo": 1.0728453369763629,
+              "hi": 1.1969187229118512
+            },
+            "significant": true,
+            "equivalent": true,
+            "miss_rate": 0
+          }
+        ]
+      },
+      "known_issue": "relevance arm scored 0.000 because the frozen wave-1 corpus /Users/batra/ultrasearch-waves/advisor is absent on this machine; not a regression (see knownLimits)"
+    },
+    {
+      "name": "bench:tokens",
+      "path": "bench/results/wave3/provisional/tokens-2026-10-15-degraded.json",
+      "status": "degraded",
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "load1m 22.02 >= 1.5"
+        ]
+      },
+      "daemon": {
+        "socketOwnerPids": [
+          36122
+        ],
+        "pid": 36122,
+        "entries": 7030442,
+        "event_id": 5719174258,
+        "content_docs": 155893,
+        "socket_ino": 41663190,
+        "lock_pid": 36122,
+        "uptime_ms": 151525,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      },
+      "n": 30,
+      "summary": {
+        "ultra_tokens": {
+          "median": 38,
+          "ci": null
+        },
+        "native_tokens": {
+          "median": 155,
+          "ci": null
+        },
+        "token_delta": {
+          "point": 117,
+          "lo": 11,
+          "hi": 117
+        },
+        "savings_ratio": {
+          "n": 30,
+          "point": 0.7548387096774194,
+          "lo": 0.6115569823434992,
+          "hi": 0.8580645161290322,
+          "method": "bca",
+          "resamples": 10000,
+          "alpha": 0.05,
+          "biasCorrection": -0.5092171836688745,
+          "acceleration": -1.4838873378911497e-16,
+          "quantity": "fraction of tokens saved (1 - ultra/native)"
+        }
+      }
+    },
+    {
+      "name": "bench:lanes",
+      "path": "bench/results/wave3/provisional/lanes-2026-10-15-degraded.json",
+      "status": "degraded",
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "load1m 23.22 >= 1.5"
+        ]
+      },
+      "daemon": {
+        "socketOwnerPids": [
+          36122
+        ],
+        "pid": 36122,
+        "entries": 7030442,
+        "event_id": 5719184066,
+        "content_docs": 155893,
+        "socket_ino": 41663190,
+        "lock_pid": 36122,
+        "uptime_ms": 152938,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      },
+      "n": 30,
+      "summary": {
+        "pooled_batch": {
+          "median": 13.502458000000047,
+          "ci": null
+        },
+        "paired_delta_ms": {
+          "point": 0.06308300000011968,
+          "lo": -0.23933399999998528,
+          "hi": 0.565375000000131
+        },
+        "paired_ratio": {
+          "point": 0.995328035828727,
+          "lo": 0.9585761472075567,
+          "hi": 1.0178162802455157
+        },
+        "significant": false,
+        "concurrency_shape": {
+          "treatmentParallelMedianMs": 13.502458000000047,
+          "treatmentSingleMedianMs": 5.1041660000000775,
+          "controlParallelMedianMs": 13.439374999999927,
+          "controlSingleMedianMs": 5.100291000000027,
+          "treatmentRatioToSingle": 2.645379872049585,
+          "controlRatioToSingle": 2.635021217416782,
+          "interpretation": "ratio ~1 => batch time equals one call (max, no head-of-line blocking); ~N => serialized (sum)"
+        }
+      }
+    },
+    {
+      "name": "bench:fallback",
+      "path": "bench/results/wave3/provisional/fallback-2026-10-15-degraded.json",
+      "status": "degraded",
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "load1m 23.36 >= 1.5"
+        ]
+      },
+      "daemon": {
+        "socketOwnerPids": [
+          36122
+        ],
+        "pid": 36122,
+        "entries": 7030442,
+        "event_id": 5719193108,
+        "content_docs": 155893,
+        "socket_ino": 41663190,
+        "lock_pid": 36122,
+        "uptime_ms": 154401,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      },
+      "n": 200,
+      "summary": {
+        "sync_latency": {
+          "median": 4.5321249999997235,
+          "ci": null
+        },
+        "async_latency": {
+          "median": 7.88616600000023,
+          "ci": null
+        },
+        "paired_delta_ms": {
+          "point": 3.3540410000005068,
+          "lo": 3.2455420000003414,
+          "hi": 3.4396240000000944
+        },
+        "event_loop_max_delta_ms": {
+          "point": -3.0631679999996777,
+          "lo": -3.208334000000491,
+          "hi": -2.9244170000010854
+        },
+        "no_leaked_children": true
+      }
+    },
+    {
+      "name": "bench:boost",
+      "path": "bench/results/wave3/provisional/boost-2026-10-15-degraded.json",
+      "status": "degraded",
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "load1m 26.77 >= 1.5"
+        ]
+      },
+      "daemon": {
+        "socketOwnerPids": [
+          36122
+        ],
+        "pid": 36122,
+        "entries": 7030442,
+        "event_id": 5719199634,
+        "content_docs": 155893,
+        "socket_ino": 41663190,
+        "lock_pid": 36122,
+        "uptime_ms": 155650,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      },
+      "n": 36,
+      "summary": {
+        "ndcg_on": {
+          "median": 0,
+          "ci": null
+        },
+        "ndcg_off": {
+          "median": 0,
+          "ci": null
+        },
+        "delta_ndcg10": {
+          "point": 0,
+          "lo": 0,
+          "hi": 0
+        },
+        "decision": false
+      },
+      "known_issue": "both arms scored 0.000 nDCG because the wave-1 judgment corpus is absent; the delta is unmeasurable, not zero"
+    },
+    {
+      "name": "bench:engine (engine-ab)",
+      "path": "bench/results/wave3/provisional/wave3-engine-ab.json",
+      "status": "degraded",
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "load1m 17.81103515625 > 1.5"
+        ]
+      },
+      "daemon": {
+        "socketOwnerPids": [
+          36122
+        ],
+        "pid": 36122,
+        "entries": 7030442,
+        "event_id": 5719203149,
+        "content_docs": 155893,
+        "socket_ino": 41663190,
+        "lock_pid": 36122,
+        "uptime_ms": 156647,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      },
+      "n": 20,
+      "summary": {
+        "baseline_ref": "f84ce92",
+        "files": 4000,
+        "queries": {
+          "path-search": {
+            "a_median_ms": 0.3559579999999869,
+            "b_median_ms": 0.36064599999997426,
+            "diff_ms": 0.0037079999999605207,
+            "diff_ci": [
+              -0.03285399999992933,
+              0.0965204999999969
+            ],
+            "equivalent": true
+          },
+          "path-search-budget": {
+            "a_median_ms": 0.4009999999999536,
+            "b_median_ms": 0.42672899999996616,
+            "diff_ms": -0.011124999999992724,
+            "diff_ci": [
+              -0.13737450000002127,
+              0.04666649999995798
+            ],
+            "equivalent": true
+          },
+          "path-narrow": {
+            "a_median_ms": 0.17968749999994316,
+            "b_median_ms": 0.1510625000000232,
+            "diff_ms": 0.030813000000023294,
+            "diff_ci": [
+              -0.0018955000000460132,
+              0.04387499999990041
+            ],
+            "equivalent": true
+          },
+          "grep": {
+            "a_median_ms": 1.3028125000000728,
+            "b_median_ms": 1.3113329999999905,
+            "diff_ms": -0.057771000000116146,
+            "diff_ci": [
+              -0.15533350000009705,
+              0.08658300000001873
+            ],
+            "equivalent": true
+          }
+        }
+      }
+    },
+    {
+      "name": "engine-concurrency",
+      "path": "bench/results/wave3/provisional/concurrency-2026-10-15-degraded.json",
+      "status": "degraded",
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "load1m 13.53 >= 1.5"
+        ]
+      },
+      "daemon": {
+        "socketOwnerPids": [
+          36122
+        ],
+        "pid": 36122,
+        "entries": 7030442,
+        "event_id": 5719211053,
+        "content_docs": 155893,
+        "socket_ino": 41663190,
+        "lock_pid": 36122,
+        "uptime_ms": 157551,
+        "replay_in_progress": false,
+        "staleness_ms": 0
+      },
+      "n": 20,
+      "summary": {
+        "baseline": {
+          "singleMedianMs": 128.70960400000058,
+          "batchMedianMs": 261.2568744999992,
+          "ratio": 2.029816473524369,
+          "singleCI": [
+            116.22300050000058,
+            152.32993749999923
+          ],
+          "batchCI": [
+            247.4873750000006,
+            283.3255835
+          ],
+          "coresUsed": 3.224653534061079,
+          "n": 20
+        },
+        "treatment": {
+          "singleMedianMs": 136.52743750000081,
+          "batchMedianMs": 275.69829200000004,
+          "ratio": 2.0193618004439466,
+          "singleCI": [
+            122.6922085000001,
+            150.6568540000003
+          ],
+          "batchCI": [
+            257.15895850000015,
+            290.5127499999994
+          ],
+          "coresUsed": 4.141413250058011,
+          "n": 20
+        },
+        "paired_batch_delta_ms": {
+          "point": 14.549251000002187,
+          "lo": -4.349457999999231,
+          "hi": 40.90708299999915
+        },
+        "paired_batch_ratio": {
+          "point": 0.9468816018523782,
+          "lo": 0.8536561848666415,
+          "hi": 1.0150539085541703
+        },
+        "significant": false,
+        "note": "baseline = the wave-1 installed engine (app-bundle backup), treatment = the promoted build"
+      }
+    }
+  ],
+  "tests": {
+    "test:gate": {
+      "result": "8/8 pass",
+      "artifact": "bench/results/wave3/promotion/test-gate-live.log",
+      "note": "live daemon pid 36122; grep client p50 5.36 ms / raw p50 2.82 ms; search 0.86 / 1.25"
+    },
+    "test:engine": {
+      "result": "38/38 pass",
+      "artifact": "bench/results/wave3/promotion/test-engine.log"
+    },
+    "statusCapture": "bench/results/wave3/promotion/status-one-line.txt"
+  },
+  "knownLimits": [
+    "No artifact is final: the environment gate never passed during the bounded 30-minute wait (60/60 samples failed; min load1 9.45, max 128.44; AC held; a sibling wave's cargo/rustc ran in 19 samples). All timing rows are provisional and may not be cited as production evidence.",
+    "The frozen wave-1 judgment corpus /Users/batra/ultrasearch-waves/advisor is absent on this machine, so bench:scopes' relevance arm and bench:boost scored 0.000. Those rows are unmeasurable here, not a regression of the promoted daemon.",
+    "bench:lanes/baseline vs treatment was run on a loaded machine; ratios are provisional.",
+    "engine-ab baseline f84ce92 was built from git archive; the wave-1 installed engine is the concurrency baseline.",
+    "The live test:gate first failed (client p50 78.88 ms) because the fresh worktree's content index was cold and the scoped grep fell back to source=scan over 7,734 on-disk files; a tracked-file touch made the daemon re-track the path (read 91) and the re-run passed 8/8. This is the documented cold-worktree condition, not a daemon change."
+  ],
+  "artifactSha256": {
+    "boost-2026-10-15-degraded.json": "2a625989b0bdef43a97efc0b4bb9f5694dd9a05a37242a8f186ade898875a72e",
+    "concurrency-2026-10-15-degraded.json": "7ab3043b0d23af9ffaa80acceabd37d602bd7535ee231cd00e304b806ce75aaa",
+    "fallback-2026-10-15-degraded.json": "d6251942ac8e1dc110e3f20a0d9d0f57a5f4b0b46f8625d371eb4dc475c2c58f",
+    "lanes-2026-10-15-degraded.json": "8f1bf7094ef3f7431f785838f1c0596c4fd9070673512012a3b45b1cb5078808",
+    "scopes-2026-10-15-degraded.json": "42c5cd770e6e988c035d62c4bcf05a0e37519b9c20b06c4ae8a99583118bb7f7",
+    "tokens-2026-10-15-degraded.json": "4a735317824103015b6c9fc0a53c457372a90aa81157c12d21d0519f23df7b35",
+    "wave3-engine-ab.json": "402d3ce2748e31c350054beaa946eb95305de7735aa036e40da54568e7505cdb"
+  }
+}
