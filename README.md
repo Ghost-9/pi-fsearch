@@ -129,15 +129,35 @@ source of truth for every client. Protocol conformance (initialize/initialized, 
 notification semantics, unknown method, parse error, JSON-RPC error codes, stdio framing) is covered by
 `test/mcp.test.ts` and runs hermetically without a daemon.
 
-Registration status:
+Registration is not hand-editing: `ultrasearch init` detects the harnesses on the machine and patches
+their config with a timestamped backup, a printed diff and the exact revert command. It plans by
+default and writes only with `--write`:
 
-| Client | Status |
-|:---|:---|
-| Antigravity | registered in `~/.gemini/antigravity/mcp_config.json` and `~/.gemini/config/mcp_config.json` |
-| VS Code | registered in the user `mcp.json` |
-| Claude Desktop | registered in `claude_desktop_config.json` |
-| **Pi Agent** | **intentionally not registered via MCP** — the native extension already exposes the same tools; avoiding a duplicate tool surface |
-| T3 Code | no generic user-level MCP registry; T3 reaches the tools through its Pi provider and the `ultrasearch` CLI |
+```bash
+ultrasearch init --list                        # registry + what is detected/registered here
+ultrasearch init --harness cursor              # show the diff, write nothing
+ultrasearch init --harness cursor --write      # patch, with a backup and revert command
+ultrasearch init --harness codex --remove --write
+```
+
+| Harness | Surface | Config |
+|:---|:---|:---|
+| Pi Agent | **native extension** (init skips it by default) | `~/.pi/agent/mcp.json` |
+| T3 Code | inherits the Pi provider; CLI otherwise | — |
+| Codex CLI | MCP | `~/.codex/config.toml` `[mcp_servers]` |
+| Claude Code | MCP | `~/.claude.json` `mcpServers` |
+| Claude Desktop | MCP | `claude_desktop_config.json` |
+| Cursor | MCP | `~/.cursor/mcp.json` |
+| Windsurf | MCP | `~/.codeium/windsurf/mcp_config.json` |
+| Zed | MCP | `~/.config/zed/settings.json` `context_servers` (JSONC preserved) |
+| VS Code | MCP | user `mcp.json` `servers` |
+| Antigravity | MCP | `~/.gemini/antigravity/mcp_config.json` |
+
+Each row carries a smoke artifact under `bench/harness-smoke/` (initialize + `tools/list` + one
+`tools/call`, plus a native harness CLI arm where one exists) and the generated
+[`docs/harness-matrix.md`](docs/harness-matrix.md) states exactly which arms ran and which are
+explicitly `skipped:<reason>`. `npm run smoke:harness && npm run matrix:harness` regenerates both;
+CI runs the smokes and fails on a missing or dishonest row.
 
 Example MCP config entry:
 
@@ -153,7 +173,8 @@ Example MCP config entry:
 ```
 
 `npm run build` emits that entrypoint (see *Build & distribution*); `bin/mcp-server.ts` also works directly on
-Node.js ≥ 22.18 through native TypeScript type-stripping.
+Node.js ≥ 22.18 through native TypeScript type-stripping. `ultrasearch init` resolves the command itself:
+`--command`, `ULTRASEARCH_MCP_COMMAND`, `~/.local/bin/ultrasearch-mcp`, then `PATH`.
 
 ---
 

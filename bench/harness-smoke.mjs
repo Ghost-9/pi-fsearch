@@ -112,9 +112,13 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-function gitCommit() {
-  const res = spawnSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" });
-  return res.status === 0 ? res.stdout.trim() : "unknown";
+function gitState() {
+  const commit = spawnSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" });
+  const status = spawnSync("git", ["status", "--porcelain"], { cwd: repoRoot, encoding: "utf8" });
+  return {
+    commit: commit.status === 0 ? commit.stdout.trim() : "unknown",
+    worktreeDirty: status.status === 0 ? status.stdout.trim().length > 0 : null,
+  };
 }
 
 /** Run a command with a hard timeout; never throws. */
@@ -578,6 +582,7 @@ async function buildArtifact(spec, ctx) {
     label: spec.label,
     generatedAt: nowIso(),
     commit: ctx.commit,
+    worktreeDirty: ctx.worktreeDirty,
     serverVersion: SERVER_VERSION,
     supportedProtocolVersions: [...SUPPORTED_PROTOCOL_VERSIONS],
     harness: {
@@ -635,12 +640,14 @@ async function main() {
     process.exit(2);
   }
   fs.mkdirSync(opts.out, { recursive: true });
+  const git = gitState();
   const ctx = {
     home: opts.home,
     command: opts.command,
     args: opts.args,
     timeoutMs: opts.timeoutMs,
-    commit: gitCommit(),
+    commit: git.commit,
+    worktreeDirty: git.worktreeDirty,
     platform: process.platform,
   };
   const results = [];

@@ -197,6 +197,7 @@ export function buildMatrix({ specs = HARNESSES, artifacts, headCommit, generate
     // Only the check mode tags staleness; a committed artifact always refers
     // to the commit it was produced from, which is one commit behind the doc.
     const stale = requireFresh && row.stale ? " *(stale)*" : "";
+    const dirty = artifact?.worktreeDirty ? " *(dirty tree)*" : "";
     lines.push(
       `| **${cell(spec.label)}** \`${cell(spec.id)}\` | ${cell(spec.surface)} | \`${cell(spec.configPath.darwin)}\` (${cell(spec.format)}, \`${cell(spec.serverKey.join("."))}\`) | ${cell(declared)} | ${cell(protoCell(artifact ?? {}))}${flag} | ${cell(nativeCell(artifact ?? {}))} | ${cell(tools)} | ${cell(spec.entryShapeSource)} | \`${cell(shortCommit(artifact?.commit))}\`${stale} |`
     );
@@ -223,6 +224,7 @@ export function buildMatrix({ specs = HARNESSES, artifacts, headCommit, generate
   lines.push("- **protocol arm** starts the server with the command that harness is configured with (falling back to the resolved `ultrasearch-mcp`), sends `initialize` at the harness's declared revision, `notifications/initialized`, `tools/list` and one `tools/call`. The daemon behind it is a hermetic mock over a temp socket (`daemon: mock` in each artifact), so the arm proves the MCP surface, not daemon behaviour — the engine suite covers that.");
   lines.push("- **native arm** runs the harness's own CLI where one exists: `claude mcp list` (Claude Code) and `codex mcp list` / `codex mcp get` (Codex CLI) are executed against a temp HOME/`CODEX_HOME`, so no live config is touched. Claude Code is pointed at a recording proxy (`bench/harness-smoke/probe-server.mjs`) so the artifact carries the harness's *measured* `protocolVersion` and `clientInfo`.");
   lines.push("- **CI** runs the protocol arm plus the matrix check; native arms run where the harness is installed and otherwise record `skipped:<reason>`.");
+  lines.push("- The **Artifact** column is the commit the smoke ran against; `(dirty tree)` marks evidence produced with uncommitted changes present, and `--require-fresh` rejects artifacts from any commit other than HEAD.");
   lines.push("");
   if (problems.length) {
     lines.push("### Problems");

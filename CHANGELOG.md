@@ -37,6 +37,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   malformed params, tool-level errors, unknown method (-32601), invalid request (-32600), parse error (-32700),
   pre-initialize rejection (-32002), notifications-never-answered, and stdio framing (split writes, batched
   messages, CRLF, blank lines). `src/mcp.ts` enforces that contract instead of the previous ad-hoc responses.
+- **#51 harness init** — `ultrasearch init` (`src/harness-registry.ts`, `src/harness-init.ts`,
+  `src/config-edit.ts`) detects and patches the MCP config of Codex CLI, Claude Code, Claude Desktop,
+  Cursor, Windsurf, Zed, VS Code and Antigravity, plus a documented *skip* for Pi (native extension).
+  Edits are surgical textual splices over a validated document (JSON key-path editing; JSONC keeps
+  comments and trailing commas; TOML table upsert/remove refuses inline `mcp_servers`), plans unless
+  `--write` is passed, writes a timestamped backup first, verifies by reading the entry back and
+  restores on failure, is idempotent, preserves unmanaged keys, and prints the diff plus the exact
+  revert command. `--list`, `--harness`, `--remove`, `--dry-run`, `--json` included.
+- **#52 harness smoke matrix** — `bench/harness-smoke.mjs` records one artifact per harness
+  (`bench/harness-smoke/<id>.json`, committed): a protocol arm (initialize at the harness's revision,
+  `tools/list` = the six canonical tools, one `tools/call` against a hermetic mock daemon) and a
+  native arm where the harness has a non-interactive CLI (Claude Code through a recording MCP proxy —
+  which measured its protocol revision at 2025-11-25 — Codex CLI in a temp `CODEX_HOME`, the Pi
+  interop suite). `bench/harness-matrix.mjs` renders `docs/harness-matrix.md` and fails on a missing
+  row, a failed arm, a reasonless skip or (with `--require-fresh`) stale evidence. CI runs both.
 - `NOTICE` (upstream MIT attribution) and `docs/engine-rebrand.md` (migration + rollback runbook).
 - `engine/rebrand.sh <src-dir> <dst-dir>` — deterministic, idempotent rebrand of an upstream engine checkout
   (LICENSE and upstream URLs are never rewritten).
