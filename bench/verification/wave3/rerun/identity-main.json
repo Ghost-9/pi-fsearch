@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "suite": "wave3-identity-cli-mcp",
+    "generated_at": "2026-10-15T12:43:52.460Z",
+    "query": "src/**/*.ts",
+    "limit": 20,
+    "corpus": "/Users/batra/.cache/pi-ultrasearch-bench/corpus-8d1419d-clean",
+    "socket": "bench/verification/wave3/rerun/daemon-main/ultrasearch.sock",
+    "engine": "/Users/batra/ultrasearch-verify/engine/target/release/ultrasearch",
+    "note": "the CLI path is the `ultrasearch` bin over the same client; the MCP path is a real JSON-RPC tools/call in process"
+  },
+  "counts": {
+    "library": 14,
+    "cli": 14,
+    "mcp": 14
+  },
+  "sets": {
+    "library": [
+      "src/client.ts",
+      "src/codemode.ts",
+      "src/compactor.ts",
+      "src/formatter.ts",
+      "src/mcp.ts",
+      "src/observer.ts",
+      "src/recursive-learning.ts",
+      "src/sanitize.ts",
+      "src/semantic.ts",
+      "src/spawn.ts",
+      "src/telemetry.ts",
+      "src/tui.ts",
+      "src/types.ts",
+      "src/validate.ts"
+    ],
+    "cli": [
+      "src/client.ts",
+      "src/codemode.ts",
+      "src/compactor.ts",
+      "src/formatter.ts",
+      "src/mcp.ts",
+      "src/observer.ts",
+      "src/recursive-learning.ts",
+      "src/sanitize.ts",
+      "src/semantic.ts",
+      "src/spawn.ts",
+      "src/telemetry.ts",
+      "src/tui.ts",
+      "src/types.ts",
+      "src/validate.ts"
+    ],
+    "mcp": [
+      "src/client.ts",
+      "src/codemode.ts",
+      "src/compactor.ts",
+      "src/formatter.ts",
+      "src/mcp.ts",
+      "src/observer.ts",
+      "src/recursive-learning.ts",
+      "src/sanitize.ts",
+      "src/semantic.ts",
+      "src/spawn.ts",
+      "src/telemetry.ts",
+      "src/tui.ts",
+      "src/types.ts",
+      "src/validate.ts"
+    ]
+  },
+  "identity": {
+    "library_equals_cli": true,
+    "library_equals_mcp": true,
+    "all_identical": true
+  },
+  "diffs": {
+    "cli_only": [],
+    "mcp_only": [],
+    "library_only": []
+  }
+}
