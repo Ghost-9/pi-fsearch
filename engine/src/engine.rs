@@ -90,6 +90,23 @@ pub struct Status {
     /// Writes the index files (false: following another process's).
     pub owner: bool,
 
+    // --- Daemon identity and single-instance state (#45) ---
+    /// This daemon's process id.
+    pub pid: u32,
+    /// Milliseconds since this engine started (the cold-start window).
+    pub uptime_ms: u64,
+    /// The socket path it serves.
+    pub socket: String,
+    /// The socket file's device and inode (`stat`): a client can tell the
+    /// socket it answered on from a later replacement at the same path.
+    pub socket_dev: u64,
+    pub socket_ino: u64,
+    /// The pid recorded in `<index dir>/socket.lock`, the single-instance
+    /// lock `serve` must hold before it binds the socket. A client seeing a
+    /// different pid here, or several owners for one socket inode, has a
+    /// duplicate/stale daemon (#45).
+    pub lock_pid: u32,
+
     // --- Freshness (#19) ---
     /// The newest event id on the system right now (`FSEventsGetCurrentEventId`).
     pub last_event_id: u64,
@@ -164,6 +181,8 @@ struct Shared {
     content: RwLock<Content>,
     home: String,
     dir: PathBuf,
+    /// When this engine started, for the uptime in `status` (#45).
+    started: std::time::Instant,
     /// Wakes the apply loop; an empty batch is a no-op wake-up.
     wake: Sender<Vec<fsevents::Event>>,
     save_requested: AtomicBool,
@@ -212,6 +231,18 @@ struct Shared {
     /// the overlay would answer with paths outside the index's own area.
     /// `/` (the default) filters nothing.
     keep: Vec<u8>,
+}
+
+/// Device and inode of the daemon's socket file, when it exists (#45).
+fn socket_stat(dir: &std::path::Path) -> Option<(u64, u64)> {
+    use std::os::unix::fs::MetadataExt;
+    let m = std::fs::metadata(dir.join("ultrasearch.sock")).ok()?;
+    Some((m.dev(), m.ino()))
+}
+
+/// The pid recorded in `socket.lock` (0 when it is absent or unreadable) (#45).
+fn read_u32(path: &std::path::Path) -> u32 {
+    std::fs::read_to_string(path).ok().and_then(|s| s.trim().parse().ok()).unwrap_or(0)
 }
 
 /// Counts one query as in flight for as long as it lives (#34).
@@ -388,6 +419,7 @@ impl Engine {
             compact: Mutex::new(CompactStats::default()),
             stale_since: AtomicU64::new(0),
             keep: crate::env::scan_root(),
+            started: std::time::Instant::now(),
         });
         if owner {
             start_content(&shared);
@@ -558,6 +590,12 @@ impl Engine {
             content_pending: self.s.content_pending.load(Ordering::Relaxed),
             full_disk_access: walk::SKIP.get().is_none(),
             owner: self.s.owner(),
+            pid: std::process::id(),
+            uptime_ms: self.s.started.elapsed().as_millis() as u64,
+            socket: self.s.dir.join("ultrasearch.sock").to_string_lossy().into_owned(),
+            socket_dev: socket_stat(&self.s.dir).map_or(0, |m| m.0),
+            socket_ino: socket_stat(&self.s.dir).map_or(0, |m| m.1),
+            lock_pid: read_u32(&self.s.dir.join("socket.lock")),
             last_event_id,
             event_lag: last_event_id.saturating_sub(event_id),
             staleness_ms: self.s.staleness_ms(),

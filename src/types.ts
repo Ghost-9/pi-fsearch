@@ -164,6 +164,30 @@ export interface UltraSearchStatusResponse {
   stale_ms?: number;
   /** Results the daemon's policy held back: deny-list, or the caller `root` (#23). */
   withheld?: number;
+  /** This daemon's pid (#45). */
+  pid?: number;
+  /** Milliseconds since this engine started (#45): the cold-start window. */
+  uptime_ms?: number;
+  /** The socket path the daemon serves (#45). */
+  socket?: string;
+  socket_dev?: number;
+  socket_ino?: number;
+  /** The pid recorded in the daemon's single-instance `socket.lock` (#45). */
+  lock_pid?: number;
+  /**
+   * Duplicate/stale daemon signals collected by the client (#45): socket
+   * owner pids, a lock/answering pid mismatch, or a second daemon on the
+   * legacy socket. Present on `client.status()` replies.
+   */
+  daemon_health?: {
+    pid?: number;
+    uptime_ms?: number;
+    socket: string;
+    socket_owners: number[];
+    lock_pid?: number;
+    duplicate_suspected: boolean;
+    duplicates: Array<{ path: string; pid?: number; reason: string }>;
+  };
 }
 
 export interface SearchOptions {
