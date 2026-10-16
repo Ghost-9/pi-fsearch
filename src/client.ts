@@ -186,18 +186,76 @@ function probeDaemonPid(socket: string): Promise<number | null> {
   });
 }
 
+/** Strip one layer of matching outer quotes. */
+function unquote(q: string): string {
+  const s = q.trim();
+  if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+    return s.slice(1, -1).trim();
+  }
+  return s;
+}
+
+/** A token the engine already interprets itself (filter, glob, prefix/suffix, negation). */
+function isOperatorToken(t: string): boolean {
+  return (
+    t.includes(":") ||
+    t.startsWith("'") ||
+    t.startsWith("!") ||
+    t.startsWith("^") ||
+    t.endsWith("$") ||
+    t.includes("*") ||
+    t.includes("?")
+  );
+}
+
 /**
- * Extracts plain words that must be strictly matched in exact mode.
+ * Is this token an *identifier* rather than an ordinary word? Anything with a
+ * non-letter inside (`src/client.ts`, `fsearch.sock`, `mod-0017`, `v2`) or an
+ * internal capital (`UltraSearchClient`, `enforceExactQuery`) is a name someone
+ * is pointing at. `format`, `grep` and `files` are not.
+ */
+function isIdentifierToken(t: string): boolean {
+  if (!t) return false;
+  const bare = t.replace(/^['^!]+/, "");
+  if (/[0-9._/-]/.test(bare)) return true;
+  return /[a-z][A-Z]/.test(bare);
+}
+
+/**
+ * Is this query a *single identifier or selector* — something the user is
+ * naming exactly, rather than describing?
+ *
+ * Strictness is right for a name and wrong for a description. Forcing every
+ * word of `format grep files` into an exact conjunct demands that one file
+ * contain all three words as substrings of its path (client) and as exact
+ * tokens (engine), which is 0 results — measured: the engine returns 251 hits
+ * for the plain query and 0 for the exact-conjunct form. So exactness is
+ * applied only when the query *is* a selector:
+ *
+ *   - a single free token — `git`, `UltraSearchClient`, `src/client.ts`
+ *   - every free token is identifier-shaped — `fsearch.sock README.md`
+ *
+ * Filters, globs and prefix/suffix tokens do not count: the engine already
+ * interprets them, and they never made a query a selector on their own.
+ */
+export function isSelectorQuery(query: string): boolean {
+  const free = unquote(query)
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((tok) => !isOperatorToken(tok));
+  if (free.length === 0) return false;
+  if (free.length === 1) return true;
+  return free.every((tok) => isIdentifierToken(tok));
+}
+
+/**
+ * Plain words that must be strictly matched in exact mode — the selector's
+ * words only. Empty for a natural-language query, so the path filter below
+ * does not demand every word of a sentence appear in the file name.
  */
 export function extractExactWords(query: string): string[] {
-  let cleanQuery = query.trim();
-  if (
-    (cleanQuery.startsWith('"') && cleanQuery.endsWith('"')) ||
-    (cleanQuery.startsWith("'") && cleanQuery.endsWith("'"))
-  ) {
-    cleanQuery = cleanQuery.slice(1, -1).trim();
-  }
-  return cleanQuery
+  if (!isSelectorQuery(query)) return [];
+  return unquote(query)
     .split(/\s+/)
     .filter(Boolean)
     .filter((tok) => !tok.includes(":") && !tok.startsWith("!") && !tok.includes("*") && !tok.includes("?"))
@@ -212,32 +270,23 @@ export function extractExactWords(query: string): string[] {
 }
 
 /**
- * Transforms plain words in query into exact match mode (prefixing ''),
+ * Transforms a selector's plain words into exact match mode (prefixing `'`),
  * ensuring ZERO typo tolerance and strict deterministic token matching.
+ *
+ * A natural-language query is returned unchanged: its words stay fuzzy tokens
+ * so the engine can match them individually, instead of becoming a list of
+ * exact conjuncts that nothing satisfies. See `isSelectorQuery`.
  */
 export function enforceExactQuery(query: string): string {
-  let cleanQuery = query.trim();
-  if (
-    (cleanQuery.startsWith('"') && cleanQuery.endsWith('"')) ||
-    (cleanQuery.startsWith("'") && cleanQuery.endsWith("'"))
-  ) {
-    cleanQuery = cleanQuery.slice(1, -1).trim();
-  }
+  const cleanQuery = unquote(query);
   const tokens = cleanQuery.split(/\s+/).filter(Boolean);
+  if (!isSelectorQuery(query)) return tokens.join(" ");
   const transformed = tokens.map((tok) => {
     let t = tok;
     if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
       t = t.slice(1, -1);
     }
-    if (
-      t.includes(":") ||
-      t.startsWith("'") ||
-      t.startsWith("!") ||
-      t.startsWith("^") ||
-      t.endsWith("$") ||
-      t.includes("*") ||
-      t.includes("?")
-    ) {
+    if (isOperatorToken(t)) {
       return t;
     }
     return `'${t}`;

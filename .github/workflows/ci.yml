@@ -54,6 +54,12 @@ jobs:
       - name: Harness matrix check (fresh artifacts from this commit)
         run: npm run matrix:harness -- --check --require-fresh
 
+      - name: Judgment-set integrity gate (no silent edits to the instruments)
+        run: npm run judgments:integrity
+
+      - name: Judgment-set integrity gate tests
+        run: npm run judgments:integrity:test
+
       - name: Engine unit tests (cargo test --release)
         run: cargo test --release --manifest-path engine/Cargo.toml
 

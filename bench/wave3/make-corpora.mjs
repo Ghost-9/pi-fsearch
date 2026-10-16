@@ -81,7 +81,10 @@ let failed = 0;
 
 for (const c of CORPORA) {
   const dir = path.join(ROOT, c.name);
-  const meta = path.join(dir, ".corpus-meta.json");
+  // BESIDE the corpus, never inside it: an in-root metadata file is an ordinary
+  // searchable file, and the engine returns it as a hit (measured: it ranked
+  // first for the query `corpus`, ahead of the corpus's own README.md).
+  const meta = `${dir}.meta.json`;
   if (!FORCE && fs.existsSync(meta)) {
     const m = JSON.parse(fs.readFileSync(meta, "utf8"));
     if (m.commit === c.commit && m.tree_sha256 === c.tree_sha256) {

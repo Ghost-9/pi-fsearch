@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "generated_at": "2026-10-15T21:58:35Z",
+  "amend_command": "node bench/verification/checks/judgment-integrity.mjs --amend-judgments --reason \"<why>\"",
+  "note": "Content hashes of the versioned judgment sets and every *-baseline.json measurement artifact. Any change fails the integrity gate unless it is amended deliberately with --amend-judgments --reason.",
+  "amendments": [
+    {
+      "date": "2026-10-15T21:58:35Z",
+      "reason": "initial pin of the frozen judgment sets and measurement artifacts at aac4267 (defect 5)",
+      "changed": [],
+      "added": [
+        "bench/baseline/results/judgments-baseline.json",
+        "bench/baseline/results/tokens-baseline.json",
+        "bench/baseline/results/zeroresult-baseline.json",
+        "bench/judgments/wave1-judgments.json",
+        "bench/judgments/wave1-judgments.v2.json",
+        "bench/judgments/wave2-bars.json",
+        "bench/judgments/wave2-judgments.json",
+        "bench/judgments/wave2-probes.json",
+        "bench/verification/after/judgments-baseline.json",
+        "bench/verification/after/tokens-baseline.json",
+        "bench/verification/after/wave2-baseline.json",
+        "bench/verification/after/zeroresult-baseline.json",
+        "bench/verification/before/judgments-baseline.json",
+        "bench/verification/before/tokens-baseline.json",
+        "bench/verification/before/zeroresult-baseline.json"
+      ],
+      "removed": []
+    }
+  ],
+  "files": {
+    "bench/baseline/results/judgments-baseline.json": "ab4e4ac731fcc05f05feb3f3c3d8b5a90ad9f725f206fabdbe495415ab3d12c9",
+    "bench/baseline/results/tokens-baseline.json": "3e0576e4898db5ffdbea5d1d056a7bae1176e7e38f6a1e14f8fc0e78b279aeb8",
+    "bench/baseline/results/zeroresult-baseline.json": "663b89074275ced68d6ca6a9f533d0455ea37753612765de921f38f5505493d0",
+    "bench/judgments/wave1-judgments.json": "4af5fed8cc7ed23d561c5bfcd59a37bf3ec78edf27793df3702b934350185ea1",
+    "bench/judgments/wave1-judgments.v2.json": "a240c0abebe22d71e9f51ffa901a3cda35206f3482f61d0f3754c25eeee80d05",
+    "bench/judgments/wave2-bars.json": "d46ea619a11cb7a80dd71309ae0da4237a35906cbd9c8c2575e398fb4d8a7096",
+    "bench/judgments/wave2-judgments.json": "f378a5b140eb8bcb47e6b97729d25a3d4f8127ed47b75a20ab683a3dee2789b8",
+    "bench/judgments/wave2-probes.json": "14f2d19191feec7923f5e7815be04d08acf2e1e650925bca65141272f5fd0d5d",
+    "bench/verification/after/judgments-baseline.json": "99b62ae2cfadba0bb69bc2e713e189db097da0d1f130de2e9031e80205a0be72",
+    "bench/verification/after/tokens-baseline.json": "2178b8bf7688c61d4ef49960617f99fe7c9c00214e72a7ff92ec4ee2c5e4d7af",
+    "bench/verification/after/wave2-baseline.json": "b4e43ef16c418365feb0d2b5342c180ada13072d0028f28fd21d6160568ced8d",
+    "bench/verification/after/zeroresult-baseline.json": "7143ee9b839054d9f567f9487fd57dab85d41e48b4217f234ed507de64cf9938",
+    "bench/verification/before/judgments-baseline.json": "64fee02691e2f4dda88e5e1b2d8a813200706b1b0c684e770d22c994b1870738",
+    "bench/verification/before/tokens-baseline.json": "f139f95c24a9cd759d438d31368507209ac6b0b03586ce7b8bc03ebba2ead8e6",
+    "bench/verification/before/zeroresult-baseline.json": "ad4b5000535da25190ddbffafd3d5e1760e5078641d9dcd3c6c0facbb3f2037a"
+  }
+}

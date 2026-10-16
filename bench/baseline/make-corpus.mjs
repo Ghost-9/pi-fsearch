@@ -5,7 +5,8 @@
 //
 //   node bench/baseline/make-corpus.mjs [--force]
 //
-// Output: ~/.cache/pi-ultrasearch-bench/corpus-0a16e50 (+ .corpus-meta.json)
+// Output: ~/.cache/pi-ultrasearch-bench/corpus-0a16e50
+//         ~/.cache/pi-ultrasearch-bench/corpus-0a16e50.meta.json   <- BESIDE the root
 
 import { execFileSync } from "node:child_process";
 import * as crypto from "node:crypto";
@@ -18,7 +19,13 @@ ensureTestEnv();
 
 const COMMIT = "0a16e50";
 const ROOT = path.join(os.homedir(), ".cache", "pi-ultrasearch-bench", `corpus-${COMMIT}`);
-const META = path.join(ROOT, ".corpus-meta.json");
+// The metadata lives BESIDE the corpus, never inside it. Written inside, it is
+// just another file in the searchable tree: measured through the real daemon,
+// the engine returned `.corpus-meta.json` as a search hit and ranked it FIRST
+// for the query `corpus`, ahead of the corpus's own README.md. It quotes the
+// commit, the tree hash and the file count, so it poisons the very ranking it
+// exists to measure (advisor finding `spoiler_meta_inside_root`).
+const META = `${ROOT}.meta.json`;
 
 function walk(dir, out = []) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {

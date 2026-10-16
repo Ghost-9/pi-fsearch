@@ -339,6 +339,15 @@ release artifact that carries it are in **[`docs/sla.md`](docs/sla.md)**.
 - **Platforms** — socket path resolution exists for Linux/Windows, and the client, tests and hermetic gate run on
   Linux CI; the daemon itself is macOS-only (exact blockers in [`docs/linux-daemon-blockers.md`](docs/linux-daemon-blockers.md)).
 - **Frecency hook** — wired and covered by unit-level code paths, but no end-to-end regression test yet.
+- **Working directory is not tracked live** — an unscoped `search`/`grep` defaults to the *client
+  process's* `process.cwd()`, and the daemon plus the extension host are long-lived processes that started in
+  one directory. Running `cd` inside a pane changes that pane's shell directory, not either process's, so an
+  unscoped query keeps searching the directory the process started in. This bites hardest in PowerShell and
+  multi-pane shells, where every pane can `cd` independently and nothing reports it back. **Pass the scope
+  explicitly** (`in: "<dir>"`) until it is tracked; note that the client resolves a relative `in` against its
+  own process cwd, not the pane's, so an absolute path is the reliable form. There is no cheap fix inside the
+  daemon: per-pane cwd is a signal the shell must publish (an env var on `cd`, or a per-pane hook), and the
+  daemon cannot observe it on its own. Deliberately documented rather than approximated.
 - Full list with priorities: [`OPTIMIZATIONS.md`](OPTIMIZATIONS.md).
 
 ---
