@@ -15,3 +15,6 @@ engine/target/
 
 # Release check output (bench/run-checks.mjs --out)
 checks.json
+
+# synthetic test telemetry written by test/semantic-opt-in.test.ts
+.tmp/
