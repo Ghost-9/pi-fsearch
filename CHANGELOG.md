@@ -12,6 +12,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-10-17] — honest claims, a governed scorecard, semantic behind an opt-in
+
+### Fixed
+- **`rg --files` returned nothing, everywhere, silently.** Not this project's code: the
+  `~/.local/bin/rg` shim on this machine discarded every flag it did not recognise and always exited
+  0, so `rg --files` produced no output with a success status. pi-ultrasearch's own native fallback
+  calls `rg --files --glob ... --iglob ...`, so its fallback path was dead and 2 tests in
+  `test/fallback.test.ts` failed **on `main`**, not on any branch. The shim now passes any
+  output-shaping flag (`--files`, `-l`, `-c`, `--json`, `-g`, `-t`) through to the real ripgrep and
+  accelerates only a bare content search. Measured: the suite went from 260/262 to **275/275**.
+
+### Added
+- **Judgment-set integrity gate.** `bench/judgments/INTEGRITY.json` pins a checksum per governed
+  file; `npm run judgments:integrity` fails on any unamended edit, on a governed file the pin does
+  not cover, on a deletion, and on a missing manifest, and an amendment requires a written reason.
+  Wired into CI. This closes the failure mode this project's own history records - a gate closed by
+  amending what it measures. 8 tests, 6 of which assert the gate *rejects* a specific violation.
+- `.corpus-meta.json` is now written **beside** the corpus root instead of inside it, so it can no
+  longer be returned as a search hit. Includes a CONTROL test: with the metadata in-root it *is*
+  returned for the same query.
+
+### Changed
+- **`semantic` mode is gated off by default** (`ULTRASEARCH_EXPERIMENTAL_SEMANTIC=1` re-enables it).
+  It is intent keyword expansion, not vector search, and it does not perform: semantic nDCG@10
+  **0.194**, paraphrase recall@10 **0.175**, success@3 0.10, **false-positive rate 1.00**. It was
+  listed alongside `literal`/`regex`/`symbol` in the README and in the MCP tool schema with no
+  qualification, so an agent had no way to know it was the one mode that does not work. Not removed -
+  closing a 0.194 nDCG is research, not a patch - but unreachable by accident, and the refusal names
+  the numbers and the alternatives.
+- `enforceExactQuery` no longer turns every word of a query into an exact conjunct, which made
+  `format grep files` return 0 results. Exactness now applies only to genuine selectors.
+
+### Changed - housekeeping
+- Reclaimed **1.4 GiB** of `engine/target` (gitignored cargo output; verified 0 tracked files and a
+  clean `cargo build --release` from scratch in 1 m 12 s). Checkout 1.2 GB -> 48 MB.
+
+### Not changed, on purpose
+- No file under `bench/judgments/` and no `*-baseline.json` was edited. The vault recorded that 12
+  `judgments.*` rows were marked `verified` while comparing a byte-identical file with itself; that
+  was checked against this tree and **F10 is already repaired** (`8901916`, "F10 repair"). Of the 13
+  rows marked verified, 0 are self-comparing and 12 carry a non-zero delta. Relabelling them on the
+  stale note would have introduced a false finding.
+- Semantic quality was not tuned to move a number.
+
+---
+
 ## [Unreleased] — UltraSearch-only naming, build/distribution, MCP conformance
 
 ### Changed (breaking)
