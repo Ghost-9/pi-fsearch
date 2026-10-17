@@ -89,7 +89,13 @@ Indexed file and path discovery, scoped to the active worktree (nearest `.git`),
 
 ### 2. `ultrasearch_grep`
 Indexed trigram content search with four modes:
-- `literal` (default), `regex`, `symbol` (AST declaration tags/priority), `semantic` (intent keyword expansion).
+- `literal` (default), `regex`, `symbol` (AST declaration tags/priority), `semantic` (**experimental — see below**).
+- `semantic` is intent keyword expansion, not a vector or embedding search. Measured on the
+  project's own gold fixtures it is **not ready to rely on**: semantic nDCG@10 **0.194**,
+  semantic-paraphrase recall@10 **0.175**, success@3 **0.10**, and **false-positive rate 1.00** on
+  the paraphrase lane. It returns ten files for queries with no matching subject. Use `literal`
+  or `symbol`; use `semantic` only to explore, never to gate a decision. Tracked as a known
+  measurement, not a capability.
 - Optional `context` lines (0–5) and `tag_symbols` for `[def:fn]`-style annotations.
 - Enterprise DLP scrubbing before anything reaches the prompt.
 - Content index covers the daemon's tracked text corpus — see *Known limits* below.

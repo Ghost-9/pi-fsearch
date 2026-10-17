@@ -59,7 +59,7 @@ const GREP: UltraSearchToolSchema = {
     pattern: { type: "string", description: "Text or identifier to search" },
     path_filter: { type: "string", description: "Subfolder or file filter (e.g. 'src/')" },
     global: { type: "boolean", description: "Whole disk instead of the current scope" },
-    mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "literal (default) | regex | symbol (defs first) | semantic (intent)" },
+    mode: { type: "string", enum: ["literal", "regex", "symbol", "semantic"], description: "literal (default) | regex | symbol (defs first) | semantic (intent keyword expansion; EXPERIMENTAL and unreliable — measured semantic nDCG@10 0.194, paraphrase recall@10 0.175, FP 1.00. Do not use it to gate a decision; prefer literal or symbol)" },
     limit: { type: "number", description: "Max files (default 30)" },
     compact: { type: "boolean", description: "One-line 'file:line: match' (default true)" },
     max_tokens: { type: "number", description: "Output token budget" },

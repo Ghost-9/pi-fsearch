@@ -37,7 +37,7 @@ declare namespace tools {
     path_filter?: string;
     /** Whole disk instead of the current scope */
     global?: boolean;
-    /** literal (default) | regex | symbol (defs first) | semantic (intent) */
+    /** literal (default) | regex | symbol (defs first) | semantic (intent keyword expansion; EXPERIMENTAL and unreliable — measured semantic nDCG@10 0.194, paraphrase recall@10 0.175, FP 1.00. Do not use it to gate a decision; prefer literal or symbol) */
     mode?: "literal" | "regex" | "symbol" | "semantic";
     /** Max files (default 30) */
     limit?: number;
