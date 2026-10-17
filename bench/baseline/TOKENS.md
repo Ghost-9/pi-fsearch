@@ -1,6 +1,6 @@
 # Token-output baseline — pi-ultrasearch (wave1/baseline)
 
-Frozen: 2026-10-14T20:36:02.439Z · commit `0a16e5055002c2d80feed47afecc2e0416afd1a2` · Apple M1 Pro, Node v26.11.1
+Frozen: 2026-10-17T04:06:09.535Z · commit `42104cb73f6e5e5f107280b18b1dadd5718720d0` · Apple M1 Pro, Node v26.11.1
 
 ## Why this exists
 
@@ -20,18 +20,18 @@ Known limits:
 
 | # | Tool | Scope | Params | Hits | Chars | Est. tokens | Formatter tokens | Raw JSON chars |
 |---|------|-------|--------|-----:|------:|------------:|-----------------:|---------------:|
-| t01 | fsearch_query | ~/ultrasearch-waves/baseline | `{"query":"package.json","limit":30}` | 4 | 268 | 67 | — | 670 |
-| t02 | fsearch_query | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"query":"module_01232.ts","limit":30}` | 1 | 67 | 17 | — | 211 |
-| t03 | fsearch_query | ~/ultrasearch-waves/baseline | `{"query":"zzz_absent_alpha_9c3f.ts","limit":30}` | 0 | 82 | 21 | — | 78 |
-| t04 | fsearch_grep | ~/ultrasearch-waves/baseline | `{"pattern":"FSearchClient","limit":30,"context":0,"mode":"literal"}` | 27 | 6883 | 1721 | 1707 | 11200 |
-| t05 | fsearch_grep | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"pattern":"ULTRAMARKER_1232","limit":30,"context":0,"mode":"literal"}` | 1 | 127 | 32 | 19 | 346 |
-| t06 | fsearch_grep | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"pattern":"zzz_absent_token_9c3f","limit":30,"context":0,"mode":"literal"}` | 0 | 48 | 12 | — | 156 |
-| t07 | fsearch_multi_grep | ~/ultrasearch-waves/baseline | `{"patterns":["recordAudit","formatGrepFiles"],"limit":30}` | 19 | 5314 | 1329 | 1316 | 14636 |
-| t08 | fsearch_multi_grep | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"patterns":["ULTRAMARKER_1232","ULTRAMARKER_7"],"limit":30}` | 16 | 1199 | 300 | 287 | 5377 |
-| t09 | fsearch_locate | (global) | `{"filename":"package.json","global":true,"limit":10}` | 10 | 511 | 128 | — | 1243 |
-| t10 | fsearch_recent | ~/ultrasearch-waves/baseline | `{"limit":15}` | 15 | 225 | 57 | — | 1871 |
+| t01 | ultrasearch_query | ~/.pi/agent/extensions/pi-ultrasearch | `{"query":"package.json","limit":30}` | 1 | 58 | 15 | — | 478 |
+| t02 | ultrasearch_query | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"query":"module_01232.ts","limit":30}` | 1 | 67 | 17 | — | 492 |
+| t03 | ultrasearch_query | ~/.pi/agent/extensions/pi-ultrasearch | `{"query":"zzz_absent_alpha_9c3f.ts","limit":30}` | 0 | 82 | 21 | — | 337 |
+| t04 | ultrasearch_grep | ~/.pi/agent/extensions/pi-ultrasearch | `{"pattern":"FSearchClient","limit":30,"context":0,"mode":"literal"}` | 30 | 11199 | 2800 | 2786 | 16078 |
+| t05 | ultrasearch_grep | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"pattern":"ULTRAMARKER_1232","limit":30,"context":0,"mode":"literal"}` | 1 | 127 | 32 | 19 | 637 |
+| t06 | ultrasearch_grep | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"pattern":"zzz_absent_token_9c3f","limit":30,"context":0,"mode":"literal"}` | 0 | 48 | 12 | — | 444 |
+| t07 | ultrasearch_multi_grep | ~/.pi/agent/extensions/pi-ultrasearch | `{"patterns":["recordAudit","formatGrepFiles"],"limit":30}` | 30 | 10743 | 2686 | 2673 | 25894 |
+| t08 | ultrasearch_multi_grep | ~/.cache/pi-ultrasearch-bench/fixture-5k | `{"patterns":["ULTRAMARKER_1232","ULTRAMARKER_7"],"limit":30}` | 19 | 1415 | 354 | 341 | 6712 |
+| t09 | ultrasearch_locate | (global) | `{"filename":"package.json","global":true,"limit":10}` | 10 | 509 | 128 | — | 1589 |
+| t10 | ultrasearch_recent | ~/.pi/agent/extensions/pi-ultrasearch | `{"limit":15}` | 15 | 258 | 65 | — | 2440 |
 
-**Totals:** 14,724 chars ≈ 3,684 estimated tokens across 10 tasks.
+**Totals:** 24,506 chars ≈ 6,130 estimated tokens across 10 tasks.
 
 ## How later waves must use this
 

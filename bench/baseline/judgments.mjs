@@ -228,16 +228,30 @@ async function main() {
   let root = declaredRoot;
   let corpusSource = "declared-root";
   let cleanMeta = null;
-  if (!process.env.JUDGMENTS_ROOT && fs.existsSync(path.join(cleanRoot, ".corpus-meta.json"))) {
+  // The clean-archive corpus writes its metadata BESIDE the root (`<root>.meta.json`) because
+  // writing it inside made it a searchable file: the engine returned it as a hit and ranked it
+  // first for the query `corpus`, ahead of the corpus's own README (advisor finding
+  // `spoiler_meta_inside_root`). Older corpora wrote `<root>/.corpus-meta.json` instead.
+  //
+  // Both locations are accepted. Checking only the old one silently stopped finding the clean
+  // archive after that change, and the run fell through to a declared root that no longer exists —
+  // so `bench/baseline/run-all.sh` died with "judgment corpus root missing" instead of scoring.
+  // That is the failure mode this project keeps finding: a gate that cannot fail.
+  const metaCandidates = [`${cleanRoot}.meta.json`, path.join(cleanRoot, ".corpus-meta.json")];
+  const metaPath = process.env.JUDGMENTS_ROOT ? null : metaCandidates.find((p) => fs.existsSync(p));
+  if (metaPath) {
     root = cleanRoot;
     corpusSource = "clean-archive";
-    cleanMeta = JSON.parse(fs.readFileSync(path.join(cleanRoot, ".corpus-meta.json"), "utf8"));
+    cleanMeta = JSON.parse(fs.readFileSync(metaPath, "utf8"));
   }
   if (!fs.existsSync(root)) throw new Error(`judgment corpus root missing: ${root}`);
+  const META_BASENAMES = new Set([".corpus-meta.json"]);
   const corpusFiles = timeExec("find", [root, "-type", "f"], { timeoutMs: 30000 })
     .stdout.split("\n")
     .filter(Boolean)
-    .filter((f) => path.basename(f) !== ".corpus-meta.json").length;
+    // Never count a metadata file as corpus content, wherever it happens to live.
+    .filter((f) => !META_BASENAMES.has(path.basename(f)))
+    .filter((f) => !/^\S+\.meta\.json$/.test(path.basename(f))).length;
   const isGit = fs.existsSync(path.join(root, ".git"));
   const corpusCommit = isGit
     ? timeExec("git", ["rev-parse", "HEAD"], { cwd: root }).stdout.trim()
